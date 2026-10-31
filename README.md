@@ -4,7 +4,7 @@ Native Android work on Philosopher’s Stone and Chamber of Secrets, with separa
 
 ## Download and installation
 
-[0.4.1 Both Games test release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.1) includes **both HP1 and HP2 game payloads** in `Harry-Potter-TQ-0.4.1-Both-Games.apk`: **717,216,944 bytes (717.2 MB)**. Version name **0.4.1**, version code **42**, package `com.tranquil.hp1native`. The earlier 9.9 MB engine-only build is superseded.
+[0.4.1 Both Games test release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.1) includes **both HP1 and HP2 game payloads** in `Harry-Potter-TQ-0.4.1-Both-Games.apk`: **718,670,864 bytes (718.7 MB)**. Version name **0.4.1**, version code **42**, package `com.tranquil.hp1native`. The earlier 9.9 MB engine-only build is superseded.
 
 Install over the existing app without uninstalling to retain app data. The permanent signing certificate is retained. Updating on a physical device and gameplay acceptance still need testing. The release includes full source and SHA-256 checksums. HD textures are separate optional downloads.
 

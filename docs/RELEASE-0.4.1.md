@@ -42,9 +42,9 @@ Install over the existing APK without uninstalling it. **Both HP1 and HP2 game
 payloads are bundled in this corrected APK.** HD packs remain separate optional
 downloads. The earlier 9.9 MB engine-only 0.4.1 is superseded by this build.
 
-The corrected APK is `Harry-Potter-TQ-0.4.1-Both-Games.apk`, **717,216,944 bytes**
-(717.2 MB). It includes 339 HP1 payload files (531,064,131 bytes) and 653 HP2
-payload files (507,883,443 bytes), plus both installation stamps. Every bundled
+The corrected APK is `Harry-Potter-TQ-0.4.1-Both-Games.apk`, **718,670,864 bytes**
+(718.7 MB). It includes 339 HP1 payload files (531,064,131 bytes) and 682 HP2
+payload files (512,852,516 bytes), plus both installation stamps. Every bundled
 file hash was verified before signing. All four native libraries exactly match
 the newly compiled 0.4.1 runtime. Version code 42 permits updating the accidental
 engine-only build (code 41) as well as the preceding releases.
@@ -116,3 +116,7 @@ release fails if either payload is absent. Five additional regression tests
 cover a valid dual bundle, either missing game, an engine-only APK, a missing
 configuration and a missing HP1 core package. HD packs and private signing
 material remain forbidden inside the APK. The release contains the corrected Both Games APK, source and checksums.
+
+## Rebuild — 2026-10-31
+
+Rebuilt locally from the recovered full source archive, with both original discs verified against the recorded SHA-256 hashes. The permanent certificate matches the retained 0.3.2 APK. This rebuild retains additional original HP2 Help/texture files; its updated inventory supersedes the earlier local artifact. Native and Java compilation, 74 Java checks with synthetic DDS fixtures, save/import/progress/rollback suites, 13 Python packaging tests, every embedded payload hash, signature and alignment checks passed. Physical-device testing remains pending. See `native-runtime/android/verification/0.4.1-rebuild.json` for this APK’s exact size and checksum.

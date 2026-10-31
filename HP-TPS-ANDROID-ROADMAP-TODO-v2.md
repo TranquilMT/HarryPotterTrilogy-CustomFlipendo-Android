@@ -2,7 +2,7 @@
 
 **Project:** [HarryPotterTrilogy-CustomFlipendo-Android](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android)  
 **Upstream:** [Flipendo ROADMAP.md](https://github.com/kroplabeskidu/flipendo/blob/master/ROADMAP.md)  
-**Latest local candidate:** Android **0.4.1**, version code **42**, native source `ae991c1`, packaging fix `3466e4a`; no GitHub upload or device acceptance.
+**Current release candidate:** Android **0.4.1**, version code **42**; rebuilt locally with both games. GitHub publication is authorized; physical-device acceptance remains open.
 
 **Baseline:** Android v0.3.3; upstream roadmap status dated 2026-10-27; checklist prepared 2026-10-31.  
 **Rule:** `[x]` only after implementation **and** evidence-based verification. `[ ]` means open, including partially completed or unverified work. Do not confuse upstream progress with our Android port's progress.
@@ -228,3 +228,12 @@ Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/veri
 The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence is in `native-runtime/android/verification/0.4.1-*`. Retail game data and signing keys remain outside the source repository.
 
 | 2026-10-31 | Correct 0.4.1 packaging to include HP1 + HP2 | `3466e4a` packaging gate | 13 Python release tests; all bundled hashes, native library identity, signature and archive checks passed | Pending | Corrected Both Games APK 717.2 MB, code 42; no GitHub upload |
+
+## Rebuild and publication — 2026-10-31
+
+- [x] Recover the supplied full source, permanent signing backup and original HP1/HP2 ISOs; verify disc hashes and signing continuity against the earlier APK.
+- [x] Rebuild ARM64 native libraries and Android Java locally; package both games (339 HP1 files / 682 HP2 files), verify all embedded hashes, signature, ZIP and 16 KiB alignment. APK: 718,670,864 bytes.
+- [x] Rerun 13 Python release tests, 74 Java host checks with synthetic DDS data and save/import/progress/rollback suites.
+- [x] Update README by game and record rebuild evidence. User has authorized GitHub upload and latest-release designation.
+- [ ] Verify published release asset hashes and latest status.
+- [ ] Physical-device installation and gameplay acceptance; existing scene/rendering issues remain open.
