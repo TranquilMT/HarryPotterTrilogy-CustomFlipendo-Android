@@ -141,7 +141,7 @@
 - [ ] Update README with game import, HD pack optional setup, troubleshooting and known limitations.
 - [x] Produce the corrected 0.4.1 Both Games signed ARM64 APK, full source archive, SHA-256 checksum and changelog locally. Physical-device acceptance remains open.
 - [ ] Verify APK installs over previous release without losing saves, game imports or HD packs.
-- [ ] Publish release assets and verify download links, asset sizes and checksums.
+- [x] Publish v0.4.1 release assets and verify download links, asset sizes and checksums.
 - [ ] Record physical-device test results before calling a release stable.
 
 ## Release acceptance gates (do not tick without on-device proof)
@@ -235,5 +235,5 @@ The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence 
 - [x] Rebuild ARM64 native libraries and Android Java locally; package both games (339 HP1 files / 682 HP2 files), verify all embedded hashes, signature, ZIP and 16 KiB alignment. APK: 718,670,864 bytes.
 - [x] Rerun 13 Python release tests, 74 Java host checks with synthetic DDS data and save/import/progress/rollback suites.
 - [x] Update README by game and record rebuild evidence. User has authorized GitHub upload and latest-release designation.
-- [ ] Verify published release asset hashes and latest status.
+- [x] Publish v0.4.1 as Latest and verify all four uploaded assets match local sizes and SHA-256 digests (APK 718,670,864 bytes).
 - [ ] Physical-device installation and gameplay acceptance; existing scene/rendering issues remain open.
