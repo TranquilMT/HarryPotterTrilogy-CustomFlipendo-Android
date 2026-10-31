@@ -1,0 +1,90 @@
+{
+  "version": "0.3.1-HD-bundled",
+  "bytes": 1802688326,
+  "sha256": "9231a2a6382d1d6878e9c96944101b3f7133e30600ba3185e7060a917a2d6e40",
+  "embeddedModules": [
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-01-Harry-v0.3.zip",
+      "sha256": "3e8356898e01065c8c0d90f514249e88a7e588b5e6eab6707da554d84bb1f359",
+      "textures": 23,
+      "bytes": 5525672
+    },
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-02-NPCs-Creatures-v0.3.zip",
+      "sha256": "d309923b1cdc0982dd5ad14fc34e17fec1ed19495f785a3493bb608de1930d9e",
+      "textures": 133,
+      "bytes": 35731349
+    },
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-03-Environment-v0.3.zip",
+      "sha256": "5e43aed44cb0e1934d2b958b235f3a53d8d195566952c99b831b728ff54821cf",
+      "textures": 1335,
+      "bytes": 377451127
+    },
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-04-Props-Details-v0.3.zip",
+      "sha256": "cdc9c2acc62c724a116975e6a7af894a52d9c6dd20e3702a049e1353ec01e716",
+      "textures": 964,
+      "bytes": 160560307
+    },
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-05-Effects-v0.3.zip",
+      "sha256": "999379c12a276a488d8b09afed5e7c418f60c4a220be63cef3cddcf1f7a0d2c8",
+      "textures": 510,
+      "bytes": 27404020
+    },
+    {
+      "path": "assets/bundled-hd/hp1/HP1-HD-Refresh-06-Interface-Storybooks-v0.3.zip",
+      "sha256": "d136f6e259631b3ab1f211c4b9f520975dbfa054c2e027a5bf61336ab9058531",
+      "textures": 540,
+      "bytes": 91886997
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-01-Harry-v0.3.zip",
+      "sha256": "dc6f5ae802a720ce428261ec1fcf9df4b09d9f4b37c5e2e95662e3fb3d9707e7",
+      "textures": 29,
+      "bytes": 5900711
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-02-NPCs-Creatures-v0.3.zip",
+      "sha256": "c59c1780cacd3caa6e95af9f7c641d40f02c8c23733c8c036327fc9c61c1891f",
+      "textures": 319,
+      "bytes": 85188718
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-03-Environment-v0.3.zip",
+      "sha256": "52422289b54d0ba49ba06565524b6b1c9ed85016a8920ac2e1f566ba4f4e5484",
+      "textures": 1560,
+      "bytes": 419406684
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-04-Props-Details-v0.3.zip",
+      "sha256": "44ce0d73e1a22cca0210003beaceeed25f90f189dc0e08a1ce74b76c59b50814",
+      "textures": 400,
+      "bytes": 74570445
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-05-Effects-v0.3.zip",
+      "sha256": "ddbdba481508716535e6a45f9c8f137733bf8ced17cbc255b13653d88efc9cbd",
+      "textures": 693,
+      "bytes": 106288550
+    },
+    {
+      "path": "assets/bundled-hd/hp2/HP2-HD-Refresh-06-Interface-Storybooks-v0.3.zip",
+      "sha256": "1e5772c069c784c587a34228f3027d0820788c3e28ed30634d666f8fa7faae70",
+      "textures": 696,
+      "bytes": 86284981
+    }
+  ],
+  "totalTextures": 7202,
+  "nativeLibrariesUnchanged": {
+    "lib/arm64-v8a/libSDL3.so": "2e87b2d37bae93deba0dba5c97247752dfbfea02cb4cade219520fc8b4130d18",
+    "lib/arm64-v8a/libSurrealVideo.so": "4ab63ff7f9218c9df26a3fe1bafa9f60af53beac73a24fca25e47ab83fd02691",
+    "lib/arm64-v8a/libmain.so": "fe78ccb11daf53a03e4352328deaaf48633e91dd3b32d81cfd3c3dfe5454f75c",
+    "lib/arm64-v8a/libopenal.so": "6935c652076d41c371ff049f4e95aadad04d4619d619baaa22dd77592bb8cf72"
+  },
+  "deviceExecutionTested": false,
+  "optionalHDDefault": false,
+  "perGameEnableDisableHostTests": "PASS 32 bundled-HD checks: both profiles, disabled default, explicit enable, repeat launch skip, removal stays disabled, restore, version update, incomplete bundle preserves prior state.",
+  "existingLauncherHDOptionWiredToEmbeddedPacks": true
+}

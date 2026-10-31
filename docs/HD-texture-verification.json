@@ -1,0 +1,56 @@
+{
+  "HP1": {
+    "HP1-HD-Refresh-01-Harry-v0.3.zip": {
+      "textures": 23,
+      "bytes": 5525672
+    },
+    "HP1-HD-Refresh-02-NPCs-Creatures-v0.3.zip": {
+      "textures": 133,
+      "bytes": 35731349
+    },
+    "HP1-HD-Refresh-03-Environment-v0.3.zip": {
+      "textures": 1335,
+      "bytes": 377451127
+    },
+    "HP1-HD-Refresh-04-Props-Details-v0.3.zip": {
+      "textures": 964,
+      "bytes": 160560307
+    },
+    "HP1-HD-Refresh-05-Effects-v0.3.zip": {
+      "textures": 510,
+      "bytes": 27404020
+    },
+    "HP1-HD-Refresh-06-Interface-Storybooks-v0.3.zip": {
+      "textures": 540,
+      "bytes": 91886997
+    }
+  },
+  "HP2": {
+    "HP2-HD-Refresh-01-Harry-v0.3.zip": {
+      "textures": 29,
+      "bytes": 5900711
+    },
+    "HP2-HD-Refresh-02-NPCs-Creatures-v0.3.zip": {
+      "textures": 319,
+      "bytes": 85188718
+    },
+    "HP2-HD-Refresh-03-Environment-v0.3.zip": {
+      "textures": 1560,
+      "bytes": 419406684
+    },
+    "HP2-HD-Refresh-04-Props-Details-v0.3.zip": {
+      "textures": 400,
+      "bytes": 74570445
+    },
+    "HP2-HD-Refresh-05-Effects-v0.3.zip": {
+      "textures": 693,
+      "bytes": 106288550
+    },
+    "HP2-HD-Refresh-06-Interface-Storybooks-v0.3.zip": {
+      "textures": 696,
+      "bytes": 86284981
+    }
+  },
+  "HP2ProceduralRetained": 194,
+  "HP2SourceDecodeErrors": 0
+}

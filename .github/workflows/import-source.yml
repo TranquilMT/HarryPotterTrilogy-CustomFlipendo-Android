@@ -1,0 +1,35 @@
+name: Restore complete source and prepare release
+on:
+  push:
+    branches: [main]
+    paths: ['source-packages/**', '.github/workflows/import-source.yml', 'scripts/restore_source.py']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: source-import
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Verify and restore complete source
+        run: python3 scripts/restore_source.py
+      - name: Commit browsable source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add native-runtime hd-pipeline
+          if ! git diff --cached --quiet; then
+            git commit -m 'Restore complete native runtime, Android launcher and HD pipeline source'
+            git push origin HEAD:main
+          fi
+      - name: Prepare draft release and attach source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view v0.3.1-HD-bundled >/dev/null 2>&1; then
+            gh release create v0.3.1-HD-bundled --draft --title 'Harry Potter TQ 0.3.1 — optional HD packs bundled' --notes-file docs/RELEASE-0.3.1.md
+          fi
+          gh release upload v0.3.1-HD-bundled release-assets/Harry-Potter-TQ-0.3.1-HD-Bundled-Source.zip docs/SHA256SUMS-0.3.1.txt docs/INSTALL-0.3.1-HD-Bundled.txt docs/Harry-Potter-TQ-0.3.1-HD-Bundled.verification.json --clobber

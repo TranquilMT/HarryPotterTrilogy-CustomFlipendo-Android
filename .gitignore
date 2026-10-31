@@ -1,0 +1,10 @@
+/release-assets/
+/private/
+*.jks
+*.keystore
+password.txt
+**/__pycache__/
+**/launcher-build/
+**/bundled-hd-build/
+**/linux-apk/
+**/build-android/
