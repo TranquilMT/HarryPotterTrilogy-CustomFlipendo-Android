@@ -61,7 +61,20 @@ public:
 	Point getOrigin();
 	void setOrigin(const Point& origin);
 	double getScale() const { return uiscale; }
-	void setScale(double scale) { if (std::isfinite(scale) && scale > 0.0) uiscale = scale; }
+	static Rect rescaleClip(const Rect& clip, double oldScale, double newScale)
+	{
+		const double ratio = oldScale / newScale;
+		return Rect::xywh(clip.x * ratio, clip.y * ratio, clip.width * ratio, clip.height * ratio);
+	}
+	void setScale(double scale)
+	{
+		if (!std::isfinite(scale) || scale <= 0.0) return;
+		// Widget clips are in logical coordinates. Keep their physical bounds
+		// unchanged when a page introduces its own drawing scale (Android HP2).
+		for (auto& clip : clipStack)
+			clip = rescaleClip(clip, uiscale, scale);
+		uiscale = scale;
+	}
 
 	void pushClip(const Rect& box);
 	void popClip();

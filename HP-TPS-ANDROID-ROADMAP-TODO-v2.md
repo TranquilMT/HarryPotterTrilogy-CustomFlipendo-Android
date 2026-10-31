@@ -237,3 +237,9 @@ The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence 
 - [x] Update README by game and record rebuild evidence. User has authorized GitHub upload and latest-release designation.
 - [x] Publish v0.4.1 as Latest and verify all four uploaded assets match local sizes and SHA-256 digests (APK 718,670,864 bytes).
 - [ ] Physical-device installation and gameplay acceptance; existing scene/rendering issues remain open.
+
+## HP2 menu cropping — 0.4.2 candidate
+
+- [x] Inspect phone report and trace inherited Canvas clipping boundaries not changing with menu drawing scale.
+- [x] Preserve physical clip bounds on scale changes; regression passes for 1536×687 at four density scales and restoration.
+- [ ] Confirm full menu, all six slots and touch navigation on the phone; local 0.4.2/code 43 build in progress.
