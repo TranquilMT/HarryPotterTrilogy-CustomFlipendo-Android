@@ -248,7 +248,11 @@ namespace HP2
 	{
 		try
 		{
-			return (uint8_t)std::lround(std::clamp(std::stof(value), 0.0f, 1.0f) * 255.0f);
+			size_t end = 0;
+			float volume = std::stof(value, &end);
+			if (!std::isfinite(volume) || value.find_first_not_of(" \t\r\n", end) != std::string::npos)
+				return defaultValue;
+			return (uint8_t)std::lround(std::clamp(volume, 0.0f, 1.0f) * 255.0f);
 		}
 		catch (...)
 		{
@@ -281,17 +285,26 @@ namespace HP2
 		}
 		else if (StrTools::equals_ignore_case(args[0], "SETVOLUMES"))
 		{
+			bool changed = false;
 			for (size_t i = 1; i < args.size(); i++)
 			{
 				size_t eq = args[i].find('=');
 				if (eq == std::string::npos || !engine->audiodev)
 					continue;
 				std::string key = args[i].substr(0, eq);
-				if (StrTools::equals_ignore_case(key, "SOUND"))
-					engine->audiodev->SetSoundVolume(VolumeFromIni(args[i].substr(eq + 1), engine->audiodev->GetSoundVolume()));
-				else if (StrTools::equals_ignore_case(key, "MUSIC"))
-					engine->audiodev->SetMusicVolume(VolumeFromIni(args[i].substr(eq + 1), engine->audiodev->GetMusicVolume()));
+				bool sound = StrTools::equals_ignore_case(key, "SOUND");
+				if (!sound && !StrTools::equals_ignore_case(key, "MUSIC"))
+					continue;
+				uint8_t old = sound ? engine->audiodev->GetSoundVolume() : engine->audiodev->GetMusicVolume();
+				uint8_t volume = VolumeFromIni(args[i].substr(eq + 1), old);
+				if (volume == old)
+					continue;
+				if (sound) engine->audiodev->SetSoundVolume(volume);
+				else engine->audiodev->SetMusicVolume(volume);
+				changed = true;
 			}
+			if (changed)
+				SaveAudioVolumes();
 		}
 		else if (SoundPauseCommand(args[0]))
 		{

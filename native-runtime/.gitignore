@@ -31,3 +31,6 @@ __pycache__/
 /*.7z
 /Sounds-Rus*/
 *.u
+
+/android/local-041-classes/
+/android/linux-apk/

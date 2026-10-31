@@ -38,6 +38,20 @@ std::atomic<bool> g_firstPerson{false}; // Settings > First person (KW::FirstPer
 std::atomic<bool> g_autoJump{true}; // HP's Auto Jump option (settings panel; HP1::TickTouchDefaults)
 std::atomic<bool> g_saveRequested{false}; // the SAVE button: the game thread saves at its next tick (HP1::TickSaveRequest)
 
+// Opens the shared Android settings from HP2's pre-game front end.
+void AndroidOpenSettings(int tab)
+{
+    JNIEnv* env = static_cast<JNIEnv*>(SDL_GetAndroidJNIEnv());
+    jobject activity = static_cast<jobject>(SDL_GetAndroidActivity());
+    if (!env || !activity) return;
+    jclass cls = env->GetObjectClass(activity);
+    jmethodID method = env->GetMethodID(cls, "openRuntimeSettings", "(I)V");
+    if (method) env->CallVoidMethod(activity, method, (jint)tab);
+    if (env->ExceptionCheck()) env->ExceptionClear();
+    env->DeleteLocalRef(cls);
+    env->DeleteLocalRef(activity);
+}
+
 extern "C" JNIEXPORT void JNICALL Java_io_github_flipendo_spike_FlipendoActivity_nativeSetUiScale(JNIEnv*, jclass, jfloat scale)
 {
 	g_uiScale = scale;

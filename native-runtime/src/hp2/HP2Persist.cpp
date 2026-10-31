@@ -557,10 +557,21 @@ namespace HP2
 				if (UClass* cls = engine->packages->FindClass(NameString(package + "." + className)))
 					return cls;
 			}
-			return nullptr;
-		}
+            // Imported Android installations can omit Editor.EditPackages.
+            // The map/spawner has already loaded its class: search those classes
+            // rather than silently dropping a saved spawned actor.
+            UClass* found = nullptr;
+            for (GCObject* object : GC::GetObjects())
+            {
+                auto* cls = dynamic_cast<UClass*>(object);
+                if (!cls || cls->Name != NameString(className)) continue;
+                if (found && found != cls) { LogMessage("Ambiguous persistent actor class: " + className); return nullptr; }
+                found = cls;
+            }
+            return found;
+        }
 
-		// Where a saved actor the level doesn't have stands, to spawn it there: the record's Location, walking the
+        // Where a saved actor the level doesn't have stands, to spawn it there: the record's Location, walking the
 		// tags with the class's properties (a tag's size can't skip a name or an object: see Writer)
 		std::optional<vec3> SavedLocation(Reader r, UClass* cls)
 		{
@@ -859,12 +870,27 @@ namespace HP2
 		LogMessage("*** Finished Loading Persistent Actors for map " + mapFile);
 	}
 
+    static fs::path PersistenceSaveFolder(bool loading)
+    {
+        fs::path root = engine->packages->GetSaveFolderPath();
+#ifdef __ANDROID__
+        fs::path slot = root / ("PersistenceSlot" + std::to_string(ActiveSlot()));
+        std::error_code ec;
+        if (loading && !fs::is_directory(slot, ec) && fs::is_regular_file(root / ("Save" + std::to_string(ActiveSlot()) + "." + engine->packages->GetSaveExtension()), ec))
+            return root; // Legacy releases shared snapshots; retain their existing load behavior once.
+        return slot;
+#else
+        return root;
+#endif
+    }
+
 	// IDA Core.dll: ?SavePersistentActorCache@@YAXXZ [HP2 Core 0x10157790]
 	// After a save: the slot folder's old *_pa.* files are deleted and the cache folder's copied in their place.
 	void SavePersistentActorCache()
 	{
-		fs::path folder = engine->packages->GetSaveFolderPath();
+		fs::path folder = PersistenceSaveFolder(false);
 		std::error_code ec;
+		fs::create_directories(folder, ec);
 		for (const fs::path& file : PersistentFiles(folder))
 			fs::remove(file, ec);
 		for (const fs::path& file : PersistentFiles(CacheFolder()))
@@ -877,7 +903,7 @@ namespace HP2
 	// folder's copied in, so the hubs come back as they were at the save.
 	void LoadPersistentActorCache()
 	{
-		fs::path folder = engine->packages->GetSaveFolderPath();
+		fs::path folder = PersistenceSaveFolder(true);
 		std::error_code ec;
 		for (const fs::path& file : PersistentFiles(CacheFolder()))
 			fs::remove(file, ec);

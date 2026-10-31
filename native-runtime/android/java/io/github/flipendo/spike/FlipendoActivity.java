@@ -754,6 +754,60 @@ public class FlipendoActivity extends SDLActivity {
         }
     }
 
+    public void openRuntimeSettings(final int tab) {
+        runOnUiThread(() -> { if (overlay != null) { overlay.openSettings(); overlay.setSettingsTab(tab); } });
+    }
+
+    private boolean hp2MenuOpen;
+
+    /** Runtime menu: save/load belong to the game, never to the import launcher. */
+    void openHp2GameMenu() {
+        if (hp2MenuOpen || overlay == null || overlay.cutsceneShown) return;
+        hp2MenuOpen = true;
+        overlay.releaseGameplayControls();
+        debugCommand("frontend pause");
+        final boolean[] handoff = { false };
+        new android.app.AlertDialog.Builder(this)
+            .setTitle("Chamber of Secrets — Main Menu")
+            .setItems(new String[] { tr("Resume"), tr("Save Game"), tr("Load Game"), tr("Game book"), tr("Options"), tr("Return to Main Menu"), tr("Quit to Launcher") }, (dialog, which) -> {
+                if (which == 1 || which == 2) { handoff[0] = true; openHp2Slots(which == 1); }
+                else if (which == 3) { overlay.key(KeyEvent.KEYCODE_ESCAPE, true); overlay.key(KeyEvent.KEYCODE_ESCAPE, false); }
+                else if (which == 4) overlay.openSettings();
+                else if (which == 5) {
+                    handoff[0] = true;
+                    new android.app.AlertDialog.Builder(this).setMessage(tr("Return to the main menu? Unsaved progress will be lost."))
+                        .setPositiveButton(tr("Continue"), (d,w) -> restartWithGame(new File(GAME_DIR), null, null, "hp2"))
+                        .setNegativeButton(tr("Cancel"), null)
+                        .setOnDismissListener(d -> { hp2MenuOpen = false; debugCommand("frontend resume"); }).show();
+                }
+                else if (which == 6) debugCommand("frontend quit");
+            })
+            .setOnDismissListener(d -> { if (!handoff[0]) { hp2MenuOpen = false; debugCommand("frontend resume"); } }).show();
+    }
+
+    private void openHp2Slots(boolean saving) {
+        File game = new File(gameDir());
+        String[] rows = new String[6];
+        for (int n = 0; n < 6; n++) rows[n] = tr("Slot ") + (n + 1) + " — " + tr(HP2SaveSlots.exists(game, n) ? "Saved game" : "Empty");
+        final boolean[] confirming = { false };
+        new android.app.AlertDialog.Builder(this).setTitle(tr(saving ? "Save Game" : "Load Game"))
+            .setItems(rows, (dialog, slot) -> {
+                if (!saving && !HP2SaveSlots.exists(game, slot)) {
+                    android.widget.Toast.makeText(this, tr("This save slot is empty."), android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Runnable action = () -> debugCommand("frontend " + (saving ? "save " : "load ") + slot);
+                if (saving && HP2SaveSlots.exists(game, slot)) {
+                    confirming[0] = true;
+                    new android.app.AlertDialog.Builder(this).setMessage(tr("Replace the saved game in slot ") + (slot + 1) + "?")
+                        .setPositiveButton(tr("Save Game"), (d,w) -> action.run()).setNegativeButton(tr("Cancel"), null)
+                        .setOnDismissListener(d -> { hp2MenuOpen = false; debugCommand("frontend resume"); }).show();
+                } else action.run();
+            })
+            .setNegativeButton(tr("Cancel"), null)
+            .setOnDismissListener(d -> { if (!confirming[0]) { hp2MenuOpen = false; debugCommand("frontend resume"); } }).show();
+    }
+
     Overlay overlay;
 
     /** The game folder the launcher found or the player picked (SetupActivity), for the engine (android_main.cpp, argv[1]). */
@@ -772,7 +826,7 @@ public class FlipendoActivity extends SDLActivity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (overlay != null && (fromPad(event) || KeyEvent.isGamepadButton(event.getKeyCode())) && overlay.padKey(event)) {
+        if (!hp2MenuOpen && overlay != null && (fromPad(event) || KeyEvent.isGamepadButton(event.getKeyCode())) && overlay.padKey(event)) {
             return true;
         }
         return super.dispatchKeyEvent(event);
@@ -780,7 +834,7 @@ public class FlipendoActivity extends SDLActivity {
 
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent event) {
-        if (overlay != null && fromPad(event) && event.getAction() == MotionEvent.ACTION_MOVE) {
+        if (!hp2MenuOpen && overlay != null && fromPad(event) && event.getAction() == MotionEvent.ACTION_MOVE) {
             return overlay.padMotion(event);
         }
         return super.dispatchGenericMotionEvent(event);
@@ -853,7 +907,7 @@ public class FlipendoActivity extends SDLActivity {
             if (layoutEdit) return b != skip; // the layout editor shows every control
             if (b == menu || b == gear) return true;
             if (b == skip) return cutsceneShown && !noSkip; // the skip button exists only in cutscenes (and not with Settings > No cutscene skip)
-            if (b == save && noQuickSave) return false;
+            if (b == save && (noQuickSave || isHp2Game())) return false;
             if (cutsceneShown) return false;       // and they leave only the skip, settings and menu buttons
             if (padActive && (b == cast || b == jump || isArrow(b))) return false; // a gamepad is in use
             boolean game = !(menuShown || lessonShown);
@@ -1247,7 +1301,8 @@ public class FlipendoActivity extends SDLActivity {
                     if (cutsceneShown) {
                         if (!noSkip) padSkipHold(down); // a cutscene is skipped by holding Y, so a touch on a stick or button skips nothing
                     } else if (down && !menuShown && !lessonShown && !noQuickSave) {
-                        nativeRequestSave();
+                        if (isHp2Game()) ((FlipendoActivity)getContext()).openHp2GameMenu();
+                        else nativeRequestSave();
                     }
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_B:
@@ -1270,7 +1325,9 @@ public class FlipendoActivity extends SDLActivity {
                         }
                         return true;
                     }
-                    key(KeyEvent.KEYCODE_ESCAPE, down);
+                    if (isHp2Game() && !levelShown.isEmpty() && !cutsceneShown) {
+                        if (down) ((FlipendoActivity)getContext()).openHp2GameMenu();
+                    } else key(KeyEvent.KEYCODE_ESCAPE, down);
                     return true;
                 case KeyEvent.KEYCODE_BUTTON_R2:
                     padCastTrigger = down;
@@ -2589,6 +2646,11 @@ public class FlipendoActivity extends SDLActivity {
         }
 
         void setButton(Btn b, boolean down) {
+            if (b == menu && isHp2Game() && !levelShown.isEmpty() && !cutsceneShown) {
+                b.down = false;
+                if (down) ((FlipendoActivity)getContext()).openHp2GameMenu();
+                return;
+            }
             if (b == save) {
                 b.down = down;
                 if (down && !noQuickSave) nativeRequestSave(); // saved by the game thread at its next tick, see onSaved

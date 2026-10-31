@@ -12,19 +12,12 @@
 
 // HP2's console commands that the scripts send through ConsoleCommand and that the engine's own Exec answers
 // (UViewport / audio subsystem). NOT reversed: the effect of each is taken from the hgame scripts that send it.
-//   MUTESOUNDS / UNMUTESOUNDS  HPConsole.HandleFastForward, around a cutscene skip. Not muted yet: the sounds of a
-//                              fast-forwarded cutscene still play.
-//   SETVOLUMES SOUND=x MUSIC=y FESoundVideoPage sliders, x and y in 0..1.
+// Audio commands, including cutscene mute/unmute and SETVOLUMES, are handled by HP2Music.cpp.
 //   MLOD x                     FESoundVideoPage "object detail" (mesh LOD bias). No LOD change here.
-//   ISFULLSCREEN               FESoundVideoPage.LoadAvailableSettings: asks whether the window is fullscreen.
+// ISFULLSCREEN uses the engine handler so the Options page sees the actual window state.
 namespace HP2
 {
 	static const char* const AudioSection = "ALAudio.ALAudioSubsystem";
-
-	static uint8_t ToByte(float volume)
-	{
-		return (uint8_t)std::clamp((int)(volume * 255.0f + 0.5f), 0, 255);
-	}
 
 	// HP2 keeps its volumes in [ALAudio.ALAudioSubsystem] as floats (MusicVolume=0.53, SoundVolume=0.9); the stock
 	// audio device reads them as bytes (0..255) from another section, and a "0.9" reads as 0.
@@ -35,10 +28,23 @@ namespace HP2
 		const std::string music = engine->packages->GetIniValue("System", AudioSection, "MusicVolume", "");
 		const std::string sound = engine->packages->GetIniValue("System", AudioSection, "SoundVolume", "");
 		if (!music.empty())
-			engine->audiodev->SetMusicVolume(ToByte((float)atof(music.c_str())));
+			engine->audiodev->SetMusicVolume(VolumeFromIni(music, engine->audiodev->GetMusicVolume()));
 		if (!sound.empty())
-			engine->audiodev->SetSoundVolume(ToByte((float)atof(sound.c_str())));
+			engine->audiodev->SetSoundVolume(VolumeFromIni(sound, engine->audiodev->GetSoundVolume()));
 
+	}
+
+	// Keep the engine's device configuration and HP2's original float-volume section
+	// together. LoadAudioVolumes reads the latter even when an engine INI exists.
+	void SaveAudioVolumes()
+	{
+		if (!engine || !engine->audiodev || !engine->packages)
+			return;
+		auto* audio = engine->audiodev;
+		engine->packages->SetIniValue("System", AudioSection, "MusicVolume", VolumeToIni(audio->GetMusicVolume()));
+		engine->packages->SetIniValue("System", AudioSection, "SoundVolume", VolumeToIni(audio->GetSoundVolume()));
+		audio->SaveConfig();
+		engine->packages->SaveAllIniFiles();
 	}
 
 	bool ConsoleCommand(const std::string& commandline, std::string& result)
@@ -49,15 +55,10 @@ namespace HP2
 		if (name.empty())
 			return false;
 
-		if (StrTools::equals_ignore_case(name, "mutesounds") || StrTools::equals_ignore_case(name, "unmutesounds")
-			|| StrTools::equals_ignore_case(name, "mlod"))
+		// Audio commands fall through to AudioCommand; do not swallow mute/unmute.
+		if (StrTools::equals_ignore_case(name, "mlod"))
 		{
 			result.clear();
-			return true;
-		}
-		if (StrTools::equals_ignore_case(name, "isfullscreen"))
-		{
-			result = "True";
 			return true;
 		}
 		// FESoundVideoPage reads and writes the volumes as "get ini:Engine.Engine.AudioDevice SoundVolume" and "set ini:... SoundVolume 0.9",
@@ -81,35 +82,17 @@ namespace HP2
 			}
 			if (!value.empty())
 			{
-				volume = ToByte((float)atof(value.c_str()));
-				if (music) engine->audiodev->SetMusicVolume(volume); else engine->audiodev->SetSoundVolume(volume);
-				engine->packages->SetIniValue("System", AudioSection, music ? "MusicVolume" : "SoundVolume", value);
+				uint8_t updated = VolumeFromIni(value, volume);
+				if (updated != volume)
+				{
+					if (music) engine->audiodev->SetMusicVolume(updated); else engine->audiodev->SetSoundVolume(updated);
+					SaveAudioVolumes();
+				}
 			}
 			result.clear();
 			return true;
 		}
-		if (StrTools::equals_ignore_case(name, "setvolumes"))
-		{
-			std::string word;
-			while (words >> word)
-			{
-				size_t eq = word.find('=');
-				if (eq == std::string::npos)
-					continue;
-				std::string key = word.substr(0, eq);
-				std::string value = word.substr(eq + 1);
-				bool music = StrTools::equals_ignore_case(key, "music");
-				bool sound = StrTools::equals_ignore_case(key, "sound");
-				if (!music && !sound)
-					continue;
-				uint8_t volume = ToByte((float)atof(value.c_str()));
-				if (engine->audiodev)
-					{ if (music) engine->audiodev->SetMusicVolume(volume); else engine->audiodev->SetSoundVolume(volume); }
-				engine->packages->SetIniValue("System", AudioSection, music ? "MusicVolume" : "SoundVolume", value);
-			}
-			result.clear();
-			return true;
-		}
+
 		return false;
 	}
 }

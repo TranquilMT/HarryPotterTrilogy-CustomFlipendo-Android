@@ -145,6 +145,8 @@ namespace HP2
 
 	// Reads HP2's float volumes from [ALAudio.ALAudioSubsystem] into the audio device (after the settings load).
 	void LoadAudioVolumes();
+	// Save both HP2 and engine volume settings immediately, so Android process death retains them.
+	void SaveAudioVolumes();
 
 	// Left and Right strafe on the phone (src/hp2/HP2Console.cpp), after the key bindings are loaded.
 	void TweakKeybindings();

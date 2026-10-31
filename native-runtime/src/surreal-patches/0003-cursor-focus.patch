@@ -222,3 +222,16 @@ index 03451a7d..b8ff6974 100644
  		{
  			RECT box = {};
  			GetClientRect(WindowHandle.hwnd, &box);
+
+diff --git a/SurrealWidgets/include/surrealwidgets/core/canvas.h b/SurrealWidgets/include/surrealwidgets/core/canvas.h
+--- a/SurrealWidgets/include/surrealwidgets/core/canvas.h
++++ b/SurrealWidgets/include/surrealwidgets/core/canvas.h
+@@ -60,6 +60,8 @@
+ 
+ 	Point getOrigin();
+ 	void setOrigin(const Point& origin);
++	double getScale() const { return uiscale; }
++	void setScale(double scale) { if (std::isfinite(scale) && scale > 0.0) uiscale = scale; }
+ 
+ 	void pushClip(const Rect& box);
+ 	void popClip();

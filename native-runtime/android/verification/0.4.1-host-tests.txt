@@ -1,0 +1,26 @@
+Host checks only; no Android device execution.
+
+ok   DecodeXA_WavHeader
+ok   DecodeXA_NibblesAndShift
+ok   DecodeXA_Predictors
+ok   DecodeXA_Clamps
+ok   DecodeXA_Lengths
+ok   VolumeFromIni_Parses
+ok   VolumeToIni_RoundTrips
+ok   MirrorPlane_OnlyCoplanarFacesShareReflection
+ok   HP2FrontEnd_FitsSmallAndWideScreens
+ok   WandTip_UsesEndCapCentreInsteadOfDiagonalCorner
+10 tests, 0 failed
+
+PASS 30 checks: configuration repair, profile validation, nested imports, traversal, HD metadata/checksums/mips, profile isolation, rollback and removal.
+PASS 12 external-HD checks: both profiles, no bundled assets, imported overrides survive enabled launch, disabled restores originals.
+PASS 32 bundled-HD checks: both profiles, disabled default, explicit enable, repeat launch skip, removal stays disabled, restore, version update, incomplete bundle preserves prior state.
+PASS: install phases, interrupted commit rollback, original DDS/manifest preserved, temporary files cleaned.
+PASS: mixed-case paths, thumbnails excluded, empty/missing saves, six-slot bounds.
+PASS: 3,505 updates coalesced; phase changes delivered; completion protected; lifecycle closed.
+
+Python release checks: 8 passed.
+check_repo: passed.
+Full Android API 36 Java compilation: passed.
+ARM64 NDK r27c native build and link: passed.
+Renderer/core/widget patch reverse/apply round trips: passed.

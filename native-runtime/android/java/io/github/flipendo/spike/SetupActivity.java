@@ -697,16 +697,6 @@ public class SetupActivity extends Activity {
             return;
         }
         String text = tr("Play");
-        if (isHp2()) {
-            String start = getSharedPreferences("setup", MODE_PRIVATE).getString(PREF_START, "new");
-            text = tr("Start a new game");
-            if (start.startsWith("load:")) {
-                try {
-                    text = tr("Continue slot ") + (Integer.parseInt(start.substring(5)) + 1);
-                } catch (NumberFormatException ignored) {
-                }
-            }
-        }
         play.setText("\u25B6  " + text);
     }
 
@@ -801,7 +791,7 @@ public class SetupActivity extends Activity {
             }
             for (File f : files) {
                 String n = f.getName().toLowerCase(java.util.Locale.ROOT);
-                if (n.startsWith("save" + i + ".") && f.length() > 0) {
+                if (n.equals("save" + i + ".usa") && f.isFile() && f.length() > 0) {
                     slots[i].exists = true;
                 }
             }
@@ -840,7 +830,8 @@ public class SetupActivity extends Activity {
             return;
         }
         boolean two = isHp2();
-        slotsBox.setVisibility(two ? android.view.View.VISIBLE : android.view.View.GONE);
+        // HP2 now owns New Game and Load Game in its front end.
+        slotsBox.setVisibility(android.view.View.GONE);
         if (!two) {
             updatePlayLabel();
             return;
@@ -991,28 +982,9 @@ public class SetupActivity extends Activity {
             file.delete();
             return;
         }
-        String start = getSharedPreferences("setup", MODE_PRIVATE).getString(PREF_START, "new");
-        String line;
-        if (start.startsWith("load:")) {
-            line = "load " + start.substring(5);
-        } else {
-            // a new game goes to the first empty slot (the first one when all six are used)
-            SlotInfo[] slots = readSlots();
-            int slot = 0;
-            for (int i = 0; i < 6; i++) {
-                if (!slots[i].exists) {
-                    slot = i;
-                    break;
-                }
-            }
-            line = "new " + slot;
-        }
-        try {
-            new File(FlipendoActivity.GAME_DIR).mkdirs();
-            writeSmallFile(file, line);
-        } catch (IOException e) {
-            android.util.Log.e("flipendo", "could not write the start choice: " + e);
-        }
+        // A normal Play opens HP2's front end. Internal restarts retain the
+        // active slot written by the game, so changing graphics can resume it.
+        file.delete();
     }
 
     /** One half of the renderer control (a gamepad moves between the halves and A picks one). */
@@ -3127,4 +3099,5 @@ public class SetupActivity extends Activity {
         }
     }
 }
+
 

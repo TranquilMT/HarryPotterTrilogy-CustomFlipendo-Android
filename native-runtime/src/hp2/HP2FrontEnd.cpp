@@ -1,5 +1,12 @@
 #include "Precomp.h"
 #include "HP2.h"
+#include "HP2FrontEndLayout.h"
+#include <fstream>
+#ifdef __ANDROID__
+#include <atomic>
+extern std::atomic<bool> g_androidMenuActive;
+void AndroidOpenSettings(int tab);
+#endif
 #include "Utils/CommandLine.h"
 #include "KW.h"
 #include "HP1.h"
@@ -336,6 +343,15 @@ namespace HP2
 
 		private:
 			bool sizeLocked = false;
+			Point MenuPoint(const Point& pos) const
+			{
+#ifdef __ANDROID__
+				auto layout = HP2::FrontEndLayout::Fit(GetWidth(), GetHeight());
+				return Point((pos.x - layout.x) / layout.scale, (pos.y - layout.y) / layout.scale);
+#else
+				return pos;
+#endif
+			}
 			Page MainMenuPage();
 			Page NewGamePage();
 			Page LoadGamePage();
@@ -418,15 +434,20 @@ namespace HP2
 			{
 				Slot& slot = slots[number];
 				slot.folder = engine->packages->GetSaveFolderPath() / ("Slot" + std::to_string(number));
+#ifdef __ANDROID__
+				slot.folder = engine->packages->GetSaveFolderPath();
+#endif
 				std::error_code ec;
 				fs::create_directories(slot.folder, ec);
-				fs::path save = slot.folder / ("Save0." + engine->packages->GetSaveExtension());
+				std::string saveStem = "Save0";
+#ifdef __ANDROID__
+				saveStem = "Save" + std::to_string(number - 1);
+#endif
+				fs::path save = slot.folder / (saveStem + "." + engine->packages->GetSaveExtension());
 				slot.empty = !(fs::is_regular_file(save, ec) && fs::file_size(save, ec) > 0);
 				slot.thumbnail = nullptr;
-				if (slot.empty)
-					ClearSlot(number);
-				else
-					slot.thumbnail = LoadBitmap(slot.folder, "Save0.bmp");
+				if (!slot.empty)
+					slot.thumbnail = LoadBitmap(slot.folder, saveStem + ".bmp");
 			}
 		}
 
@@ -436,11 +457,20 @@ namespace HP2
 		{
 			Slot& slot = slots[number];
 			std::error_code ec;
+#ifdef __ANDROID__
+			// Android keeps the existing flat Save0..Save5 layout. Never clear
+			// the whole shared folder when replacing just one game.
+			std::string stem = "Save" + std::to_string(number - 1);
+			for (const auto& name : { stem + "." + engine->packages->GetSaveExtension(), stem + ".bmp", "Slot" + std::to_string(number - 1) + ".txt" })
+				fs::remove(slot.folder / name, ec);
+			fs::remove_all(slot.folder / ("PersistenceSlot" + std::to_string(number - 1)), ec);
+#else
 			for (const auto& entry : fs::directory_iterator(slot.folder, ec))
 			{
 				if (entry.is_regular_file(ec))
 					fs::remove(entry.path(), ec);
 			}
+#endif
 			slot.empty = true;
 			slot.thumbnail = nullptr;
 		}
@@ -511,8 +541,21 @@ namespace HP2
 					{
 						std::string question = Localize("HPMenu", "All", "Select_Game_0001", "Are you sure you want to replace this game?");
 						std::string title = Localize("HPMenu", "All", "Select_Game_0002", "Replace Game");
+						#ifdef __ANDROID__
+						// SDL Android supports one native window. Confirm in this page,
+						// rather than opening a second MessageBox window.
+						Page confirm;
+						confirm.title = title;
+						confirm.titleBox = DlgRect(24, 122, 271, 30);
+						confirm.instructions = question;
+						confirm.okText = Localize("HPMenu", "All", "Shared_Menu_0008", "OK");
+						confirm.onOk = [this, number] { ClearSlot(number); StartGame(true, number); };
+						Advance(std::move(confirm));
+						return;
+#else
 						if (MessageBox::Question(this, question, title) != DialogButton::Yes)
 							return;
+#endif
 					}
 					ClearSlot(number);
 					sounds.Button();
@@ -581,6 +624,12 @@ namespace HP2
 			button(124, "IDC_VideoConfig", "Video", [this] { return VideoPage(); });
 			button(166, "IDC_SoundConfig", "Sound", [this] { return SoundPage(); });
 			button(208, "IDC_JoystickConfig", "Joystick", nullptr);
+#ifdef __ANDROID__
+            page.controls[0].onClick = [] { AndroidOpenSettings(0); };
+            page.controls[2].text = "Controls";
+            page.controls[2].enabled = true;
+            page.controls[2].onClick = [] { AndroidOpenSettings(1); };
+#endif
 			return page;
 		}
 
@@ -722,8 +771,7 @@ namespace HP2
 				engine->packages->SetIniValue("System", "Engine.GameEngine", "UseSound", soundDisabled ? "False" : "True");
 				audio->SetSoundVolume((uint8_t)std::lround(page.controls[soundIndex].value * 255 / 100.0));
 				audio->SetMusicVolume((uint8_t)std::lround(page.controls[musicIndex].value * 255 / 100.0));
-				audio->SaveConfig();
-				engine->packages->SaveAllIniFiles();
+				SaveAudioVolumes();
 				sounds.Rollover();
 				Back();
 			};
@@ -838,8 +886,9 @@ namespace HP2
 			Update();
 		}
 
-		bool FrontEndWindow::OnMouseDown(const Point& pos, InputKey key)
+		bool FrontEndWindow::OnMouseDown(const Point& rawPos, InputKey key)
 		{
+			const Point pos = MenuPoint(rawPos);
 			if (key != InputKey::LeftMouse)
 				return false;
 			int index;
@@ -869,8 +918,9 @@ namespace HP2
 			return true;
 		}
 
-		bool FrontEndWindow::OnMouseUp(const Point& pos, InputKey key)
+		bool FrontEndWindow::OnMouseUp(const Point& rawPos, InputKey key)
 		{
+			const Point pos = MenuPoint(rawPos);
 			if (key != InputKey::LeftMouse || pressedIndex < 0)
 				return false;
 			int index = pressedIndex;
@@ -904,8 +954,9 @@ namespace HP2
 			return true;
 		}
 
-		bool FrontEndWindow::OnMouseWheel(const Point& pos, InputKey key)
+		bool FrontEndWindow::OnMouseWheel(const Point& rawPos, InputKey key)
 		{
+			const Point pos = MenuPoint(rawPos);
 			int index;
 			Control* c = ControlAt(pos, index);
 			if (c && c->type == Control::Type::ListBox)
@@ -919,8 +970,9 @@ namespace HP2
 			return false;
 		}
 
-		void FrontEndWindow::OnMouseMove(const Point& pos)
+		void FrontEndWindow::OnMouseMove(const Point& rawPos)
 		{
+			const Point pos = MenuPoint(rawPos);
 			if (sliderDrag && pressedIndex >= 0)
 			{
 				if (Control* c = ControlByIndex(pressedIndex))
@@ -976,6 +1028,7 @@ namespace HP2
 		{
 			double offset = pressed ? 1.0 : 0.0;
 			Rect box = control.box;
+            if (!control.image) canvas->fillRect(box, Colorf::fromRgba8(45, 43, 37));
 			if (control.image)
 			{
 				double w = control.image->GetWidth(), h = control.image->GetHeight();
@@ -1064,6 +1117,14 @@ namespace HP2
 		void FrontEndWindow::OnPaint(Canvas* canvas)
 		{
 			canvas->fillRect(Rect::xywh(0.0, 0.0, GetWidth(), GetHeight()), DialogBackground);
+#ifdef __ANDROID__
+			auto layout = HP2::FrontEndLayout::Fit(GetWidth(), GetHeight());
+			double oldScale = canvas->getScale();
+			Point oldOrigin = canvas->getOrigin();
+			canvas->setScale(oldScale * layout.scale);
+            canvas->pushClip(Rect::xywh(0.0, 0.0, GetWidth() / layout.scale, GetHeight() / layout.scale));
+			canvas->setOrigin(Point(layout.x / layout.scale, layout.y / layout.scale));
+#endif
 
 			Rect pageBox = DlgRect(0, 0, 319, 252);
 			if (background)
@@ -1073,6 +1134,7 @@ namespace HP2
 				canvas->popClip();
 			}
 
+            if (!background) DrawText(canvas, DlgRect(24, 45, 271, 40), "Harry Potter — Chamber of Secrets", TextColor, true);
 			Page& page = CurrentPage();
 			if (page.showTitle)
 				DrawText(canvas, page.titleBox, page.title, TextColor, false);
@@ -1087,6 +1149,11 @@ namespace HP2
 
 			// Dialog 152's Instructions label (3022)
 			DrawText(canvas, DlgRect(24, 301, 272, 28), page.instructions, TextColor, false);
+#ifdef __ANDROID__
+			canvas->popClip();
+			canvas->setOrigin(oldOrigin);
+			canvas->setScale(oldScale);
+#endif
 		}
 	}
 
@@ -1104,6 +1171,27 @@ namespace HP2
 	// and that run's appInit makes SavePath\Slot<n> the save folder. Here the same run goes on with both.
 	bool RunFrontEnd()
 	{
+#ifdef __ANDROID__
+		// Only an internal restart carries this file; normal launcher Play
+		// removes it so the real game menu is always shown.
+		{
+			std::ifstream restart("/sdcard/FlipendoHP/hp2_start.txt");
+			std::string mode;
+			int slot = -1;
+			if (restart >> mode >> slot && mode == "load" && slot >= 0 && slot < 6 &&
+                !KW::SaveGameLoadURL("Save" + std::to_string(slot) + "." + engine->packages->GetSaveExtension()).empty())
+			{
+				SetActiveSlot(slot);
+				loadGameSave = slot;
+				return true;
+			}
+		}
+		struct TouchMenuScope
+		{
+			TouchMenuScope() { g_androidMenuActive = true; }
+			~TouchMenuScope() { g_androidMenuActive = false; }
+		} touchMenuScope;
+#endif
 		if (!HP1::ModsSkipSplash()) // src/hp1/mods/LaunchSkips.cpp
 		{
 			std::string language = engine->packages->GetLanguage();
@@ -1116,7 +1204,11 @@ namespace HP2
 		auto window = std::make_unique<FrontEndWindow>();
 		Size screen = Widget::GetScreenSize();
 		window->SetFrameGeometry((screen.width - ClientWidth) * 0.5, (screen.height - ClientHeight) * 0.5, ClientWidth, ClientHeight);
+		#ifdef __ANDROID__
+		window->ShowFullscreen();
+#else
 		window->Show();
+#endif
 		window->RunModal();
 
 		bool finished = window->Finished;
@@ -1130,6 +1222,13 @@ namespace HP2
 			return false;
 		}
 
+#ifdef __ANDROID__
+		SetActiveSlot(slot - 1);
+		loadGameSave = newGame ? -1 : slot - 1;
+		if (newGame) engine->LaunchInfo.url = NewGameURL;
+		std::ofstream restart("/sdcard/FlipendoHP/hp2_start.txt");
+		restart << "load " << slot - 1 << "\n";
+#else
 		fs::path folder = engine->packages->GetSaveFolderPath() / ("Slot" + std::to_string(slot));
 		std::error_code ec;
 		fs::create_directories(folder, ec);
@@ -1145,6 +1244,7 @@ namespace HP2
 		{
 			loadGameSave = 0;
 		}
+#endif
 		return true;
 	}
 }

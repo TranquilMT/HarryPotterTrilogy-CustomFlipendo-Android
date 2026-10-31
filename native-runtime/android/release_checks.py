@@ -5,7 +5,7 @@ from pathlib import Path
 SYSTEM = ('Game.exe', 'Core.u', 'Engine.u', 'HGame.u', 'HProps.u', 'HPModels.u', 'HPSounds.u')
 HD_PREFIXES = ('assets/bundled-hd/', 'assets/texpacks/')
 
-def hp2_inventory(root):
+def game_inventory(root, hp2):
     root = Path(root)
     files = {}
     for p in root.rglob('*'):
@@ -17,7 +17,8 @@ def hp2_inventory(root):
             if key in files:
                 raise ValueError('Case-colliding game paths: ' + relative)
             files[key] = (relative, p)
-    required = ['System/' + name for name in SYSTEM] + ['Sounds/AllDialog.uax']
+    system = SYSTEM if hp2 else ('HP.exe', 'Core.u', 'Engine.u', 'HarryPotter.u', 'HPBase.u', 'HPPuzzle.u', 'HPMenu.u')
+    required = ['System/' + name for name in system] + ['Sounds/AllDialog.uax']
     for name in required:
         item = files.get(name.lower())
         if not item or item[1].stat().st_size == 0:
@@ -25,7 +26,7 @@ def hp2_inventory(root):
     for folder, suffix in [('Maps/', '.unr'), ('Textures/', '.utx')]:
         if not any(k.startswith(folder.lower()) and k.endswith(suffix) and p.stat().st_size > 0 for k, (_, p) in files.items()):
             raise ValueError('Missing HP2 packages: ' + folder)
-    for name in ('System/Core.u', 'System/Engine.u', 'System/HGame.u'):
+    for name in ('System/Core.u', 'System/Engine.u', 'System/HGame.u' if hp2 else 'System/HarryPotter.u'):
         with files[name.lower()][1].open('rb') as src:
             header = src.read(8)
         if len(header) < 8 or header[:4] != bytes.fromhex('c1832a9e') or not 60 <= int.from_bytes(header[4:6], 'little') < 100:
@@ -37,21 +38,43 @@ def hp2_inventory(root):
         result.append({'path': relative, 'bytes': p.stat().st_size, 'sha256': digest})
     return result
 
-def verify_embedded_hp2(apk, inventory):
+def hp1_inventory(root):
+    return game_inventory(root, False)
+
+def hp2_inventory(root):
+    return game_inventory(root, True)
+
+def verify_embedded_game(apk, inventory, prefix):
     names = apk.namelist()
     if any(n.startswith(HD_PREFIXES) for n in names):
         raise ValueError('HD texture packs must remain outside the APK')
     if any(n.lower().endswith(('.jks', '.keystore', '/password.txt')) for n in names):
         raise ValueError('Private signing material must never be packaged')
-    expected = {'assets/hp2data/' + row['path'] for row in inventory}
-    actual = {n for n in names if n.startswith('assets/hp2data/') and not n.endswith('/') and n != 'assets/hp2data/.stamp'}
+    expected = {prefix + row['path'] for row in inventory}
+    actual = {n for n in names if n.startswith(prefix) and not n.endswith('/') and n != prefix + '.stamp'}
+    if len(names) != len(set(names)):
+        raise ValueError('Duplicate APK entries')
     if actual != expected:
         raise ValueError('Embedded HP2 inventory mismatch')
     for row in inventory:
-        name = 'assets/hp2data/' + row['path']
+        name = prefix + row['path']
         if apk.getinfo(name).file_size != row['bytes']:
             raise ValueError('Embedded HP2 size mismatch: ' + row['path'])
         with apk.open(name) as src:
             digest = hashlib.file_digest(src, 'sha256').hexdigest()
         if digest != row['sha256']:
             raise ValueError('Embedded HP2 checksum mismatch: ' + row['path'])
+
+
+
+def verify_embedded_hp2(apk, inventory):
+    verify_embedded_game(apk, inventory, 'assets/hp2data/')
+
+def verify_bundled_games(apk, hp1, hp2):
+    for prefix, inventory in [('assets/gamedata/', hp1), ('assets/hp2data/', hp2)]:
+        paths = {r['path'].lower() for r in inventory}
+        if not {'system/default.ini', 'system/defuser.ini'} <= paths:
+            raise ValueError('Both games require bundled startup configuration')
+        if prefix + '.stamp' not in apk.namelist() or len(apk.read(prefix + '.stamp')) != 64:
+            raise ValueError('Missing game installation stamp')
+        verify_embedded_game(apk, inventory, prefix)

@@ -111,6 +111,11 @@ TEST(VolumeFromIni_Parses)
 	CHECK_EQ(HP2::VolumeFromIni("-2", 7), 0);
 	CHECK_EQ(HP2::VolumeFromIni("loud", 7), 7);
 	CHECK_EQ(HP2::VolumeFromIni("", 7), 7);
+	CHECK_EQ(HP2::VolumeFromIni("nan", 7), 7);
+	CHECK_EQ(HP2::VolumeFromIni("inf", 7), 7);
+	CHECK_EQ(HP2::VolumeFromIni("-inf", 7), 7);
+	CHECK_EQ(HP2::VolumeFromIni("0.5garbage", 7), 7);
+	CHECK_EQ(HP2::VolumeFromIni(" 0.5 \t", 7), 128);
 }
 
 TEST(VolumeToIni_RoundTrips)

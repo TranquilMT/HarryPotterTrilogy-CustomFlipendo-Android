@@ -1,5 +1,6 @@
 #include "Precomp.h"
 #include "KW.h"
+#include "KWWandTip.h"
 #include "KWMove.h"
 #include "KWActor.h"
 #include "KWGame.h"
@@ -167,8 +168,7 @@ namespace KW
 		// The scripts put the wand's tip at WeaponLoc + (0, 0, length) rotated by WeaponRot (baseWand.GetWandEndPoint: Lumos, the
 		// charge particles, the spells' start), so the rotator's Z axis has to be the wand's own direction. HP1's weapon frame is
 		// built that way. In HP2 the weapon bone's Z points elsewhere (down, for Harry) and the wand model is turned to its
-		// place by its own mesh transform, so the direction is taken from the model: from its origin to the corner of its bounds
-		// farthest from it, through the transform the wand is drawn with.
+		// place by its own mesh transform, so the direction is taken from the model: from its origin to the centre of its far end cap, through the transform the wand is drawn with.
 		vec3 zAxis = z, xAxis = x, yAxis = y;
 		if (IsHP2())
 		{
@@ -186,31 +186,16 @@ namespace KW
 				};
 				const BBox& bounds = weaponMesh->MeshBoundingBox;
 				vec3 root = transform(vec3(0.0f));
-				vec3 tip = root;
-				float farthest = 0.0f;
-				for (int corner = 0; corner < 8; corner++)
-				{
-					vec3 local((corner & 1) ? bounds.max.x : bounds.min.x, (corner & 2) ? bounds.max.y : bounds.min.y, (corner & 4) ? bounds.max.z : bounds.min.z);
-					vec3 world = transform(local);
-					vec3 d = world - root;
-					float length = dot(d, d);
-					if (length > farthest)
-					{
-						farthest = length;
-						tip = world;
-					}
-				}
+				vec3 tip = transform(WandTipLocal(bounds.min, bounds.max));
 				vec3 d = tip - root;
 				float length = std::sqrt(dot(d, d));
 				if (length > 1e-3f)
 				{
 					zAxis = d * (1.0f / length);
-					static bool reported = false;
-					if (!reported)
-					{
-						reported = true;
-						LogMessage("Wand tip: direction " + std::to_string(zAxis.x) + "," + std::to_string(zAxis.y) + "," + std::to_string(zAxis.z) + " length " + std::to_string(length) + " (the scripts use 20), frame Z " + std::to_string(z.x) + "," + std::to_string(z.y) + "," + std::to_string(z.z));
-					}
+                    // baseWand.GetWandEndPoint uses WeaponLoc + Z * 20.
+                    // Account for the mesh origin and actual scaled length too.
+                    origin = tip - zAxis * 20.0f;
+
 					xAxis = x - zAxis * dot(x, zAxis);
 					float xl = std::sqrt(dot(xAxis, xAxis));
 					if (xl < 1e-3f)

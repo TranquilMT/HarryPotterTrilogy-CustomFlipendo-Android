@@ -29,7 +29,7 @@ public final class GameZipImporter {
     unzip(new FilterInputStream(zip){public void close(){}},staging,progress,depth+1);
    }else{
     int at=-1;String folder=null;
-    for(int i=0;i<parts.length-1&&at<0;i++)for(String allowed:new String[]{"System","Maps","Textures","Sounds","Music","Save"})if(parts[i].equalsIgnoreCase(allowed)){at=i;folder=allowed;break;}
+    for(int i=0;i<parts.length-1&&at<0;i++)for(String allowed:new String[]{"System","Maps","Textures","Sounds","Music","Save","Help"})if(parts[i].equalsIgnoreCase(allowed)){at=i;folder=allowed;break;}
     if(at>=0){
      StringBuilder relative=new StringBuilder(folder);for(int i=at+1;i<parts.length;i++){if(parts[i].isEmpty()||parts[i].equals("."))throw new IOException("Invalid archive path");relative.append('/').append(parts[i]);}
      if(!paths.add(relative.toString().toLowerCase(Locale.ROOT)))throw new IOException("Duplicate game file in archive: "+relative);

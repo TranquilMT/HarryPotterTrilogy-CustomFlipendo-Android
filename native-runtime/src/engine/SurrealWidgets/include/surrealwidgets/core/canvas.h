@@ -60,6 +60,8 @@ public:
 
 	Point getOrigin();
 	void setOrigin(const Point& origin);
+	double getScale() const { return uiscale; }
+	void setScale(double scale) { if (std::isfinite(scale) && scale > 0.0) uiscale = scale; }
 
 	void pushClip(const Rect& box);
 	void popClip();

@@ -1,0 +1,35 @@
+{
+  "source": "Original privately uploaded game discs; GitHub v0.3.3 Both Games release used as packaging reference",
+  "referenceAPKBytes": 713739242,
+  "referenceAPKSHA256": "4dbf996d1ec3b0dc12c3afa523c11d56e199263ae21c8994d600b3dd834c8cd4",
+  "discs": [
+    {
+      "game": "HP1",
+      "bytes": 603924480,
+      "sha256": "6291cdcb3cd9338824d6428abeea9f528afbc0b5867af50bf091a93d0f29b744",
+      "previousManifestFilesVerified": 330
+    },
+    {
+      "game": "HP2",
+      "bytes": 686614528,
+      "sha256": "740dc736baa02f340a90e5f243f0bb49d5d78de1ed683409d0afc3a3b1f2a1eb",
+      "extraction": "InstallShield cabinets extracted with unshield; HGame.u recovered from separate disc file"
+    }
+  ],
+  "payloads": [
+    {
+      "game": "HP1",
+      "files": 339,
+      "bytes": 531064131
+    },
+    {
+      "game": "HP2",
+      "files": 653,
+      "bytes": 507883443
+    }
+  ],
+  "allBundledFileHashesVerified": true,
+  "nativeLibrariesUnchangedFrom041EngineBuild": true,
+  "hdTexturesBundled": false,
+  "deviceExecutionTested": false
+}

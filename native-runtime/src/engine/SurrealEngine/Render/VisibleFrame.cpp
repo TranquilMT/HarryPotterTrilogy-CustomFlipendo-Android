@@ -16,6 +16,7 @@
 #include "VM/ScriptCall.h"
 #include "KW.h"
 #include "HP2.h"
+#include "KWMirrorPlane.h"
 
 void VisibleFrame::Process(const vec3& location, const mat4& worldToView, const Coords& viewRotation, bool mirrorFlag, int portalDepth, const Array<PortalSpan>& portalSpans, const vec4& portalPlane)
 {
@@ -330,8 +331,12 @@ void VisibleFrame::ProcessNodeSurface(BspNode* node, bool front)
 			{
 				for (auto& p : Portals)
 				{
-					if (!p.WarpZone && !p.SkyZone && !p.Mover) // To do: how do we best merge mirrors using the same plane?
+					if (!p.WarpZone && !p.SkyZone && !p.Mover && !p.Nodes.empty())
 					{
+						const auto* plane = p.Nodes.front().Node;
+						if (!KW::SameMirrorPlane(node->PlaneX, node->PlaneY, node->PlaneZ, node->PlaneW,
+							plane->PlaneX, plane->PlaneY, plane->PlaneZ, plane->PlaneW))
+							continue;
 						p.Nodes.push_back(info);
 						p.Spans.insert(p.Spans.end(), spans.begin(), spans.end());
 						return;

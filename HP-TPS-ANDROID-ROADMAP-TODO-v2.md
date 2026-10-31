@@ -2,6 +2,8 @@
 
 **Project:** [HarryPotterTrilogy-CustomFlipendo-Android](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android)  
 **Upstream:** [Flipendo ROADMAP.md](https://github.com/kroplabeskidu/flipendo/blob/master/ROADMAP.md)  
+**Latest local candidate:** Android **0.4.1**, version code **42**, native source `ae991c1`, packaging fix `3466e4a`; no GitHub upload or device acceptance.
+
 **Baseline:** Android v0.3.3; upstream roadmap status dated 2026-10-27; checklist prepared 2026-10-31.  
 **Rule:** `[x]` only after implementation **and** evidence-based verification. `[ ]` means open, including partially completed or unverified work. Do not confuse upstream progress with our Android port's progress.
 
@@ -28,18 +30,18 @@
 ## P0 — Source audit, reproducible builds, release integrity
 
 - [ ] Fetch and compare current upstream source and roadmap with Android `native-runtime/` at file and commit level.
-- [ ] Record current Android build configuration, dependencies, native libraries, and changes relative to upstream.
+- [x] Record current Android build configuration, dependencies and native libraries in `native-runtime/android/verification/0.4.1-toolchain.json` and `0.4.1-build.json`. Upstream file-level comparison remains a separate open item.
 - [ ] Create a compatibility matrix for HP1, HP2, HP3 (import, boot, menu, gameplay, audio, save/load, renderer, controls).
-- [ ] Establish repeatable Android ARM64 build and smoke-test commands; document prerequisites.
-- [ ] Preserve application ID `com.tranquil.hp1native` unless existing current source proves a deliberate change.
-- [ ] Verify existing signing certificate continuity and upgrade install (no private keys in repo).
+- [x] Establish and run the local Android ARM64 build command; document prerequisites and host regression commands in `docs/RELEASE-0.4.1.md`. Device smoke tests remain open.
+- [x] Preserve application ID `com.tranquil.hp1native`; verified in the built 0.4.1 APK manifest.
+- [ ] Verify existing signing certificate continuity and upgrade install (no private keys in repo). Certificate matches prior APK in 0.4.1; upgrade installation remains for the phone test.
 - [ ] Add regression tests for HP1 launch, saves, Default.ini/DefUser.ini repair, and HD pack toggle.
 - [ ] Track each fix in this checklist with source reference, commit, tests and phone result.
 
 ## P1 — HP2: Chamber of Secrets (upstream roadmap priority)
 
 ### HP2 main menu and front-end parity — Android release blocker
-- [ ] **Implement/restore the Chamber of Secrets main menu** in the Android runtime (currently reported missing); do not mistake the launcher game selector for HP2's own front end.
+- [ ] **Implement/restore the Chamber of Secrets main menu** in the Android runtime (0.4.1 implementation built; phone navigation/rendering pending); do not mistake the launcher game selector for HP2's own front end.
 - [ ] Compare the original HP2 PC `Game.exe` menu with upstream Flipendo and our Android fork: identify missing menu assets, scripts, input handlers, camera/background rendering and initialization.
 - [ ] Show the correct HP2 title screen, background, menu graphics, fonts, cursor/highlight effects, transitions, music and button sounds using the user's imported game assets.
 - [ ] Wire **New Game** to the correct HP2 starting map and initial save/profile flow; verify it works after a fresh install and with existing saves.
@@ -137,7 +139,7 @@
 
 - [ ] Verify Android game-folder picker imports both HP1 and HP2 reliably (upstream release-roadmap equivalent).
 - [ ] Update README with game import, HD pack optional setup, troubleshooting and known limitations.
-- [ ] Produce versioned signed ARM64 APK, full source archive, SHA-256 checksum and concise changelog.
+- [x] Produce the corrected 0.4.1 Both Games signed ARM64 APK, full source archive, SHA-256 checksum and changelog locally. Physical-device acceptance remains open.
 - [ ] Verify APK installs over previous release without losing saves, game imports or HD packs.
 - [ ] Publish release assets and verify download links, asset sizes and checksums.
 - [ ] Record physical-device test results before calling a release stable.
@@ -150,6 +152,52 @@
 - [ ] HP1 menus, saves, controls and HD textures still work after the HP2 fixes.
 - [ ] Build logs, screenshots, device model, APK version and commit SHA are recorded for each accepted fix.
 
+## Local investigation — 2026-10-31
+
+User direction: keep implementation, builds and commits local; no GitHub pushes.
+
+- [ ] Opening PrivetDr mirror/window reflection glitches: base texture remains hidden by the invisible portal seal. Mirror grouping fix below is a separate defect and does not prove this scene fixed.
+- [ ] Lumos light is offset from the wand tip; distinguish this from the existing persistent-beam issue.
+- [ ] Some translucent walls render red; record map/surface/material and compare HD off/on.
+- [ ] Spawned jelly beans sometimes fail to follow Harry between levels; inspect travel serialization and actor persistence.
+- [ ] The game's own Options controls page contains empty rows; inspect binding enumeration/localization and Android input support.
+- [ ] Verify the mirror plane grouping change on Android with mirrors on separate planes and HP1 Mirror of Erised regression checks.
+
+Source finding: `Engine.cpp` explicitly excludes `HP2::RunFrontEnd()` on Android under the assumption that SetupActivity replaces it. The launcher is not HP2's six-slot New/Load/Options front end. Removing the guard alone has not been validated against SDL Android modal-window/input constraints.
+
+Local change: mirrored BSP faces now share a reflection only when their oriented planes match. Previously every BSP mirror joined the first mirror portal, regardless of position/orientation. Pure C++ regression test passes; device acceptance remains open. See `native-runtime/docs/re/hp2/android-local-findings.md`.
+
+## Local fixes — audio settings and HD progress
+
+- [x] Remove the older HP2 console interceptor that swallowed `MUTESOUNDS` / `UNMUTESOUNDS`; use the existing HP2 audio handler. Source flow reviewed; affected C++ files pass host syntax checks. Device playback remains unverified.
+- [x] Share volume saving across the HP2 front end, in-game `set` and `SETVOLUMES`; update both the HP2 and engine INI sections and flush changed values. Source/syntax verified; device relaunch test remains open.
+- [x] Reject nonfinite or malformed volume values; pass the C++ volume parser/round-trip tests.
+- [x] Use the existing engine fullscreen query rather than HP2's hardcoded `True` reply. Source/syntax verified.
+- [x] Coalesce HD progress into one pending UI update; host burst test passes with 3,505 updates, including completion and destroyed-screen protection.
+- [x] Report HD extraction/verification, copying, manifest save and cleanup; real installer host tests pass with synthetic DDS/ZIP fixtures.
+- [x] Check interruption between committed HD files and verify rollback restores the previous texture and manifest, with temporary directories cleaned.
+- [ ] Confirm audio behavior, saved volume reload and installer responsiveness on the ARM64 phone. None of the above closes an on-device release gate.
+
+## 0.4.1 local APK — implemented and built; device gates remain open
+
+- [x] Enable HP2's existing front-end code before engine startup; pass the complete ARM64 native build.
+- [x] Add proportional layout and matching touch coordinates for landscape phone surfaces; pass small/wide-screen host regression tests.
+- [x] Preserve the existing flat Save0..Save5 files while moving New/Load selection out of the launcher. Opening the menu never deletes an empty slot's shared save folder.
+- [x] Add an in-game main menu with Resume, Save Game, Load Game, Game Book, Options, Return to Main Menu and Quit to Launcher; pass full Android Java compilation. Gameplay/input validation is still pending.
+- [x] Route front-end Display/Controls buttons to the working shared Android settings; keep HP2's Sound page with the earlier volume persistence fix.
+- [x] Keep original Help-folder menu bitmaps/sounds during ZIP and ISO imports; verify synthetic ZIP import and ISO path classification. Provide text/button fallbacks if earlier imports lack Help.
+- [x] Exclude thumbnails and empty files when identifying saves; pass mixed-case and six-slot-boundary host tests.
+- [x] Honor the slot passed to HP2 LoadGame, validate slot bounds and remember the chosen slot for internal restarts.
+- [x] Save future persistent-world snapshots separately per Android save slot; retain legacy snapshot loading as a compatibility fallback. Full hub/bean testing remains open.
+- [x] Add loaded-class lookup fallback for persistent spawned actors when EditPackages omits their package; pass the native build. Bean respawn behavior still needs a map test.
+- [x] Change HP2 wand effect alignment from a bounding-box corner to the far end-cap centre and compensate for rendered length; pass geometry tests. Lumos attachment remains a candidate fix until phone comparison.
+- [x] Build and sign 0.4.1 / versionCode 42 locally with the permanent certificate; verify ARM64 ELF, 16 KiB alignment, ZIP integrity, package identity and matching certificate.
+- [ ] Install the new APK over the existing release and confirm saves/imports survive.
+- [ ] Confirm menu graphics, all six save/load slots, overwrite confirmation, gamepad navigation, pause/resume and settings on the OnePlus.
+- [ ] Confirm Lumos position while standing/moving/casting; red translucent walls, opening-scene mirror texture and the original book's empty controls rows remain unresolved.
+
+Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/verification/0.4.1-*`. No compatibility success or physical-device playthrough is claimed.
+
 ## Work log (append after each batch)
 
 | Date | Phase / task | Commit or PR | Automated tests | Android playtest | Outcome / blocker |
@@ -159,3 +207,24 @@
 ## Next Work-mode instruction (copy/paste)
 
 > Continue the HP:TPS Android project using `HP-TPS-ANDROID-ROADMAP-TODO.md` as the authoritative progress checklist, cross-checking against the latest upstream Flipendo ROADMAP.md. Start with P0 source audit, then P1 HP2 **main menu, functional settings, mirror texture** and other highest-priority fixes, followed by P2 installer freeze. Make real source changes in testable batches, run tests, commit and push changes, and update checkboxes only when verified. Preserve HP1 gameplay, Android signing, saves and optional texture packs. Keep HP3 experimental and separate. Do not claim APK or compatibility success without evidence.
+
+
+| 2026-10-31 | Local source recovery, HP2 startup/render audit, mirror plane grouping | Local commit; see Git log | Mirror regression 1/1; Android release checks 8/8; check_repo passed | Not run | Opening-scene texture compositing, menu/settings, other reported issues remain open; no APK produced |
+
+| 2026-10-31 | Local HP2 sound/settings fixes and bounded HD progress | Local commit; see Git log | 8 C++ tests; 8 release tests; 74 existing Java checks with synthetic fixtures; new queue/phase/rollback tests; syntax and repo checks | Not run | No APK build; main menu, opening-scene mirror base texture, red walls, bean travel and empty controls rows remain open |
+
+| 2026-10-31 | Local 0.4.1 candidate: HP2 menu/save flow, imports, persistence and wand alignment | `ae991c1` | ARM64 build, Android Java compile, 10 C++ tests, 74 existing Java checks plus new menu/import/queue/rollback suites, 8 Python checks | Pending user test | APK signed locally; main menu and candidate gameplay changes require phone verification; no GitHub upload |
+
+## Corrected 0.4.1 Both Games packaging
+
+- [x] Confirm the GitHub v0.3.3 reference APK is 713,739,242 bytes and includes both games, with HD separate.
+- [x] Recover both original game discs from the existing private uploads; verify all 330 previous HP1 manifest hashes.
+- [x] Include both complete validated game payloads and installation stamps in `Harry-Potter-TQ-0.4.1-Both-Games.apk` (717,216,944 bytes).
+- [x] Verify 339 HP1 files and 653 HP2 files by SHA-256 after embedding; verify all four 0.4.1 native libraries are unchanged.
+- [x] Require both payload inputs in the release build and reject engine-only/missing-game/missing-config packages; 13 Python release tests pass.
+- [x] Sign the corrected bundle as 0.4.1 / code 42 using the permanent certificate; verify package, signature, ARM64 and 16 KiB alignment.
+- [ ] User installation/gameplay test, followed by GitHub upload only after user approval.
+
+The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence is in `native-runtime/android/verification/0.4.1-*`. Retail game data and signing keys remain outside the source repository.
+
+| 2026-10-31 | Correct 0.4.1 packaging to include HP1 + HP2 | `3466e4a` packaging gate | 13 Python release tests; all bundled hashes, native library identity, signature and archive checks passed | Pending | Corrected Both Games APK 717.2 MB, code 42; no GitHub upload |

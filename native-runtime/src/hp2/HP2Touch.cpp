@@ -12,6 +12,8 @@
 #include "Packages/Core/UState.h"
 #include "Packages/Engine/UConsole.h"
 #include "Packages/Engine/UViewport.h"
+#include "Packages/Engine/Actors/Info/ULevelInfo.h"
+#include <sstream>
 #include "Packages/Engine/Actors/UHUD.h"
 #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
 #include <atomic>
@@ -153,6 +155,34 @@ namespace HP2
 			const size_t space = command.find(' ');
 			const std::string verb = command.substr(0, space);
 			const std::string argument = space == std::string::npos ? std::string() : command.substr(space + 1);
+            if (verb == "frontend")
+            {
+                static std::string previousPauser;
+                static bool held = false;
+                std::istringstream input(argument);
+                std::string action;
+                int slot = -1;
+                input >> action >> slot;
+                if (action == "pause" && !held)
+                {
+                    previousPauser = engine->LevelInfo->Pauser();
+                    engine->LevelInfo->Pauser() = "AndroidFrontEnd";
+                    held = true;
+                }
+                else if (action == "resume" && held)
+                {
+                    engine->LevelInfo->Pauser() = previousPauser;
+                    held = false;
+                }
+                else if ((action == "save" || action == "load") && slot >= 0 && slot < 6 && !CutsceneMode())
+                {
+                    if (held) { engine->LevelInfo->Pauser() = previousPauser; held = false; }
+                    if (action == "load") LoadGame(slot);
+                    else { SetActiveSlot(slot); CallEvent(harry, NameString("SaveGame")); }
+                }
+                else if (action == "quit") engine->quit = true;
+                continue;
+            }
 			LogMessage("HP2 debug: " + command);
 			if (verb == "level" && !argument.empty())
 				CallEvent(harry, NameString("LoadLevel"), { ExpressionValue::StringValue(argument) });
@@ -183,7 +213,7 @@ namespace HP2
 				UActor* camActor = UObject::TryCast<UActor>(cam);
 				const vec3 bl = camActor ? camActor->Location() : vec3(0.0f);
 				LogMessage("HP2 debug: view: cam actor at " + std::to_string(bl.x) + "," + std::to_string(bl.y) + "," + std::to_string(bl.z));
-				LogMessage("HP2 debug: view: harry state " + harry->GetStateName().ToString() + ", ViewTarget " + (target ? target->Name.ToString() + " (" + target->GetStateName().ToString() + ")" : std::string("none")) + ", cam " + (cam ? cam->Name.ToString() + " (" + cam->GetStateName().ToString() + ")" : std::string("none")) + ", harry at " + std::to_string(hl.x) + "," + std::to_string(hl.y) + "," + std::to_string(hl.z) + ", camera actor " + (engine->CameraActor ? engine->CameraActor->Name.ToString() : std::string("none")) +  + ", camera at " + std::to_string(cl.x) + "," + std::to_string(cl.y) + "," + std::to_string(cl.z));
+				LogMessage("HP2 debug: view: harry state " + harry->GetStateName().ToString() + ", ViewTarget " + (target ? target->Name.ToString() + " (" + target->GetStateName().ToString() + ")" : std::string("none")) + ", cam " + (cam ? cam->Name.ToString() + " (" + cam->GetStateName().ToString() + ")" : std::string("none")) + ", harry at " + std::to_string(hl.x) + "," + std::to_string(hl.y) + "," + std::to_string(hl.z) + ", camera actor " + (engine->CameraActor ? engine->CameraActor->Name.ToString() : std::string("none")) + ", camera at " + std::to_string(cl.x) + "," + std::to_string(cl.y) + "," + std::to_string(cl.z));
 			}
 			else if (verb == "pick")
 			{

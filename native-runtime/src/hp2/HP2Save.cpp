@@ -16,6 +16,9 @@
 // bQueuedToSaveGame and the engine saves at the end of the tick, always as save 0 of the slot folder the front end
 // chose (Save/Slot<n>/Save0.usa). Loading after death is the LoadGame console command.
 
+#ifdef __ANDROID__
+void AndroidNotifySaved(int slot);
+#endif
 namespace HP2
 {
 	// The slot the player picked in the launcher (0..5): the file Save<slot> is where the queued save goes and "LoadGame"
@@ -30,7 +33,12 @@ namespace HP2
 
 	void SetActiveSlot(int slot)
 	{
-		activeSlot = slot < 0 ? 0 : slot;
+		if (slot < 0 || slot >= 6) return;
+        activeSlot = slot;
+#ifdef __ANDROID__
+        std::ofstream restart("/sdcard/FlipendoHP/hp2_start.txt");
+        restart << "load " << slot << "\n";
+#endif
 	}
 
 	// UGameEngine::Tick, after the levels tick: a save queued by the viewport's player is written now. The original
@@ -55,7 +63,10 @@ namespace HP2
 		catch (...)
 		{
 		}
-		SoundPauseCommand("RESTARTSOUNDS");
+		#ifdef __ANDROID__
+        AndroidNotifySaved(activeSlot);
+#endif
+        SoundPauseCommand("RESTARTSOUNDS");
 		return true;
 	}
 
@@ -75,7 +86,9 @@ namespace HP2
 			return false;
 		if (args[1].empty() || args[1][0] < '0' || args[1][0] > '9')
 			return true;
-		int save = activeSlot + Convert::to_int32(args[1]);
+		int requested = Convert::to_int32(args[1]);
+		if (requested < 0 || requested >= 6 || activeSlot + requested >= 6) return true;
+		int save = activeSlot + requested;
 		LogMessage("Loading game... filename: " + (engine->packages->GetSaveFolderPath() / ("Save" + std::to_string(save) + "." + engine->packages->GetSaveExtension())).string());
 		LoadPersistentActorCache();
 		engine->ClientTravel("?load=" + std::to_string(save), ETravelType::TRAVEL_Absolute, false);
@@ -84,14 +97,16 @@ namespace HP2
 
 	// The launcher's choice (HP2GameState.cpp OpenStartMenu): the slot's save is opened like a map, after the persistent
 	// actor cache is back. The script's LoadGame always says 0; the slot is the one this game was started with.
-	bool LoadGame(int)
+	bool LoadGame(int slot)
 	{
-		std::string url = KW::SaveGameLoadURL("Save" + std::to_string(activeSlot) + "." + engine->packages->GetSaveExtension());
+		if (slot < 0 || slot >= 6) return false;
+		std::string url = KW::SaveGameLoadURL("Save" + std::to_string(slot) + "." + engine->packages->GetSaveExtension());
 		if (url.empty())
 		{
-			LogMessage("LoadGame " + std::to_string(activeSlot) + ": no save");
+			LogMessage("LoadGame " + std::to_string(slot) + ": no save");
 			return false;
 		}
+		SetActiveSlot(slot);
 		LoadPersistentActorCache();
 		engine->ClientTravel(url, ETravelType::TRAVEL_Absolute, false);
 		return true;

@@ -39,7 +39,7 @@ public final class IsoExtractor {
    if((flags&2)!=0)directory(start,bytes,path,depth+1);else {entries.add(new Entry(path,start,bytes));if(entries.size()>20000)throw new IOException("Too many disc files");}pos+=n;
   }
  }
- public static boolean gameFile(String p){String l=p.toLowerCase(Locale.ROOT);return l.startsWith("/system/")||l.startsWith("/maps/")||l.startsWith("/textures/")||l.startsWith("/sounds/")||l.startsWith("/music/");}
+ public static boolean gameFile(String p){String l=p.toLowerCase(Locale.ROOT);return l.startsWith("/system/")||l.startsWith("/maps/")||l.startsWith("/textures/")||l.startsWith("/sounds/")||l.startsWith("/music/")||l.startsWith("/help/");}
  public long extract(File dest,Progress progress)throws IOException{
   List<Entry> all=list();long total=0;boolean exe=false,pack=false,map=false;
   for(Entry e:all){String l=e.path.toLowerCase(Locale.ROOT);if(l.equals("/system/hp.exe"))exe=true;if(l.equals("/system/harrypotter.u"))pack=true;if(l.startsWith("/maps/")&&l.endsWith(".unr"))map=true;if(gameFile(e.path))total+=e.size;}

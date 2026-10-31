@@ -148,29 +148,9 @@ namespace HP2
 			return;
 		}
 
-#ifdef __ANDROID__
-		// The launcher's choice (SetupActivity writes /sdcard/FlipendoHP/hp2_start.txt: "new 2" or "load 2", the save slot 0..5):
-		// a saved game is loaded, a new game starts in PrivetDr, in that slot. Without the file the main menu opens.
-		{
-			std::ifstream file("/sdcard/FlipendoHP/hp2_start.txt");
-			std::string mode;
-			int slot = 0;
-			if (file >> mode >> slot)
-			{
-				done = true;
-				SetActiveSlot(slot);
-				if (mode == "new") // a restart from inside the game (language, renderer) must not begin again
-				{
-					std::ofstream again("/sdcard/FlipendoHP/hp2_start.txt");
-					again << "load " << slot << "\n";
-				}
-				if (mode == "load" && LoadGame(slot))
-					return;
-				engine->ClientTravel("PrivetDr", ETravelType::TRAVEL_Absolute, false);
-				return;
-			}
-		}
-#endif
+// Startup loading is now selected by the real front end, before the engine window.
+		if (LoadGameSave() >= 0) { done = true; return; }
+
 
 		UClass* consoleClass = engine->packages->FindClass(NameString("HGame.HPConsole"));
 		UClass* bookClass = engine->packages->FindClass(NameString("HGame.FEBook"));
@@ -191,6 +171,7 @@ namespace HP2
 		done = true;
 		book->BoolValue(bGamePlaying) = false;
 		CallEvent(book, NameString("OpenBook"), { ExpressionValue::StringValue("Main") });
+		CallEvent(engine->console, NameString("LaunchUWindow"));
 	}
 }
 

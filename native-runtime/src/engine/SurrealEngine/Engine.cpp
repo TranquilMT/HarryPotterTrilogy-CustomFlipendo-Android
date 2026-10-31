@@ -133,10 +133,8 @@ void Engine::Run()
 	LogGamePackageSHA1Sums();
 
 	// HP2's front end (New Game, Load Game, Options) is Game.exe's, before the engine starts
-#ifndef __ANDROID__ // Android has its own launcher (SetupActivity)
 	if (LaunchInfo.IsHarryPotter2() && LaunchInfo.url.empty() && !HP2::RunFrontEnd())
 		return;
-#endif
 	if (LaunchInfo.IsHarryPotter2()) // appInit: the slot folder's persistent actor files into the cache (src/hp2/HP2Persist.cpp)
 		HP2::LoadPersistentActorCache();
 

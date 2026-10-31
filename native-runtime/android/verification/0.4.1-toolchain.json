@@ -1,0 +1,17 @@
+{
+  "ndk": "27.2.12479018",
+  "ndkArchiveSHA256": "59c2f6dc96743b5daf5d1626684640b20a6bd2b1d85b13156b90333741bad5cc",
+  "sdkPlatform": 36,
+  "sdkPlatformArchiveSHA256": "37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e",
+  "buildTools": "36.0.0",
+  "buildToolsArchiveSHA256": "5d9ac77fb6ff43d9da518a337b4fcf8f9097113df531d99ccefe80ef7ce8250b",
+  "cmake": "4.4.4",
+  "ninja": "1.13.2",
+  "sdlTag": "release-3.2.20",
+  "sdlCommit": "96292a5b464258a2b926e0a3d72f8b98c2a81aa6",
+  "java": "OpenJDK 17.0.20",
+  "minSDK": 29,
+  "targetSDK": 35,
+  "abi": "arm64-v8a",
+  "permanentSigningCertificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40"
+}
