@@ -242,4 +242,6 @@ The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence 
 
 - [x] Inspect phone report and trace inherited Canvas clipping boundaries not changing with menu drawing scale.
 - [x] Preserve physical clip bounds on scale changes; regression passes for 1536×687 at four density scales and restoration.
-- [ ] Confirm full menu, all six slots and touch navigation on the phone; local 0.4.2/code 43 build in progress.
+- [ ] Confirm full menu, all six slots and touch navigation on the phone; local 0.4.2/code 43 build and signing checks pass; user approved publication as Latest.
+
+- [x] Produce 0.4.2/code 43 locally with both games; verify embedded hashes, permanent certificate, ZIP integrity and alignment. APK 718,674,960 bytes. User approved publishing the new version.

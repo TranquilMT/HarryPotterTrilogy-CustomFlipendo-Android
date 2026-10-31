@@ -4,7 +4,7 @@ Native Android work on Philosopher’s Stone and Chamber of Secrets, with separa
 
 ## Download and installation
 
-[0.4.1 Both Games test release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.1) includes **both HP1 and HP2 game payloads** in `Harry-Potter-TQ-0.4.1-Both-Games.apk`: **718,670,864 bytes (718.7 MB)**. Version name **0.4.1**, version code **42**, package `com.tranquil.hp1native`. The earlier 9.9 MB engine-only build is superseded.
+[0.4.2 Both Games menu-fix release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.2) includes **both HP1 and HP2 game payloads** in `Harry-Potter-TQ-0.4.2-Both-Games.apk`: **718,674,960 bytes (718.7 MB)**. Version name **0.4.2**, version code **43**, package `com.tranquil.hp1native`. The earlier 9.9 MB engine-only build is superseded.
 
 Install over the existing app without uninstalling to retain app data. The permanent signing certificate is retained. Updating on a physical device and gameplay acceptance still need testing. The release includes full source and SHA-256 checksums. HD textures are separate optional downloads.
 
@@ -13,6 +13,10 @@ Install over the existing app without uninstalling to retain app data. The perma
 | Philosopher’s Stone / Sorcerer’s Stone | Previously reported playable; regression testing of 0.4.1 remains pending. |
 | Chamber of Secrets | Story, six save slots, shops, duels, Russian text, subtitles and gamepad support previously reported working. Substantial menu, save and settings changes in 0.4.1 require phone testing. |
 | Prisoner of Azkaban | Disabled and not playable. UE2 compatibility research only. |
+
+## 0.4.2 — Chamber of Secrets menu correction
+
+Fix the startup menu cropping reported in 0.4.1: Canvas now preserves physical widget clipping boundaries when the Android menu changes drawing scale. A regression checks the reported 1536×687 surface at four display densities. Local ARM64/Java builds, both game payload hashes, signature and alignment checks pass. Phone testing of the complete menu and touch selection remains pending. All 0.4.1 updates below are retained. See [0.4.2 details](docs/RELEASE-0.4.2.md).
 
 ## Philosopher’s Stone — 0.4.1 updates
 
