@@ -1,0 +1,102 @@
+# Which patch each changed src/engine/ file belongs to.
+#
+#   [patch-name.patch] description (becomes the patch's first line)
+#   glob                (path relative to src/engine/, * matches within a folder, ** across folders)
+#
+# The first matching glob wins. A changed file that matches nothing stops the refresh: add it here first.
+# Patches apply in file name order. Ranges:
+#   0001-0009  build and launcher plumbing, any game
+#   0010-0099  fixes to SurrealEngine bugs that aren't specific to one game
+#   0100-0199  KnowWonder engine (calls into src/knowwonder/, gated by IsKnowWonder(); HP1-only bits by IsHarryPotter1())
+#   0200-0299  free for game-specific additions (HP2)
+# Patches split by file, so a file has exactly one owner.
+
+[0001-game-detection.patch] flipendo: recognise the HP1 retail (SafeDisc) and No-CD HP.exe builds (also under the long exe names some releases use), say why a folder isn't a game
+SurrealEngine/UE1GameDatabase.*
+SurrealEngine/GameFolder.*
+
+[0002-launcher-flags.patch] flipendo: --autolaunch, --logfile, --level and --renderer command line flags
+SurrealEngine/GameApp.cpp
+
+[0003-cursor-focus.patch] flipendo: only recenter the mouse cursor, and only act on raw mouse/keyboard input, while the game window is the active (foreground) window; window icons the right way up; macOS: a window started in fullscreen goes fullscreen reliably, and held mouse buttons count as held keys
+SurrealWidgets/**
+
+[0010-engine-fixes.patch] flipendo: fixes to SurrealEngine bugs (any game): VM (and HP2's bytecode tokens), properties, ini files (UTF-16 localization files), packages (Unicode strings), UTF-16 strings and file names that differ in case on Linux, GetLanguage, fonts (character remap, text drawn by code point, runtime-made fonts), crash reports, music streaming and following the default audio device (and an optional linear sound falloff, off unless a game asks), BSP regions, travel of fixed arrays and struct properties
+SurrealEngine/VM/**
+SurrealEngine/Packages/Core/**
+SurrealEngine/Package/IniFile.*
+SurrealEngine/Package/Package.*
+SurrealEngine/Package/ObjectStream.h
+SurrealEngine/Native/NObject.cpp
+SurrealEngine/PropertyOffsets.cpp
+SurrealEngine/Audio/AudioSource.cpp
+SurrealEngine/UI/**
+SurrealEngine/ObjectTravelInfo.*
+SurrealEngine/Audio/**
+SurrealEngine/Utils/UTF16.cpp
+SurrealEngine/Utils/File.*
+SurrealEngine/Packages/Engine/Resources/UFont.*
+SurrealEngine/Packages/Engine/Resources/Level/UModel.cpp
+
+[0100-knowwonder-core.patch] flipendo: build (src/knowwonder/, src/hp1/), natives, engine loop (input, console, saves, view), missing data messages
+CMakeLists.txt
+SurrealEngine/Package/PackageManager.*
+SurrealEngine/Engine.*
+SurrealEngine/Native/NCanvas.cpp
+SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp
+SurrealEngine/Native/**
+
+[0110-knowwonder-physics.patch] flipendo: KnowWonder physics, pawn movement and collision
+SurrealEngine/Collision/**
+SurrealEngine/Packages/Engine/Actors/UActor_Phys*
+SurrealEngine/Packages/Engine/Actors/Pawn/**
+SurrealEngine/Packages/Engine/Actors/UActor_Touch.cpp
+SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp
+
+[0120-knowwonder-actors.patch] flipendo: KnowWonder actor tick, native actors (ParticleFX, Wind), animation
+SurrealEngine/Packages/Engine/Actors/UActor.cpp
+SurrealEngine/Packages/Engine/Actors/UActor.h
+SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
+SurrealEngine/Packages/Engine/Resources/Mesh/**
+
+[0130-knowwonder-render.patch] flipendo: KnowWonder rendering (FOV, skeletal meshes, particles, translucency, vertex alpha, actor shadows, textures; loading screen; menu canvas, coronas); BSP surfaces take the zone on the camera's side and sprites are drawn right side up (any game)
+SurrealEngine/Render/**
+SurrealEngine/Light/**
+SurrealEngine/RenderDevice/**
+SurrealEngine/Packages/Engine/Actors/UActor_Render.cpp
+SurrealEngine/Packages/Engine/Resources/Textures/**
+
+[0140-knowwonder-audio.patch] flipendo: KnowWonder sound and music (HP2's XA ADPCM sounds)
+SurrealEngine/Packages/Engine/Subsystems/**
+SurrealEngine/Packages/Engine/Resources/USound.cpp
+
+# Written by hand (python is not needed): a file already routed above keeps its earlier owner when the patches are refreshed.
+[0200-android-port.patch] flipendo: Android arm64 port (Mali): CMake, no ALSA/GTK, BC1-3 decoded on the CPU, per-frame command pool reset, no gl_ClipDistance, upright swapchain, absolute touch mouse, no backtrace()
+CMakeLists.txt
+SurrealWidgets/CMakeLists.txt
+SurrealEngine/Audio/AudioPlayer.cpp
+SurrealEngine/Utils/Exception.cpp
+SurrealEngine/Engine.cpp
+SurrealEngine/RenderDevice/Vulkan/FileResource.cpp
+SurrealEngine/RenderDevice/Vulkan/ShaderManager.cpp
+SurrealEngine/RenderDevice/Vulkan/CommandBufferManager.cpp
+SurrealEngine/RenderDevice/Vulkan/TextureUploader.*
+SurrealEngine/Render/RenderCanvas.cpp
+SurrealEngine/Packages/Engine/Resources/UFont.*
+SurrealEngine/UE1GameDatabase.h
+SurrealEngine/Utils/UTF16.cpp
+SurrealGPU/src/vulkanswapchain.cpp
+SurrealGPU/src/vulkanbuilders.cpp
+SurrealGPU/src/gpupipeline.cpp
+SurrealGPU/include/surrealgpu/vulkanbuilders.h
+SurrealGPU/include/surrealgpu/vulkanswapchain.h
+SurrealEngine/RenderDevice/Vulkan/DescriptorSetManager.*
+SurrealEngine/RenderDevice/Vulkan/RenderPassManager.cpp
+SurrealEngine/RenderDevice/Vulkan/VulkanRenderDevice.*
+SurrealEngine/RenderDevice/OpenGL/**
+SurrealWidgets/src/window/sdl3/sdl3_display_window.cpp
+
+[0200-hp2.patch] flipendo: Harry Potter 2: its sound objects' extra fields and XA sounds, no IpDrv package, actors' tick parents
+SurrealEngine/Packages/Engine/Resources/Level/ULevel.cpp
+SurrealEngine/Packages/Engine/Resources/USound.*
+SurrealEngine/PropertyOffsets.cpp

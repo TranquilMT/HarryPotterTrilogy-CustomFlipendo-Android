@@ -1,0 +1,406 @@
+#include "Precomp.h"
+#include "HP1.h"
+#include "Engine.h"
+#include "Packages/Core/UObject.h"
+#include "Packages/Engine/UConsole.h"
+#include "Packages/Engine/UViewport.h"
+#include "Packages/Core/UClass.h"
+#include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
+#include "VM/ScriptCall.h"
+#include "KW.h"
+#include "Utils/Logger.h"
+#include "Utils/CommandLine.h"
+#include "Packages/Engine/Actors/Info/ULevelInfo.h"
+#include "Package/PackageManager.h"
+#include <filesystem>
+#include "Packages/Engine/Actors/UActor.h"
+#include "Packages/Engine/Actors/UHUD.h"
+#include "Packages/Engine/Resources/Level/ULevel.h"
+#include <atomic>
+#include <cmath>
+#include <map>
+#include <vector>
+
+// Touch-screen defaults for the Android build (spike). The key bindings can't be changed on a phone, so the
+// Options page's Controls column is hidden, and Auto Jump (a checkbox in that column) is on from the start.
+// HP1Touch.cpp is HP1-only: the page is HPMenu.FEOptionsPage (MenuBook.OptionsPage).
+
+#ifdef __ANDROID__
+// Defined in android/jni/android_main.cpp (touch bridge to the Java overlay).
+extern std::atomic<bool> g_debugMode; // the settings panel's debug mode switch
+extern std::atomic<bool> g_autoJump;  // and its Auto Jump switch
+extern std::atomic<bool> g_lessonDrawing; // a spell lesson is in its Draw state: the finger draws
+extern std::atomic<bool> g_cutsceneActive; // a cutscene holds Harry: the overlay hides the gameplay controls
+extern std::atomic<bool> g_onBroom; // Harry flies the broom: the overlay steers with the wand stick, JUMP toggles the boost
+extern std::atomic<int> g_frameCount; // frames drawn, for the overlay's FPS counter
+void AndroidSetLevelName(const std::string& name); // the map being played: the overlay's prompts (android_main.cpp)
+extern std::atomic<bool> g_touchDown;
+extern std::atomic<float> g_touchX, g_touchY; // finger position, 0..1 of the view
+extern std::atomic<bool> g_androidMenuActive; // a menu takes the cursor (Engine.cpp)
+extern std::atomic<int> g_menuAdjustIndex, g_menuAdjustDir; // the overlay asks to move a menu slider
+extern std::atomic<float> g_lessonTimeScale; // more drawing time in spell lessons (with a gamepad)
+void AndroidSetMenuItems(std::vector<float>&& items); // the menu items the overlay moves the pad cursor between
+#else
+static std::atomic<bool> g_debugMode{false}; // no settings panel off Android: debug mode stays off
+static std::atomic<bool> g_autoJump{true};
+#endif
+
+namespace HP1
+{
+	namespace
+	{
+		void HideWindowOf(UObject* window)
+		{
+			if (window)
+				CallEvent(window, NameString("HideWindow"));
+		}
+
+		void HideWindowArray(UObject* page, const char* name, int count)
+		{
+			UObject** items = static_cast<UObject**>(page->GetProperty(NameString(name)));
+			if (!items)
+				return;
+			for (int i = 0; i < count; i++)
+			{
+				HideWindowOf(items[i]);
+				// HideWindow alone leaves HPMenuRaisedButton drawn: also move it off the page (no draw, no hit).
+				if (items[i])
+					items[i]->SetPropertyFromString(NameString("WinLeft"), "5000");
+			}
+		}
+
+		void HideOptionsControls()
+		{
+			UObject* book = engine->console ? engine->console->GetUObject("MenuBook") : nullptr;
+			UObject* page = book ? book->GetUObject("OptionsPage") : nullptr;
+			if (!page)
+				return;
+
+			HideWindowOf(page->GetUObject("ControlLabel"));
+			HideWindowArray(page, "KeyNames", 8);
+			HideWindowArray(page, "KeyButtons", 8);
+			HideWindowOf(page->GetUObject("AutoJumpCheck"));
+			HideWindowOf(page->GetUObject("InvertBroomCheck"));
+		}
+	}
+
+#ifdef __ANDROID__
+	void TickMenuItems(); // below: the menu items for the gamepad cursor
+#endif
+	// --autoload=<slot>: once the main menu is up, load that save slot as Start Game's Load does (FESlotPage.nSelectedSlot, then
+	// HPConsole.LoadSelectedSlot). The Android app passes it after switching the movement mod, to go back to the save it made.
+	static void TickAutoLoad()
+	{
+		static bool done = false;
+		static int ticks = 0;
+		if (done || !commandline || !commandline->HasArg("", "--autoload") || !engine->console)
+			return;
+		UObject* book = KW::ObjectProperty(engine->console, "MenuBook");
+		if (!book || KW::BoolProperty(book, "bShowSplash"))
+			return;
+		if (++ticks < 90) // the menu has been up for a moment: the slot page has read the saves
+			return;
+		done = true;
+		int slot = std::clamp(std::atoi(commandline->GetArg("", "--autoload", "0").c_str()), 0, 5);
+		if (UObject* slotPage = KW::ObjectProperty(book, "SlotPage"))
+			CallEvent(slotPage, NameString("SetSelectedSlot"), { ExpressionValue::IntValue(slot) });
+		LogMessage("Autoload: loading save slot " + std::to_string(slot));
+		CallEvent(engine->console, NameString("LoadSelectedSlot"));
+	}
+
+	void TickTouchDefaults()
+	{
+		if (!engine->viewport)
+			return;
+
+		InitCyrillic();
+		TickAutoLoad();
+#ifdef __ANDROID__
+		g_frameCount.fetch_add(1, std::memory_order_relaxed); // one tick per frame: the overlay's FPS counter
+		TickMenuItems();
+#endif
+
+
+		// Auto Jump (on by default, the settings panel switches it): set on every new player pawn and when it changes.
+		static UObject* autoJumpPawn = nullptr;
+		static int autoJumpApplied = -1;
+		int autoJumpWanted = g_autoJump.load() ? 1 : 0;
+		UObject* pawn = engine->viewport->Actor();
+		if (pawn && (pawn != autoJumpPawn || autoJumpWanted != autoJumpApplied))
+		{
+			autoJumpPawn = pawn;
+			autoJumpApplied = autoJumpWanted;
+			pawn->SetPropertyFromString(NameString("bAutoJump"), autoJumpWanted ? "True" : "False");
+		}
+
+		// Debug mode (what typing "harrydebugmodeon" does): adds Level Select to the main menu and the console.
+		// There is no keyboard on a phone to type it: the settings panel switches it (on by default).
+		static UObject* debugConsole = nullptr;
+		static int debugApplied = -1;
+		int debugWanted = g_debugMode.load() ? 1 : 0;
+		if (engine->console && (engine->console != debugConsole || debugWanted != debugApplied))
+		{
+			debugConsole = engine->console;
+			debugApplied = debugWanted;
+			engine->console->SetPropertyFromString(NameString("bDebugMode"), debugWanted ? "True" : "False");
+		}
+
+		// The page can be rebuilt when the menu is opened: re-apply regularly while it exists.
+		static int ticks = 0;
+		if (++ticks % 10 == 0)
+			HideOptionsControls();
+	}
+}
+
+#ifdef __ANDROID__
+namespace HP1
+{
+	// Spell lessons (HPBase.SpellLearnTrigger, state Draw): the script moves the wand from mouse deltas
+	// (WandX/WandY in -1..1, the wand sits at Cam + (1, WandX*FOVRatio, WandY*FOVRatio)*WandDist) and stores the
+	// point (WandX+0.5, 0.5-WandY) while AltFire is held. With a finger there is no mouse: the wand is put under
+	// the finger instead by inverting that projection, and the Java overlay holds AltFire while the finger is down.
+	void TickLessonTouch()
+	{
+		if (!engine->Level || !engine->viewport)
+			return;
+
+		// A cutscene holds Harry (the HUD's cutscene mode with a cutscene running): the overlay drops the gameplay controls.
+		UPlayerPawn* player = engine->viewport->Actor();
+		UObject* hud = player ? player->myHUD() : nullptr;
+		g_cutsceneActive = hud && KW::BoolProperty(hud, "bCutSceneMode") && KW::ObjectProperty(hud, "curCutScene");
+
+		// Harry on the broom: the player pawn is a BroomHarry (HarryPotter.u, extends Harry) for every flight (the Remembrall
+		// chase, the flying lesson, Quidditch). The overlay's broom controls follow it.
+		g_onBroom = player && player->IsA("BroomHarry");
+
+		// The map being played, for prompts that depend on the level (the movement mod can't aim in Devil's Snare).
+		static std::string lastLevelName;
+		std::string levelName = engine->LevelInfo ? engine->LevelInfo->URL.Map : std::string();
+		if (levelName != lastLevelName)
+		{
+			lastLevelName = levelName;
+			AndroidSetLevelName(levelName);
+		}
+
+		// With a gamepad a lesson gives more time to draw: DrawTime (the Draw state samples 500 points over it, and each spell
+		// level takes 5% off it) is scaled once per lesson actor, never while the symbol is being drawn.
+		static ULevel* timeLevel = nullptr;
+		static std::map<UActor*, float> timeScaled;
+		if (timeLevel != engine->Level)
+		{
+			timeLevel = engine->Level;
+			timeScaled.clear();
+		}
+		float timeWanted = g_lessonTimeScale.load();
+
+		UActor* lesson = nullptr;
+		for (UActor* a : engine->Level->Actors)
+		{
+			if (!a || !a->IsA("SpellLearnTrigger"))
+				continue;
+			bool drawing = a->GetStateName() == "Draw";
+			auto it = timeScaled.find(a);
+			float timeHave = it != timeScaled.end() ? it->second : 1.0f;
+			if (!drawing && timeHave != timeWanted)
+			{
+				if (float* drawTime = static_cast<float*>(a->GetProperty(NameString("DrawTime"))))
+					*drawTime *= timeWanted / timeHave;
+				timeScaled[a] = timeWanted;
+			}
+			if (drawing && !lesson)
+				lesson = a;
+		}
+
+		g_lessonDrawing = lesson != nullptr;
+		if (!lesson || !g_touchDown)
+			return;
+
+		float* wandX = static_cast<float*>(lesson->GetProperty(NameString("WandX")));
+		float* wandY = static_cast<float*>(lesson->GetProperty(NameString("WandY")));
+		float* fovRatio = static_cast<float*>(lesson->GetProperty(NameString("FOVRatio")));
+		if (!wandX || !wandY || !fovRatio || *fovRatio <= 0.0f)
+			return;
+
+		float width = (float)engine->viewport->ViewportWidth();
+		float height = (float)engine->viewport->ViewportHeight();
+		float tanHalfFov = std::tan(engine->CameraFovAngle * 0.5f * 3.14159265f / 180.0f);
+		float pixelsPerUnit = *fovRatio * (width * 0.5f) / tanHalfFov;
+
+		float px = g_touchX * width, py = g_touchY * height;
+		*wandX = std::clamp((px - width * 0.5f) / pixelsPerUnit, -1.0f, 1.0f);
+		*wandY = std::clamp((height * 0.5f - py) / pixelsPerUnit, -1.0f, 1.0f);
+	}
+}
+#endif
+
+#ifdef __ANDROID__
+namespace HP1
+{
+	// Gamepad support for the menus (UWindow, HPMenu's FEBook pages): the visible buttons, checkboxes and sliders, in the
+	// order the window tree has them, as viewport rectangles for the overlay, which moves the pad's cursor between them.
+	// A window's position is its WinLeft/WinTop added up to the root, in UWindow units: Root.GUIScale of them make one
+	// unit of the menu canvas (HPConsole sets GUIScale to the canvas width / 640), and MenuToPixels places the canvas.
+	namespace
+	{
+		struct MenuItem
+		{
+			UObject* window;
+			float x0, y0, x1, y1;
+			int kind; // 0 button, 1 slider
+		};
+
+		float FloatOf(UObject* obj, const char* name)
+		{
+			float* f = static_cast<float*>(obj->GetProperty(NameString(name)));
+			return f ? *f : 0.0f;
+		}
+
+		void CollectMenuItems(UObject* window, float left, float top, float scale, std::vector<MenuItem>& out, int depth)
+		{
+			if (!window || depth > 32 || !KW::BoolProperty(window, "bWindowVisible"))
+				return;
+			left += FloatOf(window, "WinLeft");
+			top += FloatOf(window, "WinTop");
+			float width = FloatOf(window, "WinWidth"), height = FloatOf(window, "WinHeight");
+			int kind = -1;
+			if (window->IsA("UWindowHSliderControl"))
+				kind = 1;
+			else if (window->IsA("UWindowButton") && !KW::BoolProperty(window, "bDisabled"))
+				kind = 0;
+			if (kind >= 0 && width > 2.0f && height > 2.0f)
+			{
+				float x0 = left * scale, y0 = top * scale, x1 = (left + width) * scale, y1 = (top + height) * scale;
+				KW::MenuToPixels(x0, y0);
+				KW::MenuToPixels(x1, y1);
+				out.push_back({ window, x0, y0, x1, y1, kind });
+			}
+			if (kind == 1)
+				return; // a slider's own parts are not items
+			for (UObject* child = KW::ObjectProperty(window, "FirstChildWindow"); child; child = KW::ObjectProperty(child, "NextSiblingWindow"))
+				CollectMenuItems(child, left, top, scale, out, depth + 1);
+		}
+
+		std::vector<MenuItem> FindMenuItems()
+		{
+			std::vector<MenuItem> items;
+			UObject* root = engine->console ? KW::ObjectProperty(engine->console, "Root") : nullptr;
+			if (!root || !engine->viewport)
+				return items;
+			float scale = FloatOf(root, "GUIScale");
+			if (scale <= 0.0f)
+				scale = 1.0f;
+			for (UObject* child = KW::ObjectProperty(root, "FirstChildWindow"); child; child = KW::ObjectProperty(child, "NextSiblingWindow"))
+				CollectMenuItems(child, 0.0f, 0.0f, scale, items, 1);
+			// only what is on the screen (the Options page parks its hidden key buttons far to the right)
+			float w = (float)engine->viewport->ViewportWidth(), h = (float)engine->viewport->ViewportHeight();
+			std::vector<MenuItem> onScreen;
+			for (const MenuItem& item : items)
+			{
+				if (item.x1 > 0.0f && item.y1 > 0.0f && item.x0 < w && item.y0 < h)
+					onScreen.push_back(item);
+			}
+			return onScreen;
+		}
+	}
+
+	void TickMenuItems()
+	{
+		static int ticks = 0;
+		static bool published = false;
+
+		// a slider the overlay wants moved: a tenth of its range (or its step) per press, through its own SetValue
+		int index = g_menuAdjustIndex.exchange(-1);
+		if (index >= 0)
+		{
+			std::vector<MenuItem> items = FindMenuItems();
+			if (index < (int)items.size() && items[index].kind == 1)
+			{
+				UObject* slider = items[index].window;
+				float minValue = FloatOf(slider, "MinValue"), maxValue = FloatOf(slider, "MaxValue"), value = FloatOf(slider, "Value");
+				int* step = static_cast<int*>(slider->GetProperty(NameString("Step")));
+				float delta = std::max((maxValue - minValue) / 10.0f, step && *step > 0 ? (float)*step : 0.0f);
+				float newValue = std::clamp(value + delta * (g_menuAdjustDir.load() < 0 ? -1.0f : 1.0f), std::min(minValue, maxValue), std::max(minValue, maxValue));
+				CallEvent(slider, NameString("SetValue"), { ExpressionValue::FloatValue(newValue) });
+			}
+			ticks = 0; // publish the new state right away
+		}
+
+		if (!g_androidMenuActive.load())
+		{
+			if (published)
+			{
+				AndroidSetMenuItems({});
+				published = false;
+			}
+			return;
+		}
+		if (ticks++ % 6 != 0)
+			return;
+		std::vector<float> out;
+		float w = (float)engine->viewport->ViewportWidth(), h = (float)engine->viewport->ViewportHeight();
+		for (const MenuItem& item : FindMenuItems())
+		{
+			out.push_back(item.x0 / w);
+			out.push_back(item.y0 / h);
+			out.push_back(item.x1 / w);
+			out.push_back(item.y1 / h);
+			out.push_back((float)item.kind);
+		}
+		AndroidSetMenuItems(std::move(out));
+		published = true;
+	}
+}
+#endif
+
+#ifdef __ANDROID__
+extern std::atomic<bool> g_saveRequested; // android/jni/android_main.cpp
+void AndroidNotifySaved(int slot);
+
+namespace HP1
+{
+	// The SAVE button (save anywhere): the same call the save books make, HPConsole.doLevelSave(slot), which runs the
+	// SaveGame console command and writes the slot's GameSaveInfo (beans, house points, level name) so the slot shows in
+	// Load Game. The slot is the one picked at New Game (FESlotPage.nSelectedSlot). Without one (-1, a game started
+	// from Level Select) the original saves to the scratch slot 99, which the menu never lists: the first empty one of
+	// the six slots is taken instead and becomes the game's slot (as New Game's pick would), the first one if all are used.
+	static int FirstEmptySlot()
+	{
+		std::filesystem::path saveDir = (engine->packages->GetSystemFolderPath() / ".." / "save").lexically_normal();
+		for (int slot = 0; slot < 6; slot++) // FESlotPage.NUM_SAVE_SLOTS
+		{
+			if (!std::filesystem::exists(saveDir / ("GameSaveInfo" + std::to_string(slot))))
+				return slot;
+		}
+		return 0;
+	}
+
+	void TickSaveRequest()
+	{
+		if (!g_saveRequested.exchange(false) || !engine->console)
+			return;
+
+		int slot = -1;
+		int selectedBefore = -1;
+		UObject* slotPage = KW::ObjectProperty(KW::ObjectProperty(engine->console, "MenuBook"), "SlotPage");
+		if (slotPage)
+		{
+			if (int* selected = static_cast<int*>(slotPage->GetProperty(NameString("nSelectedSlot"))))
+				selectedBefore = *selected;
+		}
+		// New Game / Load Game picks 0..5. Anything else (-1: none, or a value a Level Select start leaves there: a save went
+		// to slot 10 once) is no slot of the six the menu lists.
+		if (selectedBefore >= 0 && selectedBefore < 6)
+			slot = selectedBefore;
+		if (slot < 0)
+		{
+			slot = FirstEmptySlot();
+			if (slotPage)
+				CallEvent(slotPage, NameString("SetSelectedSlot"), { ExpressionValue::IntValue(slot) });
+		}
+
+		LogMessage("SAVE button: FESlotPage.nSelectedSlot = " + std::to_string(selectedBefore) + ", saving to slot " + std::to_string(slot));
+		CallEvent(engine->console, NameString("doLevelSave"), { ExpressionValue::IntValue(slot) });
+		AndroidNotifySaved(slot);
+	}
+}
+#endif

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.tranquil.hp1native">
+    <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="35"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <!-- Android 10 has no "All files access": the old storage permission with the legacy (whole-storage) view -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
+    <uses-feature android:glEsVersion="0x00030000" android:required="true"/>
+    <uses-feature android:name="android.hardware.vulkan.version" android:version="0x400003" android:required="false"/>
+    <!-- Android TV: no touch screen, no telephony; the game is played with a remote or a gamepad -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+    <uses-feature android:name="android.software.leanback" android:required="false"/>
+    <uses-feature android:name="android.hardware.gamepad" android:required="false"/>
+    <application android:requestLegacyExternalStorage="true" android:label="Harry Potter TQ" android:icon="@mipmap/ic_launcher" android:banner="@drawable/banner" android:isGame="true" android:roundIcon="@mipmap/ic_launcher" android:hasCode="true" android:extractNativeLibs="true" android:allowBackup="false" android:debuggable="false">
+        <!-- Launcher: asks for file access, unpacks the game data when the APK carries it, then starts the game. It runs in its own
+             process, so that the game's process can be killed and started fresh (the language switch) while this one goes on. -->
+        <activity android:name="io.github.flipendo.spike.SetupActivity" android:exported="true" android:process=":setup"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <!-- the Android TV home screen -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name="io.github.flipendo.spike.FlipendoActivity" android:exported="true"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|density|smallestScreenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"/>
+        <activity android:name="io.github.flipendo.spike.IsoImportActivity" android:exported="false" android:process=":setup"
+            android:screenOrientation="sensorLandscape" android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
+        <activity android:name="io.github.flipendo.spike.GameZipImportActivity" android:exported="false" android:process=":setup" android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
+        <provider android:name="io.github.flipendo.spike.ReportProvider" android:authorities="com.tranquil.hp1native.reports"
+            android:exported="false" android:grantUriPermissions="true"/>
+    </application>
+</manifest>

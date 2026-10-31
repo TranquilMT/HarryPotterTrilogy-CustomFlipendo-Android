@@ -1,0 +1,114 @@
+flipendo: --autolaunch, --logfile, --level and --renderer command line flags
+
+diff --git a/SurrealEngine/GameApp.cpp b/SurrealEngine/GameApp.cpp
+index 3b059e5c..959e086e 100644
+--- a/SurrealEngine/GameApp.cpp
++++ b/SurrealEngine/GameApp.cpp
+@@ -6,17 +6,26 @@
+ #include "GameApp.h"
+ #include "GameFolder.h"
+ #include "Engine.h"
++#include "HP1.h"
+ #include "UI/WidgetResourceData.h"
+ #include "UI/ErrorWindow/ErrorWindow.h"
+ #include "UI/Launcher/LauncherWindow.h"
++#include "LauncherSettings.h"
+ #include "Utils/File.h"
+ #include <stdexcept>
+ #include <iostream>
++#include <fstream>
+ 
+ int GameApp::main(Array<std::string> args)
+ {
+ 	InitWidgetResources("dark");
+ 
++	// headless-friendly dev mode. --autolaunch skips the launcher window and boots the
++	// first game found in the given folder; --logfile=<path> streams every log line to a file
++	// as it is written, so the log survives a hard crash.
++	bool autolaunch = false;
++	std::ofstream logfile;
++
+ 	try
+ 	{
+ 		CommandLine cmd(args);
+@@ -27,20 +36,78 @@ int GameApp::main(Array<std::string> args)
+ 
+ 		if (commandline->HasArg("-h", "--help"))
+ 		{
+-			std::cout << "SurrealEngine [--url=<mapname>] [--engineversion=X] [Path to game folder]\n";
++			std::cout << "SurrealEngine [--url=<mapname>] [--level=<mapname> [--slot=<n>]] [--engineversion=X] [--autolaunch] [--logfile=<path>] [--skip-splash] [--skip-intro] [--vanilla] [--mod=<id,...>] [--no-mod=<id,...>] [--list-mods] [--renderer=opengl|vulkan] [Path to game folder]\n";
++			return 0;
++		}
++
++		// the Harry Potter extras (src/hp1/mods/), listed before any game is picked
++		if (commandline->HasArg("", "--list-mods"))
++		{
++			std::cout << HP1::ModsList();
+ 			return 0;
+ 		}
+ 
+-		int selectedGameIndex = LauncherWindow::ExecModal();
++		autolaunch = commandline->HasArg("", "--autolaunch");
++		// --renderer=opengl|vulkan picks the render device over Settings.json (the Android port falls back to OpenGL ES with it)
++		std::string renderer = commandline->GetArg("", "--renderer", "");
++		if (renderer == "opengl")
++			LauncherSettings::Get().RenderDevice.Type = RenderDeviceType::OpenGL;
++		else if (renderer == "vulkan")
++			LauncherSettings::Get().RenderDevice.Type = RenderDeviceType::Vulkan;
++		std::string logfilename = commandline->GetArg("", "--logfile", "");
++		if (!logfilename.empty())
++		{
++			logfile.open(logfilename, std::ios::out | std::ios::trunc);
++			Logger::Get()->SetCallback([&](const LogMessageLine& line) {
++				logfile << "[" << line.Time << "] " << line.Source << (line.Source.empty() ? "" : ": ") << line.Text << std::endl;
++			});
++		}
++
++		// a folder given on the command line that isn't a recognised game says why
++		auto noGameFound = [](const std::string& prefix) {
++			std::string text = prefix + "no known game found.";
++			for (const std::string& problem : GameFolderSelection::Problems)
++				text += "\n" + problem;
++			return std::runtime_error(text);
++		};
++
++		int selectedGameIndex = -1;
++		if (autolaunch)
++		{
++			GameFolderSelection::UpdateList();
++			if (GameFolderSelection::Games.empty())
++				throw noGameFound("--autolaunch: ");
++			selectedGameIndex = 0;
++		}
++		else
++		{
++			GameFolderSelection::UpdateList();
++			if (GameFolderSelection::Games.empty() && !GameFolderSelection::Problems.empty())
++				throw noGameFound("");
++			selectedGameIndex = LauncherWindow::ExecModal();
++		}
+ 		if (selectedGameIndex >= 0)
+ 		{
+ 			GameLaunchInfo info = GameFolderSelection::GetLaunchInfo(selectedGameIndex);
++			// --level=<map>: start in that map like --url; the game adds the state a player arrives with (HP1)
++			std::string level = commandline->GetArg("", "--level", "");
++			if (!level.empty())
++				info.url = level;
+ 			Engine engine(info);
+ 			engine.Run();
+ 		}
+ 	}
+ 	catch (const std::exception& e)
+ 	{
++		// in autolaunch mode never block on a modal dialog; report and exit non-zero
++		if (autolaunch)
++		{
++			if (logfile.is_open())
++				logfile << "FATAL: " << e.what() << std::endl;
++			std::cerr << "FATAL: " << e.what() << std::endl;
++			DeinitWidgetResources();
++			return 1;
++		}
+ 		ErrorWindow::ExecModal(e.what(), Logger::Get()->GetLog());
+ 	}
+ 

@@ -1,0 +1,104 @@
+# Roadmap
+
+What's left to do on the HP1 and HP2 ports, and what's next. Only open work is listed: remove an item when it lands (what
+was done is in the git history, how it works in `docs/`, [docs/README.md](docs/README.md)).
+
+Legend: [~] partly done / in progress · [ ] not started
+
+## HP2: Chamber of Secrets
+- [~] HP2 (UE1 build 433), on the same engine as HP1 (groundwork: [docs/one-engine.md](docs/one-engine.md)).
+  Estimate (2026-10-17): about 3 weeks at HP1's pace (10-19 working days). The engine side is ~85-90% reused (180 of
+  ~183 natives covered; of 205 IDA-tagged ports 64 carry over as is, 56 are exec wrappers that differ only by the
+  DebugInfo check, 66 need reading in HP2); the 43-map playthrough is new work.
+  Status (2026-10-20): Game.exe's front end (splashes, New Game, Load Game, Options) comes first; the intro and its
+  cutscenes play (with Enter to skip) through the flying car to the Whomping Willow, with subtitles; the in-game book
+  and the options page work at any resolution; saving and loading work (playtest 2026-10-20). Not tried past that.
+  In order:
+  1. The intro and first levels as the original (2-3 days)
+  - [ ] Voices: `Sounds/AllDialog.USA_uax` is found now; check in game that the dialogue lines play
+  - [ ] Cutscene commands that start before the previous one finished ("... hasnt finished yet"): the script timing in
+        every case checked ([docs/re/hp2/gameplay.md](docs/re/hp2/gameplay.md#cutscenes)); left: compare Dobby's
+        `Introduce` (3.5 s at rate .8 here) and Harry's `Look_Frantic` with the original, and Harry in Adv1Willow
+        (seen only while skipping)
+  - [ ] Skipping: "SKIP ERROR ... failed to advance after 16 loops" when fast-forwarding PrivetDr's intro (not
+        seen 2026-10-20 in 4 runs skipping every cutscene from PrivetDr to Adv1Willow at different moments)
+  - [ ] Mirrors look wrong (playtest 2026-10-21, after PrivetDr's intro). PrivetDr's only mirror surface
+        (`@surfs *mirror`) is an outside window, `extwindow_PD` (surface 991, PolyFlags 0x08000000, center -832,776,272):
+        SurrealEngine draws the reflection and seals the surface invisible, so the window texture never shows. Check how
+        HP2's Render.dll draws a mirror surface's own texture: its PF_Mirrored tests in `URender::OccludeBsp`
+        (0x10B22F62, 0x10B23550) and `URender::DrawFrame` (0x10B2613B)
+  - [ ] PrivetDr's intro flyover: the camera now keeps BaseCam's own rotation on the crane spline (no more map edges);
+        compare the path and the shot's brightness with the original in play, and the sky through the backdrop surfaces
+  - [ ] Lumos: after casting it the light beam on the wand stays for good (playtest 2026-10-17). The LumosLight
+        itself goes off after its 30 s (light and LumosLightFX, checked 2026-10-20 with baseWand.LumosTurnOn), so the
+        beam is another effect. Not the wand's charge particles: driven with `@console.Viewport.Actor.Weapon
+        StartChargingSpell True False Class'hgame.spellLumos'` then `StopChargingSpell` (2026-10-21), `Lumos_fly`'s
+        `Shutdown()` caps ParticlesMax at what it emitted and the system is gone within its 2 s Lifetime. Needs a real
+        cast to see which effect stays (the flying spell's own `Lumos_fly`, `Lumos_hit`, the spell cursor)
+  - [ ] Sounds as ALAudio plays them (2026-10-20, not heard yet): check by ear that a mover's sound loops while it
+        moves, Harry's own sounds and dialogue play centred, and StopSound fades out
+  - [ ] Lip sync (2026-10-21, not seen yet): check in play that Dobby's mouth moves with his lines in PrivetDr's intro
+        and closes after
+  - [ ] Check the remaining "changed" ports for real behaviour differences (beyond the DebugInfo check)
+  - [ ] Engine behaviour HP2's scripts may need, worth checking: state labels inherited from a parent state, class
+        references in travel data, dialogue with `Disable3D` playing at full volume wherever the camera is
+  2. Menus and options (1 day)
+  - [ ] The in-game book's pages, rollover sounds, the folio, the map
+  3. Play the 43 maps through, incl. the 10 duels and Quidditch (4-8 days)
+  4. Polish (1-2 days)
+  - [ ] Check the unverified HP2 engine differences in HP2's code ([docs/re/hp2/gameplay.md](docs/re/hp2/gameplay.md)):
+        movers colliding by bounding box, the mover flickering fix; find a map with an
+        `MV_SpringByTime` mover (ported 2026-10-21, not seen in play) and check it
+  - [ ] HP2-only engine features ([docs/re/hp2/engine.md](docs/re/hp2/engine.md)): oval collision cylinders
+  - [ ] Linux: `HP1_SHOTS` screenshots crash the game after the first one (also HP2), which limits automated testing
+        (segfault in radv's `vkCmdEndRenderPass`, called from `VulkanRenderDevice::Unlock` in `RenderSubsystem::DrawGame`
+        right after the shot is saved)
+
+## Extras for HP1 (`src/hp1/mods/`)
+- [ ] Per-mod on/off and settings in an ini section (`[Flipendo.Mods]`), not only command-line flags; an *Extras*
+      page in the options book (FEBook) to toggle them in game
+- [ ] Fixed 60 Hz game logic, drawing at any frame rate: the game ticks (scripts, physics, cutscenes) at a fixed
+      1/60 s, zero or more ticks per drawn frame, so every frame-rate bug of the original behaves as at 60 fps, found
+      or not; drawing runs at the monitor's rate (or uncapped) and interpolates between the last two ticks: actor
+      locations and rotations, animation frames and tweens, the camera, particles. Needs a main-loop hook
+      (`Engine::Run`: tick and render split) and the interpolation in the renderer. An option, the 60 FPS cap stays
+      the default until it is tested level by level
+- [ ] More built-in extras: FOV slider, controller support, free camera
+- [ ] Texture packs: check masked and translucent overrides (a DXT1 file's 1-bit alpha against the game's masking)
+- [ ] Twitch chaos mod (opt-in, `--chaos`): stream viewers vote in chat on effects every N seconds (low gravity,
+      giant or tiny Harry, a random spell cast, camera upside down, slow motion, Harry runs backwards, beans
+      rain). Each effect is a timed `@set` on live actors / `Level.TimeDilation`, undone when it ends; a vote
+      bar drawn in `PostRenderMods`. Reads chat over Twitch's anonymous IRC (no login, no keys); an offline
+      mode picks effects at random. Effects must never break a save (all undone before saving)
+- [ ] Restored content mod (opt-in), from [docs/re/hp1/cut_content.md](docs/re/hp1/cut_content.md). First check
+      whether the cut actors still work when spawned (`Hub2.h2barron` Bloody Baron fight, `mirrortarget` shrinking
+      Harry, `InvisibilityCloak` pickup, `FloatingSpellBook`); do the mod only if most do. Then add the unused audio:
+      Lee Jordan's alternate takes as commentator variants, wizard card voice lines in the Folio, student chatter,
+      extra final-battle taunts. Cut spells are out (no level content uses them)
+
+## Releases
+- [ ] Game folder picker in the launcher remembered between runs, so players never touch the command line
+- [ ] Version number in the window title and the log, for bug reports
+- [ ] Linux download (prebuilt) and a Steam Deck build tested with Flipendo
+
+## Later: the other KnowWonder games
+- [~] HP2 (Chamber of Secrets, UE1 build 433): runs on Android since 0.3.0 (new game, six save slots, story state, duels, shops,
+  Russian text; [docs/android.md](docs/android.md)); what is left:
+  - [ ] Play it through and fix what breaks (the later levels, the Basilisk and the final scenes have had little play)
+  - [ ] Translucent walls come out red in some levels
+  - [ ] The `Loop` flag of `PlaySound`
+  - [ ] Spawned persistent actors (jelly beans) are not carried to the next level; old saves lost their spells
+  - [ ] HP1 on a device after the shared changes of 0.3.0 (script VM, travel, canvas, audio, input)
+  - [ ] Check the remaining "changed" ports for real behaviour differences (beyond the DebugInfo check)
+  - [ ] HP2 music: check `src/hp2/HP2Music.cpp` (written from the scripts) against ALAudio.dll: crossfades between songs, looping, volumes; `StopSound`'s fade-out
+  - [ ] PrivetDr's intro flyover: the camera doesn't follow the original's path and the shot is darker than the original's (`BaseCam` FollowSpline / FlyTo)
+  - [ ] Dobby's and Filch's eye blink channels fail (`eye_close` anim / `eye_root` bone not found)
+  - [ ] Accessed None in scripts that the original may not hit: `harry.CutCommand`, `HPConsole.Tick`, `harry.PlayerWalking.Landed`, `harry.PlayerTick`, `baseWand.StopChargingSpell`
+  - [ ] XA sounds: check the decoder by ear (stereo XA)
+  - [ ] Check the unverified HP2 engine differences in HP2's code ([docs/re/hp2/gameplay.md](docs/re/hp2/gameplay.md)):
+        music always loops, XA ADPCM sounds, save loading, lip sync, movers colliding by bounding box
+  - [ ] HP2-only engine features ([docs/re/hp2/engine.md](docs/re/hp2/engine.md)): Lumos surfaces, TurnTo's flattened focus,
+        particle Opacity, I3DL2 reverb
+- [ ] HP3 (Prisoner of Azkaban, UE2 build 2226, packages 129): no UE2 counterpart of SurrealEngine exists. First check,
+      with UELib: how many native classes/functions its gameplay packages have (HP1's have none). Mostly script =
+      extending SurrealEngine towards UE2 is worth a look; otherwise fixes for the original exe are the better route

@@ -1,0 +1,60 @@
+# Reverse engineering notes
+
+What was learned from the games' binaries and scripts. Sorted the way the code is (`src/knowwonder/`, `src/hp1/`, `src/hp2/`,
+[one-engine.md](../one-engine.md)):
+
+- [`engine/`](engine/): **KnowWonder's engine**, what both games do. Most of it was reversed in HP1's DLLs; each note
+  has an "HP1 and HP2" part saying which functions HP2 has unchanged, with other offsets, or changed (from
+  the HP1 vs HP2 code comparison) and what HP2's scripts do differently.
+- [`hp1/`](hp1/) and [`hp2/`](hp2/): what only one game has: its gameplay scripts, levels, bugs.
+
+Addresses are written `[HP1 0x...]` / `[HP2 0x...]`, or bare when the note says which game's database they come from.
+A note that says "HP2 not checked" means exactly that: don't assume HP2 is the same until someone reads its code.
+
+## KnowWonder's engine (`engine/`)
+
+| Note | Topic |
+|---|---|
+| [animation.md](engine/animation.md) | skeletal meshes, the animation format, channels, tweening, root motion, bones and attachments |
+| [particles.md](engine/particles.md) | ParticleFX: parameters, emission, update, rendering; Wind |
+| [rendering.md](engine/rendering.md) | actor shadows (ActorShadow decals placed by the renderer), Actor.Opacity, the loading screen (fade-out, DrawLevelInfo) |
+| [lighting.md](engine/lighting.md) | mesh lighting (light picking, colours and effects, per-vertex light, back-face culling) and BSP light maps |
+| [collision.md](engine/collision.md) | CollideType (HP2 adds two), CT_Box's box checks, world bounding boxes |
+| [physics.md](engine/physics.md) | setPhysics, blocking and Bump, walking and ledges, ledge grabbing (Mount), auto jump, pawn rotation, latent moves, turning (rotateToward), movers, InterpolationManager |
+| [scripting.md](engine/scripting.md) | the UnrealScript VM: HP2's bytecode tokens and DebugInfo, disable()/GotoState, latent calls on other actors |
+| [script_events.md](engine/script_events.md) | every script event the native code raises, and which ones SurrealEngine didn't |
+| [savegames.md](engine/savegames.md) | level saves, the save screen, GameSaveInfo, thumbnails, loading; HP1's and HP2's script flows |
+| [sound.md](engine/sound.md) | sound effects: PlaySound, who hears a sound (range, BSP occlusion), Galaxy's channels, volume falloff, pan, Doppler |
+| [music.md](engine/music.md) | songs: looping (bDontLoopSong), bSongFinished, the end of a song played once |
+| [gestures.md](engine/gestures.md) | the Gesture natives that score a drawn spell shape |
+| [textures.md](engine/textures.md) | Fire.dll procedural textures (IceTexture) |
+| [fonts.md](engine/fonts.md) | UFont in the package (CharRemap), character to glyph, system fonts (Console.CreateNativeFont, WinDrv.dll) |
+| [packages.md](engine/packages.md) | package file contents SurrealEngine didn't read: Unicode (UTF-16) strings |
+| [native_classes.md](engine/native_classes.md) | native classes with no native code (ImpactSoundSet, LocationID, ...) and leftover natives (FindStairRotation, ScreenToWorld, CreateNativeFont) |
+
+## Harry Potter 1 (`hp1/`)
+
+| Note | Topic |
+|---|---|
+| [spells.md](hp1/spells.md) | spell targeting and casting, the spell lesson and its rendering |
+| [controls.md](hp1/controls.md) | turning and strafing (the Left / Right bindings, PlayerMove), moving while aiming (fTimeToStop), the reticle's pitch, the camera's mouse look only while Harry stands still |
+| [cutscenes.md](hp1/cutscenes.md) | CutScene command lists, how cutscenes move Harry, Lev_Tut1's scenes and merchants |
+| [menus.md](hp1/menus.md) | the menu book (title menu, pause, storybook: bIsOpen, bGamePlaying), level titles from Dobby.int / HPMenu.int |
+| [collectibles.md](hp1/collectibles.md) | wizard cards (IDs, where each of the 24 is), chests and their contents, beans |
+| [cut_content.md](hp1/cut_content.md) | what the retail files contain but the game never uses: cut spells, classes, dialogue, commentary |
+| [localized_releases.md](hp1/localized_releases.md) | the Russian release: its exes, UTF-16 `.rus` text, system fonts, Object.GetLanguage |
+| [original_bugs.md](hp1/original_bugs.md) | bugs in the original game that Flipendo fixes instead of reproducing |
+
+## Harry Potter 2 (`hp2/`)
+
+| Note | Topic |
+|---|---|
+| [gameplay.md](hp2/gameplay.md) | HP2's `hgame` scripts against HP1's: cutscenes from files, queued saves, the new spell system, HP2-only natives; engine differences not checked yet |
+| [startup.md](hp2/startup.md) | how HP2 starts: Game.exe's Windows front end (splash, New/Load/Options), its command lines, the Startup map |
+| [engine.md](hp2/engine.md) | HP2 engine work for later: GameState screening, Lumos surfaces, TurnTo, particle Opacity, ALAudio music and reverb |
+
+## Adding a note
+
+Shared engine behaviour goes in `engine/`, even when only one game has been checked: say which one, and add what is
+known about the other under "HP1 and HP2". A note goes in `hp1/` or `hp2/` only when the thing doesn't exist in the
+other game. Add it to the tables above.

@@ -1,0 +1,196 @@
+flipendo: recognise the HP1 retail (SafeDisc) and No-CD HP.exe builds (also under the long exe names some releases use), say why a folder isn't a game
+
+diff --git a/SurrealEngine/GameFolder.cpp b/SurrealEngine/GameFolder.cpp
+index 473146a7..bf256223 100644
+--- a/SurrealEngine/GameFolder.cpp
++++ b/SurrealEngine/GameFolder.cpp
+@@ -9,16 +9,21 @@
+ #include <filesystem>
+ 
+ Array<GameLaunchInfo> GameFolderSelection::Games;
++Array<std::string> GameFolderSelection::Problems;
+ 
+ void GameFolderSelection::UpdateList()
+ {
+ 	Games.clear();
++	Problems.clear();
+ 
+ 	for (const std::string& folder : commandline->GetItems())
+ 	{
+-		GameLaunchInfo game = ExamineFolder(folder);
++		std::string problem;
++		GameLaunchInfo game = ExamineFolder(folder, &problem);
+ 		if (!game.gameName.empty())
+ 			Games.push_back(game);
++		else if (!problem.empty())
++			Problems.push_back(problem);
+ 	}
+ 
+ 	if (Games.empty())
+@@ -57,14 +62,14 @@ GameLaunchInfo GameFolderSelection::GetLaunchInfo(int selectedGame)
+ 	return info;
+ }
+ 
+-GameLaunchInfo GameFolderSelection::ExamineFolder(const std::string& path)
++GameLaunchInfo GameFolderSelection::ExamineFolder(const std::string& path, std::string* problem)
+ {
+ 	GameLaunchInfo info;
+ 
+ 	if (path.empty())
+ 		return info;
+ 
+-	auto ue1_game = FindUE1GameInPath(path);
++	auto ue1_game = FindUE1GameInPath(path, problem);
+ 
+ 	if (ue1_game.first != KnownUE1Games::UE1_GAME_NOT_FOUND)
+ 	{
+diff --git a/SurrealEngine/GameFolder.h b/SurrealEngine/GameFolder.h
+index 1a03615b..dfacd75e 100644
+--- a/SurrealEngine/GameFolder.h
++++ b/SurrealEngine/GameFolder.h
+@@ -24,6 +24,8 @@ struct GameLaunchInfo
+ 	bool IsRune() const { return gameExecutableName == "Rune"; }
+ 	bool IsHarryPotter1() const { return gameExecutableName == "HP"; }
+ 	bool IsHarryPotter2() const { return gameExecutableName == "Game"; }
++	// games running KnowWonder's modified engine, reimplemented in ../knowwonder
++	bool IsKnowWonder() const { return IsHarryPotter1() || IsHarryPotter2(); }
+ 	bool IsNerfArenaBlast() const { return gameExecutableName == "nerf" || gameExecutableName == "Nerf"; }
+ };
+ 
+@@ -34,9 +36,11 @@ public:
+ 	static GameLaunchInfo GetLaunchInfo(int selectedGame);
+ 
+ 	static Array<GameLaunchInfo> Games;
++	// why each folder given on the command line wasn't recognised
++	static Array<std::string> Problems;
+ 
+ private:
+-	static GameLaunchInfo ExamineFolder(const std::string& path);
++	static GameLaunchInfo ExamineFolder(const std::string& path, std::string* problem = nullptr);
+ 	static Array<std::string> FindGameFolders();
+ 	static std::string GetExePath();
+ };
+diff --git a/SurrealEngine/UE1GameDatabase.cpp b/SurrealEngine/UE1GameDatabase.cpp
+index bf6912eb..5f4daaa3 100644
+--- a/SurrealEngine/UE1GameDatabase.cpp
++++ b/SurrealEngine/UE1GameDatabase.cpp
+@@ -2,17 +2,25 @@
+ #include "Precomp.h"
+ #include "UE1GameDatabase.h"
+ #include "Utils/SHA1Sum.h"
++#include "Utils/File.h"
+ #include <iostream>
+ 
+-std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_game_root_folder_path)
++std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_game_root_folder_path, std::string* problem)
+ {
++	// report why a folder isn't recognised instead of skipping it silently
++	auto notFound = [&](const std::string& why) {
++		if (problem)
++			*problem = why;
++		return std::make_pair(KnownUE1Games::UE1_GAME_NOT_FOUND, std::string());
++	};
++
+ 	if (ue1_game_root_folder_path.empty())
+-		return std::make_pair(KnownUE1Games::UE1_GAME_NOT_FOUND, "");
++		return notFound("no folder given");
+ 
+ 	if (!fs::exists(ue1_game_root_folder_path) || !fs::is_directory(ue1_game_root_folder_path))
+-		return std::make_pair(KnownUE1Games::UE1_GAME_NOT_FOUND, "");
++		return notFound(ue1_game_root_folder_path + ": folder does not exist");
+ 
+-	const auto UE1GameSystemPath = fs::path(ue1_game_root_folder_path) / "System";
++	const auto UE1GameSystemPath = File::find_ignoring_case(fs::path(ue1_game_root_folder_path) / "System");
+ 	const auto UE1GameSystem64Path = fs::path(ue1_game_root_folder_path) / "System64";
+ 
+ 	for (auto& executable_name : knownUE1ExecutableNames)
+@@ -23,6 +31,16 @@ std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_g
+ 		std::string sha1sum = SHA1Sum::of_file(executablePath);
+ 		std::string sha1sum64 = SHA1Sum::of_file(executablePath64);
+ 
++		// some releases rename the executable (HP1: "Harry Potter and the Philosophers Stone.exe")
++		for (auto& alias : knownUE1ExecutableAliases)
++		{
++			if (sha1sum.empty() && alias.second == executable_name)
++			{
++				executablePath = UE1GameSystemPath / alias.first;
++				sha1sum = SHA1Sum::of_file(executablePath);
++			}
++		}
++
+ 		// If sha1sum is empty this means that the file doesn't exist
+ 		if (sha1sum.empty() && sha1sum64.empty())
+ 			continue;
+@@ -31,7 +49,8 @@ std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_g
+ 		const auto it = !sha1sum64.empty() ? SHA1Database.find(sha1sum64) : SHA1Database.find(sha1sum);
+ 		
+ 		if (it == SHA1Database.end())
+-			return std::make_pair(KnownUE1Games::UE1_GAME_NOT_FOUND, "");
++			return notFound((!sha1sum64.empty() ? executablePath64 : executablePath).string() + " is not a recognised version (SHA-1 " +
++				(!sha1sum64.empty() ? sha1sum64 : sha1sum) + "). Please report it with the game's language and release.");
+ 
+ 		// Hack: Tactical-Ops has a version that contains the exact same UTv469d executable. Handle that here
+ 		if (it->second == KnownUE1Games::UT99_469d && executable_name == "TacticalOps.exe")
+@@ -40,5 +59,9 @@ std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_g
+ 	}
+ 
+ 	// We got nothing here
+-	return std::make_pair(KnownUE1Games::UE1_GAME_NOT_FOUND, "");
++	// a common mistake is pointing at the System folder itself instead of the game folder
++	if (fs::path(ue1_game_root_folder_path).filename() == "System" || fs::exists(fs::path(ue1_game_root_folder_path) / "Core.u"))
++		return notFound(ue1_game_root_folder_path + " looks like the game's System folder; use the folder above it (the one that contains System, Maps, Textures)");
++	return notFound(ue1_game_root_folder_path + ": no known game executable in its System folder (for Harry Potter: System/HP.exe). "
++		"Use the game's install folder, the one that contains System, Maps, Textures");
+ }
+\ No newline at end of file
+diff --git a/SurrealEngine/UE1GameDatabase.h b/SurrealEngine/UE1GameDatabase.h
+index c87149a8..67b10dbd 100644
+--- a/SurrealEngine/UE1GameDatabase.h
++++ b/SurrealEngine/UE1GameDatabase.h
+@@ -199,11 +199,30 @@ static const std::map<std::string, KnownUE1Games> SHA1Database = {
+ 	// Harry Potter 1 (UK), post-patched, archive.org cracked exe
+ 	{"7e675aa863f55049f3cf530dfea0b241b112d03a", KnownUE1Games::HARRYPOTTER1_433},
+ 
++	// Harry Potter 1 (EN), unpatched retail 1.0, SafeDisc-wrapped exe
++	{"f7abfd7d56a6792e119964aa40af2190b8fe4ec4", KnownUE1Games::HARRYPOTTER1_433},
++
++	// Harry Potter 1 (EN), unpatched retail 1.0, community No-CD exe
++	{"9aad58812940d27c7cd96d2920c726cc2d2fdde9", KnownUE1Games::HARRYPOTTER1_433},
++	{"97882c5533b8eae434b10fab743f812a2993cfe4", KnownUE1Games::HARRYPOTTER1_433}, // spike: US 1.0 with no-CD HP.exe
++
++	// Harry Potter 1 (RU), EA Hit-Parade retail, SafeDisc-wrapped exe
++	{"5d7ff458f6a9c3f6ff70725ecb3dada3b320998e", KnownUE1Games::HARRYPOTTER1_433},
++
++	// Harry Potter 1 (RU), EA Hit-Parade retail, No-CD exe shipped with the rutracker release
++	{"7d5664c62634596fecf09013aa1aaf902a50cb27", KnownUE1Games::HARRYPOTTER1_433},
++
++	// Harry Potter 1 (EU, EN/FR/DE), retail release, reported in issue #11 (SafeDisc or No-CD not known)
++	{"aac3b600dfc3ee689a2323021d3cf9f5c862cce9", KnownUE1Games::HARRYPOTTER1_433},
++
+ 	// Harry Potter 2 (UK)
+ 	{"3a43d9ec8be7ec441b18a8dc710b4bdd5b29bda3", KnownUE1Games::HARRYPOTTER2_433},
+ 
+ 	// Harry Potter 2 (UK), archive.org cracked exe
+ 	{"28b0e54af165c1ad170d5132e4ac7ca986d06484", KnownUE1Games::HARRYPOTTER2_433},
++
++	// Harry Potter 2 (US, EN/FR/ES), retail 1.0 (its SafeDisc exe matches the UK one above), community No-CD exe
++	{"21011286848ce94f96b1dc1a58a64ac71fe33193", KnownUE1Games::HARRYPOTTER2_433},
+ };
+ 
+ // Note: order matters here as we pick the first match.
+@@ -231,5 +250,14 @@ static const Array<std::string> knownUE1ExecutableNames = {
+ 	"Game.exe",
+ };
+ 
++// Other names some releases give a known executable, and the name it is treated as
++static const Array<std::pair<std::string, std::string>> knownUE1ExecutableAliases = {
++	{ "Harry Potter and the Philosophers Stone.exe", "HP.exe" },
++	{ "Harry Potter and the Philosopher's Stone.exe", "HP.exe" },
++	{ "Harry Potter and the Sorcerers Stone.exe", "HP.exe" },
++	{ "Harry Potter and the Sorcerer's Stone.exe", "HP.exe" },
++};
++
+ // Returns a pair of UE1-Game type and executable name
+-std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_game_root_folder_path);
++// problem (if given) says why nothing was found: missing folder, no known executable, unknown exe hash
++std::pair<KnownUE1Games, std::string> FindUE1GameInPath(const std::string& ue1_game_root_folder_path, std::string* problem = nullptr);

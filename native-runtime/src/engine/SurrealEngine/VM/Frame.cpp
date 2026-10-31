@@ -1,0 +1,2149 @@
+
+#include "Precomp.h"
+#include "Utils/StrTools.h"
+#include "Frame.h"
+#include "Bytecode.h"
+#include "ExpressionEvaluator.h"
+#include "NativeFunc.h"
+#include "Packages/Core/UTextBuffer.h"
+#include "Packages/Core/UFunction.h"
+#include "Packages/Engine/Subsystems/USurrealAudioDevice.h"
+#include "Engine.h"
+#include "Package/PackageManager.h"
+#include "Utils/AlignedAlloc.h"
+#include "Commandlet/VM/DisassemblyCommandlet.h"
+#include <cassert>
+#include <unordered_set>
+
+std::function<void()> Frame::RunDebugger;
+Array<Breakpoint> Frame::Breakpoints;
+Array<Trace> Frame::Traces;
+Array<Frame*> Frame::Callstack;
+FrameRunState Frame::RunState = FrameRunState::Running;
+Frame* Frame::StepFrame = nullptr;
+Expression* Frame::StepExpression = nullptr;
+std::string Frame::ExceptionText;
+bool Frame::BreakOnError;
+std::unique_ptr<Iterator> Frame::CreatedIterator;
+
+Frame::Frame(UObject* instance, UStruct* func, size_t statementIndex, bool isStateFrame, UStruct* stateNode) :
+	Object(instance), Func(func), StatementIndex(statementIndex), IsStateFrame(isStateFrame), StateNode(stateNode ? stateNode : (isStateFrame ? func : nullptr))
+{
+	InitVariables();
+}
+
+Frame::~Frame()
+{
+	DeinitVariables();
+}
+
+void Frame::SetState(UStruct* func)
+{
+	DeinitVariables();
+	Func = func;
+	StateNode = func;
+	InitVariables();
+}
+
+#define VM_VARIABLE_STACK_CAPACITY (1024*1024)
+static Array<size_t> VariableStackAllocations;
+static size_t VariableStackOffset = 0;
+static char VariableStack[VM_VARIABLE_STACK_CAPACITY];
+
+static void* VMVariableStackAlloc(size_t alignment, size_t size)
+{
+	char* current_ptr = VariableStack + VariableStackOffset;
+	size_t space = VM_VARIABLE_STACK_CAPACITY - VariableStackOffset;
+	void* aligned_ptr = current_ptr;
+	if (std::align(alignment, size, aligned_ptr, space))
+	{
+		VariableStackAllocations.push_back(VariableStackOffset);
+		VariableStackOffset = static_cast<char*>(aligned_ptr) - VariableStack + size;
+		return aligned_ptr;
+	}
+	return nullptr;
+}
+
+void VMFreeVariables()
+{
+	VariableStackOffset = VariableStackAllocations.back();
+	VariableStackAllocations.pop_back();
+}
+
+void Frame::InitVariables()
+{
+	UStruct* layout = IsStateFrame ? StateNode : Func;
+	if (layout)
+	{
+		if (IsStateFrame)
+			Variables = AlignedAlloc(layout->StructAlignment, layout->StructSize);
+		else
+			Variables = VMVariableStackAlloc(layout->StructAlignment, layout->StructSize);
+
+		if (!layout->IsNativeFunc)
+		{
+			for (UProperty* prop : layout->Properties)
+			{
+				prop->ConstructArray(static_cast<uint8_t*>(Variables) + prop->DataOffset.DataOffset);
+			}
+		}
+		else
+		{
+			auto v = (char*)Variables;
+			for (size_t i = 0, count = layout->Properties.size(); i < count; i++)
+			{
+				new(v + i * sizeof(ExpressionValue)) ExpressionValue();
+			}
+		}
+	}
+}
+
+void Frame::DeinitVariables()
+{
+	UStruct* layout = IsStateFrame ? StateNode : Func;
+	if (Variables)
+	{
+		if (!layout->IsNativeFunc)
+		{
+			for (UProperty* prop : layout->Properties)
+			{
+				prop->DestructArray(static_cast<uint8_t*>(Variables) + prop->DataOffset.DataOffset);
+			}
+		}
+		else
+		{
+			auto v = (ExpressionValue*)Variables;
+			for (size_t i = 0, count = layout->Properties.size(); i < count; i++)
+			{
+				v[i].~ExpressionValue();
+			}
+		}
+		if (IsStateFrame)
+			AlignedFree(Variables);
+		else
+			VMFreeVariables();
+		Variables = nullptr;
+	}
+}
+
+void Frame::AddTrace(const NameString& func, std::function<void(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)> callback)
+{
+	Trace trace;
+	trace.Function = func;
+	trace.Callback = callback;
+	Traces.push_back(trace);
+}
+
+bool Frame::AddBreakpoint(const NameString& clsName, const NameString& funcName, const NameString& stateName, int statementIndex)
+{
+	Breakpoint bp;
+	bp.Class = clsName;
+	bp.Function = funcName;
+	bp.State = stateName;
+
+	UClass* cls = engine->packages->FindClass(clsName);
+	if (!cls)
+		return false;
+
+	if (stateName.IsNone())
+	{
+		for (UField* child = cls->Children; child; child = child->Next)
+		{
+			if (child->Name == funcName && UObject::IsType<UFunction>(child))
+			{
+				UFunction* func = UObject::Cast<UFunction>(child);
+				if (statementIndex < 0 || (size_t)statementIndex >= func->Code->Statements.size())
+					return false;
+				bp.Expr = func->Code->Statements[statementIndex];
+				Breakpoints.push_back(bp);
+				return true;
+			}
+		}
+	}
+	else
+	{
+		for (UField* child = cls->Children; child; child = child->Next)
+		{
+			if (child->Name == stateName && UObject::IsType<UState>(child))
+			{
+				UState* state = UObject::Cast<UState>(child);
+				for (UField* stateChild = state->Children; stateChild; stateChild = stateChild->Next)
+				{
+					if (stateChild->Name == funcName && UObject::IsType<UFunction>(stateChild))
+					{
+						UFunction* func = UObject::Cast<UFunction>(stateChild);
+						if (statementIndex < 0 || (size_t)statementIndex >= func->Code->Statements.size())
+							return false;
+						bp.Expr = func->Code->Statements[statementIndex];
+						Breakpoints.push_back(bp);
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
+void Frame::Break()
+{
+	RunState = FrameRunState::DebugBreak;
+
+	if (RunDebugger)
+	{
+		engine->audiodev->BreakpointTriggered();
+		RunDebugger();
+	}
+	else
+	{
+		if (!ExceptionText.empty())
+		{
+			std::string callstack = Frame::GetCallstack();
+			std::string message = "Script execution error:\r\n\r\n";
+			message += ExceptionText;
+			message += "\r\n\r\nCall stack:\r\n\r\n" + callstack;
+			Exception::Throw(message);
+		}
+	}
+}
+
+void Frame::Resume()
+{
+	RunState = FrameRunState::Running;
+}
+
+void Frame::StepInto()
+{
+	StepFrame = Callstack.back();
+	RunState = FrameRunState::StepInto;
+}
+
+void Frame::StepOver()
+{
+	StepFrame = Callstack.back();
+	RunState = FrameRunState::StepOver;
+}
+
+void Frame::StepOut()
+{
+	StepFrame = Callstack.back();
+	RunState = FrameRunState::StepOut;
+}
+
+void Frame::ThrowException(const std::string& text)
+{
+#if defined(_DEBUG) && defined(WIN32)
+	DebugBreak();
+#endif
+
+	ExceptionText = text;
+	Break();
+}
+
+std::string debugCallstack;
+const char* GetCallStack()
+{
+	debugCallstack = Frame::GetCallstack();
+	return debugCallstack.c_str();
+}
+
+std::string Frame::GetName()
+{
+	std::string name;
+	if (Func)
+	{
+		for (UStruct* s = Func; s != nullptr; s = s->StructParent)
+		{
+			if (name.empty())
+				name = s->Name.ToString();
+			else
+				name = s->Name.ToString() + "." + name;
+		}
+	}
+	return name;
+}
+
+std::string Frame::GetDisassembly(Expression* statement)
+{
+	std::string result;
+	PrintPrettyExpression::Print([&](const std::string& text) { result += text; }, statement);
+	return result;
+}
+
+std::string Frame::GetCallstack()
+{
+	std::string result;
+
+#ifdef WIN32
+	std::string newline = "\r\n";
+#else
+	std::string newline = "\n";
+#endif
+
+	for (auto it = Callstack.rbegin(); it != Callstack.rend(); ++it)
+	{
+		Frame* frame = *it;
+		std::string name = frame->GetName();
+		if (UStruct* func = frame->Func)
+		{
+			if (frame->StatementIndex > 0) // StatementIndex points at the NEXT statement to be executed
+			{
+				int line = func->GetStatementLine(func->Code->Statements[frame->StatementIndex - 1]);
+				if (line > 0)
+				{
+					name += " line " + std::to_string(line);
+				}
+				else
+				{
+					name += " line " + std::to_string(func->Line) + " [debug info failed]";
+					line = func->GetStatementLine(func->Code->Statements[frame->StatementIndex - 1]);
+				}
+				name += ": ";
+				name += GetDisassembly(func->Code->Statements[frame->StatementIndex - 1]);
+			}
+			else
+			{
+				name += " line " + std::to_string(func->Line);
+			}
+		}
+		if (!result.empty()) result += newline;
+		result += "at " + name;
+	}
+	return result;
+}
+
+// Logs an Accessed None once per script expression: a script that reads None every frame (HP1's
+// BaseCam.CheckPosition does) would otherwise put a callstack in the log every frame.
+static void LogAccessedNone(Expression* where, const std::string& message)
+{
+	static std::unordered_set<Expression*> logged;
+	if (where && !logged.insert(where).second)
+		return;
+	LogMessage(message + (where ? " (logged once for this line)" : ""));
+	LogMessage(Frame::GetCallstack());
+}
+
+ExpressionValue Frame::Call(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)
+{
+	if (!instance)
+	{
+		LogAccessedNone(Frame::StepExpression, "Accessed None when calling " + func->Name.ToString());
+		return ExpressionValue::NothingValue();
+	}
+
+	TraceCall(func, instance, args);
+
+	if (!instance->IsEventEnabled(func->Name))
+	{
+		return ExpressionValue::NothingValue();
+	}
+
+	if (AllFlags(func->FuncFlags, FunctionFlags::Native))
+	{
+		return CallNative(func, instance, args);
+	}
+	else
+	{
+		// While a singular function runs on an object, every singular call on that object is skipped: the body doesn't
+		// run, out parameters keep their values and the result is the return type's default. Kept in a side table, not
+		// in the object's flags, which come unmasked from package files and go into saves.
+		static std::unordered_set<UObject*> inSingularFunc;
+		struct SingularScope
+		{
+			UObject* object = nullptr;
+			~SingularScope() { if (object) inSingularFunc.erase(object); }
+		} singularScope;
+		if (AllFlags(func->FuncFlags, FunctionFlags::Singular))
+		{
+			if (!inSingularFunc.insert(instance).second)
+			{
+				for (UProperty* prop : func->Properties)
+				{
+					if (AllFlags(prop->PropFlags, PropertyFlags::ReturnParm))
+						return ExpressionValue::DefaultValue(prop);
+				}
+				return ExpressionValue::NothingValue();
+			}
+			singularScope.object = instance;
+		}
+
+		Frame frame(instance, func, 0, false);
+
+		// Store args in function frame local variables
+		int argindex = 0;
+		for (UProperty* prop : func->Properties)
+		{
+			ExpressionValue lvalue = ExpressionValue::Variable(frame.Variables, prop);
+			if (AllFlags(prop->PropFlags, PropertyFlags::Parm))
+			{
+				if (argindex < args.size())
+				{
+					lvalue.Store(args[argindex]);
+				}
+				else
+				{
+					// Trailing optional args may be missing.
+					lvalue.Store(ExpressionValue::DefaultValue(prop));
+				}
+
+				argindex++;
+			}
+		}
+
+		// Run the function
+		ExpressionValue result = frame.Run().Value;
+
+		// Load the result from the frame local result variable
+		result.Load();
+
+		// Copy out params from frame local variables
+		argindex = 0;
+		for (UProperty* prop : func->Properties)
+		{
+			ExpressionValue lvalue = ExpressionValue::Variable(frame.Variables, prop);
+
+			if (AllFlags(prop->PropFlags, PropertyFlags::Parm | PropertyFlags::OutParm) && argindex < args.size())
+			{
+				args[argindex].Store(lvalue);
+			}
+
+			if (AllFlags(prop->PropFlags, PropertyFlags::ReturnParm) && result.GetType() == ExpressionValueType::Nothing)
+			{
+				result = ExpressionValue::DefaultValue(prop);
+			}
+
+			if (AllFlags(prop->PropFlags, PropertyFlags::Parm))
+				argindex++;
+		}
+
+		return result;
+	}
+}
+
+ExpressionValue Frame::CallNative(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)
+{
+	Frame frame(instance, func, 0, false);
+	ActiveCallStackFrame activeFrame(&frame);
+
+	auto frameArgs = (ExpressionValue*)frame.Variables;
+	int argindex = 0;
+	for (UProperty* prop : func->Properties)
+	{
+		if (AllFlags(prop->PropFlags, PropertyFlags::Parm))
+		{
+			if (AllFlags(prop->PropFlags, PropertyFlags::ReturnParm))
+			{
+				frameArgs[argindex++] = ExpressionValue::PropertyValue(prop);
+			}
+			else if (argindex < args.size())
+			{
+				// An out parameter read through a None context (Other.PlayerReplicationInfo.Score -= 1 with no
+				// PlayerReplicationInfo) is already logged as Accessed None. UE1 gives the native a temporary to
+				// write to instead of a script error.
+				if (args[argindex].GetType() == ExpressionValueType::Nothing && AllFlags(prop->PropFlags, PropertyFlags::OutParm) && !AllFlags(prop->PropFlags, PropertyFlags::OptionalParm))
+					frameArgs[argindex++] = ExpressionValue::DefaultValue(prop);
+				else
+					frameArgs[argindex++] = args[argindex];
+			}
+			else
+			{
+				// Trailing optional args may be missing.
+				frameArgs[argindex++] = ExpressionValue::NothingValue();
+			}
+		}
+	}
+
+	// a native HP2 declares without a number has an index of its own in the package: a handler registered by name serves it
+	NativeFuncHandler* callback = nullptr;
+	if (func->NativeFuncIndex != 0 && (size_t)func->NativeFuncIndex < NativeFunctions::NativeByIndex.size() && NativeFunctions::NativeByIndex[func->NativeFuncIndex])
+		callback = &NativeFunctions::NativeByIndex[func->NativeFuncIndex];
+	else
+	{
+		auto byName = NativeFunctions::NativeByName.find({ func->Name, func->NativeStruct->Name });
+		if (byName != NativeFunctions::NativeByName.end())
+			callback = &byName->second;
+	}
+
+	if (callback)
+	{
+		try
+		{
+			(*callback)(instance, frameArgs);
+		}
+		catch (const std::exception& e)
+		{
+			LogMessage(std::string("Script error: ") + e.what());
+			return ExpressionValue::NothingValue();
+		}
+		catch (...)
+		{
+			LogMessage("Script error: Unknown error");
+			return ExpressionValue::NothingValue();
+		}
+	}
+	else
+	{
+		Exception::Throw("Unknown native function " + func->NativeStruct->Name.ToString() + "." + func->Name.ToString());
+	}
+
+	ExpressionValue result = ExpressionValue::NothingValue();
+	argindex = 0;
+	for (UProperty* prop : func->Properties)
+	{
+		if (AllFlags(prop->PropFlags, PropertyFlags::Parm))
+		{
+			if (AllFlags(prop->PropFlags, PropertyFlags::ReturnParm))
+			{
+				result = frameArgs[argindex];
+				break;
+			}
+			argindex++;
+		}
+	}
+	return result;
+}
+
+void Frame::TraceCall(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)
+{
+	for (const auto& trace : Traces)
+	{
+		if (trace.Enabled && trace.Function == func->Name)
+			trace.Callback(func, instance, args);
+	}
+}
+
+void Frame::GotoLabel(const NameString& label)
+{
+	if (engine->LaunchInfo.IsHarryPotter2() && StateNode)
+	{
+		// HP2 HPawn.stateLeadingActor extends patrol: logical state and code owner differ.
+		// NOT yet verified against Core.dll; follows the shipped state super links and label tables.
+		NameString wanted = label.IsNone() ? NameString("Begin") : label;
+		for (UClass* cls = Object->Class; cls; cls = static_cast<UClass*>(cls->BaseStruct))
+			for (UState* state = cls->GetState(StateNode->Name); state; state = UObject::TryCast<UState>(state->BaseStruct))
+			{
+				int index = state->Code ? state->Code->FindLabelIndex(wanted) : -1;
+				if (index >= 0)
+				{
+					Func = state;
+					StatementIndex = index;
+					LatentState = LatentRunState::Continue;
+					return;
+				}
+			}
+		LatentState = LatentRunState::Stop;
+		return;
+	}
+
+	for (UClass* cls = Object->Class; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
+	{
+		UState* state = cls->GetState(Func->Name);
+		if (state)
+		{
+			int labelIndex = state->Code->FindLabelIndex(label.IsNone() ? NameString("Begin") : label);
+			if (labelIndex != -1)
+			{
+				Func = state;
+				StatementIndex = labelIndex;
+				LatentState = LatentRunState::Continue;
+				return;
+			}
+		}
+	}
+	LatentState = LatentRunState::Stop;
+}
+
+void Frame::Tick()
+{
+	if (LatentState == LatentRunState::Continue)
+		Run();
+}
+
+ExpressionEvalResult Frame::Run()
+{
+	if (!Func)
+		return {};
+
+	ActiveCallStackFrame activeFrame(this);
+
+	// UE1 stops a script that keeps calling itself (UObject::ProcessInternal: a critical error over 250 nested script
+	// calls) before the native stack runs out. HP2's harry.Summon calls itself.
+	static int scriptDepth = 0;
+	struct ScriptDepthGuard
+	{
+		ScriptDepthGuard() { scriptDepth++; }
+		~ScriptDepthGuard() { scriptDepth--; }
+	} depthGuard;
+	if (scriptDepth > 250)
+		ThrowException("Infinite script recursion (250 calls) detected");
+
+	if (!Func->Code->Statements.empty())
+		StepExpression = Func->Code->Statements[StatementIndex];
+
+	if (RunState == FrameRunState::StepInto)
+	{
+		// We entered a new function. Break for step into.
+		Break();
+	}
+
+	// KnowWonder's Core.dll only counts Jump tokens, logs past 10,000,000 and goes on (UObject::execJump), so a long
+	// foreach is fine there: HP2's debug mode checks every pair of cutscene actors in harry.DisplayFirstErrorMessages
+	const int maxInstructions = engine->LaunchInfo.IsKnowWonder() ? 100'000'000 : 500'000;
+	int instructionsRetired = 0;
+	while (true)
+	{
+		if (StatementIndex >= Func->Code->Statements.size())
+			ThrowException("Unexpected end of code statements");
+
+		// Note: GotoState may change StatementIndex (jump to a different location) so we have to increment the index before executing the statement
+		size_t curStatementIndex = StatementIndex;
+		StatementIndex++;
+
+		StepExpression = Func->Code->Statements[curStatementIndex];
+
+		if (instructionsRetired >= maxInstructions)
+		{
+			LogMessage("Too many VM instructions executed in a single tick");
+			Break();
+		}
+		else if ((RunState == FrameRunState::StepOver || RunState == FrameRunState::StepInto) && StepFrame == this)
+		{
+			// We are running a new expression. Break on step over, but also step into as there might not been a function to step into.
+			Break();
+		}
+		else if (RunState == FrameRunState::StepOut && StepFrame == nullptr)
+		{
+			// We found the function exit point. Break the debugger.
+			Break();
+		}
+
+		Expression* statement = Func->Code->Statements[curStatementIndex];
+		//ExpressionEvalResult result = ExpressionEvaluator::Eval(statement, Object, Object, Variables);
+		ExpressionEvalResult result = RunExpr(statement, Object, Object, Variables);
+		if (!Func)
+			return result;
+		switch (result.Result)
+		{
+		case StatementResult::Next:
+			break;
+		case StatementResult::Jump:
+			StatementIndex = Func->Code->FindStatementIndex(result.JumpAddress);
+			break;
+		case StatementResult::Switch:
+			ProcessSwitch(result.Value);
+			break;
+		case StatementResult::GotoLabel:
+			{
+				if (IsStateFrame && engine->LaunchInfo.IsHarryPotter2())
+				{
+					GotoLabel(result.Label);
+					break;
+				}
+				int index = Func->Code->FindLabelIndex(result.Label);
+				if (index != -1)
+				{
+					StatementIndex = index;
+				}
+				else
+				{
+					// State gotos can jump to a parent state block!
+					bool found = false;
+					for (UClass* cls = Object->Class; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
+					{
+						UState* state = cls->GetState(Func->Name);
+						if (state)
+						{
+							int labelIndex = state->Code->FindLabelIndex(result.Label);
+							if (labelIndex != -1)
+							{
+								Func = state;
+								StatementIndex = labelIndex;
+								found = true;
+								break;
+							}
+						}
+					}
+					if (!found)
+					{
+						if (Object->Class)
+							LogMessage(Object->Class->Name.ToString() + "." + Func->Name.ToString() + ": GotoLabel (" + result.Label.ToString() + "): Label not found");
+						LatentState = LatentRunState::Stop;
+						result.Result = StatementResult::Stop;
+						return result;
+					}
+				}
+			}
+			break;
+		case StatementResult::Stop:
+			LatentState = LatentRunState::Stop;
+			return result;
+		case StatementResult::Return:
+			// Package 61 and earlier transfered the return value in an out parameter
+			if (!static_cast<ReturnExpression*>(statement)->Value)
+			{
+				for (UProperty* prop : Func->Properties)
+				{
+					if (AllFlags(prop->PropFlags, PropertyFlags::Parm | PropertyFlags::ReturnParm))
+					{
+						result.Value = ExpressionValue::Variable(Variables, prop);
+						result.Value.Load();
+						break;
+					}
+				}
+			}
+
+			if (RunState == FrameRunState::StepOut && StepFrame == this)
+			{
+				// We are exiting the function. Break on next instruction by requesting a break on next instruction.
+				StepFrame = nullptr;
+			}
+			return result;
+		case StatementResult::Iterator:
+			if (!result.Iter)
+				ThrowException("Iterator statement without an iterator in " + Object->Name.ToString() + "." + Func->Name.ToString());
+			Iterators.push_back(std::move(result.Iter));
+			Iterators.back()->StartStatementIndex = curStatementIndex + 1;
+			Iterators.back()->EndStatementIndex = Func->Code->FindStatementIndex(result.JumpAddress);
+			if (Iterators.back()->Next())
+				StatementIndex = Iterators.back()->StartStatementIndex;
+			else
+				StatementIndex = Iterators.back()->EndStatementIndex;
+			break;
+		case StatementResult::IteratorNext:
+			if (Iterators.empty())
+				ThrowException("Iterator next statement without an iterator in " + Object->Name.ToString() + "." + Func->Name.ToString());
+			if (Iterators.back()->Next())
+				StatementIndex = Iterators.back()->StartStatementIndex;
+			else
+				StatementIndex = Iterators.back()->EndStatementIndex;
+			break;
+		case StatementResult::IteratorPop:
+			if (Iterators.empty())
+				ThrowException("Iterator pop statement without an iterator in " + Object->Name.ToString() + "." + Func->Name.ToString());
+			Iterators.pop_back();
+			break;
+		case StatementResult::AccessedNone:
+			if (BreakOnError)
+			{
+				LogMessage("Accessed None");
+				Break();
+			}
+			else
+			{
+				LogAccessedNone(statement, "Accessed None");
+			}
+			break;
+		}
+
+		if (Object->StateFrame.get() == this && LatentState != LatentRunState::Continue)
+		{
+			return result;
+		}
+
+		instructionsRetired++;
+	}
+}
+
+void Frame::ProcessSwitch(const ExpressionValue& condition)
+{
+	SwitchExpression* switchexpr = static_cast<SwitchExpression*>(Func->Code->Statements[StatementIndex - 1]);
+	while (true)
+	{
+		CaseExpression* caseexpr = static_cast<CaseExpression*>(Func->Code->Statements[StatementIndex++]);
+		if (caseexpr->Value)
+		{
+			//ExpressionValue casevalue = ExpressionEvaluator::Eval(caseexpr->Value, Object, Object, Variables).Value;
+			ExpressionValue casevalue = RunExpr(caseexpr->Value, Object, Object, Variables).Value;
+			// UE1 matches a case with the property's Identical, which ignores case for strings (UStrProperty::Identical
+			// uses appStricmp); HP2's cutscene scripts rely on it ("waitfor" against case "WAITFOR")
+			bool match = condition.GetType() == ExpressionValueType::ValueString ?
+				StrTools::equals_ignore_case(condition.ToString(), casevalue.ToString()) :
+				condition.IsEqual(casevalue);
+			if (match)
+				break;
+			else
+				StatementIndex = Func->Code->FindStatementIndex(caseexpr->NextOffset);
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+#define MAX_VMSTACK_DEPTH 1000
+
+struct alignas(ExpressionValue) ExpressionValueMemory
+{
+	char buffer[sizeof(ExpressionValue)];
+};
+
+static struct VMStack
+{
+	int exprEnd = 0;
+	int valueEnd = 0;
+	int contextEnd = 0;
+	Expression* expr[MAX_VMSTACK_DEPTH];
+	int pass[MAX_VMSTACK_DEPTH];
+	ExpressionValueMemory value[MAX_VMSTACK_DEPTH];
+	UObject* context[MAX_VMSTACK_DEPTH];
+} vmstack;
+
+#define PushExpr(e) vmstack.pass[vmstack.exprEnd] = 0; vmstack.expr[vmstack.exprEnd++] = (e);
+#define PopExpr() --vmstack.exprEnd
+#define PushContext(c) vmstack.context[vmstack.contextEnd++] = context; context = (c)
+#define PopContext() context = vmstack.context[--vmstack.contextEnd]
+#define PushValue(v) new(vmstack.value[vmstack.valueEnd++].buffer) ExpressionValue(v)
+
+static ExpressionValue PopValue()
+{
+	--vmstack.valueEnd;
+	ExpressionValue result = std::move(*reinterpret_cast<ExpressionValue*>(vmstack.value[vmstack.valueEnd].buffer));
+	reinterpret_cast<ExpressionValue*>(vmstack.value[vmstack.valueEnd].buffer)->~ExpressionValue();
+	return result;
+}
+
+static void PopValues(size_t count)
+{
+	while (count > 0)
+	{
+		reinterpret_cast<ExpressionValue*>(vmstack.value[--vmstack.valueEnd].buffer)->~ExpressionValue();
+		--count;
+	}
+}
+
+ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UObject* context, void* variables)
+{
+	int enterExprEnd = vmstack.exprEnd;
+	int enterValueEnd = vmstack.valueEnd;
+	int enterContextEnd = vmstack.contextEnd;
+
+	try
+	{
+		ExpressionEvalResult result;
+
+		PushExpr(statementExpr);
+
+		while (vmstack.exprEnd > enterExprEnd)
+		{
+			Expression* expr = vmstack.expr[vmstack.exprEnd - 1];
+			int pass = vmstack.pass[vmstack.exprEnd - 1]++;
+
+			Frame::StepExpression = expr;
+			for (const Breakpoint& bp : Breakpoints)
+			{
+				if (bp.Expr == expr && bp.Enabled)
+				{
+					Frame::Break();
+				}
+			}
+
+			switch (expr->Type)
+			{
+			default:
+				break;
+			case ExpressionType::LocalVariable:
+				PushValue(ExpressionValue::Variable(variables, static_cast<LocalVariableExpression*>(expr)->Variable));
+				PopExpr();
+				break;
+
+			case ExpressionType::InstanceVariable:
+				PushValue(ExpressionValue::Variable(context->PropertyData.Data, static_cast<InstanceVariableExpression*>(expr)->Variable));
+				PopExpr();
+				break;
+
+			case ExpressionType::DefaultVariable:
+				if (UObject::TryCast<UClass>(context))
+					PushValue(ExpressionValue::Variable(context->PropertyData.Data, static_cast<DefaultVariableExpression*>(expr)->Variable));
+				else
+					PushValue(ExpressionValue::Variable(context->Class->GetDefaultObject<UObject>()->PropertyData.Data, static_cast<DefaultVariableExpression*>(expr)->Variable));
+				PopExpr();
+				break;
+
+			case ExpressionType::Return:
+				if (pass == 0)
+				{
+					if (static_cast<ReturnExpression*>(expr)->Value)
+					{
+						PushExpr(static_cast<ReturnExpression*>(expr)->Value);
+					}
+					else
+					{
+						PushValue(ExpressionValue::NothingValue());
+					}
+				}
+				else if (pass == 1)
+				{
+					result.Result = StatementResult::Return;
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Switch:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<SwitchExpression*>(expr)->Condition);
+				}
+				else
+				{
+					result.Result = StatementResult::Switch;
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Jump:
+				result.Result = StatementResult::Jump;
+				result.JumpAddress = static_cast<JumpExpression*>(expr)->Offset;
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::JumpIfNot:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<JumpIfNotExpression*>(expr)->Condition);
+				}
+				else
+				{
+					if (!PopValue().ToBool())
+					{
+						result.Result = StatementResult::Jump;
+						result.JumpAddress = static_cast<JumpIfNotExpression*>(expr)->Offset;
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Stop:
+				result.Result = StatementResult::Stop;
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::Assert:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<AssertExpression*>(expr)->Condition);
+				}
+				else
+				{
+					if (!PopValue().ToBool())
+					{
+						Frame::ThrowException("Script assert failed for " + self->Name.ToString() + " line " + std::to_string(static_cast<AssertExpression*>(expr)->Line));
+					}
+					PushValue(ExpressionValue::NothingValue());
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Case:
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::Nothing:
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::LabelTable:
+				// Klingon honor guard has this! (UE 251)
+				Frame::ThrowException("Label table expression is not implemented");
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::GotoLabel:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<GotoLabelExpression*>(expr)->Value);
+				}
+				else
+				{
+					result.Result = StatementResult::GotoLabel;
+					result.Label = PopValue().ToName();
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::EatString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<EatStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					PopValue();
+					PushValue(ExpressionValue::NothingValue());
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Let:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<LetExpression*>(expr)->LeftSide);
+					PushExpr(static_cast<LetExpression*>(expr)->RightSide);
+				}
+				else
+				{
+					ExpressionValue lvalue = std::move(PopValue());
+					ExpressionValue rvalue = std::move(PopValue());
+					if (lvalue.GetType() != ExpressionValueType::Nothing)
+					{
+						lvalue.Store(rvalue);
+						PushValue(std::move(lvalue));
+					}
+					else
+					{
+						PushValue(std::move(rvalue));
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::LetBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<LetBoolExpression*>(expr)->LeftSide);
+					PushExpr(static_cast<LetBoolExpression*>(expr)->RightSide);
+				}
+				else
+				{
+					ExpressionValue lvalue = std::move(PopValue());
+					ExpressionValue rvalue = std::move(PopValue());
+					if (lvalue.GetType() != ExpressionValueType::Nothing)
+					{
+						lvalue.Store(rvalue);
+						PushValue(std::move(lvalue));
+					}
+					else
+					{
+						PushValue(std::move(rvalue));
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::DynArrayElement:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<DynArrayElementExpression*>(expr)->Index);
+					PushExpr(static_cast<DynArrayElementExpression*>(expr)->Array);
+				}
+				else
+				{
+					int index = PopValue().ToInt();
+					ExpressionValue arrayval = std::move(PopValue());
+					if (arrayval.IsVariable())
+					{
+						if (index < 0)
+						{
+							LogMessage("Negative index used");
+							PushValue(ExpressionValue::NothingValue());
+						}
+						else
+						{
+							PushValue(arrayval.DynArrayItemAt(index));
+						}
+					}
+					else
+					{
+						Frame::ThrowException("Array is not a variable in DynArrayElementExpression");
+						PushValue(ExpressionValue::NothingValue());
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::New:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<NewExpression*>(expr)->ParentExpr);
+					PushExpr(static_cast<NewExpression*>(expr)->NameExpr);
+					PushExpr(static_cast<NewExpression*>(expr)->FlagsExpr);
+					PushExpr(static_cast<NewExpression*>(expr)->ClassExpr);
+				}
+				else
+				{
+					auto newExpr = static_cast<NewExpression*>(expr);
+					ExpressionValue outer = std::move(PopValue());
+					ExpressionValue name = std::move(PopValue());
+					ExpressionValue flags = std::move(PopValue());
+					UClass* cls = UObject::Cast<UClass>(PopValue().ToObject());
+
+					// To do: package needs to be grabbed from outer, or the "transient package" if it is None, a virtual package for runtime objects
+					Package* package = engine->packages->GetPackage("Engine");
+
+					UObject* newObj = package->NewObject(
+						name.GetType() == ExpressionValueType::Nothing ? NameString() : name.ToName(),
+						cls,
+						flags.GetType() == ExpressionValueType::Nothing ? ObjectFlags::NoFlags : (ObjectFlags)flags.ToInt(),
+						true);
+
+					if (outer.GetType() != ExpressionValueType::Nothing)
+						newObj->Outer() = outer.ToObject();
+
+					PushValue(ExpressionValue::ObjectValue(newObj));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ClassContext:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ClassContextExpression*>(expr)->ObjectExpr);
+				}
+				else if (pass == 1)
+				{
+					UClass* cls = UObject::TryCast<UClass>(PopValue().ToObject());
+					if (cls)
+					{
+						PushContext(cls->GetDefaultObject<UObject>());
+						PushExpr(static_cast<ClassContextExpression*>(expr)->ContextExpr);
+					}
+					else
+					{
+						result.Result = StatementResult::AccessedNone;
+						PushValue(ExpressionValue::NothingValue());
+						PopExpr();
+					}
+				}
+				else
+				{
+					PopContext();
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::MetaCast:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<MetaCastExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto castExpr = static_cast<MetaCastExpression*>(expr);
+					UObject* value = PopValue().ToObject();
+					if (value && value != castExpr->Class)
+					{
+						UClass* cls = UObject::TryCast<UClass>(value);
+						while (cls)
+						{
+							if (cls == castExpr->Class)
+								break;
+							cls = static_cast<UClass*>(cls->BaseStruct);
+						}
+						if (!cls)
+							value = nullptr;
+					}
+					PushValue(ExpressionValue::ObjectValue(value));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Unknown0x15:
+				// Klingon honor guard has this! (UE 251)
+				//Frame::ThrowException("Unknown0x15 expression encountered");
+				result.Result = StatementResult::Stop;
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::Self:
+				PushValue(ExpressionValue::ObjectValue(self));
+				PopExpr();
+				break;
+
+			case ExpressionType::Skip:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<SkipExpression*>(expr)->Value);
+				}
+				else
+				{
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Context:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ContextExpression*>(expr)->ObjectExpr);
+				}
+				else if (pass == 1)
+				{
+					UObject* newContext = PopValue().ToObject();
+					if (newContext)
+					{
+						PushContext(newContext);
+						PushExpr(static_cast<ContextExpression*>(expr)->ContextExpr);
+					}
+					else
+					{
+						result.Result = StatementResult::AccessedNone;
+						PushValue(ExpressionValue::NothingValue());
+						PopExpr();
+					}
+				}
+				else
+				{
+					PopContext();
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ArrayElement:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ArrayElementExpression*>(expr)->Index);
+					PushExpr(static_cast<ArrayElementExpression*>(expr)->Array);
+				}
+				else
+				{
+					int index = PopValue().ToInt();
+					ExpressionValue arrayval = std::move(PopValue());
+					if (arrayval.IsVariable())
+					{
+						PushValue(arrayval.ItemAt(index));
+					}
+					else
+					{
+						Frame::ThrowException("Array is not a variable in ArrayElementExpression");
+						PushValue(ExpressionValue::NothingValue());
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntConst:
+				PushValue(ExpressionValue::IntValue(static_cast<IntConstExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::FloatConst:
+				PushValue(ExpressionValue::FloatValue(static_cast<FloatConstExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::StringConst:
+				PushValue(ExpressionValue::StringValue(static_cast<StringConstExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::ObjectConst:
+				PushValue(ExpressionValue::ObjectValue(static_cast<ObjectConstExpression*>(expr)->Object));
+				PopExpr();
+				break;
+
+			case ExpressionType::NameConst:
+				PushValue(ExpressionValue::NameValue(static_cast<NameConstExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::RotationConst:
+				PushValue(ExpressionValue::RotatorValue({
+					static_cast<RotationConstExpression*>(expr)->Pitch,
+					static_cast<RotationConstExpression*>(expr)->Yaw,
+					static_cast<RotationConstExpression*>(expr)->Roll
+					}));
+				PopExpr();
+				break;
+
+			case ExpressionType::VectorConst:
+				PushValue(ExpressionValue::VectorValue({
+					static_cast<VectorConstExpression*>(expr)->X,
+					static_cast<VectorConstExpression*>(expr)->Y,
+					static_cast<VectorConstExpression*>(expr)->Z
+					}));
+				PopExpr();
+				break;
+
+			case ExpressionType::ByteConst:
+				PushValue(ExpressionValue::ByteValue(static_cast<ByteConstExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::IntZero:
+				PushValue(ExpressionValue::IntValue(0));
+				PopExpr();
+				break;
+
+			case ExpressionType::IntOne:
+				PushValue(ExpressionValue::IntValue(1));
+				PopExpr();
+				break;
+
+			case ExpressionType::True:
+				PushValue(ExpressionValue::BoolValue(true));
+				PopExpr();
+				break;
+
+			case ExpressionType::False:
+				PushValue(ExpressionValue::BoolValue(false));
+				PopExpr();
+				break;
+
+			case ExpressionType::NativeParm:
+				Frame::ThrowException("Native parm expression is not implemented");
+				PopExpr();
+				break;
+
+			case ExpressionType::NoObject:
+				PushValue(ExpressionValue::ObjectValue(nullptr));
+				PopExpr();
+				break;
+
+			case ExpressionType::Unknown0x2b:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<Unknown0x2bExpression*>(expr)->Value);
+				}
+				else
+				{
+					// This may have been a truncating instruction from back when strings had a fixed size (package version 61 and earlier)
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntConstByte:
+				PushValue(ExpressionValue::ByteValue(static_cast<IntConstByteExpression*>(expr)->Value));
+				PopExpr();
+				break;
+
+			case ExpressionType::BoolVariable:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<BoolVariableExpression*>(expr)->Variable);
+				}
+				else
+				{
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::DynamicCast:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<DynamicCastExpression*>(expr)->Value);
+				}
+				else
+				{
+					UObject* value = PopValue().ToObject();
+					if (value && !value->IsA(static_cast<DynamicCastExpression*>(expr)->Class->Name))
+						value = nullptr;
+					PushValue(ExpressionValue::ObjectValue(value));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Iterator:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<IteratorExpression*>(expr)->Value);
+				}
+				else
+				{
+					result.Result = StatementResult::Iterator;
+					result.Iter = std::move(Frame::CreatedIterator);
+					result.JumpAddress = static_cast<IteratorExpression*>(expr)->Offset;
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IteratorPop:
+				result.Result = StatementResult::IteratorPop;
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::IteratorNext:
+				result.Result = StatementResult::IteratorNext;
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::StructCmpEq:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StructCmpEqExpression*>(expr)->Value1);
+					PushExpr(static_cast<StructCmpEqExpression*>(expr)->Value2);
+				}
+				else
+				{
+					ExpressionValue val1 = std::move(PopValue());
+					ExpressionValue val2 = std::move(PopValue());
+					PushValue(ExpressionValue::BoolValue(val1.IsEqual(val2)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StructCmpNe:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StructCmpNeExpression*>(expr)->Value1);
+					PushExpr(static_cast<StructCmpNeExpression*>(expr)->Value2);
+				}
+				else
+				{
+					ExpressionValue val1 = std::move(PopValue());
+					ExpressionValue val2 = std::move(PopValue());
+					PushValue(ExpressionValue::BoolValue(!val1.IsEqual(val2)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StructMember:
+				if (pass == 0)
+				{
+					if (!static_cast<StructMemberExpression*>(expr)->Field)
+						Frame::ThrowException("Null field encountered in struct member expression");
+					PushExpr(static_cast<StructMemberExpression*>(expr)->Value);
+				}
+				else
+				{
+					ExpressionValue val = std::move(PopValue());
+					PushValue(val.Member(static_cast<StructMemberExpression*>(expr)->Field));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::UnicodeStringConst:
+			{
+				std::string s;
+				s.reserve(static_cast<UnicodeStringConstExpression*>(expr)->Value.size());
+				for (wchar_t c : static_cast<UnicodeStringConstExpression*>(expr)->Value)
+					s.push_back(c < 128 ? c : '?');
+				PushValue(ExpressionValue::StringValue(s));
+				PopExpr();
+				break;
+			}
+
+			case ExpressionType::RotatorToVector:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<RotatorToVectorExpression*>(expr)->Value);
+				}
+				else
+				{
+					Rotator rot = PopValue().ToRotator();
+					PushValue(ExpressionValue::VectorValue(Coords::Rotation(rot).XAxis));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ByteToInt:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ByteToIntExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToByte();
+					PushValue(ExpressionValue::IntValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ByteToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ByteToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToByte() != 0;
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ByteToFloat:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ByteToFloatExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToByte();
+					PushValue(ExpressionValue::FloatValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntToByte:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<IntToByteExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToInt();
+					PushValue(ExpressionValue::ByteValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<IntToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToInt();
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntToFloat:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<IntToFloatExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToInt();
+					PushValue(ExpressionValue::FloatValue((float)val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::BoolToByte:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<BoolToByteExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToBool();
+					PushValue(ExpressionValue::ByteValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::BoolToInt:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<BoolToIntExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToBool();
+					PushValue(ExpressionValue::IntValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::BoolToFloat:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<BoolToFloatExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToBool();
+					PushValue(ExpressionValue::FloatValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::FloatToByte:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<FloatToByteExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToFloat();
+					PushValue(ExpressionValue::ByteValue((uint8_t)val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::FloatToInt:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<FloatToIntExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToFloat();
+					PushValue(ExpressionValue::IntValue((int)val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::FloatToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<FloatToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToFloat();
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::Unknown0x46:
+				Frame::ThrowException("Unknown0x46 expression encountered");
+				break;
+
+			case ExpressionType::ObjectToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ObjectToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToObject() != nullptr;
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::NameToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<NameToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = PopValue().ToName() != "None";
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToByte:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToByteExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = std::atoi(PopValue().ToString().c_str());
+					PushValue(ExpressionValue::ByteValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToInt:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToIntExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = std::atoi(PopValue().ToString().c_str());
+					PushValue(ExpressionValue::IntValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = std::atoi(PopValue().ToString().c_str()) != 0;
+					PushValue(ExpressionValue::BoolValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToFloat:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToFloatExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto val = (float)std::atof(PopValue().ToString().c_str());
+					PushValue(ExpressionValue::FloatValue(val));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToVector:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToVectorExpression*>(expr)->Value);
+				}
+				else
+				{
+					std::string v = PopValue().ToString();
+					auto pos1 = v.find_first_of(',');
+					auto pos2 = v.find_first_of(',', pos1 + 1);
+					if (pos1 != std::string::npos && pos2 != std::string::npos)
+					{
+						PushValue(ExpressionValue::VectorValue({
+							(float)std::atof(v.substr(0, pos1).c_str()),
+							(float)std::atof(v.substr(pos1 + 1, pos2 - pos1 - 1).c_str()),
+							(float)std::atof(v.substr(pos2 + 1).c_str())
+							}));
+					}
+					else
+					{
+						PushValue(ExpressionValue::VectorValue({ 0.0f }));
+					}
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToRotator:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToRotatorExpression*>(expr)->Value);
+				}
+				else
+				{
+					std::string v = PopValue().ToString();
+					auto pos1 = v.find_first_of(',');
+					auto pos2 = v.find_first_of(',', pos1 + 1);
+					if (pos1 != std::string::npos && pos2 != std::string::npos)
+					{
+						PushValue(ExpressionValue::RotatorValue({
+							std::atoi(v.substr(0, pos1).c_str()),
+							std::atoi(v.substr(pos1 + 1, pos2 - pos1 - 1).c_str()),
+							std::atoi(v.substr(pos2 + 1).c_str())
+							}));
+					}
+					else
+					{
+						PushValue(ExpressionValue::RotatorValue({ 0, 0, 0 }));
+					}
+					PopExpr();
+					break;
+				}
+				break;
+
+			case ExpressionType::VectorToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<VectorToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					vec3 v = PopValue().ToVector();
+					PushValue(ExpressionValue::BoolValue(v != vec3(0.0f)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::VectorToRotator:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<VectorToRotatorExpression*>(expr)->Value);
+				}
+				else
+				{
+					vec3 v = PopValue().ToVector();
+					PushValue(ExpressionValue::RotatorValue(Rotator::FromVector(v)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::RotatorToBool:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<RotatorToBoolExpression*>(expr)->Value);
+				}
+				else
+				{
+					bool v = PopValue().ToRotator() != Rotator(0, 0, 0);
+					PushValue(ExpressionValue::BoolValue(v));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ByteToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ByteToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto v = PopValue().ToByte();
+					PushValue(ExpressionValue::StringValue(std::to_string(v)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::IntToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<IntToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto v = PopValue().ToInt();
+					PushValue(ExpressionValue::StringValue(std::to_string(v)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::BoolToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<BoolToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto v = PopValue().ToBool();
+					PushValue(ExpressionValue::StringValue(std::to_string(v)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::FloatToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<FloatToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					auto v = PopValue().ToFloat();
+					PushValue(ExpressionValue::StringValue(std::to_string(v)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::ObjectToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<ObjectToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					UObject* obj = PopValue().ToObject();
+					PushValue(ExpressionValue::StringValue(obj ? obj->package->GetPackageName().ToString() + "." + obj->Name.ToString() : "None"));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::NameToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<NameToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					NameString v = PopValue().ToName();
+					PushValue(ExpressionValue::StringValue(v.ToString()));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::VectorToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<VectorToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					vec3 v = PopValue().ToVector();
+					PushValue(ExpressionValue::StringValue(std::to_string(v.x) + "," + std::to_string(v.y) + "," + std::to_string(v.z)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::RotatorToString:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<RotatorToStringExpression*>(expr)->Value);
+				}
+				else
+				{
+					Rotator v = PopValue().ToRotator();
+					PushValue(ExpressionValue::StringValue(std::to_string(v.Pitch & 0xffff) + "," + std::to_string(v.Yaw & 0xffff) + "," + std::to_string(v.Roll & 0xffff)));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::StringToName:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<StringToNameExpression*>(expr)->Value);
+				}
+				else
+				{
+					std::string v = PopValue().ToString();
+					PushValue(ExpressionValue::NameValue(v));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::DynArrayToInt:
+				if (pass == 0)
+				{
+					PushExpr(static_cast<DynArrayToIntExpression*>(expr)->Value);
+				}
+				else
+				{
+					size_t count = PopValue().ToArray().GetSize();
+					PushValue(ExpressionValue::IntValue((int)count));
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::VirtualFunction:
+				if (pass == 0)
+				{
+					PushContext(self);
+					const auto& args = static_cast<VirtualFunctionExpression*>(expr)->Args;
+					for (auto it = args.rbegin(); it != args.rend(); ++it)
+					{
+						PushExpr(*it);
+					}
+				}
+				else
+				{
+					PopContext();
+
+					auto funcExpr = static_cast<VirtualFunctionExpression*>(expr);
+					ArrayView<ExpressionValue> funcArgs((ExpressionValue*)vmstack.value[vmstack.valueEnd - funcExpr->Args.size()].buffer, funcExpr->Args.size());
+
+					UClass* contextClass = UObject::TryCast<UClass>(context);
+					if (!contextClass)
+						contextClass = context->Class;
+
+					// Search states first
+
+					NameString stateName = context->GetStateName();
+					bool found = false;
+					for (UClass* cls = contextClass; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
+					{
+						UState* state = cls->GetState(stateName);
+						if (state)
+						{
+							UFunction* func = state->GetFunction(funcExpr->Name);
+							if (func)
+							{
+								auto callresult = Frame::Call(func, context, funcArgs);
+								PopValues(funcExpr->Args.size());
+								PushValue(callresult);
+								PopExpr();
+								found = true;
+								break;
+							}
+						}
+					}
+
+					if (!found)
+					{
+						// Search normal member functions next
+						for (UClass* cls = contextClass; !found && cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
+						{
+							if (UFunction* func = cls->GetFunction(funcExpr->Name))
+							{
+								auto callresult = Frame::Call(func, context, funcArgs);
+								PopValues(funcExpr->Args.size());
+								PushValue(callresult);
+								PopExpr();
+								found = true;
+								break;
+							}
+						}
+					}
+
+					if (!found)
+					{
+						Frame::ThrowException("Script virtual function " + funcExpr->Name.ToString() + " not found!");
+						for (size_t i = 0, count = funcExpr->Args.size(); i < count; i++)
+							PopValue();
+						PushValue(ExpressionValue::NothingValue());
+						PopExpr();
+					}
+				}
+				break;
+
+			case ExpressionType::FinalFunction:
+				if (pass == 0)
+				{
+					PushContext(self);
+					const auto& args = static_cast<VirtualFunctionExpression*>(expr)->Args;
+					for (auto it = args.rbegin(); it != args.rend(); ++it)
+					{
+						PushExpr(*it);
+					}
+				}
+				else
+				{
+					PopContext();
+					auto funcExpr = static_cast<FinalFunctionExpression*>(expr);
+					ArrayView<ExpressionValue> funcArgs((ExpressionValue*)vmstack.value[vmstack.valueEnd - funcExpr->Args.size()].buffer, funcExpr->Args.size());
+
+					auto callresult = Frame::Call(funcExpr->Func, context, funcArgs);
+					PopValues(funcExpr->Args.size());
+					PushValue(callresult);
+					PopExpr();
+				}
+				break;
+
+			case ExpressionType::GlobalFunction:
+				if (pass == 0)
+				{
+					PushContext(self);
+					const auto& args = static_cast<GlobalFunctionExpression*>(expr)->Args;
+					for (auto it = args.rbegin(); it != args.rend(); ++it)
+					{
+						PushExpr(*it);
+					}
+				}
+				else
+				{
+					PopContext();
+					auto funcExpr = static_cast<GlobalFunctionExpression*>(expr);
+					ArrayView<ExpressionValue> funcArgs((ExpressionValue*)vmstack.value[vmstack.valueEnd - funcExpr->Args.size()].buffer, funcExpr->Args.size());
+
+					// Global function calls skip the states and only searches normal member functions
+
+					UClass* contextClass = UObject::TryCast<UClass>(context);
+					if (!contextClass)
+						contextClass = context->Class;
+
+					bool found = false;
+					for (UClass* cls = contextClass; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
+					{
+						UFunction* func = cls->GetFunction(funcExpr->Name);
+						if (func)
+						{
+							auto callresult = Frame::Call(func, context, funcArgs);
+							PopValues(funcExpr->Args.size());
+							PushValue(callresult);
+							PopExpr();
+							found = true;
+							break;
+						}
+					}
+
+					if (!found)
+					{
+						Frame::ThrowException("Script global function " + static_cast<GlobalFunctionExpression*>(expr)->Name.ToString() + " not found!");
+						PopValues(funcExpr->Args.size());
+						PushValue(ExpressionValue::NothingValue());
+					}
+				}
+				break;
+
+			case ExpressionType::NativeFunction:
+				// To do: conditional operator should probably be handled by the skip expression
+				if (static_cast<NativeFunctionExpression*>(expr)->nativeindex == 130) // conditional operator &&
+				{
+					auto funcExpr = static_cast<NativeFunctionExpression*>(expr);
+					if (pass == 0)
+					{
+						PushContext(self);
+						PushExpr(funcExpr->Args[0]);
+					}
+					else if (pass == 1)
+					{
+						if (PopValue().ToBool())
+						{
+							PushExpr(funcExpr->Args[1]);
+						}
+						else
+						{
+							PopContext();
+							PushValue(ExpressionValue::BoolValue(false));
+							PopExpr();
+						}
+					}
+					else
+					{
+						PopContext();
+						bool value = PopValue().ToBool();
+						PushValue(ExpressionValue::BoolValue(value));
+						PopExpr();
+					}
+				}
+				else if (static_cast<NativeFunctionExpression*>(expr)->nativeindex == 132) // conditional operator ||
+				{
+					auto funcExpr = static_cast<NativeFunctionExpression*>(expr);
+					if (pass == 0)
+					{
+						PushContext(self);
+						PushExpr(funcExpr->Args[0]);
+					}
+					else if (pass == 1)
+					{
+						if (!PopValue().ToBool())
+						{
+							PushExpr(funcExpr->Args[1]);
+						}
+						else
+						{
+							PopContext();
+							PushValue(ExpressionValue::BoolValue(true));
+							PopExpr();
+						}
+					}
+					else
+					{
+						PopContext();
+						bool value = PopValue().ToBool();
+						PushValue(ExpressionValue::BoolValue(value));
+						PopExpr();
+					}
+				}
+				else
+				{
+					if (pass == 0)
+					{
+						PushContext(self);
+						const auto& args = static_cast<NativeFunctionExpression*>(expr)->Args;
+						for (auto it = args.rbegin(); it != args.rend(); ++it)
+						{
+							PushExpr(*it);
+						}
+					}
+					else
+					{
+						PopContext();
+						auto funcExpr = static_cast<NativeFunctionExpression*>(expr);
+						ArrayView<ExpressionValue> funcArgs((ExpressionValue*)vmstack.value[vmstack.valueEnd - funcExpr->Args.size()].buffer, funcExpr->Args.size());
+
+						auto callresult = Frame::Call(NativeFunctions::FuncByIndex[funcExpr->nativeindex], context, funcArgs);
+						PopValues(funcExpr->Args.size());
+						PushValue(callresult);
+						PopExpr();
+					}
+				}
+				break;
+
+			case ExpressionType::Construct:
+				Frame::ThrowException("Construct expression not implemented");
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+
+			case ExpressionType::FunctionArguments:
+				PushValue(ExpressionValue::NothingValue());
+				PopExpr();
+				break;
+			}
+		}
+
+		if (vmstack.valueEnd > enterValueEnd)
+			result.Value = std::move(PopValue());
+
+		assert(enterExprEnd == vmstack.exprEnd);
+		assert(enterValueEnd == vmstack.valueEnd);
+		assert(enterContextEnd == vmstack.contextEnd);
+
+		return result;
+	}
+	catch (...)
+	{
+		vmstack.exprEnd = enterExprEnd;
+		vmstack.contextEnd = enterContextEnd;
+		PopValues(vmstack.valueEnd - enterValueEnd);
+		throw;
+	}
+}

@@ -1,0 +1,218 @@
+flipendo: KnowWonder actor tick, native actors (ParticleFX, Wind), animation
+
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor.cpp b/SurrealEngine/Packages/Engine/Actors/UActor.cpp
+index 20911673..e2244041 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.cpp
+@@ -9,6 +9,8 @@
+ #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
++#include "KW.h"
++#include "HP2.h"
+ #include "Packages/Engine/Subsystems/USurrealAudioDevice.h"
+ #include "Utils/Logger.h"
+ #include "Engine.h"
+@@ -45,7 +47,16 @@ UActor* UActor::Spawn(UClass* SpawnClass, std::optional<UActor*> SpawnOwner, std
+ 	// To do: find unique new name in the package
+ 	static std::map<NameString, int> nextIndex;
+ 	NameString name = SpawnClass->Name.ToString() + std::to_string(nextIndex[SpawnClass->Name]++);
++	// The original's names are unique: a map placed Jellybean0 next to a spawned Jellybean0 breaks HP2's persistent
++	// actors, which are matched by name
++	if (engine->LaunchInfo.IsKnowWonder())
++	{
++		while (std::any_of(XLevel()->Actors.begin(), XLevel()->Actors.end(), [&](UActor* a) { return a && a->Name == name; }))
++			name = SpawnClass->Name.ToString() + std::to_string(nextIndex[SpawnClass->Name]++);
++	}
+ 	UActor* actor = UObject::Cast<UActor>(engine->LevelPackage->NewObject(name, UObject::Cast<UClass>(SpawnClass), ObjectFlags::Transient, true));
++	if (engine->LaunchInfo.IsKnowWonder()) // the native class constructor runs on the copied defaults
++		KW::ActorConstructed(actor);
+ 
+ 	actor->Outer() = XLevel()->Outer();
+ 	actor->XLevel() = XLevel();
+@@ -120,8 +131,23 @@ bool UActor::Destroy()
+ 	if (bDeleteMe())
+ 		return true;
+ 
++	// HP1's ULevel::DestroyActor calls EndState first when the actor is in a state, before the actor is marked deleted
++	// (CallEvent skips a deleted actor). Harry's Target draws the spell symbol on a creature
++	// (baseChar.bGestureOnTargeting false: imps, Peeves, gnomes) from its EndState when the cast destroys it.
++	if (engine->LaunchInfo.IsKnowWonder() && StateFrame && StateFrame->GetFunc() && IsEventEnabled(EventName::EndState))
++	{
++		InEndState = true; // a GotoState made from this EndState must not send EndState again (UObject::GotoState)
++		CallEvent(this, EventName::EndState);
++		InEndState = false;
++		if (bDeleteMe()) // EndState destroyed it
++			return true;
++	}
++
+ 	bDeleteMe() = true;
+ 
++	if (engine->LaunchInfo.IsKnowWonder()) // free the ParticleFX particle list
++		KW::ParticleFXDestroyed(this);
++
+ 	//GotoState({}, {}); // What should happen to function calls after Destroy() has been called? Razor2 calls SetRoll afterwards!
+ 	SetBase(nullptr, true);
+ 
+@@ -150,6 +176,9 @@ bool UActor::Destroy()
+ 
+ 	SetOwner(nullptr);
+ 
++	if (engine->LaunchInfo.IsHarryPotter2()) // no actor keeps this one as its TickParent / TickParent2
++		HP2::ClearTickParents(this);
++
+ 	while (!ChildActors.empty())
+ 	{
+ 		ChildActors.back()->SetOwner(nullptr);
+@@ -168,6 +197,13 @@ bool UActor::Destroy()
+ 
+ void UActor::Tick(float elapsed)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // AParticleFX::Tick, AWind::Tick
++	{
++		KW::TickNativeActor(this, elapsed);
++		if (bDeleteMe())
++			return;
++	}
++
+ 	if (engine->LaunchInfo.IsDeusEx())
+ 	{
+ 		DistanceFromPlayer() = length(engine->viewport->Actor()->Location() - Location());
+@@ -182,13 +218,17 @@ void UActor::Tick(float elapsed)
+ 		CallEvent(this, EventName::Tick, { ExpressionValue::FloatValue(elapsed) });
+ 	}
+ 
++	if (engine->LaunchInfo.IsKnowWonder()) // HP1's ProcessState: the latent action is polled after the Tick event
++		PollLatentAction(elapsed);
++
+ 	if (StateFrame)
+ 	{
+ 		LatentRunState latentState = StateFrame->GetLatentState();
+ 		if (latentState == LatentRunState::Sleep)
+ 		{
+-			SleepTimeLeft = std::max(SleepTimeLeft - elapsed, 0.0f);
+-			if (SleepTimeLeft == 0.0f)
++			// the time left lives in LatentFloat (saved with the actor); done once under half a tick
++			LatentFloat() -= elapsed;
++			if (LatentFloat() < elapsed * 0.5f)
+ 				StateFrame->SetLatentState(LatentRunState::Continue);
+ 		}
+ 		else if (latentState == LatentRunState::FinishInterpolation)
+@@ -203,7 +243,9 @@ void UActor::Tick(float elapsed)
+ 		}
+ 	}
+ 
+-	TickPhysics(elapsed);
++	bool timerFirst = engine->LaunchInfo.IsKnowWonder() && KW::UseKWPhysics(); // HP1's AActor::Tick: Timer, then physics
++	if (!timerFirst)
++		TickPhysics(elapsed);
+ 
+ 	if (TimerRate() > 0.0f) // Role() == ROLE_Authority && RemoteRole() == ROLE_AutonomousProxy
+ 	{
+@@ -216,6 +258,12 @@ void UActor::Tick(float elapsed)
+ 			CallEvent(this, EventName::Timer);
+ 		}
+ 	}
++
++	if (timerFirst && !bDeleteMe())
++		TickPhysics(elapsed);
++
++	if (engine->LaunchInfo.IsKnowWonder()) // bAnimMove root motion (end of AActor::Tick)
++		KW::TickRootMotion(this);
+ }
+ 
+ bool UActor::Move(const vec3& delta)
+@@ -396,3 +444,13 @@ float UActor::AIVisibility(std::optional<bool> bIncludeVelocity)
+ 	//LogMessage(Name.ToString() + ": AIVisibility");
+ 	return 0.0f;
+ }
++
++// KnowWonder's AActor::WorldLightRadius is max(DrawScale, 1) * (LightRadius + 1) * 25 (the Quidditch suns,
++// DrawScale 5, reach 32000 units). docs/re/engine/lighting.md.
++float UActor::WorldLightRadius()
++{
++	float radius = ((int)LightRadius() + 1) * 25.0f;
++	if (engine->LaunchInfo.IsKnowWonder())
++		radius *= std::max(DrawScale(), 1.0f);
++	return radius;
++}
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor.h b/SurrealEngine/Packages/Engine/Actors/UActor.h
+index 8b39b403..5fb11f00 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.h
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.h
+@@ -384,6 +384,7 @@ public:
+ 	PointRegion FindRegion(const vec3& offset = vec3(0.0f));
+ 
+ 	virtual void Tick(float elapsed);
++	virtual void PollLatentAction(float elapsed) { } // a pawn's latent moves and turns (UPawn)
+ 
+ 	void TickAnimation(float elapsed);
+ 	void TickBlendAnimation(float elapsed);
+@@ -577,7 +578,7 @@ public:
+ 
+ 	int LastDrawFrame = -1;
+ 
+-	float SleepTimeLeft = 0.0f;
++	// no SleepTimeLeft; Sleep's remaining time is LatentFloat(), saved with the actor
+ 	vec3 gravityVector;
+ 
+ 	// Index in level Actors array
+@@ -603,7 +604,7 @@ public:
+ 
+ 	float WorldSoundRadius() { return ((int)SoundRadius() + 1) * 25.0f; }
+ 	float WorldVolumetricRadius() { return ((int)VolumeRadius() + 1) * 25.0f; }
+-	float WorldLightRadius() { return ((int)LightRadius() + 1) * 25.0f; }
++	float WorldLightRadius(); // KnowWonder scales it by DrawScale (UActor.cpp)
+ 
+ 	vec3& Acceleration() { return Value<vec3>(PropOffsets_Actor.Acceleration); }
+ 	uint8_t& AmbientGlow() { return Value<uint8_t>(PropOffsets_Actor.AmbientGlow); }
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
+index e58877fd..3e079eb7 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
+@@ -6,6 +6,7 @@
+ #include "VM/Frame.h"
+ #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ bool UActor::HasAnim(const NameString& sequence)
+ {
+@@ -329,6 +330,12 @@ void UActor::LoopAnim_HP(const NameString& Sequence, std::optional<float> Rate,
+ 
+ void UActor::TickAnimation(float elapsed)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // HP1 anim channels/tweening (src/knowwonder/Anim)
++	{
++		KW::TickAnimation(this, elapsed);
++		return;
++	}
++
+ 	if (StateFrame && StateFrame->GetLatentState() == LatentRunState::FinishAnim)
+ 	{
+ 		if (!IsAnimating() || AnimFrame() >= AnimLast())
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UAnimation.cpp b/SurrealEngine/Packages/Engine/Resources/Mesh/UAnimation.cpp
+index 53982dc0..76d59fdb 100644
+--- a/SurrealEngine/Packages/Engine/Resources/Mesh/UAnimation.cpp
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UAnimation.cpp
+@@ -2,12 +2,19 @@
+ #include "Precomp.h"
+ #include "UAnimation.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UAnimation::Load(ObjectStream* stream)
+ {
+ 	UObject::Load(stream);
+ 
+-	if (engine->LaunchInfo.IsHarryPotter1() || engine->LaunchInfo.IsHarryPotter2())
++	if (engine->LaunchInfo.IsKnowWonder()) // HP1 animation format (src/knowwonder/Anim)
++	{
++		KW::LoadAnimation(this, stream);
++		return;
++	}
++
++	if (engine->LaunchInfo.IsHarryPotter2())
+ 		return; // To do: format changed. Figure out how. Maybe the arrays became skippable?
+ 
+ 	int NumRefBones = stream->ReadIndex();

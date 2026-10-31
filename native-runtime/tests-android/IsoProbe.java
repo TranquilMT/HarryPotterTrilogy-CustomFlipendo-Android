@@ -1,0 +1,2 @@
+import io.github.flipendo.spike.IsoExtractor;import java.io.*;import java.util.*;
+public class IsoProbe { public static void main(String[] a)throws Exception {try(RandomAccessFile f=new RandomAccessFile(a[0],"r")){List<IsoExtractor.Entry> entries=new IsoExtractor(f).list();int count=0;long total=0;for(IsoExtractor.Entry e:entries){if(IsoExtractor.gameFile(e.path)){count++;total+=e.size;}}System.out.println("entries="+entries.size()+" gameFiles="+count+" gameBytes="+total);if(entries.size()!=548)throw new AssertionError("Disc inventory mismatch");} } }

@@ -1,0 +1,184 @@
+# Save games
+
+How the games save and load. Both keep a level save (the level package written as `Save<N>.usa`, stock UE1) plus
+KnowWonder's `GameSaveInfo` file for the slot page; the script side around them differs per game. Implemented in
+`src/knowwonder/KWSave.cpp` plus three `Engine.cpp` hooks ([engine-hooks.md](../../engine-hooks.md)). Addresses are HP1's.
+
+## HP1's flow (HPMenu scripts)
+
+- **Slots.** `FESlotPage` shows 6 slots (indices 0-5, shown as 1-6). Picking an empty one starts a new game in it;
+  `nSelectedSlot` stays the current slot for the whole session. With no slot (`-1`, e.g. a game started with
+  `--url=` or after the credits) saves go to slot 99, which the page never lists. Quitting from the pause book also
+  sets `-1` ("So game doesnt save when in menus or quidditch"): the main menu's Quidditch button then starts the flying
+  lesson's replay, whose level-start save overwrites slot 99. `--level` selects slot 0 (or `--slot=`).
+- **Saving** is always `FESlotPage.SaveSelectedSlot` → `HPConsole.doLevelSave(slot)`. It's called:
+  - on the first tick of every level reached through `HPConsole.ChangeLevel` (`bLoadNewLevel`, "Saving level at start");
+  - when Harry touches a `savepoint` (the floating book; it plays `save_game` and destroys itself first).
+  `SaveSelectedSlot` also tops LifePotions up to half of MaxLifePotions first.
+- **doLevelSave(i)**: clears `Level.Pauser`, runs `ConsoleCommand("SaveGame " $i)`, restores Pauser, then fills a
+  `GameSaveInfo` (numBeans, numStars, house points, `currentLevelString` = `LevelEnterText` up to the first ".",
+  `savePointID` = `baseHarry.FindNearestSavePointID()`) and writes it with `SaveGameSaveInfo("GameSaveInfo" $i, info)`.
+  The screenshot code ("Snap 3", "SaveSnap") is commented out: thumbnails are pre-made BMPs (below).
+- **Loading**: `FESlotPage.LoadSelectedSlot` → `ConsoleCommand("open save" $slot $".usa")`. HP1's ini has
+  `Paths=../save/*.usa`, so the save is opened like a map.
+
+## HP2's flow (hgame scripts)
+
+From HP2's decompiled scripts and its Engine.dll (2026-10-20: `UGameEngine::Tick`, `SaveGame`, `Exec`,
+`SetThumbnailForSaveSlot`).
+
+- **Saving is queued.** HP2's `PlayerPawn.SaveGame()` is a script function that only sets `bQueuedToSaveGame`; its
+  comment says the engine saves at the end of the level tick, and that "slots are just directories, the save game
+  number that the front end will always look for is zero". HP1 saves synchronously from a console command instead.
+  The slot is the folder: Game.exe's front end starts the engine with `-SAVESLOT=<n>`, which `appInit` turns into
+  `..\Save\Slot<n>`, and loads with `-LOADGAME=0` ([startup](../hp2/startup.md#save-slots--saveslot-and--loadgame)).
+- New events on every actor, `PreSaveGame` / `PostSaveGame` ("called right before/after it saves the game in
+  UnGame::SaveGame()"); `harry` uses them.
+- `HPConsole.doLevelSave(i)` still fills a `GameSaveInfo` and writes it with native 325 (`SaveGameSaveInfo`), as in HP1.
+- `SavePoint.OnSaveGame` raises Harry's health to `iMinHealthAfterDeath` for the save and restores it afterwards.
+- Loading after death is `ConsoleCommand("LoadGame 0")` (`harry`, `SleepingGoyle`), a console command HP1 doesn't have.
+
+In the HP1 vs HP2 code comparison `UViewport::Exec` grew from 4000 to 5271 bytes (probably the new
+commands) and `LoadMap` changed by 8 bytes; the four save natives below grew by the DebugInfo check only in size, HP2
+code not read yet. The `FString` serializer in Core.dll is identical.
+
+## Engine side
+
+In HP2 `PaintProgress` differs only in offsets. HP2's engine side of saving:
+
+- **The queued save**: `UGameEngine::Tick` [HP2 0x103A9910], after the levels tick, tests the viewport player's
+  `bQueuedToSaveGame` (PlayerPawn +0x958, at 0x103A9BB7). When set: creates SavePath and the save folder, logs "Saving
+  game...(before call) Filename: <folder>\Save0.usa", clears the flag, calls `SaveGame(0)`, runs the `RestartSounds`
+  console command, `Flush(1)`, and returns, leaving out the rest of that tick (no frame is drawn). `RESTARTSOUNDS`
+  (ALAudio's `Exec` [HP2 ALAudio 0x100067B0]) sets a flag that makes its next `Update` call `UnpauseSounds`: every
+  source that was playing plays again, so a streamed sound that ran dry while the save blocked starts over. Flipendo
+  (`HP2::TickQueuedSave`) does the same and ends the frame; there are no caches to flush (before 2026-10-21 it went on
+  with the frame).
+- **`UGameEngine::SaveGame`** [HP2 0x103AB430] (1154 -> 1380 bytes): HP1's, plus: creates SavePath and the save folder;
+  after setting LevelAction to saving raises `PreSaveGame` on every actor; draws the progress frame only when the
+  viewport player's `bShowLoadingScreen` (+0x92C) is false (a save on arriving in a level happens under the loading
+  screen); after the save `SavePersistentActorCache()` (Core.dll), `SetThumbnailForSaveSlot`, then `PostSaveGame` on
+  every actor.
+- **`SetThumbnailForSaveSlot`** [HP2 0x103ABB00]: `LevelInfo.LevelEnterText` (+1112) after its last `\`, cut at the
+  first `.`, gives `<System>\Thumbnails\<name>.bmp`; that file (or `Thumbnails\Default.bmp`) is copied to
+  `<save folder>\Save0.bmp`, the front end's slot picture.
+- **`UGameEngine::Exec`** [HP2 0x103A20F0] new commands: `SAVEGAME <n>` (the same save, then RestartSounds), `LOADGAME
+  <n>` (`LoadPersistentActorCache()`, then `LevelInfo.ServerTravel("<folder>\Save<n>.usa")`), `SAVEPACTORS`
+  (`ULevel::SavePersistentActors(LevelEnterText)`, the hub persistence).
+- Flipendo: `HP2::TickQueuedSave` and `HP2::SaveCommand` (`src/hp2/HP2Save.cpp`), the shared `KW::SaveGame` with the HP2
+  differences; the persistent actor cache in `src/hp2/HP2Persist.cpp` ([hub persistence](../hp2/engine.md#persistent-actors-across-hub-travel)). Not ported: RestartSounds, the skipped rest of the tick.
+
+
+- **`UGameEngine::SaveGame(int)`** [HP1 0x103A2280] is stock UE1: sets `LevelInfo.LevelAction` to saving, paints one
+  progress frame (below), saves the
+  level package to `"%s\Save%i.usa"` (SavePath, slot) with `UObject::SavePackage`, copies hub files
+  `Game%i.usa` → `Save%i_%i.usa` (HP1 never uses hubs), resets the movers' saved positions and LevelAction. It is
+  **synchronous**, which is why doLevelSave can clear Pauser around it. SurrealEngine defers `SaveGame` to the end of
+  the frame; for HP1 the hook saves at once (`KW::SaveGame`).
+- **The save screen**: `UGameEngine::PaintProgress` [HP1 0x10397BA0] draws one frame with the viewport player's
+  `FlashFog` forced to (0, 0.1, 0.25, W 0.2): the world at 0.2 brightness plus a dark blue, and on top
+  `baseConsole.DrawLevelAction` prints the LEVACT_Saving message, HPDialog `nearly_nick_40` ("Your game will restart
+  from this Save Game book."). The frame stays on screen while the synchronous save runs (about 3 s in Flipendo,
+  measured 2026-10-05 in Lev_Tut1b). `UGameEngine::Draw` takes the flash from `Viewport->Actor`, not from the camera
+  actor the view goes through; SurrealEngine used the view target, so no HP1 screen flash showed at all.
+- **`UGameEngine::LoadMap`** [HP1 0x1039C3D0] treats a level whose `LevelInfo.bBegunPlay` is set as a save: no
+  InitGame/BeginPlay, `TimeSeconds` restored, the saved player possessed. SurrealEngine's `?load=N` path
+  (`LoadFromSaveFile` + `PossessSavedPlayer`) does the same, so the `open` hook turns `open saveN.usa` into `?load=N`
+  when `<SavePath>/SaveN.usa` exists.
+- **`LevelEnterText`**: no HP1 map sets it and no script writes it. `LoadMap` (at 0x1039CBA6) loads the package's
+  `LevelInfo0` first and, if its `LevelEnterText` is empty (`appStricmp(.., "")`), copies `URL.Map` into it (FURL+0x1C).
+  So it is the map name the level was travelled to, with `.unr` when the URL had it (`SetStory(3, "Lev_Tut1.unr")`),
+  which is why doLevelSave cuts at "." and why one thumbnail is named `SGS lev3_troll.unr.bmp`. A save keeps its text.
+
+## Natives (both games)
+
+| Native | HP1 | Behaviour |
+|---|---|---|
+| `SaveGameSaveInfo(dir, obj)` (325) | 0x10413D10 | `GFileManager->CreateFileWriter(SavePath * dir)`; writes the 4 ints at obj+0x28..0x34 raw, then `<< FString` at +0x38 |
+| `LoadGameSaveInfo(dir, obj)` (326) | 0x10413F70 | same layout read back; false if obj is None or the file can't be opened (= empty slot) |
+| `SaveGameExists()` (3972) | 0x1040C420 | `FileSize("%s\Save%i.usa", SavePath, 9) > 0`; only commented-out script calls it |
+| `CreateTextureFromBMP(name, file)` (321) | 0x10413630 | imports `file` as texture `name` into package `SavePics`; None if it fails |
+
+`GameSaveInfo` file (`<SavePath>/GameSaveInfoN`, no extension), little endian:
+
+```
+int32 numBeans; int32 numStars; int32 numPoints; int32 savePointID;
+FString currentLevelString   // compact index length incl. terminator (0 = empty), negative = UTF-16,
+                             // else one byte per char (Core 0x10150830 picks UTF-16 only for chars > 0xFF)
+```
+
+The `GameSaveInfo.uc` comment explains the raw layout: "all objects in this class are individually saved, as I
+couldn't get the object-level stuff to work".
+
+**Thumbnails.** `FESlotPage.UpdateSlots` tries `..\Save\SGS <level><savePointID>.bmp`, then `..\Save\SGS <level>.bmp`,
+then `..\Save\DefaultGameSnap.bmp` (paths relative to System). They ship in the retail `Save` folder as 128x128 8-bit
+BMPs. `FEFilePage` (unused) would read `SaveGameSnap<i>.bmp`.
+Their names don't match the level names' case (`SGS Lev_tut1.bmp`, `SGS lev_tut3.bmp` for Lev_Tut1 and Lev_Tut3), which
+Windows ignores; on Linux every slot showed DefaultGameSnap until Flipendo's CreateTextureFromBMP also looked the
+file up ignoring case.
+
+## Latent actions in a save
+
+A suspended state saves the state, a byte offset into its bytecode and a latent action ID; SurrealEngine maps the
+offset both ways (`FindOffset` / `FindStatementIndex`, `Packages/Core/UObject.cpp`), so the resume point survives.
+
+- **`Sleep`'s remaining time** is `Actor.LatentFloat`, a script property saved with the actor: `AActor::execSleep`
+  [HP1 0x104081E0] [HP2 0x10415A30] stores the seconds there, `execPollSleep` [HP1 0x104083E0] [HP2 0x10415CB0]
+  subtracts each tick's DeltaTime and is done once it is below half of it. `APawn::execStopWaiting` [HP1 0x103D5DB0]
+  [HP2 0x103E32D0] sets it to -1 only when the latent action is Sleep (LatentFloat is also WaitForLanding's timer).
+  SurrealEngine kept the time in a C++ field no save holds, so after a load every sleeping actor woke on the first
+  tick; fixed for every game (engine fix, [engine-hooks.md](../../engine-hooks.md)). Checked 2026-10-05 in Lev_Tut1:
+  `@trigger HelpWithJumping` (Dispatcher6, Sleep 3 s between events), `SaveGame 97` 1 s in, `open save97.usa`:
+  LatentFloat comes back at the saved value and the next event fires when it runs out.
+- **The IDs** (`FFrame.LatentAction`, written to the save): HP1 writes 384 for Sleep, 385 FinishAnim, 302
+  FinishInterpolation, 501 MoveTo, 503 MoveToward, 505 StrafeTo, 507 StrafeFacing, 509 TurnTo, 511 TurnToward, 528
+  WaitForLanding (the exec functions; HP2 checked for 384 and 385 only, same). SurrealEngine registers Sleep as 257 and FinishAnim as 262, so `src/knowwonder/KWSave.cpp`
+  registers 384/385 for them: a save from the original game resumes a Sleep / FinishAnim instead of continuing at once,
+  and our saves use the original's IDs. Saves made before that (257/262) still load.
+
+## Level changes (travel)
+
+What Harry carries from one level to the next is his `travel` properties (beans, house points, `WizardCards[25]`,
+potions, quest items) and his inventory chain (the wand). Every HP1 level exit calls `baseConsole.ChangeLevel(map, true)`
+(`TriggerChangeLevel`, `CutScene`, `CutScriptII`, `BroomPracticeReferee`), so `LevelInfo.ServerTravel` sets
+`bNextItems` and the engine writes the travel info. Checked in HP1's `ULevel::SpawnPlayActor` (0x103A8270): after
+`Login` it calls `TravelPreAccept` on the pawn, finds the travel entry by the URL's `Name` option (in a standalone game
+it falls back to the first entry), spawns each incoming object and sets its properties, then `TravelPreAccept`,
+`AcceptInventory` and `TravelPostAccept`. It does this whether or not `Login` spawned the pawn: HP1's maps place Harry
+(`harry0`), and `Login` returns him. Nothing destroys what he already has, so after a level change Harry owns two wands:
+the one his `PostBeginPlay` spawned in the new map and the carried one, which `Weapon` points to.
+
+SurrealEngine lost all of it (2026-10-05: 180 house points and 52 beans came out of Lev_Tut3b as 0 in Lev2_HogFront):
+- `Engine::LoginPlayer` accepted travel info only for a pawn `Login` had just spawned; for KnowWonder it now always
+  accepts (patch 0100).
+- Fixed arrays travelled as their first element only, and a struct value read back from text wrote every field at the
+  struct's start (`bHasCard=True` landed on `ID`). Both fixed for every game (patch 0010): arrays travel as
+  `Name[i]` per element, struct fields are written at their offsets. All of Harry's wizard cards now come through.
+
+`HP1_EXEC="9:@travel Lev2_HogFront"` changes level the way the exits do, and `@get harry WizardCards` logs every card.
+
+## Not ported
+
+- `CreateTextureFromScreenShot`, `SaveObjectAsFile`, `LoadObjectAsFile`: no script calls them.
+- `Snap 3` (FEBook.OpenBook, HPConsole): UViewport::Exec copies the frame, shrunk by 2^N, into the viewport's snapshot
+  buffer for SaveSnap / CreateTextureFromScreenShot. Nothing in HP1 reads the buffer, so Flipendo accepts the command and
+  does nothing (`KW::ViewportCommand`, `src/knowwonder/KWSave.cpp`).
+- SaveGame's mover-position bookkeeping.
+- **Regions.** Every actor's `Region` (zone, BSP leaf) is in the save and the original trusts it. Flipendo's saves from
+  before the `FindRegion` leaf fix (2026-10-05) hold wrong leaves, so `KW::SaveGameLoaded` recomputes every actor's leaf
+  after a load (a no-op for good saves); without it a dropped portcullis stayed black until it moved.
+- Native-only state isn't in the save package, so it restarts on load: particles, our side tables. The camera
+  (`PotCam`, a BaseCam) is all script state and is saved with everything else. Checked 2026-10-04 in Lev_Tut1
+  (`SaveGame 98` then `open save98.usa` while Harry stands in the entrance hall): PotCam0 comes back at the same
+  location and in the same state, and screenshots before and after match. The earlier report of the camera
+  sitting further back after a load wasn't reproduced; it may need a save taken while the camera is still moving.
+
+
+## Class-valued travel properties
+
+UClassProperty derives from UObjectProperty but refers to a class definition, not an
+actor to collect and respawn. HP2 harry.SpellBook is a fixed travel array of classes.
+ActorTravelInfo now excludes class properties from actor collection, writes each class
+reference with its qualified class name (including fixed array indices), and resolves
+those names on acceptance. None clears the corresponding element. Ordinary object
+references and the upstream fixed-array/struct travel handling remain unchanged.

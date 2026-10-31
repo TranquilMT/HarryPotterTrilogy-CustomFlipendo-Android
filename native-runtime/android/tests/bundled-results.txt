@@ -1,0 +1,1 @@
+PASS 32 bundled-HD checks: both profiles, disabled default, explicit enable, repeat launch skip, removal stays disabled, restore, version update, incomplete bundle preserves prior state.

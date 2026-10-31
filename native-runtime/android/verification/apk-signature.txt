@@ -1,0 +1,17 @@
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): false
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=William Utting Native HP Test
+Signer #1 certificate SHA-256 digest: 25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40
+Signer #1 certificate SHA-1 digest: a628c5a9947138831e6dad6d773cf4ecab8377c6
+Signer #1 certificate MD5 digest: 942394a92015b5a3335dbefde4f9df6f
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 3072
+Signer #1 public key SHA-256 digest: 56de00f6dc58a0df31bacc585a4734f4845ca71f47ce4ea157bebf65d5a1b730
+Signer #1 public key SHA-1 digest: 6e98f06b190cb88880aaccc9b593852ddd100faf
+Signer #1 public key MD5 digest: 733b24fe63d1010df6afdcc3c10f952a

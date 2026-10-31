@@ -1,0 +1,3 @@
+package io.github.flipendo.spike;
+import java.io.*;import java.nio.file.*;
+public class CollectionCheck { public static void main(String[] a)throws Exception { for(boolean hp2:new boolean[]{false,true}){File stage=Files.createTempDirectory("actual-hd-").toFile();try{HDPackInstaller.Scan scan=new HDPackInstaller.Scan(stage,hp2,t->{});try(InputStream in=new FileInputStream(a[0])){HDPackInstaller.scan(in,scan,0);}int expected=hp2?3697:3505;if(scan.files.size()!=expected)throw new IOException("Incorrect texture count "+scan.files.size());System.out.println((hp2?"HP2":"HP1")+": verified "+scan.files.size()+" actual collection DDS assets, "+scan.total+" decoded bytes; other-game modules skipped.");}finally{HDPackInstaller.erase(stage);}}}}

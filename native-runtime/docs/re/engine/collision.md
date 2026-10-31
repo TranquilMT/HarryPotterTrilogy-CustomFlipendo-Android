@@ -1,0 +1,153 @@
+# Collision
+
+KnowWonder actors choose their collision primitive with `Actor.CollideType`, which stock UE1 doesn't have. CT_Box makes
+the actor's primitive a `UBox`: an oriented box centered on the actor, rotated with it. HP1's Lev_Tut1 uses it for the
+BlockAll walls along the Grand Hall stairs (250 x 10 x 200), BlockPlayers, Triggers and the CutScene trigger volumes.
+Flipendo's port is `src/knowwonder/KWCollision.cpp` (hooks in SurrealEngine's TraceTest/OverlapTest/CollisionSystem, see
+[engine-hooks.md](../../engine-hooks.md)). Addresses are HP1's.
+
+## HP1 and HP2
+
+| CollideType | HP1 | HP2 |
+|---|---|---|
+| CT_AlignedCylinder | the default: world-aligned cylinder, CollisionWidth = vertical offset | same |
+| CT_OrientedCylinder | cylinder rotated with the actor | same |
+| CT_Box | oriented centered box, CollisionRadius/Width/Height | same |
+| CT_Shape | the mesh/brush primitive's box | same |
+| CT_AlignedOvalCylinder | - | **new**: world-aligned extruded ellipse, CollisionWidth = X radius, CollisionRadius = Y radius |
+| CT_OrientedOvalCylinder | - | **new**: the same, rotated with the actor |
+
+(From each game's `Actor.uc`.) The two oval types are probably why HP2's `AActor::GetPrimitive` grew from 82 to 117
+bytes; not reversed yet. `UBox::LineCheck` / `PointCheck` and `UBoxPrim::GetCollisionBoundingBox` are identical in
+HP2, `ToLocal` and `SetCollisionSize` differ only in offsets, the other `GetCollisionBoundingBox` overrides changed
+(HP2 code not read yet; the HP1 vs HP2 code comparison).
+
+## The box
+
+`UBox::GetCollisionBoundingBox` (0x103FE130) with bWorld false: half extents CollisionRadius (X), CollisionWidth (Y,
+or CollisionRadius when CollisionWidth is 0) and CollisionHeight (Z). With bWorld true it is the bounding box of the
+eight corners transformed by the actor's coords.
+
+## LineCheck and PointCheck
+
+`UBox::LineCheck` (0x103FE620) and `UBox::PointCheck` (0x103FE590) build the local box and hand the check to two
+helpers, `sub_103FC980` (line, via thunk `sub_10303166`) and `sub_103FC1D0` (point, via thunk `sub_10302D6F`). Both
+take {End, Start, Extent, Actor}; with an actor they:
+
+1. get `AActor::ToLocal` (0x1031BAC0: Location and Rotation),
+2. transform the check's extent box (−Extent..Extent, axis aligned in the world) by it and keep half its size: the
+   bounding box of the rotated corners, so a cylinder of radius r against a box turned 45° counts as r·√2 wide,
+3. transform Start/End into the box's frame and run the axis aligned version (actor None),
+4. transform the hit location and normal back to the world.
+
+Axis aligned **point check**: the box of half size Extent at Start overlaps the target box only with more than 0.003 of
+penetration on every axis (strict). On overlap the result is the shallowest push-out axis: candidates +Z, −Z, +Y, −Y,
++X, −X in that order, a later one wins only when strictly smaller; Time is that depth, Location is Start clamped to the
+box.
+
+Axis aligned **line check**:
+
+- Start not overlapping: the target box is grown by Extent (square corners). Each face (−X, +X, −Y, +Y, −Z, +Z) the
+  segment approaches (distance > −0.003) and crosses before the best time so far is tested: the crossing point, moved
+  0.001 inside along the face normal, must lie strictly inside the grown box. A hit sets Time = t − 0.001 (at least 0)
+  and that face's normal. Time still 1 means no hit.
+- Start overlapping: the End is point-checked too. Blocked (Time 0, the Start's push-out normal) only when the End also
+  overlaps and is deeper than the Start; otherwise the check passes, so an actor caught inside can move out or along
+  the box.
+
+Flipendo had approximated this with a swept cylinder (rounded corners, grown by the plain radius) and blocked any
+movement into the nearest face while inside; since 2026-10-04 it is the original's box-against-box test. Driven check:
+Harry still runs up the Lev_Tut1 stairs along the BlockAll banister, and the intro cutscene's kids and Dumbledore make
+it up without timeout teleports.
+
+## BSP checks
+
+KnowWonder's physics (`src/knowwonder/KWBspCheck.cpp`) tests boxes and lines against a BSP model (the level's, or a
+mover's brush with its planes taken to world space) the way HP1 does; SurrealEngine's own traces are close but differ
+at edges and corners.
+
+- **Box sweep** (`UModel::LineCheck` 0x10429C80 with an extent; `sub_1042A480`): walks the BSP with the node planes
+  pushed out by 1.1 times the box, tracking whether it is inside solid space (a node is solid with vertices and none of
+  NodeFlags 0x21, `sub_1042CDA0`); only a solid leaf's convex hull (`UModel.LeafHulls` from the parent node's
+  CollisionBound: the hull's node planes, then its bounding box) is tested. The segment is clipped (`sub_1042C050`)
+  against each hull plane pushed out by the box, then (the level only) the hull's box planes (-X, -Y and both Z sides
+  pushed out by 0.1, +X and +Y pulled in by 0.1), then bevel planes between two hull planes facing opposite ways along
+  an axis (when the axis' crossings with them agree, dot > 0.001; through their intersection line, `sub_1042CAF0`). A
+  box already inside a plane and moving into it counts as entering at once. The hit's Item is the hull plane's node
+  (the surface lookup uses it). The time is pulled back by 0.5 / length.
+- **Ray** (zero extent, `sub_104294C0`): the BSP walk with the inside/outside rule; a hit is the point where the line
+  enters solid space after having been outside (unless the extra node flags have 0x10, starting inside counts too), the
+  normal is the last node crossed, facing the start.
+  HP2's `UModel::LineCheck` [HP2 0x10438320] and ray walk [HP2 0x10437C60] are HP1's; HP1's and HP2's `execTrace`
+  pass extra node flags 0, so a Trace that starts inside a mover's solid hits the mover at time 0 in both games. HP2's
+  `SpellCursor` traces from the camera, which only stops at the level and `bBlockCamera` actors and can end up inside a
+  gate mover: by the code its cursor then lands on the camera there in the original too (an Android fork skips the mover
+  in that case; not ported, not checked in the original game).
+- **Point / box at a location** (`UModel::PointCheck` 0x104271D0; `sub_10427630` with an extent): the box is out of a
+  hull when it is wholly in front of any of its planes; else the hit is the shallowest penetration, pushed out 1.02
+  times as far.
+- **FastLineCheck** (0x104291E0, `sub_10429300`): a line of sight; only NF_NotCsg (bit 0) makes a node non-solid here.
+- **A mover's frame.** The box sweep tests a brush's planes taken to world space (`sub_10427560` sets up the sweep
+  with the owner actor's coordinates; the hull's box planes are skipped when there is an owner). The planes have to
+  turn the same way as the drawn brush (location, rotation, MainScale, PrePivot, as `VisibleBrush` draws it). A brush
+  hull has only its own planes and no box, so a plane turned the wrong way stretches across open space. Seen in
+  Lev_Tut1: the Grand Hall doors (Mover0/1, BaseRot yaw 49152 / 16384, swinging 180 degrees about a corner PrePivot)
+  were solid where they had been before they opened, and the students of the opening scene stood at the open
+  doorway.
+
+## Actor primitives and the level checks
+
+`src/knowwonder/KWLevelCheck.cpp`. An actor's primitive (`AActor::GetPrimitive` 0x1037A880, a brush always its Brush):
+
+- the cylinder (`UPrimitive::LineCheck` 0x103FA760 / `PointCheck` 0x103FA420) has its centre raised by
+  CollisionWidth. Lines: through the caps (normal +/-Z) and the side (quadratic), time pulled back 0.001; a line
+  starting inside only blocks when it moves towards the axis. Points: strictly inside; the hit location is odd but kept
+  as in the original (a cap gives (x, y, Location.Z - Extent.Z), the side adds the point's Z onto Location.Z);
+- the oriented cylinder (0x103FBC50 / 0x103FB7A0): the same in the actor's rotated frame;
+- the box (CT_Box, above), and meshes too: UMesh, ULodMesh and USkeletalMesh have `UBox::PointCheck` / `LineCheck`
+  in their vtables (slots 22 and 23, read 2026-10-11). Those take the box from the primitive's virtual
+  `GetCollisionBoundingBox` (vtable +96, bWorld false), which the mesh classes override: a CT_Shape actor with a Mesh
+  checks as the **mesh's own box**, (BoundingBox - Origin) * Scale * DrawScale (UMesh 0x103B84D0, USkeletalMesh
+  0x1041B8B0), turned and placed by `ToLocal` (Location, Rotation; not centred on the actor). Flipendo used the raised
+  cylinder for meshes at first: Lev3_Quid2's common room table (`GryfTable2`, CollisionWidth 76.5) blocked from
+  Z 77 to 127 instead of up to its top at 50, and Norbert, set down at Z 101.6 by the cloak cutscene, started inside
+  it and fell to the floor. Then for a day it used CollisionRadius / Width / Height: Lev4_Sneak2's vase tables
+  (`RectangleWoodTable`, CollisionHeight 53 around Z 1046.5) reached Z 1100 and swallowed the vases standing on them
+  (centre Z 1059), so Harry's aim (`Target.setTarget`, the first blocking actor along the line) and the spell stopped at
+  the table and Mrs Norris couldn't be distracted. Brushes use their BSP.
+
+The actor hash (`FCollisionHash`, 256-unit cells by each actor's world collision box) is SurrealEngine's bucket grid,
+filled with HP1's boxes; candidates are then tested with their own primitive.
+
+- `ULevel::MultiLineCheck` (0x103AC620): the level first (when LevelInfo is passed), then actors only up to 5 units past
+  the level's hit (their times rescaled); with a level hit closer than 0.01 of the line and 30 units only movers still
+  count, and without actors asked for only movers; a mover hit on the level hit's plane within 2 units of it is put 2
+  units before it. Sorted by time.
+- `ULevel::SingleLineCheck` (0x103AC180): the first hit of MultiLineCheck the flags accept, skipping the tracer and its
+  owners: 4 the level, 2 movers, 8 zone infos, **1 actors that block the tracer** (`IsBlockedBy`), 16 the others. Trace
+  uses 23 (6 without actors); physics mostly 6 (level, movers) or 7.
+- `ULevel::MultiPointCheck` / `SinglePointCheck` (0x103ABF70 / 0x103ABD70): the level's hit first, then actors'; the
+  single check keeps the hit whose pushed-out location is nearest the point.
+
+## World bounding boxes: Actor.GetWorldCollisionBox(optional bool bVisual) (0x1040A950)
+
+With bVisual, the actor's Mesh (else Brush) gives the box; otherwise its collision primitive (`AActor::GetPrimitive`,
+0x1037A880: CT_Shape uses Mesh/Brush, CT_OrientedCylinder/CT_Box their primitives, anything else the cylinder). The
+result is always in the world (`GetCollisionBoundingBox(Actor, bWorld=1)`, vtable +96 of UPrimitive):
+
+| primitive | box |
+|---|---|
+| cylinder (UPrimitive 0x103FA2F0) | ±CollisionRadius in X/Y, ±CollisionHeight in Z around Location, **centred at Location.Z + CollisionWidth** |
+| UOrientedCylinder (0x103FB190) | (±R, ±R, ±H) through `AActor::ToWorld` (rotation + Location) |
+| UBox (0x103FE130) | (±R, ±W, ±H), W = CollisionWidth or R when 0, through ToWorld |
+| UModel / UBoxPrim (0x103FE7A0) | the primitive's BoundingBox through ToWorld (no PrePivot) |
+| UMesh (0x103B84D0) | (BoundingBox - Origin) * Scale * DrawScale, rotated by RotOrigin and Rotation, at Location + PrePivot |
+| USkeletalMesh (0x1041B8B0) | BoundingBox through GetMeshCoords |
+
+The IDA struct for AActor has the names right: CollisionRadius 0x1CC, CollisionWidth 0x1D0, CollisionHeight 0x1D4 (the
+script order). SurrealEngine had this native as a stub returning an empty box, so HP1's lock-on FX and spell homing
+aimed at the world origin ([spells.md](../hp1/spells.md)).
+
+`Actor.GetRenderExtent()` (0x1040AA10) is Max - Min of the local box: for a skeletal mesh the average of the mesh's
+per-frame bounding boxes (USkeletalMesh+504, computed in Serialize, raw mesh units), otherwise the local box of the
+Mesh, Brush or primitive. In HP1 only `ActorShadow` uses it.

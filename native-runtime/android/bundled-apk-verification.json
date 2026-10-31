@@ -1,0 +1,13 @@
+{
+  "bundledFiles": 330,
+  "bundledBytes": 530761842,
+  "allBundledFileHashesMatch": true,
+  "firstLaunchStampPresent": true,
+  "sameSigningCertificateAs010": true,
+  "certificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
+  "package": "com.tranquil.hp1native",
+  "versionCode": 2,
+  "deviceExecutionTested": false,
+  "apkBytes": 390812763,
+  "apkSHA256": "3d52b4de625010dcc0be7516c368a458fcf4867f9b217c8d33e32836b03271e4"
+}

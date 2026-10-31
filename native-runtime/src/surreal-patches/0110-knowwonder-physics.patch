@@ -1,0 +1,712 @@
+flipendo: KnowWonder physics, pawn movement and collision
+
+diff --git a/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp b/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
+index e9fb62c6..8f4283c6 100644
+--- a/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
++++ b/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
+@@ -1,5 +1,7 @@
+ 
+ #include "Precomp.h"
++#include "Engine.h"
++#include "KW.h"
+ #include "CollisionSystem.h"
+ #include "Packages/Engine/Actors/UActor.h"
+ #include "Packages/Engine/Actors/Brush/UMover.h"
+@@ -99,6 +101,35 @@ Array<UActor*> CollisionSystem::EncroachingActors(UActor* actor)
+ 	return overlap.EncroachingActors(actor);
+ }
+ 
++Array<UActor*> CollisionSystem::ActorsInBox(const vec3& boxMin, const vec3& boxMax)
++{
++	Array<UActor*> result;
++	vec3 center = (boxMin + boxMax) * 0.5f;
++	vec3 extents = (boxMax - boxMin) * 0.5f;
++	ivec3 start = GetStartExtents(center, extents);
++	ivec3 end = GetEndExtents(center, extents);
++	if (end.x - start.x >= 100 || end.y - start.y >= 100 || end.z - start.z >= 100)
++		return result;
++	for (int z = start.z; z < end.z; z++)
++	{
++		for (int y = start.y; y < end.y; y++)
++		{
++			for (int x = start.x; x < end.x; x++)
++			{
++				auto it = CollisionActors.find(GetBucketId(x, y, z));
++				if (it == CollisionActors.end())
++					continue;
++				for (UActor* actor : it->second)
++				{
++					if (std::find(result.begin(), result.end(), actor) == result.end())
++						result.push_back(actor);
++				}
++			}
++		}
++	}
++	return result;
++}
++
+ void CollisionSystem::SetLevel(ULevelInfo* levelInfo, ULevel* level)
+ {
+ 	LevelInfo = levelInfo;
+@@ -125,6 +156,12 @@ void CollisionSystem::AddToCollision(UActor* actor)
+ 				extents = bbox.extents() + 0.1f; // 0.1 for numerical stability
+ 			}
+ 		}
++		else if (engine->LaunchInfo.IsKnowWonder()) // KnowWonder hashes an actor by its primitive's world box (CT_Box, CollisionWidth offset)
++		{
++			BBox bbox = KW::ActorWorldCollisionBox(actor);
++			location = bbox.center();
++			extents = bbox.extents() + 0.1f;
++		}
+ 
+ 		actor->Collision.Inserted = true;
+ 		actor->Collision.Location = location;
+diff --git a/SurrealEngine/Collision/TopLevel/CollisionSystem.h b/SurrealEngine/Collision/TopLevel/CollisionSystem.h
+index 80afa049..535e6a5f 100644
+--- a/SurrealEngine/Collision/TopLevel/CollisionSystem.h
++++ b/SurrealEngine/Collision/TopLevel/CollisionSystem.h
+@@ -38,6 +38,7 @@ public:
+ 	Array<UActor*> CollidingActors(const vec3& origin, float radius);
+ 	Array<UActor*> CollidingActors(const vec3& origin, float height, float radius);
+ 	Array<UActor*> EncroachingActors(UActor* actor);
++	Array<UActor*> ActorsInBox(const vec3& boxMin, const vec3& boxMax); // every actor in the hash cells the box touches
+ 
+ 	void SetLevel(ULevelInfo* levelInfo, ULevel* level);
+ 	void AddToCollision(UActor* actor);
+diff --git a/SurrealEngine/Collision/TopLevel/OverlapTest.cpp b/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
+index cab04fab..771b6f29 100644
+--- a/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
+@@ -1,5 +1,7 @@
+ 
+ #include "Precomp.h"
++#include "Engine.h"
++#include "KW.h"
+ #include "OverlapTest.h"
+ #include "Collision/BottomLevel/OverlapAABBModel.h"
+ #include "Packages/Engine/Actors/UActor.h"
+@@ -282,6 +284,8 @@ Array<UActor*> OverlapTester::EncroachingActors(UActor* actor)
+ 
+ bool OverlapTester::IsOverlapping(UActor* actor1, UActor* actor2)
+ {
++	if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor1) && !KW::IsBoxCollider(actor2)) // CollideType CT_Box
++		return CylinderActorOverlap(to_dvec3(actor2->Location()), actor2->CollisionHeight(), actor2->CollisionRadius(), actor1);
+ 	return CylinderActorOverlap(to_dvec3(actor1->Location()), actor1->CollisionHeight(), actor1->CollisionRadius(), actor2);
+ }
+ 
+@@ -334,6 +338,9 @@ bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereR
+ 	if (actor->Brush()) // Ignore brushes for now
+ 		return false;
+ 
++	if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor)) // CollideType CT_Box
++		return KW::BoxActorOverlapSphere(actor, sphereCenter, sphereRadius);
++
+ 	dvec3 center = to_dvec3(actor->Location());
+ 	double height = actor->CollisionHeight();
+ 	double radius = actor->CollisionRadius();
+@@ -347,6 +354,9 @@ bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHei
+ 	if (actor->Brush()) // Ignore brushes for now
+ 		return false;
+ 
++	if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor)) // CollideType CT_Box
++		return KW::BoxActorOverlapCylinder(actor, origin, cylinderHeight, cylinderRadius);
++
+ 	dvec3 center = to_dvec3(actor->Location());
+ 	double height = actor->CollisionHeight();
+ 	double radius = actor->CollisionRadius();
+diff --git a/SurrealEngine/Collision/TopLevel/TraceTest.cpp b/SurrealEngine/Collision/TopLevel/TraceTest.cpp
+index 214511d2..6aee8336 100644
+--- a/SurrealEngine/Collision/TopLevel/TraceTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/TraceTest.cpp
+@@ -1,5 +1,7 @@
+ 
+ #include "Precomp.h"
++#include "Engine.h"
++#include "KW.h"
+ #include "TraceTest.h"
+ #include "Collision/BottomLevel/TraceAABBModel.h"
+ #include "Collision/BottomLevel/TraceRayModel.h"
+@@ -251,6 +253,15 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
+ 		if (!traceActors || visibilityOnly)
+ 			return;
+ 
++		if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor)) // CollideType CT_Box
++		{
++			vec3 normal;
++			double t = KW::BoxActorTrace(actor, origin, tmin, dirNormalized, tmax, height, radius, normal);
++			if (t < tmax)
++				hits.push_back({ (float)t, normal, actor, nullptr, nullptr });
++			return;
++		}
++
+ 		double t = CylinderActorTrace(origin, tmin, dirNormalized, tmax, height, radius, actor);
+ 		if (t < tmax)
+ 		{
+diff --git a/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn.h b/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn.h
+index 32736319..573aeef7 100644
+--- a/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn.h
++++ b/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn.h
+@@ -16,6 +16,7 @@ public:
+ 	using UActor::UActor;
+ 
+ 	void Tick(float elapsed) override;
++	void PollLatentAction(float elapsed) override;
+ 	void TickRotating(float elapsed) override;
+ 
+ 	void InitActorZone() override;
+diff --git a/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn_Tick.cpp b/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn_Tick.cpp
+index 48026a40..c80c2d72 100644
+--- a/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn_Tick.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/Pawn/UPawn_Tick.cpp
+@@ -7,11 +7,10 @@
+ #include "Packages/Engine/Actors/Inventory/UWeapon.h"
+ #include "Utils/Logger.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+-void UPawn::Tick(float elapsed)
++void UPawn::PollLatentAction(float elapsed)
+ {
+-	MoveTimer() -= elapsed;
+-
+ 	if (StateFrame)
+ 	{
+ 		LatentRunState latentState = StateFrame->GetLatentState();
+@@ -21,6 +20,11 @@ void UPawn::Tick(float elapsed)
+ 			if (TickMoveTo(Destination()))
+ 				StateFrame->SetLatentState(LatentRunState::Continue);
+ 		}
++		else if (latentState == LatentRunState::MoveToward && engine->LaunchInfo.IsKnowWonder()) // APawn::execPollMoveToward (AlterDestination)
++		{
++			if (KW::PawnPollMoveToward(this))
++				StateFrame->SetLatentState(LatentRunState::Continue);
++		}
+ 		else if (latentState == LatentRunState::MoveToward)
+ 		{
+ 			if (MoveTarget())
+@@ -41,6 +45,11 @@ void UPawn::Tick(float elapsed)
+ 			if (TickMoveTo(Destination()))
+ 				StateFrame->SetLatentState(LatentRunState::Continue);
+ 		}
++		else if (latentState == LatentRunState::StrafeFacing && engine->LaunchInfo.IsKnowWonder()) // APawn::execPollStrafeFacing (AlterDestination)
++		{
++			if (KW::PawnPollStrafeFacing(this))
++				StateFrame->SetLatentState(LatentRunState::Continue);
++		}
+ 		else if (latentState == LatentRunState::StrafeFacing)
+ 		{
+ 			if (engine->LaunchInfo.ue1Version > 219 && FaceTarget())
+@@ -65,7 +74,7 @@ void UPawn::Tick(float elapsed)
+ 		}
+ 		else if (latentState == LatentRunState::TurnTo)
+ 		{
+-			if (TickRotateTo(Focus()))
++			if (engine->LaunchInfo.IsKnowWonder() ? KW::PawnTurnStep(this, Focus()) : TickRotateTo(Focus()))
+ 				StateFrame->SetLatentState(LatentRunState::Continue);
+ 		}
+ 		else if (latentState == LatentRunState::TurnToward)
+@@ -73,7 +82,7 @@ void UPawn::Tick(float elapsed)
+ 			if (engine->LaunchInfo.ue1Version > 219 && FaceTarget())
+ 			{
+ 				Focus() = FaceTarget()->Location();
+-				if (TickRotateTo(FaceTarget()->Location()))
++				if (engine->LaunchInfo.IsKnowWonder() ? KW::PawnTurnStep(this, Focus()) : TickRotateTo(FaceTarget()->Location()))
+ 					StateFrame->SetLatentState(LatentRunState::Continue);
+ 			}
+ 			else if (engine->LaunchInfo.ue1Version <= 219)
+@@ -87,6 +96,11 @@ void UPawn::Tick(float elapsed)
+ 				StateFrame->SetLatentState(LatentRunState::Continue);
+ 			}
+ 		}
++		else if (latentState == LatentRunState::WaitForLanding && engine->LaunchInfo.IsKnowWonder()) // APawn::execPollWaitForLanding (LongFall)
++		{
++			if (KW::PawnPollWaitForLanding(this, elapsed))
++				StateFrame->SetLatentState(LatentRunState::Continue);
++		}
+ 		else if (latentState == LatentRunState::WaitForLanding)
+ 		{
+ 			if (Physics() != PHYS_Falling)
+@@ -99,6 +113,22 @@ void UPawn::Tick(float elapsed)
+ 			}
+ 		}
+ 	}
++}
++
++void UPawn::Tick(float elapsed)
++{
++	// KnowWonder's performPhysics (KW::PerformPhysics) counts MoveTimer down and keeps AvgPhysicsTime itself; doing it
++	// here as well ran every latent move's timer at double speed (gnomes gave up halfway to their hide spot)
++	if (!engine->LaunchInfo.IsKnowWonder() || !KW::UseKWPhysics())
++		MoveTimer() -= elapsed;
++	if (engine->LaunchInfo.IsKnowWonder() && !KW::UseKWPhysics()) // AvgPhysicsTime for moveToward
++		KW::PawnPhysicsTime(this, elapsed);
++
++	// HP1 polls the latent action in ProcessState, after the Tick event (AActor::Tick): a latent move or turn sees
++	// where the actor's own Tick put it. BaseCam's RotateAroundHarry moves the camera in Tick and turns it with
++	// turntoward; polled before Tick, every other frame aimed from last frame's spot and the view shook.
++	if (!engine->LaunchInfo.IsKnowWonder())
++		PollLatentAction(elapsed);
+ 
+ 	UActor::Tick(elapsed);
+ 
+@@ -180,6 +210,12 @@ void UPawn::Tick(float elapsed)
+ 
+ void UPawn::TickRotating(float elapsed)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::physicsRotation
++	{
++		KW::PawnPhysicsRotation(this, elapsed);
++		return;
++	}
++
+ 	if (Physics() == PHYS_Spider)
+ 		return;
+ 
+@@ -221,6 +257,9 @@ void UPawn::TickRotating(float elapsed)
+ 
+ bool UPawn::TickRotateTo(const vec3& target)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::rotateToward
++		return KW::PawnRotateToward(this, target);
++
+ 	if (Physics() == PHYS_Spider)
+ 		return true;
+ 
+@@ -237,6 +276,9 @@ bool UPawn::TickRotateTo(const vec3& target)
+ 
+ bool UPawn::TickMoveTo(const vec3& target)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::moveToward
++		return KW::PawnMoveToward(this, target);
++
+ 	if (MoveTimer() < 0.0f)
+ 		return true;
+ 
+@@ -274,6 +316,8 @@ void UPawn::MoveTo(const vec3& newDestination, float speed)
+ 	SetMoveDuration(newDestination - Location());
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::MoveTo);
++	if (engine->LaunchInfo.IsKnowWonder()) // execMoveTo takes the first step at once
++		KW::PawnStartMove(this);
+ }
+ 
+ void UPawn::MoveToward(UActor* newTarget, float speed)
+@@ -287,11 +331,13 @@ void UPawn::MoveToward(UActor* newTarget, float speed)
+ 	bReducedSpeed() = false;
+ 	DesiredSpeed() = clamp(speed, 0.0f, MaxDesiredSpeed());
+ 	if (UObject::TryCast<UPawn>(newTarget))
+-		MoveTimer() = 1.0f;
++		MoveTimer() = engine->LaunchInfo.IsKnowWonder() ? 1.2f : 1.0f;
+ 	else
+ 		SetMoveDuration(newTarget->Location() - Location());
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::MoveToward);
++	if (engine->LaunchInfo.IsKnowWonder()) // execMoveToward takes the first step at once
++		KW::PawnStartMove(this);
+ }
+ 
+ void UPawn::StrafeFacing(const vec3& newDestination, UActor* newTarget)
+@@ -305,6 +351,13 @@ void UPawn::StrafeFacing(const vec3& newDestination, UActor* newTarget)
+ 	SetMoveDuration(newDestination - Location());
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::StrafeFacing);
++	if (engine->LaunchInfo.IsKnowWonder()) // execStrafeFacing: StrafeTo's speed, faces the target, first step at once
++	{
++		bReducedSpeed() = false;
++		DesiredSpeed() = bIsPlayer() ? MaxDesiredSpeed() : 0.8f * MaxDesiredSpeed();
++		Focus() = newTarget->Location();
++		KW::PawnStartMove(this);
++	}
+ }
+ 
+ void UPawn::StrafeTo(const vec3& newDestination, const vec3& newFocus)
+@@ -317,12 +370,16 @@ void UPawn::StrafeTo(const vec3& newDestination, const vec3& newFocus)
+ 	SetMoveDuration(newDestination - Location());
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::StrafeTo);
++	if (engine->LaunchInfo.IsKnowWonder()) // execStrafeTo takes the first step at once
++		KW::PawnStartMove(this);
+ }
+ 
+ void UPawn::TurnTo(const vec3& newFocus)
+ {
+ 	MoveTarget() = nullptr;
+ 	Focus() = newFocus;
++	if (engine->LaunchInfo.IsKnowWonder()) // execTurnTo starts turning at once (HP2: Focus flattened while walking)
++		KW::PawnStartTurnTo(this);
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::TurnTo);
+ }
+@@ -335,12 +392,25 @@ void UPawn::TurnToward(UActor* newTarget)
+ 	if (engine->LaunchInfo.ue1Version > 219)
+ 		FaceTarget() = newTarget;
+ 	Focus() = newTarget->Location();
+-	if (StateFrame)
++	if (engine->LaunchInfo.IsKnowWonder()) // execTurnToward starts turning at once
++		KW::PawnTurnStep(this, Focus());
++	// a state frame without code (stopped, or a state with no labels) is never polled in UE1, so the latent
++	// turn does nothing. HP1's spell lesson calls Teacher.TurnToward on Tut1Quirrell in his empty 'idle' state; resuming
++	// that frame ran off the end ("Unexpected end of code statements").
++	if (StateFrame && !(engine->LaunchInfo.IsKnowWonder() && StateFrame->GetLatentState() == LatentRunState::Stop))
+ 		StateFrame->SetLatentState(LatentRunState::TurnToward);
+ }
+ 
+ void UPawn::WaitForLanding()
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::execWaitForLanding: 2.5 s until LongFall, no wait unless falling
++	{
++		LatentFloat() = 2.5f;
++		if (StateFrame && Physics() == PHYS_Falling)
++			StateFrame->SetLatentState(LatentRunState::WaitForLanding);
++		return;
++	}
++
+ 	if (StateFrame)
+ 		StateFrame->SetLatentState(LatentRunState::WaitForLanding);
+ }
+diff --git a/SurrealEngine/Packages/Engine/Actors/Pawn/UPlayerPawn.cpp b/SurrealEngine/Packages/Engine/Actors/Pawn/UPlayerPawn.cpp
+index e3c87b45..286f8498 100644
+--- a/SurrealEngine/Packages/Engine/Actors/Pawn/UPlayerPawn.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/Pawn/UPlayerPawn.cpp
+@@ -3,6 +3,8 @@
+ #include "UPlayerPawn.h"
+ #include "UCamera.h"
+ #include "Engine.h"
++#include "KW.h"
++#include "HP1.h"
+ #include "Package/PackageManager.h"
+ #include "Package/IniProperty.h"
+ #include "VM/ScriptCall.h"
+@@ -35,7 +37,8 @@ void UPlayerPawn::Tick(float elapsed)
+ 		if (Player() && !UObject::TryCast<UCamera>(this))
+ 		{
+ 			CallEvent(this, EventName::PlayerInput, { ExpressionValue::FloatValue(elapsed) });
+-			CallEvent(this, EventName::PlayerTick, { ExpressionValue::FloatValue(elapsed) });
++			if (!engine->LaunchInfo.IsHarryPotter1() || !HP1::ModsPlayerTick(this))
++				CallEvent(this, EventName::PlayerTick, { ExpressionValue::FloatValue(elapsed) });
+ 		}
+ 	}
+ 
+@@ -50,6 +53,12 @@ void UPlayerPawn::Tick(float elapsed)
+ 
+ void UPlayerPawn::TickRotating(float elapsed)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::physicsRotation
++	{
++		KW::PawnPhysicsRotation(this, elapsed);
++		return;
++	}
++
+ 	if (Physics() == PHYS_Spider)
+ 		return;
+ 
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
+index c9036135..b73fe0d8 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
+@@ -8,9 +8,25 @@
+ #include "Packages/Engine/Actors/Info/ULevelInfo.h"
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
++#include "KW.h"
+ 
+ void UActor::TickPhysics(float elapsed)
+ {
++	// KnowWonder's own physics (src/knowwonder/KWPhysics.cpp): one step with the whole frame time
++	if (engine->LaunchInfo.IsKnowWonder() && KW::UseKWPhysics())
++	{
++		KW::PhysicsTick(this, elapsed);
++		return;
++	}
++
++	// HP1's InterpolationManager overrides performPhysics (one call per tick, moves its Owner)
++	if (engine->LaunchInfo.IsKnowWonder() && Physics() == PHYS_Interpolating && KW::IsInterpolationManager(this))
++	{
++		KW::InterpolationManagerPhysics(this, elapsed);
++		CheckPendingTouch();
++		return;
++	}
++
+ 	for (float timeLeft = elapsed; timeLeft > 0.0f && !bDeleteMe(); timeLeft -= 0.02f)
+ 	{
+ 		float physTimeElapsed = std::min(timeLeft, 0.02f);
+@@ -214,7 +230,7 @@ UPawn* UActor::PreparePawnMovementTick()
+ 	if (!pawn)
+ 		return nullptr;
+ 
+-	if (HasLeftWorld())
++	if ((!engine->LaunchInfo.IsKnowWonder() || KW::PhysicsChecksLeftWorld(this)) && HasLeftWorld()) // only physWalking checks
+ 		return nullptr;
+ 
+ 	OldLocation() = Location();
+@@ -259,6 +275,12 @@ std::pair<bool, vec3> UActor::CheckLocation(vec3 location, float radius, float h
+ 	if (!check)
+ 		return { true, location };
+ 
++	if (engine->LaunchInfo.IsKnowWonder() && KW::UseKWPhysics()) // ULevel::SpawnActor's FindSpot (src/knowwonder/KWMove.cpp)
++	{
++		bool found = KW::SpawnFindSpot(radius, height, location);
++		return { found, location };
++	}
++
+ 	// What is a reasonable size for this grid? what did UE1 do?
+ 	int offset[] = { 0, 1, -1 };
+ 	bool found = false;
+@@ -312,6 +334,8 @@ UObject* UActor::Trace(vec3& hitLocation, vec3& hitNormal, const vec3& traceEnd,
+ 	}
+ 
+ 	CollisionHit hit = XLevel()->Collision.TraceFirstHit(traceStart, traceEnd, this, extent, flags);
++	if (engine->LaunchInfo.IsKnowWonder()) // what stops the spell cursor's trace (src/knowwonder/KWDebug.cpp)
++		KW::LogCursorTrace(this, traceStart, traceEnd, hit);
+ 	hitNormal = hit.Normal;
+ 	hitLocation = traceStart + (traceEnd - traceStart) * hit.Fraction;
+ 	return hit.Actor;
+@@ -425,7 +449,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
+ 				if (hit.Actor != Level())
+ 				{
+ 					bool isBlocking;
+-					if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
++					if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy (movers stop bCollideWorld actors)
++						isBlocking = KW::IsBlockedBy(this, hit.Actor);
++					else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
+ 						isBlocking = hit.Actor->bBlockPlayers() && bBlockPlayers();
+ 					else
+ 						isBlocking = hit.Actor->bBlockActors() && bBlockActors();
+@@ -532,7 +558,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
+ 		{
+ 			// We can't touch stuff we are blocked by
+ 			bool isBlocking;
+-			if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
++			if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy
++				isBlocking = KW::IsBlockedBy(this, hit.Actor);
++			else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
+ 				isBlocking = hit.Actor->bBlockPlayers() && bBlockPlayers();
+ 			else
+ 				isBlocking = hit.Actor->bBlockActors() && bBlockActors();
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysFalling.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysFalling.cpp
+index 967106af..f71b4948 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysFalling.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysFalling.cpp
+@@ -9,6 +9,7 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UActor::TickFalling(float elapsed)
+ {
+@@ -87,6 +88,10 @@ void UActor::TickFalling(float elapsed)
+ 
+ 		if (hit.Fraction < 1.0f)
+ 		{
++			// HP1's physFalling lets a pawn grab a ledge (APawn::Mount) when it hits a wall, before processHitWall.
++			if (pawn && !bBounce() && hit.Normal.z <= 0.7f && engine->LaunchInfo.IsKnowWonder())
++				KW::PawnMount(pawn, vec3(0.0f, 0.0f, 1.0f), hit);
++
+ 			if (hit.Actor->IsA("Pawn"))
+ 			{
+ 				// So projectiles don't think they hit a wall.
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysFlying.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysFlying.cpp
+index 6ccfaa27..f5b23aba 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysFlying.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysFlying.cpp
+@@ -64,5 +64,8 @@ void UActor::TickFlying(float elapsed)
+ 	}
+ 
+ 	RecomputeVelocityFromDisplacement(elapsed);
+-	Velocity().z = 0.0f;
++	// HP1's physFlying (Engine.dll 0x103F13A0) keeps the vertical velocity; clearing it left climbing
++	// flyers (Peeves) circling a higher nav point forever
++	if (!engine->LaunchInfo.IsKnowWonder())
++		Velocity().z = 0.0f;
+ }
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysMovingBrush.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysMovingBrush.cpp
+index 22b4b664..1c5c15a1 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysMovingBrush.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysMovingBrush.cpp
+@@ -9,13 +9,18 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UActor::TickMovingBrush(float elapsed)
+ {
+ 	OldLocation() = Location();
+ 
+ 	UMover* mover = UObject::TryCast<UMover>(this);
+-	if (mover)
++	if (mover && engine->LaunchInfo.IsKnowWonder()) // KnowWonder's own mover physics (src/knowwonder/KWMover.cpp)
++	{
++		KW::PhysMovingBrush(this, elapsed);
++	}
++	else if (mover)
+ 	{
+ 		float timeLeft = elapsed;
+ 		while (timeLeft > 0.0f)
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysProjectile.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysProjectile.cpp
+index f9a39a16..423d5e4e 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysProjectile.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysProjectile.cpp
+@@ -42,7 +42,8 @@ void UActor::TickProjectile(float elapsed)
+ 
+ 	CollisionHit hit = TryMove(Velocity() * elapsed);
+ 
+-	if (hit.Fraction < 1.0f && hit.Actor == Level() && !bDeleteMe() && !bJustTeleported())
++	// HP1's physProjectile raises HitWall for blocking actors too (a spell bumps a GridMover, then explodes on it)
++	if (hit.Fraction < 1.0f && (hit.Actor == Level() || engine->LaunchInfo.IsKnowWonder()) && !bDeleteMe() && !bJustTeleported())
+ 	{
+ 		CallEvent(this, EventName::HitWall, { ExpressionValue::VectorValue(hit.Normal), ExpressionValue::ObjectValue(hit.Actor) });
+ 	}
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysRolling.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysRolling.cpp
+index 31d7896f..96b35a63 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysRolling.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysRolling.cpp
+@@ -9,10 +9,11 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UActor::TickRolling(float elapsed)
+ {
+-	if (HasLeftWorld())
++	if ((!engine->LaunchInfo.IsKnowWonder() || KW::PhysicsChecksLeftWorld(this)) && HasLeftWorld()) // physRolling has no check
+ 		return;
+ 
+ 	// Save our starting point and state
+@@ -48,8 +49,16 @@ void UActor::TickRolling(float elapsed)
+ 	// Can we reach the ground from here?
+ 	if(!TryStepToGround(stepDownDelta))
+ 	{
+-		SetPhysics(PHYS_Falling);
+-		SetBase(nullptr, true);
++		if (engine->LaunchInfo.IsKnowWonder()) // physRolling raises Falling before PHYS_Falling
++		{
++			if (KW::StartFalling(this))
++				SetBase(nullptr, true);
++		}
++		else
++		{
++			SetPhysics(PHYS_Falling);
++			SetBase(nullptr, true);
++		}
+ 	}
+ 
+ 
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysTrailer.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysTrailer.cpp
+index 519c390d..09b279ac 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysTrailer.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysTrailer.cpp
+@@ -2,9 +2,16 @@
+ #include "Precomp.h"
+ #include "UActor.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UActor::TickTrailer(float elapsed)
+ {
++	if (engine->LaunchInfo.IsKnowWonder()) // physTrailer with AnimBone (AttachToOwner) and HP1's rotation rules
++	{
++		KW::PhysTrailer(this);
++		return;
++	}
++
+ 	if (!Owner())
+ 		return;
+ 
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_PhysWalking.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_PhysWalking.cpp
+index ffa5a57a..759c63ce 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_PhysWalking.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_PhysWalking.cpp
+@@ -9,15 +9,23 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ bool UActor::ShouldAbortJumping(UPawn* pawn, vec3 oldPosition, vec3 stepDownDelta)
+ {
++	// a Falling event already ended the walk this tick (it must not be raised twice)
++	if (engine->LaunchInfo.IsKnowWonder() && Physics() != PHYS_Walking)
++		return true;
++
+ 	//check if we can still walk, if so, nothing changes
+ 	if (TryStepToGround(stepDownDelta))
+ 	{
+ 		return false;
+ 	}
+ 
++	if (engine->LaunchInfo.IsKnowWonder()) // APawn::physWalking's ledge rule, then Falling before PHYS_Falling
++		return KW::PawnWalkOffLedge(pawn);
++
+ 	if (pawn->bCanJump())
+ 	{
+ 		CallEvent(this, EventName::MayFall);
+@@ -194,6 +202,10 @@ void UActor::TickWalking(float elapsed)
+ 			if (ShouldAbortJumping(pawn, oldPosition, stepDownDelta))
+ 				return;
+ 
++			// HP1's APawn::stepUp first tries APawn::Mount(-GravDir) (ledge grab); a mount replaces the step up.
++			if (hit.Fraction < 1.0f && engine->LaunchInfo.IsKnowWonder() && KW::PawnMount(pawn, vec3(0.0f, 0.0f, -gravityDirection), hit))
++				return;
++
+ 			// if hit, step up and try again - maybe there was a ledge to get over
+ 			if (hit.Fraction < 1.0f)
+ 			{
+@@ -217,7 +229,10 @@ void UActor::TickWalking(float elapsed)
+ 
+ 			if (hit.Fraction < 1.0f)
+ 			{
+-				if (player && hit.Actor != Level())
++				// HP1's APawn::stepUp (Engine.dll 0x103EC690) only special-cases pushing a decoration; every other
++				// actor hit slides along like a wall. Without this the player sticks to Lev_Tut1's BlockAll stair walls.
++				bool hp1PushHit = player && UObject::IsType<UDecoration>(hit.Actor) && UObject::Cast<UDecoration>(hit.Actor)->bPushable() && dot(hit.Normal, moveDelta) < -0.9f;
++				if (player && hit.Actor != Level() && (!engine->LaunchInfo.IsKnowWonder() || hp1PushHit))
+ 				{
+ 					if (UObject::IsType<UDecoration>(hit.Actor) && UObject::Cast<UDecoration>(hit.Actor)->bPushable() && dot(hit.Normal, moveDelta) < -0.9f)
+ 					{
+@@ -270,8 +285,16 @@ void UActor::TickWalking(float elapsed)
+ 		// Can we reach the ground from here?
+ 		if (!TryStepToGround(stepDownDelta))
+ 		{
+-			SetPhysics(PHYS_Falling);
+-			SetBase(nullptr, true);
++			if (engine->LaunchInfo.IsKnowWonder()) // physWalking raises Falling before PHYS_Falling
++			{
++				if (KW::StartFalling(this))
++					SetBase(nullptr, true);
++			}
++			else
++			{
++				SetPhysics(PHYS_Falling);
++				SetBase(nullptr, true);
++			}
+ 		}
+ 	}
+ 
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Touch.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Touch.cpp
+index 7076ca11..103b1418 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Touch.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Touch.cpp
+@@ -3,6 +3,7 @@
+ #include "UActor.h"
+ #include "VM/ScriptCall.h"
+ #include "Engine.h"
++#include "KW.h"
+ 
+ void UActor::CheckPendingTouch()
+ {
+@@ -28,6 +29,12 @@ void UActor::Touch(UActor* actor)
+ 	if (bDeleteMe() || actor->bDeleteMe())
+ 		return;
+ 
++	if (engine->LaunchInfo.IsKnowWonder()) // one side at a time, the second also when the first was destroyed
++	{
++		KW::BeginTouch(this, actor);
++		return;
++	}
++
+ 	if (engine->LaunchInfo.IsUnrealTournament_469())
+ 	{
+ 		auto TouchingArray = Touching_UT469();

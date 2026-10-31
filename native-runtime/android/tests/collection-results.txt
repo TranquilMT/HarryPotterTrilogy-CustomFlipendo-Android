@@ -1,0 +1,2 @@
+HP1: verified 3505 actual collection DDS assets, 2177557392 decoded bytes; other-game modules skipped.
+HP2: verified 3697 actual collection DDS assets, 2430916096 decoded bytes; other-game modules skipped.

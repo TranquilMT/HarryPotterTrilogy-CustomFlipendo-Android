@@ -1,0 +1,10 @@
+{
+  "ndkRevision": "27.2.12479018",
+  "ndkArchiveSHA256": "59c2f6dc96743b5daf5d1626684640b20a6bd2b1d85b13156b90333741bad5cc",
+  "jdkArchiveSHA256": "d7f5d5cf865a2902b70ff549b97586a7d3f234e016f041ab447ea740c7d66d1c",
+  "jdkVersion": "openjdk version \"21.0.13\" 2026-10-20 LTS\nOpenJDK Runtime Environment Temurin-21.0.13+9 (build 21.0.13+9-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.13+9 (build 21.0.13+9-LTS, mixed mode, sharing)\n",
+  "sdkPlatform": 36,
+  "buildTools": "36.0.0",
+  "cmake": "4.4.4",
+  "ninja": "1.13.2"
+}

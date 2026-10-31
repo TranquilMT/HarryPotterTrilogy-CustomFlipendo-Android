@@ -1,0 +1,16 @@
+{
+  "realDiscDirectoryInventory": {
+    "totalFiles": 548,
+    "selectedGameFiles": 330,
+    "selectedGameBytes": 530761842,
+    "payloadTested": false
+  },
+  "syntheticTests": [
+    "exact extracted file bytes",
+    "existing-file protection",
+    "traversal rejection",
+    "extent bounds",
+    "truncated image rejection"
+  ],
+  "androidImportTested": false
+}

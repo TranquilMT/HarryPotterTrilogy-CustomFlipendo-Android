@@ -1,0 +1,1 @@
+PASS 30 checks: configuration repair, profile validation, nested imports, traversal, HD metadata/checksums/mips, profile isolation, rollback and removal.

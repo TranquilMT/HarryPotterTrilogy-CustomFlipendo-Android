@@ -1,0 +1,1672 @@
+{
+  "originalISO": {
+    "bytes": 603924480,
+    "sha256": "6291cdcb3cd9338824d6428abeea9f528afbc0b5867af50bf091a93d0f29b744",
+    "source": "Existing authenticated Remaster Vault upload",
+    "id": "392159e7-c3b2-4013-8464-dc7744f2648e"
+  },
+  "files": [
+    {
+      "path": "Maps/Entry.unr",
+      "bytes": 2387,
+      "sha256": "ca5c1b6b18e6e7f54222a69bf380dc7e5ff16f5b37fab704809f780f3987904d"
+    },
+    {
+      "path": "Maps/Lev2_Fire2.unr",
+      "bytes": 1703180,
+      "sha256": "8c3b03e160bb538e8e89fc40e5a2321cb03b235c2292b970f4c5e9ed34b3660f"
+    },
+    {
+      "path": "Maps/Lev2_HogFront.unr",
+      "bytes": 2448906,
+      "sha256": "d0bedeb149e4f35596e0f7326568045f7bd1bea096636bbdf1081b492f7c2cf6"
+    },
+    {
+      "path": "Maps/Lev2_HogFront_2.unr",
+      "bytes": 859487,
+      "sha256": "d290d7cf786800bab183e1fa8ef9d1a297175d223563e1086fbc0278a2412cd1"
+    },
+    {
+      "path": "Maps/Lev2_HogFront_3.unr",
+      "bytes": 851402,
+      "sha256": "b8ce78dbbf07886145af076ea3c81025ec95eb3f09acbb565562aaba9ac01bc2"
+    },
+    {
+      "path": "Maps/Lev2_Inc_A.unr",
+      "bytes": 3264272,
+      "sha256": "910e19bcf2d80db2514e92b3a81e7339ab1a490a2465102bf3c60f4779825870"
+    },
+    {
+      "path": "Maps/Lev2_Inc_B.unr",
+      "bytes": 2526122,
+      "sha256": "97fb689abdca00c065c9c79388344e1861c451e615f50ab50b94b191e0c6a952"
+    },
+    {
+      "path": "Maps/Lev2_Quid1.unr",
+      "bytes": 564354,
+      "sha256": "206238162d51518633aabb2b5d04d9caa254dc65b01fa45d5c4b74e900d168cd"
+    },
+    {
+      "path": "Maps/Lev2_RemChase.unr",
+      "bytes": 3027754,
+      "sha256": "5f1ce9f606b68b22acafb23a664e57feff85e21b2b18101f5aa1630aa112f3e6"
+    },
+    {
+      "path": "Maps/Lev2_fire1.unr",
+      "bytes": 4927232,
+      "sha256": "37622a0bc8574af3bbadf44df04cad089fc3e1d7811af02c792cc869ac34125a"
+    },
+    {
+      "path": "Maps/Lev3_Dungeon.unr",
+      "bytes": 2828930,
+      "sha256": "3ea3e78b74022546941a63f4ca0c879a092f244f543db24a20043d716467d5c2"
+    },
+    {
+      "path": "Maps/Lev3_DungeonB.unr",
+      "bytes": 2576742,
+      "sha256": "fb0d1edbc259ca639f007028219c6651c0d5b7dd73403ec683ba36e1fc0e0949"
+    },
+    {
+      "path": "Maps/Lev3_Intro.unr",
+      "bytes": 4776776,
+      "sha256": "17442eba7c9636014f8dcb3da17bfbb419fac35c9a474b6f6155df992b110b35"
+    },
+    {
+      "path": "Maps/Lev3_Lumos.unr",
+      "bytes": 5422415,
+      "sha256": "58658099abfd9e8fc30006354bf8a50c76f168d68621e9aed6ce67c3a1674934"
+    },
+    {
+      "path": "Maps/Lev3_PreDungeon.unr",
+      "bytes": 1702247,
+      "sha256": "315056b1a5882d7fb48f9b14657fd298ed2c4ce2f69951bbe7efc1ad96d1ef50"
+    },
+    {
+      "path": "Maps/Lev3_PreTroll.unr",
+      "bytes": 1482403,
+      "sha256": "7b36730711c349f65082120bdfeef12ec25c4f5866eeedf33f4ba0aa2dc0e98c"
+    },
+    {
+      "path": "Maps/Lev3_Quid2.unr",
+      "bytes": 1074297,
+      "sha256": "0a10f09012bca31f4430810845e6d40cbde868ec4b9ba1fe0f004e371254bbba"
+    },
+    {
+      "path": "Maps/Lev3_Troll.unr",
+      "bytes": 4695827,
+      "sha256": "e9b27d9e20a5f66075845ea3cac8c36e32867f44073f343b871f24a25fb8bd88"
+    },
+    {
+      "path": "Maps/Lev4_Sneak.unr",
+      "bytes": 2701933,
+      "sha256": "7fc128da1b1d0d12b08c473ebe3d394401bfef3d3224b134df6e49bb4896a208"
+    },
+    {
+      "path": "Maps/Lev4_Sneak2.unr",
+      "bytes": 6224787,
+      "sha256": "f2fde5658ead65829781100e618e598976c09139de312948321d632151c06abb"
+    },
+    {
+      "path": "Maps/Lev5_Chess.unr",
+      "bytes": 605733,
+      "sha256": "0e10b6006da82c77a789961adf312139a63e3b49af9f48ea54984525e8ba5f20"
+    },
+    {
+      "path": "Maps/Lev5_Final.unr",
+      "bytes": 2047227,
+      "sha256": "7094ec460452c867719f3a9b94adc64a4305fb421eb5c9d80a982ea0da08dc15"
+    },
+    {
+      "path": "Maps/Lev5_FlyKeys.unr",
+      "bytes": 666822,
+      "sha256": "9c3d2ec74ae9a7c45dfba49073ae97f459cc6b463b91a8a7be99202b62f6a49f"
+    },
+    {
+      "path": "Maps/Lev5_Snare.unr",
+      "bytes": 405647,
+      "sha256": "4891cb54b3240c9429a7d5ca3f77dea4b4d0ab725be25b91778ee5f08d160acb"
+    },
+    {
+      "path": "Maps/Lev5_fluffy.unr",
+      "bytes": 2244314,
+      "sha256": "703d756533cf2bd51117755d8b60823c7ab749f7d17cda85225069100873e099"
+    },
+    {
+      "path": "Maps/Lev_Tut1.unr",
+      "bytes": 3465537,
+      "sha256": "c3a23b396e67fb43ed6e018944a60496b19ee8a15d5253ebf26029abaca150f7"
+    },
+    {
+      "path": "Maps/Lev_Tut1b.unr",
+      "bytes": 5070653,
+      "sha256": "6d227ff27b1f3bb3e1041c4e8eb31f87cfd031073a57f4c2cf17ff59436d3cd1"
+    },
+    {
+      "path": "Maps/Lev_Tut2.unr",
+      "bytes": 694077,
+      "sha256": "b7964868b401b60b38b2500d7cc910e600f214f435719f0b06854062bf0497cd"
+    },
+    {
+      "path": "Maps/Lev_Tut3.unr",
+      "bytes": 2988433,
+      "sha256": "2626725fca769132908b6803330934b2ba52e535796396cb7b250359d2c72c1e"
+    },
+    {
+      "path": "Maps/Lev_Tut3b.unr",
+      "bytes": 2380294,
+      "sha256": "5b0f16ee99ffb8d88a1dc1dd1da5d3acf631a01409bf685e12b73850a3e905d7"
+    },
+    {
+      "path": "Maps/Quid_HuffleA.unr",
+      "bytes": 270588,
+      "sha256": "06e1da7df0f3595674ac8e57913480763d5b80b19279496a628b559bcae2ecbf"
+    },
+    {
+      "path": "Maps/Quid_HuffleB.unr",
+      "bytes": 270599,
+      "sha256": "b99a6fda2708e5f92afd3ceef574ce485ad2aa61224e62fe5831543333cb59b3"
+    },
+    {
+      "path": "Maps/Quid_HuffleC.unr",
+      "bytes": 270617,
+      "sha256": "9dc2477dd074aa63ccaaef055a4aa4f544ff575871c04484f5704d2a91b78073"
+    },
+    {
+      "path": "Maps/Quid_RavenA.unr",
+      "bytes": 270515,
+      "sha256": "c8adb91b7ee25b41a22f032418a3182c975871416e1ed04830707b4fae042081"
+    },
+    {
+      "path": "Maps/Quid_RavenB.unr",
+      "bytes": 270495,
+      "sha256": "e1247d15fcda6314f6a3715404fd6de94bdc94c454e81fba4f2fef58953285b7"
+    },
+    {
+      "path": "Maps/Quid_RavenC.unr",
+      "bytes": 270335,
+      "sha256": "970e600e6229c4700775c083580e369d3c91a3157d36b5ec5adee4ca56852608"
+    },
+    {
+      "path": "Maps/Quid_SlythA.unr",
+      "bytes": 270555,
+      "sha256": "d937fe1f087ddd667d0adb66fe6de8298bdbe1bcd11142367b65b6dd6c2d2ccc"
+    },
+    {
+      "path": "Maps/Quid_SlythB.unr",
+      "bytes": 270499,
+      "sha256": "cf8310ddee3a2659a2c6368ae44a463a7930156fcf248856eb93cbd06d796b78"
+    },
+    {
+      "path": "Maps/Quid_SlythC.unr",
+      "bytes": 270506,
+      "sha256": "a4a8fd64881846c837baba3627d6833cd96aa6852f3e7d20a3ee9a5f7aa4dcbf"
+    },
+    {
+      "path": "Maps/Snapes_Office.unr",
+      "bytes": 1152194,
+      "sha256": "7f792ec41d884c183297fe0721d986b70a8b41d3b46670327e44a003db39f664"
+    },
+    {
+      "path": "Maps/startup.unr",
+      "bytes": 10397,
+      "sha256": "cbf71b9949b080103ea897a3efac3b7622ad8eb02b82b8bb056407ba6426fa8d"
+    },
+    {
+      "path": "Music/Common_Room.umx",
+      "bytes": 864770,
+      "sha256": "69e98742c8f90365ffa2ff85ad33e3df55a30985e221479de855c1848ab3247f"
+    },
+    {
+      "path": "Music/Crabbe_Goyle1.umx",
+      "bytes": 439709,
+      "sha256": "834ccc8a740441f5b64251ae169261ebd66d25a38d4638caf53a36dda531d71b"
+    },
+    {
+      "path": "Music/Crabbe_Goyle2.umx",
+      "bytes": 550050,
+      "sha256": "c479ca33d86190da7e647c4d4b2d08e25c762ec5fa28b9a1ec24c57a748a8b31"
+    },
+    {
+      "path": "Music/Crabbe_Goyle3.umx",
+      "bytes": 933736,
+      "sha256": "4e64d5dca5a59eab3d52c9c94b77a5e0927025d63831aa81e8ef607676b6b42a"
+    },
+    {
+      "path": "Music/Fluffy_Flute_2_v4.umx",
+      "bytes": 37836,
+      "sha256": "979fb8d9bb5ec5260d4bf991bdef1e919ab73a2536ec167cdd6dba385dc7632a"
+    },
+    {
+      "path": "Music/Fluffy_Flute_3_v4.umx",
+      "bytes": 39717,
+      "sha256": "ad8da77e85d75f2cbe23161e23156c611e3bb91fef03cfc71a03c508fe833a95"
+    },
+    {
+      "path": "Music/Fluffy_Flute_4_v4.umx",
+      "bytes": 37836,
+      "sha256": "e5b6413b5efa5ccc73bba55df03e6af3623780856b21cf0ab819ffac964520a4"
+    },
+    {
+      "path": "Music/Fluffy_Flute_5_v4.umx",
+      "bytes": 51001,
+      "sha256": "c9e5856678ce794f0094c9e35c1bfa36100e02c4c456a87f42d98b49bf2e66b9"
+    },
+    {
+      "path": "Music/Green_Cauldron_mx.umx",
+      "bytes": 792356,
+      "sha256": "e88cf5914402c49ba4fb2fdaeea66c27ff32886486c6e35c31f47d586ac406aa"
+    },
+    {
+      "path": "Music/Hooded_Figure.umx",
+      "bytes": 240959,
+      "sha256": "8c0d7ee4fe29beafa9bd757b18bd6b6b63f98a645c56ca4a30593564eff05194"
+    },
+    {
+      "path": "Music/Invisible.umx",
+      "bytes": 236462,
+      "sha256": "8875e50f119d17a9b274edd9fd4a9f28899c4fde4ac9d354c5a02bf8b5bbcbee"
+    },
+    {
+      "path": "Music/JS_Chess.umx",
+      "bytes": 768837,
+      "sha256": "bbfadd8667804dd7b8488e29f3e56c108b8bf973d232c873a1dd708e1c23da82"
+    },
+    {
+      "path": "Music/JS_Chess_end_mx.umx",
+      "bytes": 52880,
+      "sha256": "31a4a4fddcfccaac8aa841c4040587b108d147a7aa658e0821183045b2f6d6cf"
+    },
+    {
+      "path": "Music/JS_Chess_v3_mx.umx",
+      "bytes": 792040,
+      "sha256": "0fe9a9b2b9971ef8df507107e95a0042256a58d79269c96d87c35b0d837f1c2e"
+    },
+    {
+      "path": "Music/JS_Devils_Snare_end_mx.umx",
+      "bytes": 157032,
+      "sha256": "5ab0bfd803c092c0bd59f7aa2c35cce3f3e92cd5ce90bb088aef7839b5807045"
+    },
+    {
+      "path": "Music/JS_Devils_Snare_mx.umx",
+      "bytes": 721200,
+      "sha256": "3fbb6fc7565f677a68568afdab50a30608d454c6526bb120fad0cc2e4aa9157a"
+    },
+    {
+      "path": "Music/JS_Fireseeds_no_loop_v2_mx.umx",
+      "bytes": 1040947,
+      "sha256": "01180ea7b37a44790eac0f7c311e377ec6db1d1c4b7112ac32a2a32b75b11a6f"
+    },
+    {
+      "path": "Music/JS_Fireseeds_v2_mx.umx",
+      "bytes": 827153,
+      "sha256": "d2b11f4adb33bdc21ba439d047c64f7e8a8195e6a32c731cb445d8d2963afd46"
+    },
+    {
+      "path": "Music/JS_Flying_Key_v3_mx.umx",
+      "bytes": 665403,
+      "sha256": "fc45dbdd730c0df918a15df5d268c25b28bc3adc6c3ae3f2d5d379cd90989f96"
+    },
+    {
+      "path": "Music/JS_Free_Hedwig_mx.umx",
+      "bytes": 150685,
+      "sha256": "5f276865b5331b8e533434c40eeca4250839357beff62194e0dff3b02637761e"
+    },
+    {
+      "path": "Music/JS_GreenCauldron-24.umx",
+      "bytes": 294883,
+      "sha256": "32b75226d6a2686d1767ca1129ca6090cf914b12a496693ae01a6c526f374167"
+    },
+    {
+      "path": "Music/JS_GreenCauldron_08.umx",
+      "bytes": 109936,
+      "sha256": "a3414ff9f57700e81e42974ef1a328ba87d14697b0a98edc7d72c6186e403851"
+    },
+    {
+      "path": "Music/JS_GreenCauldron_24.umx",
+      "bytes": 294883,
+      "sha256": "7a30880a14e3d68457d885f5cf0dc965f372436173b4761baa8ffb2b6a7928b1"
+    },
+    {
+      "path": "Music/JS_HP_Title_Screen_v2.umx",
+      "bytes": 2096709,
+      "sha256": "f5dbb94687ead79c5f77c333bf5d9b57fa486cf399d3d93891a1149ea437c2b1"
+    },
+    {
+      "path": "Music/JS_Hagrid's_Hut_Nobert_Hatch_mx.umx",
+      "bytes": 218408,
+      "sha256": "251da1804a598b37f7b7f4a1e868a6e532220b3fd6bbc8e010416d0af04a483a"
+    },
+    {
+      "path": "Music/JS_Hagrid's_Hut_Quidditch_book_mx.umx",
+      "bytes": 145685,
+      "sha256": "d2312ad495d51841c6e12bf25b86b879f66259355c79d9a460944e9aebfba062"
+    },
+    {
+      "path": "Music/JS_Hagrids_Hut_Nobert_Hatch_mx.umx",
+      "bytes": 218407,
+      "sha256": "d637495a9882ea1d84e6e5ee6364358de76820986714cc032d93ffce53a9f184"
+    },
+    {
+      "path": "Music/JS_Hagrids_Hut_Quidditch_book_mx.umx",
+      "bytes": 145684,
+      "sha256": "2f176cbb4dfd97d6e3a4593a1056ad3e37a9da5aa1f07c13280c4d5a3b31ce7c"
+    },
+    {
+      "path": "Music/JS_Harry_Dies_mx.umx",
+      "bytes": 42223,
+      "sha256": "951ae51320c102d57af81a4b48315173ff9856f5569d530c589175cc1d755451"
+    },
+    {
+      "path": "Music/JS_HogwartsDark_07.umx",
+      "bytes": 98650,
+      "sha256": "f658b10d76297d43308ce114b734ea2f329c70ac4811c51c0d6d0f59e80c3f90"
+    },
+    {
+      "path": "Music/JS_HogwartsDark_17.umx",
+      "bytes": 210245,
+      "sha256": "8851d8cf8de8a5a2a78a9968f03be2830c730cf7f187b332bdbab41e57f8f178"
+    },
+    {
+      "path": "Music/JS_HogwartsDark_18.umx",
+      "bytes": 217141,
+      "sha256": "0f5869a22bc3f11fe337fe8fe4c30fdb336d7571408190414a069d994b772f5a"
+    },
+    {
+      "path": "Music/JS_HogwartsDark_23.umx",
+      "bytes": 279835,
+      "sha256": "99c62147b557f0352235a5f58d815c697152d560b6266b301227ac984ce15b47"
+    },
+    {
+      "path": "Music/JS_HogwartsDark_28.umx",
+      "bytes": 343153,
+      "sha256": "c0d8d4ca2424d5e99454c65ba5abf3bda3f00180d89f2ecc924573b703db3532"
+    },
+    {
+      "path": "Music/JS_HogwartsHappy_05.umx",
+      "bytes": 59154,
+      "sha256": "ecad548eb5e6128803fa58b1a08bbf3c5cc45a818a4f63d029543eba9fa8884c"
+    },
+    {
+      "path": "Music/JS_HogwartsHappy_12.umx",
+      "bytes": 151314,
+      "sha256": "798c6fc1f188b4b5248d8c465b09a63dac00b27850634b36f2f00d10b76678ee"
+    },
+    {
+      "path": "Music/JS_HogwartsHappy_19.umx",
+      "bytes": 232816,
+      "sha256": "3ef058e15e21bf8f4062e003331dccc9f41b175f9f8c68b1481f7f10bec94fcf"
+    },
+    {
+      "path": "Music/JS_HogwartsHappy_20.umx",
+      "bytes": 234070,
+      "sha256": "f3807aeadffe00065b853381f7ca417498382d54c0cd9e155255b0155242afdd"
+    },
+    {
+      "path": "Music/JS_HogwartsNeutral_07.umx",
+      "bytes": 82352,
+      "sha256": "a62ad20238464a6b68df63b4369e364736ef96db86adc66075e60c23ae772cd8"
+    },
+    {
+      "path": "Music/JS_HogwartsNeutral_09.umx",
+      "bytes": 104922,
+      "sha256": "460de43651b4f40f3a45daf43170caf08769128c47d01450d8dfc98702b3637e"
+    },
+    {
+      "path": "Music/JS_HogwartsNeutral_14.umx",
+      "bytes": 168870,
+      "sha256": "365ca4e546e566b271b24cfec34ede01ad8564a35d438fd3181a7816230383b6"
+    },
+    {
+      "path": "Music/JS_HogwartsNeutral_17.umx",
+      "bytes": 202098,
+      "sha256": "cdf17037e0f8f9a668908d4cf60f79ee6a00331a9bbc65793bba1fa8a99ca6e1"
+    },
+    {
+      "path": "Music/JS_HogwartsNeutral_28.umx",
+      "bytes": 338770,
+      "sha256": "8cfafb5a64809aa09bcc28552bd3b546e19df1ea21e63b718cad8bbbc8fa59f2"
+    },
+    {
+      "path": "Music/JS_Invisible_mx.umx",
+      "bytes": 219646,
+      "sha256": "109d60208796e395a9a30796b5070c1ce6f5393d14b13d64d0831cff36eba084"
+    },
+    {
+      "path": "Music/JS_Malfoy_end_mx.umx",
+      "bytes": 57270,
+      "sha256": "ba07ae3e043a7fb4faf8d6b36711a4b4c7afe9f426ad8dba35545a3711a9fca6"
+    },
+    {
+      "path": "Music/JS_Opening_Castle_Fly_Through_mx.umx",
+      "bytes": 220917,
+      "sha256": "a213745b53501071a28c11015326dc4a48bf34ec7579f8d95832a709192d446a"
+    },
+    {
+      "path": "Music/JS_Peeves_chase_end_mx.umx",
+      "bytes": 42856,
+      "sha256": "39c39a65e2f279dd3aa88962abf90b9972dbf1e80b97b0aec1268e0c4899adf3"
+    },
+    {
+      "path": "Music/JS_Peeves_chase_v2_mx.umx",
+      "bytes": 771985,
+      "sha256": "db4e84f319fec8ace333c0ffd122827a24a299788c2142613ab3709af8fad4bc"
+    },
+    {
+      "path": "Music/JS_Quidditch_v2_mx.umx",
+      "bytes": 648475,
+      "sha256": "3db8c295d4f38a41700bf723b4868be05609a92e925021b2ad4d6b6bb2da15df"
+    },
+    {
+      "path": "Music/JS_Quirell_Stage_2_end_mx.umx",
+      "bytes": 57906,
+      "sha256": "747cffc64460297b4c3284921c13283185ccfd839aca03eff49baa0b41dacc93"
+    },
+    {
+      "path": "Music/JS_Quirrell1.umx",
+      "bytes": 709909,
+      "sha256": "af3bce4dd6f44ec4e3c65a6667105a6b54378b4b9facec1139a54ab4a8e8f7ba"
+    },
+    {
+      "path": "Music/JS_Quirrell1_mx.umx",
+      "bytes": 709285,
+      "sha256": "15f54dc8b05e48798797e759497a26e66897da8f4217acd4a06aa086ed221497"
+    },
+    {
+      "path": "Music/JS_Quirrell2.umx",
+      "bytes": 806458,
+      "sha256": "95ae8448807401eb06d6c6eb4052d4088080e3cbf123167035b987c5b0706789"
+    },
+    {
+      "path": "Music/JS_Quirrell2_08.umx",
+      "bytes": 106170,
+      "sha256": "e322d239f35d7c036d4b299ae246c348165f77fd992ef6bdc5b3ea1f2eceffc1"
+    },
+    {
+      "path": "Music/JS_Quirrell2_09.umx",
+      "bytes": 111813,
+      "sha256": "62a8c1500789b24862a8d58d7c9ec11f5698b31dcf6355050d85726b6e1fc9fd"
+    },
+    {
+      "path": "Music/JS_Quirrell2_18.umx",
+      "bytes": 224662,
+      "sha256": "b41c939ade04dd10979a1c1486361c7c2b3d367b7a3e8a3e47603450de434495"
+    },
+    {
+      "path": "Music/JS_Quirrell2_20.umx",
+      "bytes": 254755,
+      "sha256": "be4018ab639ccacacd55f502036ef36f0785bad1c75464cd4e68a275842b7d87"
+    },
+    {
+      "path": "Music/JS_Quirrell2_mx.umx",
+      "bytes": 806461,
+      "sha256": "abbc633acb6649822cfd4690dab13f85161676eaff3c85c65778b760ead16589"
+    },
+    {
+      "path": "Music/JS_Quirrell3.umx",
+      "bytes": 720567,
+      "sha256": "26297698d6ea10f77fc7cc5b92f31c08e019c8dc0fd4f525886c2890f828ff27"
+    },
+    {
+      "path": "Music/JS_Quirrell3_mx.umx",
+      "bytes": 720570,
+      "sha256": "b22e420eb2e0469958a4ed175401af3efe7444e6486d6f8efa04be3a88f80adc"
+    },
+    {
+      "path": "Music/JS_Remeberall_Chase_end_mx.umx",
+      "bytes": 51010,
+      "sha256": "416292f24a92dfb2ebfb81af53d8c4f90d918afb18f17c6b34f309651ddbabf7"
+    },
+    {
+      "path": "Music/JS_Rememberall_Chase_mx.umx",
+      "bytes": 728728,
+      "sha256": "9cbeb370d6abceaea1e5c16b8ec5293680b623e869ea04c7d914cbbadd067cbe"
+    },
+    {
+      "path": "Music/JS_StoryBook_v2_mx.umx",
+      "bytes": 1531834,
+      "sha256": "9cbc8a0606df3de1b7ae9c8daded48f2a26fbcabfd1234e4d235b74bf7bdf244"
+    },
+    {
+      "path": "Music/JS_Troll_Asleep.umx",
+      "bytes": 409608,
+      "sha256": "86377dedba5ecdab90a736759a9d9b75cd0659ac4bd5a5baee472d4999f0e70d"
+    },
+    {
+      "path": "Music/JS_Troll_Awake_v3_mx.umx",
+      "bytes": 143164,
+      "sha256": "3be01127bb27ec41edf265907c2fededafc0f64e607737b5f5ffb361d0031446"
+    },
+    {
+      "path": "Music/JS_Troll_chase_v3_mx.umx",
+      "bytes": 709290,
+      "sha256": "9dc9ad653e338410b342a4279a5b0b3a3d6ce7c0e13c9b68375e8583aa5d91e7"
+    },
+    {
+      "path": "Music/JS_Voldemort_and_Unicorn_mx.umx",
+      "bytes": 257274,
+      "sha256": "4ab14fa41daa0412d7069689b8a4d97d04dd42bb8dc163a23cc69eaab0b26b15"
+    },
+    {
+      "path": "Music/JS_dark_hogwarts_mx.umx",
+      "bytes": 801449,
+      "sha256": "cabcbb1de23553871907bb2c8a63adf9b881a3b136284f47aa7ea94992fdc9d3"
+    },
+    {
+      "path": "Music/JS_flying_keys.umx",
+      "bytes": 765709,
+      "sha256": "6a9cd7d1be1c51f247806ef29df3b66216bb23130b7a3794143491c0d657e2ef"
+    },
+    {
+      "path": "Music/JS_main_title_mx.umx",
+      "bytes": 2105794,
+      "sha256": "631fc95936112f7a2b3565fe0dbe9249fb42fbf97d817dfe76ba66e018db603d"
+    },
+    {
+      "path": "Music/JS_malfoy1.umx",
+      "bytes": 672918,
+      "sha256": "cb1e267a2504380a9a73c94c144e26ccbb3036d586fd9debb9b0fc572445c1aa"
+    },
+    {
+      "path": "Music/JS_malfoy_fight_v3_mx.umx",
+      "bytes": 672929,
+      "sha256": "26b126d47de59768707337f6e1514491b1322cbfc088804b7bec3b509f20ae40"
+    },
+    {
+      "path": "Music/JS_quidditch_fanfare.umx",
+      "bytes": 60409,
+      "sha256": "6e1314794d12d68ca2cd72a913ff838e3b4daff70a93c4d371d844b9d022a3ec"
+    },
+    {
+      "path": "Music/JS_quidditch_theme.umx",
+      "bytes": 716811,
+      "sha256": "e3d467a699952b6147c68145304b81269f74512862c35f707b0df916719ca7a8"
+    },
+    {
+      "path": "Music/JS_quidditch_win.umx",
+      "bytes": 57270,
+      "sha256": "ce610db1f597939888e5572727c385a88ff4050e947ea8e62a230723069846c2"
+    },
+    {
+      "path": "Music/JS_troll_run_loop.umx",
+      "bytes": 734365,
+      "sha256": "08878aaf52eec4508097517663593b26ddb495c5759ecce446f32da93dada3e3"
+    },
+    {
+      "path": "Music/Phoenix.umx",
+      "bytes": 1008963,
+      "sha256": "8162725dc81840a772e7fb432faee956f352ae6aa61b161150b7b663113a8813"
+    },
+    {
+      "path": "Music/Pickup22.umx",
+      "bytes": 86519,
+      "sha256": "be9e8772ed3eb034433ef40792b64f6e3537f8c33b067447d3123b9ffaf8640a"
+    },
+    {
+      "path": "Music/Protect_Ron.umx",
+      "bytes": 416509,
+      "sha256": "d534cf2b7a1cc7b64aedbdd334a21994f6dbef1072f42380452111c1e82e57db"
+    },
+    {
+      "path": "Music/Reward.umx",
+      "bytes": 68858,
+      "sha256": "ce8ee5eb1aeffa00465a1d1b5e29e9f53954c7426b890cd0590783372de9a259"
+    },
+    {
+      "path": "Music/SecretCauldron.umx",
+      "bytes": 561963,
+      "sha256": "386447aa8076a8fb5821582c2806fe1c09b5278dee355ed5375bb8dcc20c3762"
+    },
+    {
+      "path": "Music/Troll_asleep.umx",
+      "bytes": 192693,
+      "sha256": "0d9655739f494ddba72ec7956dbda9f498ad6a40ca89a5de4a0667ff366a3640"
+    },
+    {
+      "path": "Music/Troll_awake.umx",
+      "bytes": 308048,
+      "sha256": "6c75fef93a9d67155f75b797905e3f266bbcde6adbb2f43fb41ddf27da08bf92"
+    },
+    {
+      "path": "Music/Troll_chase.umx",
+      "bytes": 602710,
+      "sha256": "802f3f55af1bcde6c5e96baa37322ff14fec0671585b84de2b34785ea686c0a3"
+    },
+    {
+      "path": "Music/Voldemort_Pillar.umx",
+      "bytes": 969474,
+      "sha256": "cc7f7cf5a3ff7fc0364d12b5ce0c40880ccff648a7b2c94f19311434b7e66e3d"
+    },
+    {
+      "path": "Music/gargoyle.umx",
+      "bytes": 855250,
+      "sha256": "c47c47ac21cf600470a05f2e199f375a370368f9cf7a448d23f9d229a15b73e7"
+    },
+    {
+      "path": "Music/happy_hogwarts_mxlp1.umx",
+      "bytes": 485159,
+      "sha256": "e34326c93faca3e451c3951499c836a7ef9d67d497061032697deee06f5b2bb0"
+    },
+    {
+      "path": "Music/hogwarts_neutral_mxlp1.umx",
+      "bytes": 664361,
+      "sha256": "61fce8481db3052f96a0efb37d7a709cac45e7cc6767f720ac22cbe7b00bc65e"
+    },
+    {
+      "path": "Music/hogwarts_neutralgood_mxlp1.umx",
+      "bytes": 1299875,
+      "sha256": "3730eb4e6f5e71be8d0e75f24b63311948a083483a952212b50df26637e42e71"
+    },
+    {
+      "path": "Music/quidcatch.umx",
+      "bytes": 294245,
+      "sha256": "e447cf707e2acff1adb2c3c90844272ad878aa4d737a0f89afa8c541cd2c146e"
+    },
+    {
+      "path": "Music/shock.umx",
+      "bytes": 163838,
+      "sha256": "a65af49b1199a0162707e4a5bf9f35eae1ab30d890ff673710214a45adb3d5a3"
+    },
+    {
+      "path": "Sounds/0/AllDialog.eng_uax",
+      "bytes": 34906941,
+      "sha256": "c65243c6ea2621f15aa08837889056d3273ff9d89893738705b1b6f60252333f"
+    },
+    {
+      "path": "Sounds/1/AllDialog.fre_uax",
+      "bytes": 41772103,
+      "sha256": "1128d24e2dc77c8a79497f2960e3d3dd97e8cd7e0d726fae0c5119dcf17d8f83"
+    },
+    {
+      "path": "Sounds/2/AllDialog.ger_uax",
+      "bytes": 43841377,
+      "sha256": "b24b1d3f73279dba17192b30d9c71e101b2c1fe04dbe93deb5a57788d1f7812e"
+    },
+    {
+      "path": "Sounds/AllDialog.uax",
+      "bytes": 35120049,
+      "sha256": "7eefd451bb010a7a7559c030355389bac3a77f21a0858391c19d8fc27da94618"
+    },
+    {
+      "path": "Sounds/AllEmote.eng_uax",
+      "bytes": 1857811,
+      "sha256": "d330d0ceac9f01655004672f8b12386d3ab4fee89ff2e568b6d53da3d2b7f6ae"
+    },
+    {
+      "path": "Sounds/AllEmote.uax",
+      "bytes": 1857811,
+      "sha256": "d330d0ceac9f01655004672f8b12386d3ab4fee89ff2e568b6d53da3d2b7f6ae"
+    },
+    {
+      "path": "Sounds/Ambient.uax",
+      "bytes": 2137968,
+      "sha256": "7029f967c666c87aaba47ef9f7a66b1d986bd96e55e263b99c1b73080aec0b41"
+    },
+    {
+      "path": "Sounds/Critters.uax",
+      "bytes": 1421396,
+      "sha256": "199f7d6e08c6badd75dc5663e383fc47ddc7bf4b3f410af60b8b95bbde69ba1b"
+    },
+    {
+      "path": "Sounds/Events.uax",
+      "bytes": 1689845,
+      "sha256": "0cc744648aca1e31c09b4ac1aea9d299c1015dce7529dffca46a46ca63822eb9"
+    },
+    {
+      "path": "Sounds/Firecrab_sfx.uax",
+      "bytes": 162597,
+      "sha256": "664a87cfca22cf9e442b762e4d2ba6f06825c76caec57b6f22618a31193903b5"
+    },
+    {
+      "path": "Sounds/Footsteps.uax",
+      "bytes": 259990,
+      "sha256": "71306048be379f61fc106583acd7ad4357618388485206cd3aaf79cf56ca5c52"
+    },
+    {
+      "path": "Sounds/Gnome_sfx.uax",
+      "bytes": 219249,
+      "sha256": "1c9c6228bbfa2f30679116921e68c1bb901094b35a9ac54ede4c1180d5154da7"
+    },
+    {
+      "path": "Sounds/HAR_emotes.uax",
+      "bytes": 408164,
+      "sha256": "95d4303c54bd08bf9a630d85da7e6015f4dcd021f1b5e95bf6a47ddb11b03c11"
+    },
+    {
+      "path": "Sounds/Hub1_amb.uax",
+      "bytes": 1910542,
+      "sha256": "057b3b6833fb12be1d729da20dfdc05c0f031a24d02c72bed07a7626343ee883"
+    },
+    {
+      "path": "Sounds/Hub1_sfx.uax",
+      "bytes": 6424787,
+      "sha256": "5b8e1d26f12e4807c3cc62d9bf438d299ded7b666c1a2726827e4f4dc1b18147"
+    },
+    {
+      "path": "Sounds/Hub2_amb.uax",
+      "bytes": 541237,
+      "sha256": "4d472b3e4223b09575ec96e97104ac8469106c9bfc91705e135947018e680b49"
+    },
+    {
+      "path": "Sounds/Hub2_sfx.uax",
+      "bytes": 3371493,
+      "sha256": "f379b6ed2a3c4fedfd0462a656c9f621bd0dea49f01f775dabb2225192fe0de2"
+    },
+    {
+      "path": "Sounds/Hub3_sfx.uax",
+      "bytes": 2055667,
+      "sha256": "d0b764bf292c093bc6ca28bfbb0709ae441bc724318db91dbed78334522c9d50"
+    },
+    {
+      "path": "Sounds/Hub4_sfx.uax",
+      "bytes": 815854,
+      "sha256": "eca9522caa73696de37a75c221ede47845fc3cab16cd2dffbc20cbe8a7dd82d1"
+    },
+    {
+      "path": "Sounds/Hub5_sfx.uax",
+      "bytes": 2966022,
+      "sha256": "22598b413a35c08ef712453da4989d1ed94444e0c9ec2a63313c5f24097f43b2"
+    },
+    {
+      "path": "Sounds/Incantate_sfx.uax",
+      "bytes": 329407,
+      "sha256": "73d00b0db976c8923ee313afa050e44df302e8f86a24e8c63a47130925eee4ad"
+    },
+    {
+      "path": "Sounds/Magic_sfx.uax",
+      "bytes": 4310490,
+      "sha256": "722ea1d04f3ead430fbaf9e0bd8d054c185915f56e2618897ea5c6f1233a3b94"
+    },
+    {
+      "path": "Sounds/Menu_sfx.uax",
+      "bytes": 110273,
+      "sha256": "5076e6cb314848c3017084bc02e13c3b35266a5ecdaef4337fd5d44b2e793650"
+    },
+    {
+      "path": "Sounds/Quidditch.uax",
+      "bytes": 2547297,
+      "sha256": "85fc9f1b8eefc3c118ed15482e13a33fce5f3fc91faac249e485d98bf4236156"
+    },
+    {
+      "path": "Sounds/Quidditch_Lee_Jordan.uax",
+      "bytes": 4367863,
+      "sha256": "8ecf26c69e47b3eda10bf6e33fc23744f39c92ec6fe9ca4a12611e69df51171c"
+    },
+    {
+      "path": "Sounds/Snail_sfx.uax",
+      "bytes": 98902,
+      "sha256": "b6347d0a6c646b779c30d5d55cdbe54685aca0a9180d3de9eeaa9f17089b50ab"
+    },
+    {
+      "path": "Sounds/critters_sfx.uax",
+      "bytes": 1963929,
+      "sha256": "a4831d25aab583e6841806291c61d9f5ae85ef3fca514e34974a7871756a8ebc"
+    },
+    {
+      "path": "Sounds/fluffy_sfx.uax",
+      "bytes": 154503,
+      "sha256": "8bfad30b6b051e2ce9c0acfa282b03d4023a8a7f6a887a50d2d4f07906ece33b"
+    },
+    {
+      "path": "Sounds/s_spell_shrink.wav",
+      "bytes": 172472,
+      "sha256": "6921c6e7c1a75ebfd215d9612e0956e4ba871f2860405141431f2725f6ca65c9"
+    },
+    {
+      "path": "Sounds/s_spell_shrink_unshrink.wav",
+      "bytes": 151288,
+      "sha256": "074c12b6f8fc70076c7a5d496823174cce95041f83b03d8a6dd733ba6c0d90ff"
+    },
+    {
+      "path": "Sounds/spellhit1.wav",
+      "bytes": 44218,
+      "sha256": "c26f9ce7d5eb616e11b6ced9f59121402d894fb484f12460e47e8c8aaddac73f"
+    },
+    {
+      "path": "Sounds/wavs/scloak1.wav",
+      "bytes": 44350,
+      "sha256": "e40d77c9b53fbf08c7946c8ff99fbcbed8538a40776e1903eb56ea7cf8c1c09b"
+    },
+    {
+      "path": "System/0/Default.ini",
+      "bytes": 10449,
+      "sha256": "03dfe5a1f7b357be26af19bb4c744f9325f17694956b2c55b95e7c9d0ff966df"
+    },
+    {
+      "path": "System/0/HP.eng",
+      "bytes": 119,
+      "sha256": "e10090812b33ef0c1ec7cd3db6133e0fdb319ecb1acf2da571e26fe20177bd80"
+    },
+    {
+      "path": "System/0/Startup.eng",
+      "bytes": 4324,
+      "sha256": "22d393a0597322bc29ef1a5c1a5bccd4551465428d20c13025b5594d4135390a"
+    },
+    {
+      "path": "System/0/hpcredits.eng",
+      "bytes": 6406,
+      "sha256": "4eebebe1a05c52be1788c827d59166b5aefc8c12d5874ad15d1387dbb0ce51e2"
+    },
+    {
+      "path": "System/0/hpdialog.eng",
+      "bytes": 92250,
+      "sha256": "3b26eef24acbf9a9d899f9c8d5f33582d174af33e0100ef57aa3726ce6606581"
+    },
+    {
+      "path": "System/0/hpmenu.eng",
+      "bytes": 21891,
+      "sha256": "b03a08200a1727db4049de0df28ad31455bf16d171691f4a07f17af0e5471237"
+    },
+    {
+      "path": "System/0/pickup.eng",
+      "bytes": 3836,
+      "sha256": "9cb0e20e0c508ed3a7a956d43eadfa57853101dac43322c300e684c76107b21a"
+    },
+    {
+      "path": "System/0/pickup2.eng",
+      "bytes": 7347,
+      "sha256": "a6f72b4633dcd086c4ab3eb5ed2fa66d67a4d53708bf2c0511be517a20f3bda0"
+    },
+    {
+      "path": "System/00000407.016",
+      "bytes": 20744,
+      "sha256": "4f19fd5c7c11798d77040e176115c0861176a15ed3852570b861a28018462141"
+    },
+    {
+      "path": "System/00000407.256",
+      "bytes": 36480,
+      "sha256": "4ef8cd3d25734afe3eb0d7c0bb4dfe9e8102ded5a88a1ea4ec2491238b8a6e9a"
+    },
+    {
+      "path": "System/0000040c.016",
+      "bytes": 20744,
+      "sha256": "4f19fd5c7c11798d77040e176115c0861176a15ed3852570b861a28018462141"
+    },
+    {
+      "path": "System/0000040c.256",
+      "bytes": 36480,
+      "sha256": "4ef8cd3d25734afe3eb0d7c0bb4dfe9e8102ded5a88a1ea4ec2491238b8a6e9a"
+    },
+    {
+      "path": "System/00000809.016",
+      "bytes": 20744,
+      "sha256": "4f19fd5c7c11798d77040e176115c0861176a15ed3852570b861a28018462141"
+    },
+    {
+      "path": "System/00000809.256",
+      "bytes": 36480,
+      "sha256": "4ef8cd3d25734afe3eb0d7c0bb4dfe9e8102ded5a88a1ea4ec2491238b8a6e9a"
+    },
+    {
+      "path": "System/1/Default.ini",
+      "bytes": 10449,
+      "sha256": "d520265dd5211994c2d117bb15d0d1330a9690a7057725e9a2c394c29b140562"
+    },
+    {
+      "path": "System/1/HP.fre",
+      "bytes": 124,
+      "sha256": "beb99aa6399d5228bfdcebf863dfbcaed297ef6e98b7679f1c22b004c11d3731"
+    },
+    {
+      "path": "System/1/HPDialog.fre",
+      "bytes": 108448,
+      "sha256": "c25e48bdb268cd1b11b616fdc7de89814fcf219ac4114278582d6cc4d9c4e05f"
+    },
+    {
+      "path": "System/1/HPcredits.fre",
+      "bytes": 7167,
+      "sha256": "0af61ad7e1becaa7ec7bd4da5506d9ab010fe2c5c161f9aaf987167c62f23059"
+    },
+    {
+      "path": "System/1/HPmenu.fre",
+      "bytes": 23347,
+      "sha256": "786a77cc4c5aff7a4ba5bf5154ac13d9084cfcc1a76bab5b89cfd1d81a206e20"
+    },
+    {
+      "path": "System/1/Startup.fre",
+      "bytes": 4957,
+      "sha256": "38ba44533d5f10474b667264276b5984a8a9c316e605e2f2c50f6ec862a5e58a"
+    },
+    {
+      "path": "System/1/pickup.fre",
+      "bytes": 4910,
+      "sha256": "f8f21de8b867a4c8deed2cf4cb92bb5ede4ddb08f66917d4cab1108d8ffab6ba"
+    },
+    {
+      "path": "System/1/pickup2.fre",
+      "bytes": 7709,
+      "sha256": "24644a450203d8062c3bbe91c8245c63ac1f1ce27b96b1d7f014cb1c4281f629"
+    },
+    {
+      "path": "System/2/Default.ini",
+      "bytes": 10449,
+      "sha256": "5708a018b69d0eaa332da4b7dc0e77b3ee5a163534a25289c234c2883387dcd8"
+    },
+    {
+      "path": "System/2/HP.ger",
+      "bytes": 118,
+      "sha256": "fa17be005505bd350766c271cd5243fb42349b691f6debed1688972a659a236f"
+    },
+    {
+      "path": "System/2/HPDialog.ger",
+      "bytes": 105131,
+      "sha256": "cd91f2b520ffc5e3a59f087cbbe5740ecae1db52dc5d2cb195af22a250cb7451"
+    },
+    {
+      "path": "System/2/HPMenu.ger",
+      "bytes": 23100,
+      "sha256": "790558a03d90d9da7f7e38f9247ec103d2397163cb0ee33a0fec96ca46489a5b"
+    },
+    {
+      "path": "System/2/HPcredits.ger",
+      "bytes": 7468,
+      "sha256": "f850294fd157e957b7d937e43022c26af7a92cdbde3c8c3affa17f5c6abaf52c"
+    },
+    {
+      "path": "System/2/Startup.ger",
+      "bytes": 4722,
+      "sha256": "8dcd6dd48e9a901b2300f050c270b9d4b65e7ba3abbc8d67528439a1e9816e14"
+    },
+    {
+      "path": "System/2/pickup.ger",
+      "bytes": 4226,
+      "sha256": "d17e0b42b3a358e1ccc59134d2ccf6cbf495c420664745e89295500a08585ebe"
+    },
+    {
+      "path": "System/2/pickup2.ger",
+      "bytes": 7491,
+      "sha256": "183d06c794022be5bd1d11e72dbd75a8eddf78885b3fe19d5dbc0192a4cea0dc"
+    },
+    {
+      "path": "System/Core.dll",
+      "bytes": 860160,
+      "sha256": "e8c07f3e74507b23e56dfa77ef2b19c5d4f551ccbc9cd1e20c5d2d6397b0e4f6"
+    },
+    {
+      "path": "System/Core.int",
+      "bytes": 3239,
+      "sha256": "3fc4060861611137172b4612a488fc7cf004b662aa5a0598673f44ecd9695b5a"
+    },
+    {
+      "path": "System/Core.u",
+      "bytes": 61654,
+      "sha256": "58e1a15ddbb46ec3b28145507a1356a1ac7ad7d05a635cb6010dcb6e8ac92fc1"
+    },
+    {
+      "path": "System/D3DDrv.dll",
+      "bytes": 221184,
+      "sha256": "b38fcb3c1ca06f7a745e33695af44f916fa9762892349719e177728414e70f4d"
+    },
+    {
+      "path": "System/D3DDrv.int",
+      "bytes": 374,
+      "sha256": "f1472e84479d5fc86ad3efe2d7f9e822494da193d0706172626e482cabeecbb6"
+    },
+    {
+      "path": "System/DProps.u",
+      "bytes": 179183,
+      "sha256": "5055a89b27574d5743ab7622528f3c4aa9c8a4cf2063a8325b44af6eb1fa7bb1"
+    },
+    {
+      "path": "System/DefUser.ini",
+      "bytes": 4502,
+      "sha256": "dd809271c47227acea964eacdf0f0e29cba46bb4e3a8790e0e3aa6ad568fa552"
+    },
+    {
+      "path": "System/Dobby.int",
+      "bytes": 1689,
+      "sha256": "6d524e48907466f24a05dbc237acbc42003d5613b2a913c72034d69083ca19ff"
+    },
+    {
+      "path": "System/Editor.dll",
+      "bytes": 1351680,
+      "sha256": "b56bc5629570bd18cd95cad376f2dcc13fe871036f9f959680efb615d72b1e79"
+    },
+    {
+      "path": "System/Editor.int",
+      "bytes": 5196,
+      "sha256": "8caa3ad4ac46ac060a6f4c40628314bce6c326fe1909df9fd14271769062e102"
+    },
+    {
+      "path": "System/Editor.u",
+      "bytes": 126396,
+      "sha256": "8d2bae755a43471c4fb4fa394ecb20b1a3e377d8179d817f4665ef241b4981da"
+    },
+    {
+      "path": "System/Engine.dll",
+      "bytes": 2105344,
+      "sha256": "ad629f993a6fe9a2ed8e07dab6d245e88ed42d2a5ba08819b4a5719559e56fd5"
+    },
+    {
+      "path": "System/Engine.int",
+      "bytes": 5455,
+      "sha256": "057b2fd34d184b1e68ad515d80b30e46042468e6615760c001a894bf34cff48d"
+    },
+    {
+      "path": "System/Engine.u",
+      "bytes": 4891771,
+      "sha256": "dbfa6a740c88d63e5f2d66d56309c26e50113a3c0c0fb5b79b9e476b75995e5c"
+    },
+    {
+      "path": "System/Fire.dll",
+      "bytes": 106496,
+      "sha256": "b8d865e41ee7a330d70346e968f3e4addd26504167b6c8ba1956b3726e2f3aa7"
+    },
+    {
+      "path": "System/Fire.u",
+      "bytes": 14926,
+      "sha256": "d108a9a70223af609cbf461cfb86ae14771e499d415cf7ed19fb2c12a88a5c1a"
+    },
+    {
+      "path": "System/Galaxy.dll",
+      "bytes": 344064,
+      "sha256": "b37615cb1cde17a9edd27d5bcd607a829124df06c359214ba0a4fe3c22e8ea58"
+    },
+    {
+      "path": "System/Galaxy.int",
+      "bytes": 273,
+      "sha256": "3b1ede84365c5412a8d68730c47d479f00a959b3e3e966fb48a291c1c5de51c9"
+    },
+    {
+      "path": "System/HP.exe",
+      "bytes": 1152482,
+      "sha256": "980f74253a5d079cd4cc296d24496c38e00e9920f6e882dd3015e93c1fb8ba9c"
+    },
+    {
+      "path": "System/HPBase.u",
+      "bytes": 4314052,
+      "sha256": "fa819324857faddc494a9fc0e3fd86b527de9cf237653d0722c064da7d3f9481"
+    },
+    {
+      "path": "System/HPDialog.u",
+      "bytes": 12261,
+      "sha256": "99344cbb429b97ae71f2715b5132de4de4ff90d39682adb279e38a05d8f663a5"
+    },
+    {
+      "path": "System/HPMenu.int",
+      "bytes": 21889,
+      "sha256": "96c192db44bf168052a9a2243a11d0ef1aee3430ef38a2479e8a6994178e15ea"
+    },
+    {
+      "path": "System/HPMenu.u",
+      "bytes": 13817580,
+      "sha256": "eb5c0892247f897c0ede0f517558fd4f77f0d98faf72d8f420e9b19984f2900e"
+    },
+    {
+      "path": "System/HPModels.u",
+      "bytes": 16967788,
+      "sha256": "52cff49362fa72891d8a2101b9be2e3ac414b73545fc6520ad47f98709b745b2"
+    },
+    {
+      "path": "System/HPParticle.u",
+      "bytes": 2445789,
+      "sha256": "e867fe0cd44986a94a12fdd7fd1738c42c9d29199664129362410d36efffd057"
+    },
+    {
+      "path": "System/HPPuzzle.u",
+      "bytes": 2283,
+      "sha256": "516de5d0c56cb5593c312c505620f39fdbafda89afabebb1f05143449224d381"
+    },
+    {
+      "path": "System/HPSounds.u",
+      "bytes": 29680245,
+      "sha256": "d8e871a968fe31aed9f4e858b30d3317ecb66c75558f9e990e29d499ddfafcb6"
+    },
+    {
+      "path": "System/HProps.u",
+      "bytes": 10094918,
+      "sha256": "85b11c9e0a7eb8d2163f1b47597e057f917d2a9e4e19c870b0d5dfd755731b6f"
+    },
+    {
+      "path": "System/HarryPotter.u",
+      "bytes": 13972294,
+      "sha256": "dad0235708b17a714e423a8d4ee0551a50f599ab77071b97e7c227963764e435"
+    },
+    {
+      "path": "System/Hog1.u",
+      "bytes": 6946,
+      "sha256": "1699c45c0a3555f01159c00e4168d42673aeaf7fc51c39313db0784382f9f8fc"
+    },
+    {
+      "path": "System/Hog2.u",
+      "bytes": 142540,
+      "sha256": "dd3423d71689b492a68a70bc19e419aa8dd1a770ed9c40f11e5309f1c3fed199"
+    },
+    {
+      "path": "System/Hub2.u",
+      "bytes": 318520,
+      "sha256": "cc523907c57fc6bc2fd1febf4d0db703d0856eab3d47ee402fe69018fe4d0e78"
+    },
+    {
+      "path": "System/Hub3.u",
+      "bytes": 36085,
+      "sha256": "e63c0a964379a60e731b1c8c296e72288952aa0d6de8678ea4a1727c052a394e"
+    },
+    {
+      "path": "System/Hub4.u",
+      "bytes": 112665,
+      "sha256": "35c2b05586770c75479f6f52c64da2e5c54ba670c14ef3aa5b0bd06eee976ace"
+    },
+    {
+      "path": "System/Hub5.u",
+      "bytes": 170872,
+      "sha256": "49a9f55081a5f5611cb2f6550c656d899b1d4f66834fa35871e5c13582b0f4eb"
+    },
+    {
+      "path": "System/IpDrv.dll",
+      "bytes": 245760,
+      "sha256": "3c5a18e62b058e73065ed3cdc83193fa66ad11b38096ae4de02baa469b9491d7"
+    },
+    {
+      "path": "System/IpDrv.int",
+      "bytes": 1792,
+      "sha256": "fb3387b5a1eba8f0af61f23b3aee40549b5169e4a933f766c87e1bdc64d601b0"
+    },
+    {
+      "path": "System/IpDrv.u",
+      "bytes": 19851,
+      "sha256": "f8d03c62103efd30b70db8fe9b7ac8be2b763b458a9933f9866055ba0e242cc8"
+    },
+    {
+      "path": "System/IpServer.int",
+      "bytes": 301,
+      "sha256": "ee3ae6a5e272926ce3837e994278db064f6c9c9cad34f8e8aaeffe026d38e6fb"
+    },
+    {
+      "path": "System/IpServer.u",
+      "bytes": 31620,
+      "sha256": "14b647951c963addd519bec7ded5af8485fd26d32dd9733dcae7ef4682d5db73"
+    },
+    {
+      "path": "System/MeTaLDrv.int",
+      "bytes": 454,
+      "sha256": "5c971fc97f10c75e5bfdc8a9354ce626609685e84b9f2ccd9fb1e8426bf6cd26"
+    },
+    {
+      "path": "System/Multimesh.int",
+      "bytes": 1220,
+      "sha256": "bef6b28582eb7364979bd38d8771c9871d8c1138e7df40dd90e9d43e0e072b98"
+    },
+    {
+      "path": "System/Pickup.int",
+      "bytes": 3836,
+      "sha256": "9cb0e20e0c508ed3a7a956d43eadfa57853101dac43322c300e684c76107b21a"
+    },
+    {
+      "path": "System/Pickup2.int",
+      "bytes": 7347,
+      "sha256": "a6f72b4633dcd086c4ab3eb5ed2fa66d67a4d53708bf2c0511be517a20f3bda0"
+    },
+    {
+      "path": "System/PolFont.exec",
+      "bytes": 979,
+      "sha256": "93a2d510b90f7365c9d6a13ba34f750809ddeb777c7057cd0b6b8feac708c158"
+    },
+    {
+      "path": "System/Render.dll",
+      "bytes": 290816,
+      "sha256": "0d909ba2c23de6ae744e0d559ff2add6d310c1c867879449d915fe37763ce4ed"
+    },
+    {
+      "path": "System/SAPFont.jap",
+      "bytes": 158,
+      "sha256": "36716cdd042f5afb1a4512890f269ce241409e0f64bcf3de63e27648325e116e"
+    },
+    {
+      "path": "System/SAPFont.kor",
+      "bytes": 131,
+      "sha256": "010d4155b37725516d09986329d78285d93c8e7a6085702940e1a570cc522208"
+    },
+    {
+      "path": "System/SAPFont.sim",
+      "bytes": 135,
+      "sha256": "1d05611d00bd048d3e526324b068c3e49ffa5053fab85fe5a3d8e267974f73ed"
+    },
+    {
+      "path": "System/SAPFont.tha",
+      "bytes": 135,
+      "sha256": "6cdc184a2d77e016b78a7c0e2793b9c92d20b4d7d3ec1ece983713b74159d8f8"
+    },
+    {
+      "path": "System/SAPFont.tra",
+      "bytes": 135,
+      "sha256": "1d05611d00bd048d3e526324b068c3e49ffa5053fab85fe5a3d8e267974f73ed"
+    },
+    {
+      "path": "System/Setup.int",
+      "bytes": 7236,
+      "sha256": "cc05884406c9f349054d6c44e7408b949f92e54ddd3bd3364301965c278f1d92"
+    },
+    {
+      "path": "System/SglDrv.int",
+      "bytes": 450,
+      "sha256": "f3d9e10ce9a0579566198527b02d64cb7df8d044c12df3868c545a568c1015e5"
+    },
+    {
+      "path": "System/SoftDrv.dll",
+      "bytes": 393216,
+      "sha256": "84bc1d46f6c1d9ec501531a8a1d168ab043896178d4b3164a96059b75f0dfb7b"
+    },
+    {
+      "path": "System/SoftDrv.int",
+      "bytes": 329,
+      "sha256": "0bc6a91285ecb27c06dc1c1289f05e305304224694730ad7274fccb4a666040d"
+    },
+    {
+      "path": "System/Startup.int",
+      "bytes": 4308,
+      "sha256": "fcafdc113c29828ab71c9ab20264bcd12c456142ed41879af3dc308221fd88f6"
+    },
+    {
+      "path": "System/Tut1.u",
+      "bytes": 90534,
+      "sha256": "d18e3205fa349ae686b184a0838efee963313139ff4b87e56bfae5e2340d97ee"
+    },
+    {
+      "path": "System/Tut2.u",
+      "bytes": 38655,
+      "sha256": "73bd0db9c4c3fed7954f6fcf45650cdd8040f8d176adaa23ae4f6ddfd224d43f"
+    },
+    {
+      "path": "System/Tut3.u",
+      "bytes": 26374,
+      "sha256": "86935f59a465c5cf5107d0ee782f3cbdf666df19753ecec197f840c5e1bafb6a"
+    },
+    {
+      "path": "System/UBrowser.int",
+      "bytes": 331,
+      "sha256": "14ccd80897dcd8337369c3679eb0bc58f0409497a85c752c112d4b3fe8fe689e"
+    },
+    {
+      "path": "System/UBrowser.u",
+      "bytes": 325912,
+      "sha256": "feda36daabdc491169163c265c4c7f0e301ff67a68704f1ea833523b8a25ba4b"
+    },
+    {
+      "path": "System/UMenu.int",
+      "bytes": 335,
+      "sha256": "fdb8cd466a4bd78724c801f3b8d02b5a2e166ca8e0a5d3f32f2ee847fe96f26c"
+    },
+    {
+      "path": "System/UTMenu.int",
+      "bytes": 149,
+      "sha256": "e374e91b31adecf714f42c1705218ec6805144726a1215d61a440ad3400a9bad"
+    },
+    {
+      "path": "System/UWeb.dll",
+      "bytes": 69632,
+      "sha256": "e52be001e3a9425f10dc2be47e96a58d6f519309f1252b4e8c8920688ea403e9"
+    },
+    {
+      "path": "System/UWeb.u",
+      "bytes": 27953,
+      "sha256": "2bde6b2412ee48856a30e77527fd5b08ac283b0118beef11ac8f7de7bfd70296"
+    },
+    {
+      "path": "System/UWindow.u",
+      "bytes": 790233,
+      "sha256": "eed45f33b30e8ca6b74cff85b300e8787d8d5afa245532a0778edd9d271bb2d7"
+    },
+    {
+      "path": "System/UnrealShare.u",
+      "bytes": 6877,
+      "sha256": "4a75a27fe9559fb3f38a72127b3e025fb68116d5adc6a2d1d73241c6d5f40901"
+    },
+    {
+      "path": "System/WinDrv.dll",
+      "bytes": 176128,
+      "sha256": "57e30eb23cd104a5e2bd6303d2216ed8de4a51a75700fa02cdd6b9ecec0f3bd3"
+    },
+    {
+      "path": "System/WinDrv.int",
+      "bytes": 681,
+      "sha256": "2817d1521d5bb9fa833f7e1a8d8c91263dd61373d3011b6ba8778c4696161aa3"
+    },
+    {
+      "path": "System/Window.dll",
+      "bytes": 532480,
+      "sha256": "7a3575fe8ccec07272ffdfdb9fb4dd5c328afef7e0885978bd9cb77ba1b20d92"
+    },
+    {
+      "path": "System/Window.int",
+      "bytes": 2091,
+      "sha256": "112e53e265574ec85e7d2717fbaf9618b1b105aafae81479929e639decff2898"
+    },
+    {
+      "path": "System/hp.ico",
+      "bytes": 766,
+      "sha256": "22ecdd2062ea2c401c9861cd96059fc8060e3371c4d5d3bc11adb9ecd83c5064"
+    },
+    {
+      "path": "System/hp.int",
+      "bytes": 119,
+      "sha256": "e10090812b33ef0c1ec7cd3db6133e0fdb319ecb1acf2da571e26fe20177bd80"
+    },
+    {
+      "path": "System/hpcredits.int",
+      "bytes": 6616,
+      "sha256": "ad8a803f3186213d40462ad4f7419d2c687e66ca7a98e5f6689e35e2de1c0c10"
+    },
+    {
+      "path": "System/hpdialog.int",
+      "bytes": 92194,
+      "sha256": "2daf402835dbe3f9d034ed1e20721a0d332aa69b7cada43b09d3855ee0db94a8"
+    },
+    {
+      "path": "Textures/0/MenuArt.eng_utx",
+      "bytes": 709669,
+      "sha256": "62e12dd8dd22ef000d39f09d2cc3c336a0a1a6623702bc04f838e14d98564d86"
+    },
+    {
+      "path": "Textures/1/MenuArt.fre_utx",
+      "bytes": 709669,
+      "sha256": "781f91522e4b517daec21c9e2ebf0c4fb61476b8c54087dbf9f82ed144c94708"
+    },
+    {
+      "path": "Textures/2/MenuArt.ger_utx",
+      "bytes": 709671,
+      "sha256": "303a0dbe4971026b1f3ba5731514671810230417a5ec1a3c1b2a7d998c81d538"
+    },
+    {
+      "path": "Textures/Detail.utx",
+      "bytes": 1729964,
+      "sha256": "42c79438778910108f46a40db91f0d1cb177555075da516031d2e46f00a7d837"
+    },
+    {
+      "path": "Textures/Editor.utx",
+      "bytes": 136963,
+      "sha256": "baf3ac6565d452383dcb7f69b3f930b55291dc77b374da1fac76c92674929870"
+    },
+    {
+      "path": "Textures/FireEng-K.utx",
+      "bytes": 2525,
+      "sha256": "d07fa2a1b11299d7609f17fb6d2a7d6a0846282be961a7119e770c89f20d472f"
+    },
+    {
+      "path": "Textures/FireEng.utx",
+      "bytes": 97702,
+      "sha256": "bc32e68f877a8932b0a2f6f34f2d9f3a6543896f927c98df595cc7408ee40685"
+    },
+    {
+      "path": "Textures/FlareFX.utx",
+      "bytes": 185218,
+      "sha256": "ac4b37733d783936f133c51c7863e422320d4bdacc2cfe842b92ea84b977591e"
+    },
+    {
+      "path": "Textures/FractalFX.utx",
+      "bytes": 1417366,
+      "sha256": "91142ed3f05d9654a772228dc44dbbbd29cd474960216eddd7bf5804053832fd"
+    },
+    {
+      "path": "Textures/GenFX.utx",
+      "bytes": 2189510,
+      "sha256": "42e366fce123f084315f959a6abc1e9e64b12f9ceef531ecb6450a903d52870a"
+    },
+    {
+      "path": "Textures/GreatFire.utx",
+      "bytes": 13215,
+      "sha256": "071187d1d3b5f27a3194cd5386087a0272172e84f276bb0453944da772418262"
+    },
+    {
+      "path": "Textures/HPEdit.utx",
+      "bytes": 126986,
+      "sha256": "0d97ab34542ef8a353bf813a31c324787d9e5cf1ea24bda7505bb78c49043263"
+    },
+    {
+      "path": "Textures/HPFonts.utx",
+      "bytes": 990170,
+      "sha256": "1a1ba643ddaa9090ef50f7a9a64625da5a4933601d9482067dcae90190936cbd"
+    },
+    {
+      "path": "Textures/HP_1st.utx",
+      "bytes": 3500652,
+      "sha256": "657a8bdfb5fe71d51d534bf45bcf49dbb3fee281c79858ea7a3e3125cc7a81bb"
+    },
+    {
+      "path": "Textures/HP_2nd.utx",
+      "bytes": 5550,
+      "sha256": "1550e273b797b1bef95244544f24499b660b7eeeeba2f66cb87766a841197c26"
+    },
+    {
+      "path": "Textures/HP_3rd.utx",
+      "bytes": 2552467,
+      "sha256": "0d09ba0630905af244923e6f05686a2eb461b89387b853a74272ec3331fef72e"
+    },
+    {
+      "path": "Textures/HP_4th.utx",
+      "bytes": 5550,
+      "sha256": "056556f6645f20f9d0f2a9ffff977ab196f514e689f7e0d8724b70bace0b82a2"
+    },
+    {
+      "path": "Textures/HP_5th.utx",
+      "bytes": 5550,
+      "sha256": "06b616815db391afcd023a3be386f8ba276bd65f1fe0a63d1abf9f4fbcf6b79f"
+    },
+    {
+      "path": "Textures/HP_6th.utx",
+      "bytes": 117401,
+      "sha256": "6ba24b262fd564ba254df9d472a5b12a6c9c761917cf0b2e0c0c7370ab1d96a4"
+    },
+    {
+      "path": "Textures/HP_7th.utx",
+      "bytes": 1124177,
+      "sha256": "711db0083e97ce849c61a2ccd6e6e653e4955fe4e782769820144d76585f31c4"
+    },
+    {
+      "path": "Textures/HP_Basic.utx",
+      "bytes": 5874023,
+      "sha256": "cef9f553a2d9d2b10965c91349e4b88b26fb0c39c460142e220c999f25ce40d9"
+    },
+    {
+      "path": "Textures/HP_Bentemp.utx",
+      "bytes": 4090807,
+      "sha256": "1472c504678c93eac8308807556e165a9f55fee0892633e89c430dd39a0a9d24"
+    },
+    {
+      "path": "Textures/HP_BroomTraining.utx",
+      "bytes": 1245544,
+      "sha256": "8f1e0ab5b4f9e5039514b4c163dc4a6c17fc969f7894bb8a499986d362c96111"
+    },
+    {
+      "path": "Textures/HP_C.utx",
+      "bytes": 10435938,
+      "sha256": "da9f9e7c97cca2d433d39e7990d4153c28b5c177fff18550f5f313ee2fb93583"
+    },
+    {
+      "path": "Textures/HP_Dungeon.utx",
+      "bytes": 1596501,
+      "sha256": "3807bf035d12cd9584b4f599f76940340712c1baf5d313fae02aed502786a12d"
+    },
+    {
+      "path": "Textures/HP_Erised.utx",
+      "bytes": 207617,
+      "sha256": "42cd52ba7ead8203b32ce602139dcf42eadb30fb44f3ddb9ebbeb8cbeefa0248"
+    },
+    {
+      "path": "Textures/HP_Exterior.utx",
+      "bytes": 316375,
+      "sha256": "c54a54892b139fbbaf53c5c9a951e28b1e297652895560d16124d144774dd527"
+    },
+    {
+      "path": "Textures/HP_FX.utx",
+      "bytes": 2151020,
+      "sha256": "d41346cf8ca023cedfdc9caba36bae051cf118529da6dfd42113ca73c80104b8"
+    },
+    {
+      "path": "Textures/HP_HagridHut.utx",
+      "bytes": 1178888,
+      "sha256": "0ca51f73e28537d3c6cf6f367b37c197f371b0e64c143c118e47c2ed29b0db84"
+    },
+    {
+      "path": "Textures/HP_K.utx",
+      "bytes": 9069305,
+      "sha256": "23bbac7e763a6a9c30425a32571f5294bd47e0186a680e63c48b5cbda3f18f66"
+    },
+    {
+      "path": "Textures/HP_L500.utx",
+      "bytes": 539817,
+      "sha256": "53f00e5b190f0b722a78ea5062e8edd9fd3adb110fc41ab88fd4933d8026df12"
+    },
+    {
+      "path": "Textures/HP_Logo.utx",
+      "bytes": 264048,
+      "sha256": "cfcbe5c27071dfdcb6d90578905fe419a5c32946eb5a6b7f3cf0b7f114d2cc17"
+    },
+    {
+      "path": "Textures/HP_Outside.utx",
+      "bytes": 5923091,
+      "sha256": "0f890d5bf19b08ee1a696152b04bd4bd5cfbaa5a96a128f6705257765d89befb"
+    },
+    {
+      "path": "Textures/HP_PD.utx",
+      "bytes": 1315677,
+      "sha256": "d23e7872298d698a6c17b26917b07f3f8ca8fc8243be2d8678b182e866b606b2"
+    },
+    {
+      "path": "Textures/HP_Portraits2.utx",
+      "bytes": 809637,
+      "sha256": "e7cdff0c98fdef777dacd67cbc5b12db35a30b86cc74d327459505dac19bbe17"
+    },
+    {
+      "path": "Textures/HP_Quidditch.utx",
+      "bytes": 1295491,
+      "sha256": "ab15df2834e2258bc8d04e4ca33c077b3b840bcc24e8d2e840998d6e470c5ec7"
+    },
+    {
+      "path": "Textures/HP_R.utx",
+      "bytes": 113277,
+      "sha256": "8d064d8c733d6b1e33c1e3201602b67e4fc2b4522d088cfaffe0af92d6250cb4"
+    },
+    {
+      "path": "Textures/HP_Skins.utx",
+      "bytes": 3094271,
+      "sha256": "af1dc3eff945e4c8f68f79bc39ff3eedfe8b957a6f392cfbbe7c1d477527d9db"
+    },
+    {
+      "path": "Textures/HP_Sneak.utx",
+      "bytes": 1001733,
+      "sha256": "ce6dcd74f7bf2fbb64171f15b2a624b05f86943948c7115b7b10808c2c3f956b"
+    },
+    {
+      "path": "Textures/HP_T.utx",
+      "bytes": 10431747,
+      "sha256": "7513a811f4ffb966da64715cebacd1628bc832ff48c039851a37bcdbc371bf91"
+    },
+    {
+      "path": "Textures/HP_Water.utx",
+      "bytes": 47157,
+      "sha256": "1ac2a97a1e3fda9c16a6eebc56bf609a95d445926259469a8ef072cb3e676131"
+    },
+    {
+      "path": "Textures/HP_portrait.utx",
+      "bytes": 647589,
+      "sha256": "38e011dc3f6bcbf575eec13b73ffaeb469b5fc0d3a1459a6fde365d4a7dc2279"
+    },
+    {
+      "path": "Textures/Harry Potter.utx",
+      "bytes": 6117748,
+      "sha256": "8aefbc620a3a68ce27b701cbc5e9f54ba3f305bc256ffb50fde3bb3214fab334"
+    },
+    {
+      "path": "Textures/Hub2_Greenhouse.utx",
+      "bytes": 1278666,
+      "sha256": "2a04ea232f20d8431422b2f98e81be2406b36e06d1949ed3396749ff83d7427f"
+    },
+    {
+      "path": "Textures/Hub5_Devils.utx",
+      "bytes": 671336,
+      "sha256": "95533175dbac5a5b98731c2b832b875d74b4405175115c6fd8d97ff8549fd3ec"
+    },
+    {
+      "path": "Textures/Hub_3_Lumos.utx",
+      "bytes": 942646,
+      "sha256": "f1d5b801d72a8c4e1458f3fc04f8cd0a2727a426e2deb6bb73ae4b6441bd4bb1"
+    },
+    {
+      "path": "Textures/Hub_3_troll.utx",
+      "bytes": 1189249,
+      "sha256": "0a679ce601aef6122aa4d69c7c6664216b35f668b124b13cc43a80d8c23bafc3"
+    },
+    {
+      "path": "Textures/Hub_5_chess.utx",
+      "bytes": 869179,
+      "sha256": "93990cc2dcf0875d604313943174283f2ccdf223e74ffbf8dfa99a4d982a875d"
+    },
+    {
+      "path": "Textures/Jump.utx",
+      "bytes": 162152,
+      "sha256": "9accdf4c7ffe5780583e3b6bf084c0f879ed5d918513dc26004d32fbcbac3d6c"
+    },
+    {
+      "path": "Textures/Lev5_flyingKeys.utx",
+      "bytes": 91635,
+      "sha256": "f17a952125f2fa3361407189d22aeeb88ead32cea0854d242846443930c4321f"
+    },
+    {
+      "path": "Textures/Liquids.utx",
+      "bytes": 14013,
+      "sha256": "25c3c65b414bc65d733a170f6efc337b45d9feb19f08478cd4b6bf1560876367"
+    },
+    {
+      "path": "Textures/MenuArt.hun_utx",
+      "bytes": 708620,
+      "sha256": "effbb48b057e2dda6da9a1f237b3df5476dfe1b5b42adf54d27d050fffa1b43c"
+    },
+    {
+      "path": "Textures/MenuArt.utx",
+      "bytes": 577843,
+      "sha256": "beb083102924a3b454055f1d9b7098fa7bc38a7cc4a50137ced7cbaf1b04a9af"
+    },
+    {
+      "path": "Textures/Palettes.utx",
+      "bytes": 421024,
+      "sha256": "3433145468a72f36e303036811b8d3be61aebd4f68f6c6ae1eb25a9ba2507bec"
+    },
+    {
+      "path": "Textures/Particles.utx",
+      "bytes": 179422,
+      "sha256": "33e7a75dc8d4570f82ed53dc8645552392edf20c4a14b2781ec408eacc1d8eb2"
+    },
+    {
+      "path": "Textures/Skybox.utx",
+      "bytes": 4480754,
+      "sha256": "e23a9e951a14102bf3379ccdd60ceee9f78b7a24c3022f1b9b11889fe05ec2e9"
+    },
+    {
+      "path": "Textures/StoryBookTest.utx",
+      "bytes": 4619966,
+      "sha256": "db6880af1e56caa134cde073dad7f034e90513983b6f924670ea14b31250b201"
+    },
+    {
+      "path": "Textures/UWindowFonts.utx",
+      "bytes": 1755486,
+      "sha256": "91ac2a325d361f46948ebbbda5cf5431add4930e7466667f0fa36819606642c7"
+    },
+    {
+      "path": "Textures/characters.utx",
+      "bytes": 94267,
+      "sha256": "207532d32c2888fc8257c032a6feb06750e4e24aabd748e9eb77e80b28f60ba8"
+    },
+    {
+      "path": "Textures/hp_b.utx",
+      "bytes": 3102906,
+      "sha256": "609dfb324c783fa769bc9c9fcc53443f321b1baa85f868b4506b40f459b5bc04"
+    },
+    {
+      "path": "Textures/jordantemp.utx",
+      "bytes": 965294,
+      "sha256": "3744d808bc1b6c091796e6362a8922b11591f7fb8cb6387eace8701955a2e1e3"
+    }
+  ],
+  "fileCount": 330,
+  "totalBytes": 530761842,
+  "packagesMatchedPreviousRecovery": [
+    "HPBase.u",
+    "Core.u",
+    "HPPuzzle.u",
+    "Engine.u",
+    "Tut1.u",
+    "HarryPotter.u",
+    "HPDialog.u"
+  ],
+  "executableMatchedPreviousRecovery": true
+}

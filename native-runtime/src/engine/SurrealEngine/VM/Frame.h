@@ -1,0 +1,128 @@
+#pragma once
+
+#include "ExpressionValue.h"
+#include "Iterator.h"
+
+class DebuggerWindow;
+class Bytecode;
+class UObject;
+class UFunction;
+class Expression;
+struct ExpressionEvalResult;
+
+enum class FrameRunState
+{
+	Running,
+	DebugBreak,
+	StepInto,
+	StepOver,
+	StepOut
+};
+
+enum class LatentRunState
+{
+	Continue,
+	Stop,
+	Sleep,
+	FinishAnim,
+	FinishInterpolation,
+	MoveTo,
+	MoveToward,
+	StrafeTo,
+	StrafeFacing,
+	TurnTo,
+	TurnToward,
+	WaitForLanding
+};
+
+struct Breakpoint
+{
+	NameString Class;
+	NameString Function;
+	NameString State;
+	Expression* Expr = nullptr;
+	UProperty* Property = nullptr; // For watchpoints. Not implemented yet.
+	bool Enabled = true;
+};
+
+struct Trace
+{
+	NameString Function;
+	std::function<void(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)> Callback;
+	bool Enabled = true;
+};
+
+class Frame
+{
+public:
+	static ExpressionValue Call(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args);
+	static std::string GetCallstack();
+	static std::string GetDisassembly(Expression* statement);
+
+	static bool AddBreakpoint(const NameString& cls, const NameString& func, const NameString& state = {}, int statementIndex = 0);
+	static void AddTrace(const NameString& func, std::function<void(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)> callback);
+
+	static std::function<void()> RunDebugger;
+	static Array<Breakpoint> Breakpoints;
+	static Array<Trace> Traces;
+	static Array<Frame*> Callstack;
+	static FrameRunState RunState;
+	static Frame* StepFrame;
+	static Expression* StepExpression;
+	static std::string ExceptionText;
+	static bool BreakOnError;
+
+	static void Break();
+	static void Resume();
+	static void StepInto();
+	static void StepOver();
+	static void StepOut();
+	static void ThrowException(const std::string& text);
+
+	static std::unique_ptr<Iterator> CreatedIterator;
+
+	Frame(UObject* instance, UStruct* func, size_t statementIndex, bool isStateFrame, UStruct* stateNode = nullptr);
+	~Frame();
+
+	void SetState(UStruct* func);
+	void SetLatentState(LatentRunState state) { LatentState = state; }
+	void GotoLabel(const NameString& label);
+	void Tick();
+
+	UStruct* GetFunc() const { return Func; }
+	UStruct* GetState() const { return StateNode; }
+	void* GetVariables() const { return Variables; }
+	std::string GetName();
+	size_t GetStatementIndex() const { return StatementIndex; }
+	UObject* GetUObject() const { return Object; }
+	LatentRunState GetLatentState() const { return LatentState; }
+
+private:
+	void InitVariables();
+	void DeinitVariables();
+
+	bool IsStateFrame = false;
+	void* Variables = nullptr;
+	UObject* Object = nullptr;
+	UStruct* Func = nullptr;
+	UStruct* StateNode = nullptr;
+	size_t StatementIndex = 0;
+	LatentRunState LatentState = LatentRunState::Continue;
+	Array<std::unique_ptr<Iterator>> Iterators;
+
+	ExpressionEvalResult Run();
+	void ProcessSwitch(const ExpressionValue& condition);
+
+	static ExpressionEvalResult RunExpr(Expression* expr, UObject* self, UObject* context, void* variables);
+	static ExpressionValue CallNative(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args);
+	static void TraceCall(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args);
+
+	struct ActiveCallStackFrame
+	{
+		ActiveCallStackFrame(Frame* frame) { Frame::Callstack.push_back(frame); }
+		~ActiveCallStackFrame() { Frame::Callstack.pop_back(); }
+	};
+
+	Frame(const Frame&) = delete;
+	Frame& operator=(const Frame&) = delete;
+};

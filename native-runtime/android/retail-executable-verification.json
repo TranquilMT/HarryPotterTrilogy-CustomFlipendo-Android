@@ -1,0 +1,10 @@
+{
+  "discPath": "/System/HP.exe",
+  "discOffset": 387540992,
+  "bytes": 1152482,
+  "sha1": "18ba5889e3a3aa221be52dda2eae75e53e52351b",
+  "sha256": "980f74253a5d079cd4cc296d24496c38e00e9920f6e882dd3015e93c1fb8ba9c",
+  "recognizedByPinnedRuntime": true,
+  "classification": "HARRYPOTTER1_433",
+  "windowsExecutableExecuted": false
+}

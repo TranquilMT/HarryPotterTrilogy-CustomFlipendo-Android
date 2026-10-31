@@ -1,0 +1,33 @@
+# Retail game files - user supplies their own copy.
+*.u
+*.unr
+*.utx
+*.uax
+*.umx
+
+# Build output
+/build/
+/out/
+*.idb
+*.i64
+*.til
+*.id0
+*.id1
+*.id2
+*.nam
+
+__pycache__/
+
+# Android build (android/build-apk.sh)
+/build-android/
+/android/apk/
+/android/dist/
+/android/deps/
+/android/debug.keystore
+/logs-*.zip
+/*logs*.zip
+/movement*.zip
+/texture-packs/
+/*.7z
+/Sounds-Rus*/
+*.u

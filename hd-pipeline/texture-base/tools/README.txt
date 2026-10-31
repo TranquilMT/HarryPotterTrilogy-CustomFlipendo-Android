@@ -1,0 +1,1 @@
+Set HP_GAME_DIR to an extracted original game folder, HP_HD_WORK to an output working folder, and run python build_hd_pack.py --jobs 4. Requires Python 3.12 and Pillow 12.3. The original packages are never modified. Inputs can be recovered from the bundled APK assets/gamedata subtree.
