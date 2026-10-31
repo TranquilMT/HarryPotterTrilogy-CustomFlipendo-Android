@@ -576,8 +576,21 @@ public class SetupActivity extends Activity {
         });
         col.addView(hdToggle);
         TextView hdHint = new TextView(this); hdHint.setTextColor(INK_MUTED); hdHint.setTextSize(12);
-        hdHint.setText("Both HD packs are included. Enable them separately for each game. First use installs the selected game's textures; switching off restores original textures.");
+        hdHint.setText("HD packs are optional downloads from the project repository. Import packs for the selected game, then enable HD textures. Switching off restores original textures.");
         col.addView(hdHint);
+        android.widget.Button manageHd = new android.widget.Button(this);
+        manageHd.setText("Import or remove HD packs");
+        manageHd.setOnClickListener(v -> {
+            if (!gameReady || gameDir == null) {
+                android.widget.Toast.makeText(this, "Set up the selected game first.", android.widget.Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent packs = new Intent(this, HDPackActivity.class);
+            packs.putExtra("hp2", isHp2());
+            packs.putExtra("directory", gameDir);
+            startActivityForResult(packs, 79);
+        });
+        col.addView(manageHd);
         return col;
     }
 
@@ -592,7 +605,7 @@ public class SetupActivity extends Activity {
         refreshingHdToggle = false;
     }
 
-    static final String PREF_HD = "hdTextures"; // tr("HD textures"): on by default where the APK carries the packs
+    static final String PREF_HD = "hdTextures"; // Legacy texture preference; new profile switches default off.
 
     static final String PREF_HD_ZIP = "hdZip"; // an APK without packs: the zip the player chose (a content:// URI)
     private static final int REQUEST_PICK_HD = 13;
@@ -1088,6 +1101,7 @@ public class SetupActivity extends Activity {
         }
         showRenderer(); // readable only once storage access is granted
         refreshSlots();
+        refreshHdToggle();
         if (splashUntil == Long.MAX_VALUE) {
             splashUntil = android.os.SystemClock.uptimeMillis() + 800; // back from the channel
             tryStart();
@@ -3113,3 +3127,4 @@ public class SetupActivity extends Activity {
         }
     }
 }
+

@@ -35,7 +35,9 @@
             android:screenOrientation="sensorLandscape" android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
             android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
         <activity android:name="io.github.flipendo.spike.GameZipImportActivity" android:exported="false" android:process=":setup" android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
+        <activity android:name="io.github.flipendo.spike.HDPackActivity" android:exported="false" android:process=":setup" android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen"/>
         <provider android:name="io.github.flipendo.spike.ReportProvider" android:authorities="com.tranquil.hp1native.reports"
             android:exported="false" android:grantUriPermissions="true"/>
     </application>
 </manifest>
+

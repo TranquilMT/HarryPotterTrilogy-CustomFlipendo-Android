@@ -8,14 +8,14 @@ root=pathlib.Path(__file__).resolve().parent;bt=pathlib.Path(a.sdk).resolve()/'b
 def run(args):subprocess.run(list(map(str,args)),check=True)
 sources=sorted((root/'java').rglob('*.java'))+sorted((root/'deps/SDL/android-project/app/src/main/java/org/libsdl/app').glob('*.java'))
 run(['java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-Xlint:-options','-cp',jar,'-d',classes,*sources]);arg=stage/'classes.list';arg.write_text('\n'.join(str(x) for x in sorted(classes.rglob('*.class'))));run([bt/'d8','--lib',jar,'--min-api','29','--output',stage,'@'+str(arg)])
-run([bt/'aapt2','compile','--dir',root/'res','-o',stage/'res.zip']);run([bt/'aapt2','link','-o',stage/'base.apk','--manifest',root/'AndroidManifest.xml','-I',jar,'-R',stage/'res.zip','--min-sdk-version','29','--target-sdk-version','35','--version-code','5','--version-name','0.3.0-tq'])
+run([bt/'aapt2','compile','--dir',root/'res','-o',stage/'res.zip']);run([bt/'aapt2','link','-o',stage/'base.apk','--manifest',root/'AndroidManifest.xml','-I',jar,'-R',stage/'res.zip','--min-sdk-version','29','--target-sdk-version','35','--version-code','7','--version-name','0.3.2-tq'])
 unsigned=stage/'unsigned.apk';shutil.copyfile(stage/'base.apk',unsigned);native={}
 with zipfile.ZipFile(a.runtime_apk) as old,zipfile.ZipFile(unsigned,'a',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
  for name in old.namelist():
-  if name.startswith(('lib/','assets/')) and not name.endswith('/') and not name.startswith(('assets/gamedata/','assets/hp2data/','assets/texpacks/')) and name!='assets/build-info.txt':
+  if name.startswith(('lib/','assets/')) and not name.endswith('/') and not name.startswith(('assets/gamedata/','assets/hp2data/','assets/texpacks/')) and name!='assets/build-info.txt' and not name.startswith('assets/bundled-hd/'):
    data=old.read(name);z.writestr(name,data)
    if name.startswith('lib/'):native[name]=hashlib.sha256(data).hexdigest()
- z.write(stage/'classes.dex','classes.dex');z.writestr('assets/build-info.txt','Harry Potter TQ 0.3.0: HP1/HP2 launcher, automatic configuration repair, profile-isolated optional HD modules. POA disabled. Native runtime unchanged from 0.1.0.\n')
+ z.write(stage/'classes.dex','classes.dex');z.writestr('assets/build-info.txt','Harry Potter TQ 0.3.2: HP1/HP2 launcher, automatic configuration repair, optional external HD packs. POA disabled. Native runtime unchanged from 0.1.0.\n')
  for f in sorted((root/'launcher-assets').rglob('*')):
   if f.is_file():z.write(f,'assets/'+f.relative_to(root/'launcher-assets').as_posix())
  game=pathlib.Path(a.hp2_data);assert (game/'System/Game.exe').is_file() and (game/'System/HGame.u').is_file();stamp=hashlib.sha256();count=0
@@ -31,4 +31,5 @@ with zipfile.ZipFile(out) as z:
  for name,h in native.items():assert hashlib.sha256(z.read(name)).hexdigest()==h
  for game in ('hp1','hp2'):
   for config in ('Default.ini','DefUser.ini'):assert len(z.read('assets/defaults/'+game+'/'+config))>0
-report={'version':'0.3.0-tq','bytes':out.stat().st_size,'sha256':hashlib.file_digest(out.open('rb'),'sha256').hexdigest(),'bundledHP2Files':count,'nativeLibrariesUnchanged':native,'deviceExecutionTested':False};out.with_suffix('.verification.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+report={'version':'0.3.2-tq','bytes':out.stat().st_size,'sha256':hashlib.file_digest(out.open('rb'),'sha256').hexdigest(),'bundledHP2Files':count,'nativeLibrariesUnchanged':native,'deviceExecutionTested':False};out.with_suffix('.verification.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+

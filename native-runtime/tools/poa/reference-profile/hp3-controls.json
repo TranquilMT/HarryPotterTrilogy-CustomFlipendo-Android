@@ -1,0 +1,222 @@
+{
+  "status": "mapping-only; no Android runtime integration yet",
+  "source": "system/defuser.ini",
+  "originalBindings": {
+    "LeftMouse": "Fire",
+    "RightMouse": "Jump | WingFlap | bWingFlap",
+    "MiddleMouse": "Zoom",
+    "Tab": "ShowMap",
+    "Enter": "Use | BypassCutscene | EndCreaturePossess",
+    "Shift": "Walking",
+    "Ctrl": "Jump | WingFlap | bWingFlap",
+    "Alt": "Fire",
+    "Pause": "Pause",
+    "Escape": "ShowMenu",
+    "Space": "Jump | EndCOMCPopup | WingFlap | bWingFlap",
+    "End": "CenterView | ACTOR ALIGN SNAPTOFLOOR ALIGN=1",
+    "Left": "TURNLEFT",
+    "Up": "Axis aArrowUp SpeedBase=0.7",
+    "Right": "TURNRIGHT",
+    "Down": "Axis aArrowUp SpeedBase=0.7 Invert=-1",
+    "S": "MoveBackward",
+    "F9": "shot",
+    "MouseX": "Count bXAxis | Axis aMouseX Speed=6.0",
+    "MouseY": "Count bYAxis | Axis aMouseY Speed=6.0",
+    "home": "CenterView | ACTOR ALIGN SNAPTOFLOOR ALIGN=0",
+    "PrintScrn": "shot",
+    "A": "StrafeLeft",
+    "D": "StrafeRight",
+    "W": "MoveForward",
+    "NumPad0": "set playercontroller bZeroRoll False | set playercontroller rotation (pitch=0,yaw=0,roll=16384)",
+    "NumPad1": "set playercontroller bZeroRoll False | set playercontroller rotation (pitch=0,yaw=32768,roll=-16384)",
+    "numPad2": "MoveBackward",
+    "NumPad3": "set playercontroller bZeroRoll False | set playercontroller rotation (pitch=0,yaw=-16384,roll=0)",
+    "numPad4": "StrafeLeft",
+    "NumPad5": "set playercontroller bZeroRoll False | set playercontroller rotation (pitch=-16384,yaw=0,roll=16384)",
+    "numPad6": "StrafeRight",
+    "NumPad7": "MoveUp",
+    "NumPad8": "MoveForward",
+    "NumPad9": "MoveDown",
+    "SingleQuote": "Strafe",
+    "MouseWheelDown": "PrevSkill",
+    "MouseWheelUp": "NextSkill"
+  },
+  "originalAliases": [
+    {
+      "key": "Aliases[0]",
+      "value": "(Command=\"Button bFire | Fire\",Alias=Fire)"
+    },
+    {
+      "key": "Aliases[1]",
+      "value": "(Command=\"Button bAltFire | AltFire\",Alias=AltFire)"
+    },
+    {
+      "key": "Aliases[2]",
+      "value": "(Command=\"Axis aBaseY  Speed=+1200.0\",Alias=MoveForward)"
+    },
+    {
+      "key": "Aliases[3]",
+      "value": "(Command=\"Axis aBaseY  Speed=-1200.0\",Alias=MoveBackward)"
+    },
+    {
+      "key": "Aliases[4]",
+      "value": "(Command=\"Axis aArrowRight SpeedBase=0.9 Invert=-1\",Alias=TurnLeft)"
+    },
+    {
+      "key": "Aliases[5]",
+      "value": "(Command=\"Axis aArrowRight SpeedBase=0.9\",Alias=TurnRight)"
+    },
+    {
+      "key": "Aliases[6]",
+      "value": "(Command=\"Axis aStrafe Speed=-1200.0\",Alias=StrafeLeft)"
+    },
+    {
+      "key": "Aliases[7]",
+      "value": "(Command=\"Axis aStrafe Speed=+1200.0\",Alias=StrafeRight)"
+    },
+    {
+      "key": "Aliases[8]",
+      "value": "(Command=\"Jump | Axis aUp Speed=+1200.0\",Alias=Jump)"
+    },
+    {
+      "key": "Aliases[9]",
+      "value": "(Command=\"Button bDuck | Axis aUp Speed=-1200.0\",Alias=Duck)"
+    },
+    {
+      "key": "Aliases[10]",
+      "value": "(Command=\"Button bLook\",Alias=Look)"
+    },
+    {
+      "key": "Aliases[11]",
+      "value": "(Command=\"Toggle bLook\",Alias=LookToggle)"
+    },
+    {
+      "key": "Aliases[12]",
+      "value": "(Command=\"ActivateItem\",Alias=InventoryActivate)"
+    },
+    {
+      "key": "Aliases[13]",
+      "value": "(Command=\"NextItem\",Alias=InventoryNext)"
+    },
+    {
+      "key": "Aliases[14]",
+      "value": "(Command=\"PrevItem\",Alias=InventoryPrevious)"
+    },
+    {
+      "key": "Aliases[15]",
+      "value": "(Command=\"Axis aLookUp Speed=+25.0\",Alias=LookUp)"
+    },
+    {
+      "key": "Aliases[16]",
+      "value": "(Command=\"Axis aLookUp Speed=-25.0\",Alias=LookDown)"
+    },
+    {
+      "key": "Aliases[17]",
+      "value": "(Command=\"Button bSnapLevel\",Alias=CenterView)"
+    },
+    {
+      "key": "Aliases[18]",
+      "value": "(Command=\"Button bRun\",Alias=Walking)"
+    },
+    {
+      "key": "Aliases[19]",
+      "value": "(Command=\"Button bStrafe\",Alias=Strafe)"
+    },
+    {
+      "key": "Aliases[20]",
+      "value": "(Command=\"NextWeapon\",Alias=NextWeapon)"
+    },
+    {
+      "key": "Aliases[21]",
+      "value": "(Command=\"ActivateTranslator\",Alias=ActivateTranslator)"
+    },
+    {
+      "key": "Aliases[22]",
+      "value": "(Command=\"ActivateHint\",Alias=ActivateHint)"
+    },
+    {
+      "key": "Aliases[23]",
+      "value": "(Command=\"Button bFreeLook\",Alias=FreeLook)"
+    },
+    {
+      "key": "Aliases[24]",
+      "value": "(Command=\"ViewClass Pawn\",Alias=ViewTeam)"
+    },
+    {
+      "key": "Aliases[25]",
+      "value": "(Command=\"Button bTurnToNearest\",Alias=TurnToNearest)"
+    },
+    {
+      "key": "Aliases[26]",
+      "value": "(Command=\"Button bTurn180\",Alias=Turn180)"
+    },
+    {
+      "key": "Aliases[27]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[28]",
+      "value": "(Command=\"Axis aUp Speed=+1200.0\",Alias=MoveUp)"
+    },
+    {
+      "key": "Aliases[29]",
+      "value": "(Command=\"Axis aUp Speed=-1200.0\",Alias=MoveDown)"
+    },
+    {
+      "key": "Aliases[30]",
+      "value": "(Command=\"Button bFlap | AltFire\",Alias=bWingFlap)"
+    },
+    {
+      "key": "Aliases[31]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[32]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[33]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[34]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[35]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[36]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[37]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[38]",
+      "value": "(Command=\"\",Alias=None)"
+    },
+    {
+      "key": "Aliases[39]",
+      "value": "(Command=\"\",Alias=None)"
+    }
+  ],
+  "touchProposal": {
+    "leftStick": [
+      "MoveForward",
+      "MoveBackward",
+      "StrafeLeft",
+      "StrafeRight"
+    ],
+    "look": "relative camera input; engine adapter pending",
+    "cast": "Fire",
+    "jump": "Jump | EndCOMCPopup | WingFlap | bWingFlap",
+    "interact": "Use | BypassCutscene | EndCreaturePossess",
+    "map": "ShowMap",
+    "menu": "ShowMenu",
+    "zoom": "Zoom",
+    "walk": "Walking"
+  }
+}
