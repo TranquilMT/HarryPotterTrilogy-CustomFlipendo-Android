@@ -1,12 +1,14 @@
 # Harry Potter Trilogy — Custom Flipendo Android
 
-Private development repository for William Utting's Android port work.
+HARRY POTTER 1/2/3 ported to Mobile!
+
+# The Harry Potter Trilogy is still *WorkInProgress* and will be recieving constant updates and more additions via mods or texture upgrades.
 
 ## Downloads: v0.3.3
 
 [Release and APK downloads](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.3.3). Sign into an account with repository access.
 
-The locally built v0.3.3 APK bundles HP1 and Chamber of Secrets, includes Default.ini/DefUser.ini repair, and retains the app signing certificate. Prisoner of Azkaban remains disabled. User reports HP1 works and HP2 is playable with issues; POA is not playable.
+The built v0.3.3 APK bundles HP1 and Chamber of Secrets, includes Default.ini/DefUser.ini repair, and retains the app signing certificate. Prisoner of Azkaban remains disabled. User reports HP1 works and HP2 is playable with issues; POA is not playable.
 
 ## OPTIONAL HD TEXTURE PACK — compatibility fix
 
@@ -21,3 +23,22 @@ The recovered native runtime, Android launcher, dependency sources, build script
 The older 0.3.1 draft preserves its source archive, installation notes, verification and checksums. No standalone HD texture ZIPs were attached to that draft. Its HD-bundled description is historical and does not describe the v0.3.3 APK.
 
 Original signing keys and passwords must stay private and must never be committed or attached to a release.
+
+##
+
+Release Notes:
+
+HARRY POTTER : TPS (1)
+(100% GAME READY)
+
+HARRY POTTER : TCoS (2)
+(80~90% GAME READY)
+
+**missing game menu and select other items and some bugs are still there, currently being looked into and fixed in a later version update.**
+
+HARRY POTTER : PoA (3)
+(0% GAME READY)
+
+**ISO has been imported through the upload site and engine compatibility from UE1.0 -> UE2.0 is currently on the way.*
+
+**POA WORK WILL BEGIN AFTER COS FIXES AND IMPROVEMENTS ARE MADE**
