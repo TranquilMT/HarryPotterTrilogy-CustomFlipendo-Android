@@ -248,6 +248,7 @@ Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/veri
 
 | Date | Phase / task | Commit or PR | Automated tests | Android playtest | Outcome / blocker |
 |---|---|---|---|---|---|
+| 2026-11-02 | Batch A: HP3 UE2 compatibility matrix + hp3 notes (design only; HP3 stays disabled) | 7350d2e | docs only | Not run | No runtime changes; UE2 profile not implemented |
 | 2026-11-02 | Adopt 0.4.3 source checkpoint; port Italian HP1 detection (issue #15); add Windows ARM64 build pipeline; reconcile git history on top of 0.4.2 main | ad59709 | Python release/preflight/both-games tests pass; host tests not rerun | Not run | No new APK; test-signed 0.4.3 build pending user request; HP3 remains disabled |
 | 2026-10-31 | Roadmap baseline captured | Documentation only | Not run | User reports HP1 playable; HP2 playable with issues; HD pack install success but freeze occurred | No engine fixes claimed |
 
