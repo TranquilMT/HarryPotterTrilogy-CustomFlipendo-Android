@@ -330,9 +330,11 @@ public class SetupActivity extends Activity {
         unavailable.setContentDescription("Prisoner of Azkaban. Experimental. Tap to test.");
         unavailable.setOnClickListener(v -> {
             getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, "hp3").apply();
-            File f = locateGame(false);
-            if (f != null) { gameDir = f.getPath(); gameReady = true; tryStart(); }
-            else { android.widget.Toast.makeText(this, "No HP3 folder found. Copy game data to /sdcard/FlipendoHP3 or pick a folder in Settings.", android.widget.Toast.LENGTH_LONG).show(); }
+            try {
+                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_PICK_HP3);
+            } catch (RuntimeException e) {
+                android.widget.Toast.makeText(this, "No folder picker on this phone: copy the game to /sdcard/FlipendoHP3 instead", android.widget.Toast.LENGTH_LONG).show();
+            }
         });
         LinearLayout.LayoutParams disabledLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         disabledLayout.topMargin = dp(8); shelf.addView(unavailable, disabledLayout);
@@ -2013,6 +2015,21 @@ public class SetupActivity extends Activity {
             }
             getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_HD_ZIP, zip.toString()).putBoolean(PREF_HD, true).apply();
             android.widget.Toast.makeText(this, displayName(this, zip) + tr(" will be unpacked when you press Play"), android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (requestCode == REQUEST_PICK_HP3) {
+            if (resultCode == RESULT_OK && data != null) {
+                String picked = treeUriToPath(data.getData());
+                if (picked == null) {
+                    android.widget.Toast.makeText(this, "That place can't be read as a folder", android.widget.Toast.LENGTH_LONG).show();
+                } else if (GameFiles.findHp3(new File(picked), 2) == null) {
+                    android.widget.Toast.makeText(this, "No Prisoner of Azkaban in " + picked + " (System/hppoa.exe not found)", android.widget.Toast.LENGTH_LONG).show();
+                } else {
+                    getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME_DIR, picked).apply();
+                    foldersChanged = true;
+                    android.widget.Toast.makeText(this, "HP3 folder set. Press Play.", android.widget.Toast.LENGTH_LONG).show();
+                }
+            }
             return;
         }
         if (requestCode == REQUEST_PICK_HP1 || requestCode == REQUEST_PICK_HP2) {
