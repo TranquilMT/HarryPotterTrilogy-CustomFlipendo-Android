@@ -1,0 +1,306 @@
+{
+  "totalU": 12,
+  "ue2Count": 12,
+  "files": [
+    {
+      "path": "system/HGame.u",
+      "size": 11253595,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 8464,
+        "nameOffset": 64,
+        "exportCount": 11194,
+        "exportOffset": 11064356,
+        "importCount": 2108,
+        "importOffset": 11046294,
+        "guid": [
+          1355874082,
+          1153728571,
+          3467448206,
+          3037810994
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/Engine.u",
+      "size": 2518546,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 6134,
+        "nameOffset": 64,
+        "exportCount": 9697,
+        "exportOffset": 2359597,
+        "importCount": 106,
+        "importOffset": 2358652,
+        "guid": [
+          1035637369,
+          1117481306,
+          959857087,
+          254253880
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/Decorations.u",
+      "size": 607980,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 95,
+        "nameOffset": 64,
+        "exportCount": 30,
+        "exportOffset": 607487,
+        "importCount": 18,
+        "importOffset": 607329,
+        "guid": [
+          3690070450,
+          1316698818,
+          115403667,
+          2602820693
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/AmbientCreatures.u",
+      "size": 342062,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 405,
+        "nameOffset": 64,
+        "exportCount": 467,
+        "exportOffset": 334484,
+        "importCount": 125,
+        "importOffset": 333378,
+        "guid": [
+          2201566149,
+          1081881298,
+          2813852825,
+          948244785
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/Editor.u",
+      "size": 514570,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 299,
+        "nameOffset": 64,
+        "exportCount": 381,
+        "exportOffset": 508673,
+        "importCount": 43,
+        "importOffset": 508289,
+        "guid": [
+          141652685,
+          1129052224,
+          3790247853,
+          3341943896
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/UWindow.u",
+      "size": 377056,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 5,
+        "nameCount": 1394,
+        "nameOffset": 64,
+        "exportCount": 3459,
+        "exportOffset": 321762,
+        "importCount": 101,
+        "importOffset": 320862,
+        "guid": [
+          2907655993,
+          1079864093,
+          1402519942,
+          2507473061
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/GUI.u",
+      "size": 146510,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 1262,
+        "nameOffset": 64,
+        "exportCount": 2204,
+        "exportOffset": 110926,
+        "importCount": 121,
+        "importOffset": 109813,
+        "guid": [
+          975918352,
+          1227228912,
+          898199680,
+          2047797869
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/UDebugMenu.u",
+      "size": 246112,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 646,
+        "nameOffset": 64,
+        "exportCount": 1186,
+        "exportOffset": 227129,
+        "importCount": 308,
+        "importOffset": 224387,
+        "guid": [
+          2668984722,
+          1199988932,
+          620257410,
+          3007712363
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/GamePlay.u",
+      "size": 109148,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 853,
+        "nameOffset": 64,
+        "exportCount": 1224,
+        "exportOffset": 89268,
+        "importCount": 207,
+        "importOffset": 87421,
+        "guid": [
+          22551560,
+          1180705577,
+          2136998034,
+          4127863899
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/Core.u",
+      "size": 78510,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 457,
+        "nameOffset": 64,
+        "exportCount": 865,
+        "exportOffset": 64726,
+        "importCount": 19,
+        "importOffset": 64556,
+        "guid": [
+          3694994139,
+          1253832056,
+          3084339639,
+          3261777453
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "system/Fire.u",
+      "size": 6784,
+      "source": "archive",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 173,
+        "nameOffset": 64,
+        "exportCount": 110,
+        "exportOffset": 5135,
+        "importCount": 15,
+        "importOffset": 5003,
+        "guid": [
+          3206359199,
+          1133297391,
+          2429988230,
+          3565503291
+        ],
+        "generationCount": 1
+      }
+    },
+    {
+      "path": "System/kwGame.u",
+      "size": 1589327,
+      "source": "disc",
+      "ue2": true,
+      "header": {
+        "magic": 2653586369,
+        "fileVersion": 129,
+        "licenseeVersion": 0,
+        "flags": 1,
+        "nameCount": 5153,
+        "nameOffset": 64,
+        "exportCount": 8587,
+        "exportOffset": 1448315,
+        "importCount": 828,
+        "importOffset": 1440921,
+        "guid": [
+          1203248001,
+          1287608860,
+          3456426398,
+          697948636
+        ],
+        "generationCount": 1
+      }
+    }
+  ]
+}
