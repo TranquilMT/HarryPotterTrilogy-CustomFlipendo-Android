@@ -248,6 +248,7 @@ Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/veri
 
 | Date | Phase / task | Commit or PR | Automated tests | Android playtest | Outcome / blocker |
 |---|---|---|---|---|---|
+| 2026-11-02 | Batch E: UE2 header extended (depends offset + generation count) + 3 tests; native function mapping doc (Batch F) | 5091709 | 10/10 tests pass | Not run | No ISO used yet; parser ready for real data |
 | 2026-11-02 | Batch C: src/hp3 skeleton + HP3_ENABLED guard (default off) + host tests | 5091709 | 5/5 tests pass | Not run | HP3 still disabled; no C++ compile yet |
 | 2026-11-02 | Batch D: HP3 native registration placeholder (empty, guarded) | 5091709 | docs/tests only | Not run | Native mapping tracked in PoA roadmap; no bodies implemented |
 | 2026-11-02 | Batch B: isolated UE2 package header validator + 7 tests (no engine changes) | a8eecd9 | 7/7 tests pass | Not run | HP3 still disabled |

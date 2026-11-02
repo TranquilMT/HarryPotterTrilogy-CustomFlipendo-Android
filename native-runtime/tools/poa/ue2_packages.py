@@ -14,13 +14,14 @@ UE2_MIN_VERSION = 100  # PoA observed version is 129
 def parse_ue2_header(data):
     """Return a dict of leading UE2 package fields, or raise ValueError.
 
-    The first 36 bytes are common to UE1 and UE2. UE2 packages carry a
-    version >= UE2_MIN_VERSION. Additional fields exist but are not required
-    for the minimal header check.
+    The first 40 bytes are common to UE1 and UE2. UE2 packages carry a
+    version >= UE2_MIN_VERSION. The depends table offset (UE2+) and the
+    generation count are parsed when present; UE1 packages report 0.
+    Additional fields exist but are not required for the minimal header check.
     """
     if not isinstance(data, (bytes, bytearray)):
         raise ValueError('package data must be bytes')
-    if len(data) < 36:
+    if len(data) < 40:
         raise ValueError('package too short for header')
     magic, version, flags = struct.unpack_from('<III', data, 0)
     if magic != UE_MAGIC:
@@ -32,8 +33,10 @@ def parse_ue2_header(data):
     name_count, name_offset = struct.unpack_from('<ii', data, 12)
     export_count, export_offset = struct.unpack_from('<ii', data, 20)
     import_count, import_offset = struct.unpack_from('<ii', data, 28)
+    depends_offset = struct.unpack_from('<i', data, 36)[0]
+    generation_count = struct.unpack_from('<i', data, 40)[0] if len(data) >= 44 else 0
     for label, value in (('nameCount', name_count), ('exportCount', export_count),
-                        ('importCount', import_count)):
+                        ('importCount', import_count), ('generationCount', generation_count)):
         if value < 0:
             raise ValueError('negative %s' % label)
     for label, off, count in (('name', name_offset, name_count),
@@ -41,6 +44,8 @@ def parse_ue2_header(data):
                               ('import', import_offset, import_count)):
         if count and (off < 0 or off >= len(data)):
             raise ValueError('%s table offset out of range' % label)
+    if depends_offset and (depends_offset < 0 or depends_offset >= len(data)):
+        raise ValueError('depends table offset out of range')
     return {
         'magic': magic,
         'fileVersion': file_version,
@@ -52,6 +57,8 @@ def parse_ue2_header(data):
         'exportOffset': export_offset,
         'importCount': import_count,
         'importOffset': import_offset,
+        'dependsOffset': depends_offset,
+        'generationCount': generation_count,
     }
 
 
