@@ -173,6 +173,14 @@ public class SetupActivity extends Activity {
             root.addView(scroll, bodyLp);
             root.addView(footer, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
+        TextView buildTag = new TextView(this);
+        buildTag.setText("Build 0.4.5 (code 46)");
+        buildTag.setTextColor(0x80FFFFFF); buildTag.setTextSize(10);
+        buildTag.setGravity(android.view.Gravity.CENTER);
+        LinearLayout.LayoutParams btl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        btl.topMargin = dp(4); btl.bottomMargin = dp(4);
+        root.addView(buildTag, btl);
+
         showGame();
         startScreen = root;
         setContentView(startScreen);
@@ -314,8 +322,8 @@ public class SetupActivity extends Activity {
         shelf.setOrientation(LinearLayout.VERTICAL);
         shelf.addView(row, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
         TextView unavailable = new TextView(this);
-        unavailable.setText("PRISONER OF AZKABAN\nNot working yet · compatibility work in progress");
-        unavailable.setTextColor(0xFF989BA5); unavailable.setTextSize(12);
+        unavailable.setText("PRISONER OF AZKABAN\nExperimental - tap to test");
+        unavailable.setTextColor(0xFFE0C080); unavailable.setTextSize(12);
         unavailable.setPadding(dp(12), dp(8), dp(12), dp(8));
         unavailable.setBackground(rounded(0x333D414B, 12, 0x445D626D));
         unavailable.setEnabled(true); unavailable.setFocusable(true); unavailable.setAlpha(1.0f);
