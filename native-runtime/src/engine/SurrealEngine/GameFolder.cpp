@@ -71,6 +71,25 @@ GameLaunchInfo GameFolderSelection::ExamineFolder(const std::string& path, std::
 
 	auto ue1_game = FindUE1GameInPath(path, problem);
 
+	// HP3 (Prisoner of Azkaban) is a UE2 game (hppoa.exe); not covered by the
+	// UE1 SHA1 database. Detect it by executable presence so it can be selected
+	// for testing. UE2 container reading is supported; deeper serialization is
+	// still in progress (HP3 remains experimental).
+	if (ue1_game.first == KnownUE1Games::UE1_GAME_NOT_FOUND)
+	{
+		const auto hppoaPath = File::find_ignoring_case(fs::path(path) / "System" / "hppoa.exe");
+		if (fs::exists(hppoaPath))
+		{
+			info.gameRootFolder = path;
+			info.gameExecutableName = "hppoa";
+			info.gameName = "Harry Potter and the Prisoner of Azkaban";
+			info.gameVersion = 129;
+			info.gameSubVersion = 0;
+			info.gameVersionString = "129";
+			return info;
+		}
+	}
+
 	if (ue1_game.first != KnownUE1Games::UE1_GAME_NOT_FOUND)
 	{
 		info.gameRootFolder = path;

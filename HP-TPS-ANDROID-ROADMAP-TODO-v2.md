@@ -248,6 +248,7 @@ Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/veri
 
 | Date | Phase / task | Commit or PR | Automated tests | Android playtest | Outcome / blocker |
 |---|---|---|---|---|---|
+| 2026-11-02 | Engine: HP3 game folder detection (hppoa.exe -> HP3 entry); build verified EXIT 0 | 05f90c4 | build exit 0 | Not run | HP3 selectable but UE2 serialization/VM not yet ported |
 | 2026-11-02 | Engine: add IsUE2() to Package; LogMessage on UE2 package load; build verified EXIT 0 | 05f90c4 | build exit 0 | Not run | Foundation only; no HP3 runtime path yet |
 | 2026-11-02 | Build verified on Windows (subst X:): 0.4.3 APK built+signed+aligned+payload hashes verified; openal version-script quoting fix | 05f90c4 | build exit 0 | Not run | APK is test-signed (will not install over 0.4.2) |
 | 2026-11-02 | Allow UE2 package versions (100-177) in Package::ReadTables; verified via Unreal wiki (UT2004=128) and real PoA disc (129) | dd25cbe | engine change; build in progress | Not run | HP3 still not loaded; game folder selection excludes hppoa |
