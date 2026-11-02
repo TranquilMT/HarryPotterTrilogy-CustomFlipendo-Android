@@ -21,4 +21,3 @@ See `docs/HP3-UE2-COMPATIBILITY-MATRIX.md` and `docs/HP3-POA-UE2-FULL-COMPATIBIL
 - Native functions: map and verify before use; unsupported natives fail closed with identities.
 - Bytecode VM: version-aware decode; validate against retail packages.
 - No APK/playability claims until a real PoA startup test passes.
-'@, "C:\\Users\\TSGxR\\Documents\\Default Project\\hp-tps-work\\native-runtime\\docs\\re\\hp3\\README.md")

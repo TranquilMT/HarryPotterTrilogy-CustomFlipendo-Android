@@ -39,4 +39,3 @@ Each entry must be verified against retail PoA data before implementation.
 - Profile-specific bindings prevent PoA indices from replacing HP1/HP2 registrations.
 - Unsupported natives fail closed with useful identities; never return dummy success.
 - No bodies until retail data confirms semantics.
-'@, "C:\\Users\\TSGxR\\Documents\\Default Project\\hp-tps-work\\native-runtime\\docs\\re\\hp3\\NATIVE-FUNCTION-MAPPING.md")

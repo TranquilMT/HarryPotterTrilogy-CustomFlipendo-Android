@@ -168,6 +168,9 @@ with zipfile.ZipFile(unsigned, 'a', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
             stamp.update(bytes.fromhex(row['sha256']))
             z.write(game_root / row['path'], prefix + row['path'])
         z.writestr(prefix + '.stamp', stamp.hexdigest())
+
+# Verify after the archive is closed so central directory and headers agree.
+with zipfile.ZipFile(unsigned, 'r') as z:
     verify_bundled_games(z, *inventories)
 
 run([zipalign, '-f', '-P', '16', '4', unsigned, stage / 'aligned.apk'])

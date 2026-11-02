@@ -76,4 +76,3 @@ Status: **design only**. HP3 remains disabled/experimental. No APK, first frame,
 - `docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md` (master backlog)
 - `docs/POA-PRODUCTION-ARCHITECTURE.md` (architecture decision)
 - `native-runtime/docs/re/hp3/` (implementation notes)
-'@, "$cur\docs\HP3-UE2-COMPATIBILITY-MATRIX.md"); "written"
