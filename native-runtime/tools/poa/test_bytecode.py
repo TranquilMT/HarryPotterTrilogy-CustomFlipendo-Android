@@ -20,3 +20,4 @@ class BytecodeTests(unittest.TestCase):
  def test_ue2_primitive_cast_is_distinct_from_ue1_conversion(self):
   result=self.decode([0x39,0x3a,0x2c,7],4);self.assertEqual(result['tokens'],2)
 if __name__=='__main__':unittest.main()
+

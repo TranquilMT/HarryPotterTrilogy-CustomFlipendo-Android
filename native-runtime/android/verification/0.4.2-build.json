@@ -1,0 +1,68 @@
+{
+  "versionName": "0.4.2",
+  "versionCode": 43,
+  "signingCertificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
+  "apk": "/workspace/scratch/9b9b95fc0c72/hp-rebuild/native-runtime/android/dist-menu-fix/Harry-Potter-TQ-0.4.2-Both-Games.apk",
+  "bytes": 718674960,
+  "sha256": "f408e04ee8c753d53ec3c8c487429a66094265fe84824da1def675d1e4eac9f5",
+  "nativeLibraries": [
+    "libmain.so",
+    "libSDL3.so",
+    "libopenal.so",
+    "libSurrealVideo.so"
+  ],
+  "elfVerification": [
+    {
+      "path": "lib/arm64-v8a/libSDL3.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libSurrealVideo.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libmain.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libopenal.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    }
+  ],
+  "deviceExecutionTested": false,
+  "isoImporterHostTested": false,
+  "bundledGameData": true,
+  "gamePayloads": [
+    {
+      "game": "HP1",
+      "files": 339,
+      "bytes": 531064131
+    },
+    {
+      "game": "HP2",
+      "files": 682,
+      "bytes": 512852516
+    }
+  ],
+  "allGamePayloadHashesVerified": true
+}

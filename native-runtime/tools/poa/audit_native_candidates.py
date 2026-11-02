@@ -12,3 +12,4 @@ def main():
   rows.append({'package':n['package'],'owner':n['owner'],'function':n['object'],'hp3NativeIndex':n['nativeIndex'],'candidateIndices':sorted(indices),'status':status,'abiVerified':False})
  pathlib.Path(a.output).write_text(json.dumps(rows,indent=2));print(dict(collections.Counter(r['status'] for r in rows)))
 if __name__=='__main__':main()
+

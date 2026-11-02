@@ -1,0 +1,51 @@
+{
+  "pythonTestsPassed": 50,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties",
+    "struct_properties",
+    "struct_defaults",
+    "object_context",
+    "object_constraints"
+  ],
+  "retailMetadataConstraintCorpus": {
+    "selection": {
+      "classes": 1633,
+      "counts": {
+        "nonClassOwnerDeferred": 4275,
+        "classOwnedObjectProperties": 1290,
+        "unresolvedOrUnsupportedLayoutDeferred": 329
+      },
+      "scope": "Original property/class metadata in synthetic setter tests; no retail script/default/native behavior executed",
+      "runtimeIntegrated": false
+    },
+    "schemas": 1290,
+    "classGraph": 1633,
+    "exactAssignments": 1290,
+    "subclassAssignments": 890,
+    "nullAssignments": 1290,
+    "unrelatedClassRejections": 1286,
+    "passed": true,
+    "scope": "Synthetic setters against original metadata, not original scripts/native actors"
+  },
+  "constrainedContextRegression": {
+    "fragments": 2117,
+    "invocations": 4890,
+    "passed": true,
+    "scope": "Original context/property bytes with supplied constrained host receivers"
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "unconstrainedGenericReferencesRetained": true,
+  "functionArgumentReturnClassConstraintsImplemented": false,
+  "serializedDefaultsLoaded": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

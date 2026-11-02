@@ -1,0 +1,73 @@
+{
+  "pythonTestsPassed": 50,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties",
+    "struct_properties",
+    "struct_defaults"
+  ],
+  "defaultStructReadCorpus": {
+    "selection": {
+      "counts": {
+        "otherRootOccurrencesDeferred": 4460,
+        "primitiveReadFragments": 8,
+        "importedReadFragments": 8
+      },
+      "rootAccess": "default",
+      "scope": "Original direct struct-read bytes in synthetic return harnesses; property type/struct ownership checked; whole functions not executed",
+      "defaults": "Host-supplied primitive leaves; no native offsets or retail defaults",
+      "runtimeIntegrated": false
+    },
+    "cases": 8,
+    "invocations": 16,
+    "passed": true
+  },
+  "instanceStructReadCorpus": {
+    "selection": {
+      "counts": {
+        "otherRootOccurrencesDeferred": 3258,
+        "primitiveReadFragments": 404,
+        "importedReadFragments": 309,
+        "nonPrimitiveLayoutDeferred": 34
+      },
+      "rootAccess": "instance",
+      "scope": "Original direct struct-read bytes in synthetic return harnesses; property type/struct ownership checked; whole functions not executed",
+      "defaults": "Host-supplied primitive leaves; no native offsets or retail defaults",
+      "runtimeIntegrated": false
+    },
+    "cases": 404,
+    "importedCases": 309,
+    "invocations": 816,
+    "passed": true
+  },
+  "executionHarnessScope": "Synthetic returns around original read instructions; execution uses host-supplied identities/leaves/defaults, not whole original functions or native objects",
+  "propertyRegressions": {
+    "getters": 24,
+    "getterInvocations": 76,
+    "defaultReadFragments": 95,
+    "defaultReadInvocations": 240,
+    "passed": true
+  },
+  "legacyTypedRegression": {
+    "images": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 776,
+    "smokeRejected": 2789,
+    "note": "Smoke completion is not gameplay correctness"
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "serializedDefaultsLoaded": false,
+  "defaultWritesImplemented": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

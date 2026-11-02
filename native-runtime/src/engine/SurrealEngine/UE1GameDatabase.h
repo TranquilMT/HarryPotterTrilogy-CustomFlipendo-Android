@@ -215,6 +215,12 @@ static const std::map<std::string, KnownUE1Games> SHA1Database = {
 	// Harry Potter 1 (EU, EN/FR/DE), retail release, reported in issue #11 (SafeDisc or No-CD not known)
 	{"aac3b600dfc3ee689a2323021d3cf9f5c862cce9", KnownUE1Games::HARRYPOTTER1_433},
 
+	// Harry Potter 1 (ES/IT/PT CD), Italian install, reported in issue #15 (SafeDisc or No-CD not known)
+	{"526232593aa0a5ebb57beed89ddecc9b992ab04f", KnownUE1Games::HARRYPOTTER1_433},
+
+	// Harry Potter 1 (ES/IT/PT CD), Italian HP.exe with a community widescreen patch, reported in issue #15
+	{"061afa5b6a71a717fe0b4d52e00bdf34adac4847", KnownUE1Games::HARRYPOTTER1_433},
+
 	// Harry Potter 2 (UK)
 	{"3a43d9ec8be7ec441b18a8dc710b4bdd5b29bda3", KnownUE1Games::HARRYPOTTER2_433},
 

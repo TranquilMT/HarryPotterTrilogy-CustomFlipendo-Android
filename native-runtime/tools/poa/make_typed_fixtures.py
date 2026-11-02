@@ -60,3 +60,4 @@ def main():
  report={'registeredFunctions':registered,'scripts':registered-native_count,'explicitCoreIntrinsics':native_count,'resolvedFinalReferences':linked,'unresolvedFinalReferences':unresolved,'excluded':dict(excluded),'runtimeIntegrated':False,'scope':'Primitive-only isolated frames; layouts with objects, containers, structs, enums, out/lazy parameters are excluded. Resolved callees may still be unregistered and execution must fail explicitly.'}
  pathlib.Path(a.output).with_suffix('.json').write_text(json.dumps(report,indent=2));print(report,flush=True)
 if __name__=='__main__':main()
+

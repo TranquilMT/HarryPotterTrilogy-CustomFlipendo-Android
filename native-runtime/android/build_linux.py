@@ -4,8 +4,9 @@
 Optional private game-data bundle. Reuse the same keystore and password file for every release.
 """
 from release_checks import hp1_inventory,hp2_inventory,verify_bundled_games
+from build_preflight import source_identity
 import argparse,pathlib,subprocess,os,shutil,zipfile,json,hashlib,struct,re
-p=argparse.ArgumentParser();p.add_argument('--sdk',required=True);p.add_argument('--ndk',required=True);p.add_argument('--jdk',required=True);p.add_argument('--cmake',default='cmake');p.add_argument('--ninja',default='ninja');p.add_argument('--keystore',required=True);p.add_argument('--password-file',required=True);p.add_argument('--jobs',default='4');p.add_argument('--skip-native',action='store_true');p.add_argument('--game-data',required=True);p.add_argument('--hp2-data',required=True);p.add_argument('--version-name',default='0.4.1');p.add_argument('--version-code',default='42');p.add_argument('--previous-apk',required=True);a=p.parse_args();root=pathlib.Path(__file__).resolve().parent.parent;sdk=pathlib.Path(a.sdk).resolve();ndk=pathlib.Path(a.ndk).resolve();jdk=pathlib.Path(a.jdk).resolve();key=pathlib.Path(a.keystore).resolve();password=pathlib.Path(a.password_file).resolve();game=pathlib.Path(a.game_data).resolve() if a.game_data else None;os.chdir(root);env=os.environ.copy();env['JAVA_HOME']=str(jdk);env['PATH']=str(jdk/'bin')+os.pathsep+env['PATH'];bt=sdk/'build-tools/36.0.0';aj=sdk/'platforms/android-36/android.jar'
+p=argparse.ArgumentParser();p.add_argument('--sdk',required=True);p.add_argument('--ndk',required=True);p.add_argument('--jdk',required=True);p.add_argument('--cmake',default='cmake');p.add_argument('--ninja',default='ninja');p.add_argument('--keystore',required=True);p.add_argument('--password-file',required=True);p.add_argument('--jobs',default='4');p.add_argument('--skip-native',action='store_true');p.add_argument('--game-data',required=True);p.add_argument('--hp2-data',required=True);p.add_argument('--version-name',default='0.4.3');p.add_argument('--version-code',default='44');p.add_argument('--previous-apk',required=True);a=p.parse_args();root=pathlib.Path(__file__).resolve().parent.parent;sdk=pathlib.Path(a.sdk).resolve();ndk=pathlib.Path(a.ndk).resolve();jdk=pathlib.Path(a.jdk).resolve();key=pathlib.Path(a.keystore).resolve();password=pathlib.Path(a.password_file).resolve();game=pathlib.Path(a.game_data).resolve() if a.game_data else None;os.chdir(root);env=os.environ.copy();env['JAVA_HOME']=str(jdk);env['PATH']=str(jdk/'bin')+os.pathsep+env['PATH'];bt=sdk/'build-tools/36.0.0';aj=sdk/'platforms/android-36/android.jar'
 hp2=pathlib.Path(a.hp2_data).resolve();inventories=[hp1_inventory(game),hp2_inventory(hp2)]
 def run(args):subprocess.run(list(map(str,args)),env=env,check=True)
 if not key.is_file() or not password.is_file():raise ValueError('Permanent signing recovery is required; refusing to generate a new key')
@@ -15,6 +16,7 @@ def certificate(apk):
  if not match:raise ValueError('Cannot verify signing certificate')
  return match.group(1).lower()
 previous_certificate=certificate(pathlib.Path(a.previous_apk).resolve())
+source_revision=source_identity(root)
 build=root/'build-android'
 if not a.skip_native:
  run([a.cmake,'-S','android','-B',build,'-G','Ninja','-DCMAKE_MAKE_PROGRAM='+str(pathlib.Path(a.ninja).resolve()),'-DCMAKE_TOOLCHAIN_FILE='+str(ndk/'build/cmake/android.toolchain.cmake'),'-DANDROID_ABI=arm64-v8a','-DANDROID_PLATFORM=android-29','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,max-page-size=16384','-DCMAKE_POLICY_VERSION_MINIMUM=3.5'])
@@ -31,7 +33,7 @@ shutil.copytree(root/'images/android',assets/'icons',dirs_exist_ok=True)
 shutil.copytree(root/'android/launcher-assets',assets,dirs_exist_ok=True)
 ru=assets/'rutext';ru.mkdir(exist_ok=True)
 for f in (root/'android/lang/ru-text').glob('*.rus'):(ru/(f.stem+'.int')).write_bytes(f.read_text(encoding='utf-16').encode('cp1251'))
-(assets/'build-info.txt').write_text('Harry Potter TQ '+a.version_name+'; local ARM64 test build; source '+subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()+'\n')
+(assets/'build-info.txt').write_text('Harry Potter TQ '+a.version_name+'; local ARM64 test build; source '+source_revision+'\n')
 sources=list((root/'android/deps/SDL/android-project/app/src/main/java/org/libsdl/app').glob('*.java'))+list((root/'android/java/io/github/flipendo/spike').glob('*.java'))
 run([jdk/'bin/java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-Xlint:-options','-cp',aj,'-d',classes,*sources]);classfiles=sorted(classes.rglob('*.class'));argfile=stage/'classes.list';argfile.write_text('\n'.join(str(f) for f in classfiles));run([bt/'d8','--lib',aj,'--output',stage,'@'+str(argfile)])
 run([bt/'aapt2','compile','--dir',root/'android/res','-o',stage/'res.zip']);run([bt/'aapt2','link','-o',stage/'base.apk','--manifest',root/'android/AndroidManifest.xml','-I',aj,'-R',stage/'res.zip','--min-sdk-version','29','--target-sdk-version','35','--version-code',a.version_code,'--version-name',a.version_name])

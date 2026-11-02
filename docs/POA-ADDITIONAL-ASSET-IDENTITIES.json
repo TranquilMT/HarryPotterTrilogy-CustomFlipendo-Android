@@ -1,0 +1,139 @@
+{
+  "scope": "original archive CRC-checked payload SHA-256 identities and table counts; no native asset deserialization",
+  "assetPackages": [
+    {
+      "file": "KWMenu.utx",
+      "bytes": 131159,
+      "sha256": "07e891a8860a7b4590eee51e69729ddc775e908096f89cd2ccbf3e958056c1a2",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 4,
+        "Texture": 6,
+        "Package": 1
+      },
+      "path": "textures/KWMenu.utx"
+    },
+    {
+      "file": "HP3_LoadLevel.utx",
+      "bytes": 66151,
+      "sha256": "ca0a1d3d1ec3f602624df93f65c06690aaf1b9907b818afd564c4ac1e979eef5",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "MovieTexture": 1,
+        "Shader": 1,
+        "ConstantColor": 1,
+        "Package": 1
+      },
+      "path": "textures/HP3_LoadLevel.utx"
+    },
+    {
+      "file": "HP3_SkyBoxes.usx",
+      "bytes": 162061,
+      "sha256": "1214a650a22c0b27a370aec0aacb1bd3e122c0429ad5efb825489056aff3109e",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 2,
+        "StaticMesh": 13
+      },
+      "path": "StaticMeshes/HP3_SkyBoxes.usx"
+    },
+    {
+      "file": "SpellShapes.utx",
+      "bytes": 106425,
+      "sha256": "32ea1eab8b660a63ce4f71c84d84feb135370927f3d67447b33ae0814e7324cf",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 14,
+        "Texture": 14,
+        "Package": 2,
+        "WetTexture": 14
+      },
+      "path": "textures/SpellShapes.utx"
+    },
+    {
+      "file": "HP3_Particles_SM.usx",
+      "bytes": 155687,
+      "sha256": "645b5eb8531b89961b1aec653d4c27a0fb122359d7f1b64466ceb221bac66ae4",
+      "version": 128,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 3,
+        "StaticMesh": 7
+      },
+      "path": "StaticMeshes/HP3_Particles_SM.usx"
+    },
+    {
+      "file": "HP3_SystemIcons.utx",
+      "bytes": 162588,
+      "sha256": "ba39c6602348458f9dc38227b5856c9d940dceab8b1b27aa28c28f4b4b88b497",
+      "version": 123,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 20,
+        "Package": 1,
+        "Texture": 50
+      },
+      "path": "textures/HP3_SystemIcons.utx"
+    },
+    {
+      "file": "HP3_CutScenes_SM.usx",
+      "bytes": 351127,
+      "sha256": "2d4e05f246ca9a48f11691860ecda993201e9e5cfb63057ea1a02d60750cc8db",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 3,
+        "StaticMesh": 11
+      },
+      "path": "StaticMeshes/HP3_CutScenes_SM.usx"
+    },
+    {
+      "file": "HP3_HogwartsExpress_SM.usx",
+      "bytes": 606607,
+      "sha256": "77932bc2069d7a4515fe29f09647c284d1721ef3053210954fa49e64e4fd75c2",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "KMeshProps": 9,
+        "Model": 9,
+        "Polys": 9,
+        "StaticMesh": 23,
+        "Package": 4
+      },
+      "path": "StaticMeshes/HP3_HogwartsExpress_SM.usx"
+    },
+    {
+      "file": "HP3_Furniture_SM.usx",
+      "bytes": 1179334,
+      "sha256": "ea47cddfa2371bffa8aa2442571d0ca100204388f688cad26cc14de999912582",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 7,
+        "StaticMesh": 35
+      },
+      "path": "StaticMeshes/HP3_Furniture_SM.usx"
+    },
+    {
+      "file": "GUIContent.utx",
+      "bytes": 1163433,
+      "sha256": "36065188f8f7ccf81a6ebfb28d04d056900cf885c6cae2acdcc933ca17bc94ac",
+      "version": 120,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "FadeColor": 2,
+        "Texture": 62,
+        "Combiner": 15,
+        "Shader": 3,
+        "TexPanner": 7,
+        "Package": 2,
+        "FinalBlend": 11
+      },
+      "path": "textures/GUIContent.utx"
+    }
+  ]
+}

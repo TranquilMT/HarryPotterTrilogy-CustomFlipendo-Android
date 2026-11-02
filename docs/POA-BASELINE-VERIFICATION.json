@@ -1,0 +1,265 @@
+{
+  "checkpoint": "poa-base-20261101",
+  "canonicalRepository": "TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android",
+  "canonicalCommit": "d367c77c745a776c7178ba7218a27b115c75f025",
+  "reconciledRelease": "0.4.2",
+  "engineRevision": "c41d349e7e23584dac863367ba661bf90ef1c4f3",
+  "upstreamEngineUnmodifiedFilesMatched": 3254,
+  "engineRecovery": {
+    "reversePatches": [
+      {
+        "patch": "0200-hp2.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0200-android-port.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0140-knowwonder-audio.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0130-knowwonder-render.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0120-knowwonder-actors.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0110-knowwonder-physics.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0100-knowwonder-core.patch",
+        "exit": 0,
+        "stderr": "/workspace/scratch/f92afac0581b/source/native-runtime/src/surreal-patches/0100-knowwonder-core.patch:432: trailing whitespace.\n\t\t\t}\t\nwarning: 1 line adds whitespace errors.\n"
+      },
+      {
+        "patch": "0010-engine-fixes.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0003-cursor-focus.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0002-launcher-flags.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0001-game-detection.patch",
+        "exit": 0,
+        "stderr": ""
+      }
+    ],
+    "touchedFiles": 127,
+    "upstreamMismatches": [],
+    "forwardPatches": [
+      {
+        "patch": "0001-game-detection.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0002-launcher-flags.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0003-cursor-focus.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0010-engine-fixes.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0100-knowwonder-core.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0110-knowwonder-physics.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0120-knowwonder-actors.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0130-knowwonder-render.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0140-knowwonder-audio.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0200-android-port.patch",
+        "exit": 0,
+        "stderr": ""
+      },
+      {
+        "patch": "0200-hp2.patch",
+        "exit": 0,
+        "stderr": ""
+      }
+    ],
+    "roundTripMismatches": []
+  },
+  "pythonTests": {
+    "poa": 54,
+    "androidPackaging": 13,
+    "passed": true
+  },
+  "canvasClipRegression": {
+    "passed": true,
+    "surface": [
+      1536,
+      687
+    ],
+    "densityScales": [
+      1,
+      2,
+      2.75,
+      3
+    ],
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "isolatedPoaSanitizers": {
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "leakDetection": false,
+    "leakDetectionReason": "LeakSanitizer cannot run under the execution environment ptrace",
+    "results": [
+      {
+        "suite": "named_calls",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS named calls: virtual/global separation, nested arguments, caller-local links, missing bindings/targets, strict arguments, recursion and shared budget\n",
+        "stderr": ""
+      },
+      {
+        "suite": "dispatch_resolver",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS metadata dispatch: state/class inheritance, global bypass, name folding, package-local names, transactional failure, missing/cyclic scopes and malformed calls\n",
+        "stderr": ""
+      },
+      {
+        "suite": "receiver_program",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS receiver calls: per-instance dispatch/state selection, global bypass, final/native context propagation, caller-local names, ownership, shared limits and explicit failures\n",
+        "stderr": ""
+      },
+      {
+        "suite": "instance_properties",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS instance properties: independent receivers, inherited schemas, typed defaults, reads/writes, local separation, nested/named/native calls, package-local refs, bool/float/byte and explicit failures\n",
+        "stderr": ""
+      },
+      {
+        "suite": "bool_variables",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS BoolVariable reads/assignments: locals, instances, branches, separate receivers, imported bindings, type errors, invalid wrappers and shared budgets\n",
+        "stderr": ""
+      },
+      {
+        "suite": "default_properties",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS primitive defaults: nearest inherited override, instance/default separation, independent receivers, wrapped bool, nested/imported access and explicit failures\n",
+        "stderr": ""
+      },
+      {
+        "suite": "struct_properties",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS primitive instance structs: nested paths, typed leaves, separate receivers, inherited schemas, bool wrappers, imported refs, nested calls, unsupported roots and failures\n",
+        "stderr": ""
+      },
+      {
+        "suite": "struct_defaults",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS struct defaults: nearest inherited leaf override, copied instance values, default isolation, bool/nested/imported reads, readonly writes and schema failures\n",
+        "stderr": ""
+      },
+      {
+        "suite": "object_context",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS object contexts: Self/None, typed references, live-handle checks, target field/call access, caller Self/argument scope, cross-class bindings, context unwind, null rejection and shared budget\n",
+        "stderr": ""
+      },
+      {
+        "suite": "object_constraints",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS object property constraints: exact class, subclass, inherited owner, null, nested writes, rejected unrelated/unknown handles, preserved values and generic compatibility\n",
+        "stderr": ""
+      },
+      {
+        "suite": "object_call_constraints",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS object call constraints: exact/subclass/null arguments and results, optional null defaults, pre-body rejection, final/named calls, Self rejection and invalid schemas\n",
+        "stderr": ""
+      },
+      {
+        "suite": "receiver_lifetime",
+        "compileExit": 0,
+        "runExit": 0,
+        "stdout": "PASS registry lifetime: retired invocation/arguments/field reads/context rejected, identity reuse blocked, explicit stale-field clearing, struct cleanup and permanent schema freeze\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "androidPackage": "com.tranquil.hp1native",
+  "permanentCertificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
+  "signingKeyReplaced": false,
+  "gameDataOrSavesModified": false,
+  "poaRuntimeIntegrated": false,
+  "androidBuildProduced": false,
+  "livePoaEvidence": false,
+  "playable": false,
+  "remainingBaselineGaps": [
+    "Verify original PoA edition/executable and complete package identity record from current source data (BASE-04)",
+    "Verify original startup configuration and first interactive scene (BASE-07)",
+    "Locate and verify build toolchain, original signing material, previous APK and complete HP1/HP2 payload inputs before a reproducible signed Android build; do not regenerate the key (BASE-03/G0)",
+    "Milestone acceptance evidence review remains ongoing (BASE-08)"
+  ],
+  "sourceRecovery": {
+    "baseArchiveSHA256": "73ac1e2dc75902d29e7dfb974827dacdbdab8a41616f859e5313c25d15af0301",
+    "filesVerified": 5844,
+    "passed": true,
+    "modifiedFileRejected": true,
+    "existingDestinationRejected": true,
+    "scope": "Complete locked source reconstruction and integrity checks; not an Android build"
+  }
+}

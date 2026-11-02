@@ -87,3 +87,4 @@ inline NativeStub readNativeStub(Reader& r,const FunctionHeader& h) {
  return n;
 }
 } // namespace hp3
+

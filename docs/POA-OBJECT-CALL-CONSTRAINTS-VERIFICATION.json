@@ -1,0 +1,67 @@
+{
+  "pythonTestsPassed": 54,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties",
+    "struct_properties",
+    "struct_defaults",
+    "object_context",
+    "object_constraints",
+    "object_call_constraints"
+  ],
+  "retailMetadataObjectCallCorpus": {
+    "selection": {
+      "classes": 1633,
+      "functionSlots": true,
+      "counts": {
+        "functionObjectSlots": 2891,
+        "argumentSlots": 2667,
+        "nonArgumentOrReturnDeferred": 2896,
+        "returnSlots": 224,
+        "unresolvedOrUnsupportedLayoutDeferred": 65,
+        "outOrLazySlotsDeferred": 42
+      },
+      "scope": "Original argument/return metadata in synthetic identity functions; original functions/defaults/native behavior not executed",
+      "runtimeIntegrated": false
+    },
+    "slots": 2891,
+    "argumentSlots": 2667,
+    "returnSlots": 224,
+    "exactAssignments": 2891,
+    "subclassAssignments": 2252,
+    "nullAssignments": 2891,
+    "omittedOptionalArguments": 142,
+    "unrelatedClassRejections": 2855,
+    "passed": true
+  },
+  "propertyClassRegression": {
+    "schemas": 1290,
+    "exact": 1290,
+    "subclass": 890,
+    "null": 1290,
+    "unrelatedRejected": 1286,
+    "passed": true
+  },
+  "legacyTypedRegression": {
+    "images": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 776,
+    "smokeRejected": 2789,
+    "note": "Smoke completion is not correctness/gameplay coverage"
+  },
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "constrainedObjectLocalsImplemented": false,
+  "serializedDefaultsLoaded": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

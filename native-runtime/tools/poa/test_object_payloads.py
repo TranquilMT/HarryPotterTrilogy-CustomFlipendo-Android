@@ -16,3 +16,4 @@ class ObjectTests(unittest.TestCase):
   raw=bytes([0,0,0,0,0,1,1])+bytes(12)
   with self.assertRaises(ValueError):function_header(raw,['None','Function'])
 if __name__=='__main__':unittest.main()
+

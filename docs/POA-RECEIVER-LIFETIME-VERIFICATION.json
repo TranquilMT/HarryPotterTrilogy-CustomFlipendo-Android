@@ -1,0 +1,51 @@
+{
+  "pythonTestsPassed": 54,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties",
+    "struct_properties",
+    "struct_defaults",
+    "object_context",
+    "object_constraints",
+    "object_call_constraints",
+    "receiver_lifetime"
+  ],
+  "propertyMetadataLifetimeCorpus": {
+    "schemas": 1290,
+    "exactClassAssignments": 1290,
+    "subclassAssignments": 890,
+    "nullAssignments": 1290,
+    "unrelatedClassRejections": 1286,
+    "staleFieldRejectionsAfterRetirement": 1290,
+    "explicitClearingPassed": true,
+    "scope": "Synthetic registry receivers/setters with original property metadata; original Destroy/native actors not executed"
+  },
+  "contextRegression": {
+    "fragments": 2117,
+    "invocations": 4890,
+    "passed": true
+  },
+  "syntheticLifetimeCoverage": [
+    "Retired invocation/argument/field/context rejection",
+    "No retired identity reuse",
+    "Explicit stale field clearing",
+    "New valid receiver creation",
+    "Struct field storage cleanup",
+    "Schema/default freeze after all receivers retire",
+    "Invocation guard cleanup on errors"
+  ],
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "unrealDestroyImplemented": false,
+  "pendingKillEventsGCImplemented": false,
+  "serializedDefaultsLoaded": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

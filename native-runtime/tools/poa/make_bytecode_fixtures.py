@@ -29,3 +29,4 @@ def main():
     u32(len(d.jumps));u32(native);u32(precedence);u32(flags)
  print('Full-function fixtures',count,'packages',len(groups),flush=True)
 if __name__=='__main__':main()
+

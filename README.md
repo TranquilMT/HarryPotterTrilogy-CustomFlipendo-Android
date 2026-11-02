@@ -2,6 +2,12 @@
 
 Native Android work on Philosopher’s Stone and Chamber of Secrets, with separate research into Prisoner of Azkaban.
 
+## Local source checkpoint — 0.4.3
+
+The complete local 0.4.3 source archive includes the reconciled 0.4.2 HP1/HP2 fixes, saved engine patches, cumulative PoA tools/tests and updated roadmaps. It is a standalone source archive: no older source ZIP or recovery overlay is needed to extract the project. Version defaults are 0.4.3 / code 44; package identity is unchanged.
+
+**This is a source checkpoint, not a newly built APK. PoA remains disabled and unplayable.** Building an Android release still requires the Android toolchain, original signing material, a previous signed APK and both original game payloads. Those private/release inputs are not in this source ZIP. See [0.4.3 source details](docs/RELEASE-0.4.3.md).
+
 ## Download and installation
 
 [0.4.2 Both Games menu-fix release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.2) includes **both HP1 and HP2 game payloads** in `Harry-Potter-TQ-0.4.2-Both-Games.apk`: **718,674,960 bytes (718.7 MB)**. Version name **0.4.2**, version code **43**, package `com.tranquil.hp1native`. The earlier 9.9 MB engine-only build is superseded.

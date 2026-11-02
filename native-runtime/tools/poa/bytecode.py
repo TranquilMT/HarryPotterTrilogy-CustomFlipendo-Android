@@ -100,3 +100,4 @@ def main():
    except Exception as ex:errors.append(dict(row,error=str(ex)))
  (out/'functions.json').write_text(json.dumps(ok,indent=2));(out/'errors.json').write_text(json.dumps(errors,indent=2));(out/'opcodes.json').write_text(json.dumps(dict(ops),indent=2));print('Decoded',len(ok),'errors',len(errors),flush=True)
 if __name__=='__main__':main()
+

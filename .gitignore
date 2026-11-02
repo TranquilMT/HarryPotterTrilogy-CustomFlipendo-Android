@@ -8,3 +8,21 @@ password.txt
 **/bundled-hd-build/
 **/linux-apk/
 **/build-android/
+**/windows-apk/
+# Private game payloads and signing material (never commit)
+/game-data/
+*.jks
+*.keystore
+password.txt
+tools/test-signing/
+
+# Build outputs
+/android/dist/
+/android/apk/
+/android/local-*/ 
+*.apk
+*.zip
+
+# Build logs
+build-*.log
+

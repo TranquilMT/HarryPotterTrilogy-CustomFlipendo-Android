@@ -43,3 +43,4 @@ int main(int argc,char** argv){try{
  std::cout<<"Executed "<<constantReturns<<" real constant-return functions and "<<voidReturns<<" original empty functions; local/branch/error tests passed\n";
  std::cout<<"PASS "<<passed<<" full functions, "<<tokens<<" tokens, "<<jumps<<" branch targets, malformed bytecode\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+

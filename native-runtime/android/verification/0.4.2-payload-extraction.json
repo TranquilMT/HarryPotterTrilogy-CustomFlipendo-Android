@@ -1,0 +1,38 @@
+{
+  "purpose": "Recover the bundled HP1/HP2 payloads from the published 0.4.2 APK for future local builds",
+  "date": "2026-11-02",
+  "sourceApk": {
+    "name": "Harry-Potter-TQ-0.4.2-Both-Games.apk",
+    "bytes": 718674960,
+    "sha256": "f408e04ee8c753d53ec3c8c487429a66094265fe84824da1def675d1e4eac9f5",
+    "versionName": "0.4.2",
+    "versionCode": 43
+  },
+  "extractedTo": "game-data/hp1 and game-data/hp2 (not committed; copyrighted game files)",
+  "payloads": [
+    {
+      "game": "HP1",
+      "apkPrefix": "assets/gamedata/",
+      "files": 339,
+      "bytes": 531064131,
+      "stamp": "2753d01917c18e1017103493a9ef115878529dbf7e4638cd42f45e3d2278f7da"
+    },
+    {
+      "game": "HP2",
+      "apkPrefix": "assets/hp2data/",
+      "files": 682,
+      "bytes": 512852516,
+      "stamp": "130b21cd9f37198f4121f1e35fc5a1ef7759ea19963fc513d245fb10a749b702"
+    }
+  ],
+  "method": [
+    "Stream-extracted every entry under each prefix from the 0.4.2 APK zip, excluding the .stamp marker.",
+    "Re-ran release_checks.hp1_inventory / hp2_inventory against the extracted directories.",
+    "Recomputed the stamp as SHA-256 over each path plus its file SHA-256 in inventory order."
+  ],
+  "result": "Computed stamps match the .stamp entries stored in the APK for both payloads; required-file counts and byte totals match the published build verification.",
+  "limits": [
+    "No emulator or device run was performed on the extracted data.",
+    "The extracted directory is outside version control and must not be published."
+  ]
+}

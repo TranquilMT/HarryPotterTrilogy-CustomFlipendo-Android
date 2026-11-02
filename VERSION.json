@@ -1,0 +1,10 @@
+{
+  "versionName": "0.4.3",
+  "versionCode": 44,
+  "package": "com.tranquil.hp1native",
+  "status": "local source checkpoint",
+  "apkBuilt": false,
+  "poaPlayable": false,
+  "canonicalBaseCommit": "d367c77c745a776c7178ba7218a27b115c75f025",
+  "previousCheckpoint": "poa-startup-20261101"
+}

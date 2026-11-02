@@ -1,0 +1,57 @@
+{
+  "pythonTestsPassed": 44,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties"
+  ],
+  "retailDefaultReadFragments": {
+    "sourceSummary": {
+      "counts": {
+        "defaultReadOccurrences": 493,
+        "primitiveReadFragments": 95,
+        "nonPrimitiveOrNonClassPropertyDeferred": 72,
+        "unsupportedLayoutDeferred": 5,
+        "importedPropertiesDeferred": 68
+      },
+      "scope": "Original DefaultVariable leaf bytes in synthetic return harnesses; whole retail functions not executed",
+      "defaults": "Host-supplied test values; retail default objects not loaded",
+      "runtimeIntegrated": false
+    },
+    "cases": 95,
+    "invocations": 240,
+    "passed": true,
+    "harness": "Synthetic return around original default-read leaf bytes, with host-supplied values; whole retail functions not executed",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "retailGetterRegression": {
+    "getters": 24,
+    "invocations": 76,
+    "passed": true,
+    "testValues": "Explicit host values"
+  },
+  "legacyTypedRegression": {
+    "images": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 776,
+    "smokeRejected": 2789,
+    "note": "Smoke completion is not gameplay correctness",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "serializedClassDefaultsLoaded": false,
+  "defaultWritesImplemented": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

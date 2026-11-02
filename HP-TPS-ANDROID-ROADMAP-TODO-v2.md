@@ -2,10 +2,14 @@
 
 **Project:** [HarryPotterTrilogy-CustomFlipendo-Android](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android)  
 **Upstream:** [Flipendo ROADMAP.md](https://github.com/kroplabeskidu/flipendo/blob/master/ROADMAP.md)  
-**Current release candidate:** Android **0.4.1**, version code **42**; rebuilt locally with both games. GitHub publication is authorized; physical-device acceptance remains open.
+**Local source version:** **0.4.3**, version code **44**; complete standalone source ZIP requested and assembled locally. No 0.4.3 APK or device acceptance is claimed.
+
+**Canonical source baseline:** Android **0.4.2**, version code **43**, main `d367c77c745a776c7178ba7218a27b115c75f025`; its release report records a signed Both Games build. This PoA checkpoint reconciles that source; no new APK or physical-device acceptance is claimed.
 
 **Baseline:** Android v0.3.3; upstream roadmap status dated 2026-10-27; checklist prepared 2026-10-31.  
 **Rule:** `[x]` only after implementation **and** evidence-based verification. `[ ]` means open, including partially completed or unverified work. Do not confuse upstream progress with our Android port's progress.
+
+**PoA integration checkpoint (2026-11-01):** canonical 0.4.2 source reconciled with the cumulative isolated PoA overlay; host checks pass. Checkpoint `poa-base-20261101` records source hashes, dependency pins and patch recovery. Follow the [master checklist](docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md), workstream 1/21. No live PoA or phone acceptance is established.
 
 ## How to resume in Work mode
 
@@ -127,6 +131,48 @@
 
 ## P5 — HP3: Prisoner of Azkaban (separate UE2 compatibility track)
 
+> **Full remaining scope:** [PoA full compatibility master backlog](docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md). The abbreviated checkpoint history below records isolated proofs, not a complete list of remaining production work. Do not present its next few unchecked items as everything left.
+
+
+**2026-11-01 progress checkpoint:** workstream **1/21 (BASE)** remains active. BASE-01/BASE-02 source consolidation and pinned recovery checkpoint are complete; BASE-05/BASE-06 architecture choice and bridge design are complete. See [checkpoint evidence](docs/POA-BASELINE-CHECKPOINT.md) and [production architecture](docs/POA-PRODUCTION-ARCHITECTURE.md). Canonical 0.4.2 HP2 menu behavior is preserved, including a corrected saved engine patch (D-002). Verification passes: 54 PoA Python tests, 13 packaging Python tests, Canvas regression, 12 isolated PoA sanitizer suites and all 11 engine patches round-tripped against the pinned upstream. BASE-03, BASE-04, BASE-07 and ongoing BASE-08 acceptance remain open. G0–G6 remain open; there is no new APK or live PoA Android evidence.
+
+**Startup checkpoint (2026-11-01):** BASE-07 is complete as original startup/first-interactive-target selection: preamble → front end → New Game → HP3_Adv1Express. DATA-02's supporting offline audit is complete across all 12 scripts (1,685 classes, 546 states, 8,090 function decodes/schemas). See [route selection](docs/POA-STARTUP-ROUTE.md) and [identity evidence](docs/POA-STARTUP-IDENTITY-VERIFICATION.json). Fixed hard-coded startup settings and stale audit acceptance (D-003); 66 Python tests pass. BASE-04 remains in progress for complete asset identities and independent region identification. BASE-03 and ongoing BASE-08 remain open; G0–G6 remain open and PoA remains disabled/unplayable.
+
+**Ongoing update rule:** update this roadmap and the master checklist after each work batch, fix or discovery. Record task IDs, source/artifact, verification and unresolved gaps. Keep partial work and fixes pending verification unchecked; reopen items when regressions invalidate their evidence. Add newly discovered work explicitly to the master's discovery ledger and retain its history. The next batch is not the total remaining scope.
+
+Verified source checkpoint (31 October 2026; based on supplied 0.4.1 source):
+- [x] Add isolated explicit virtual/global named-call bindings with nested argument evaluation.
+- [x] Test scope separation, package-local name bindings, missing targets, argument rejection, recursion and shared execution limits under ASan/UBSan.
+- [x] Add isolated metadata linker and test class/state inheritance, global state bypass and caller-local name resolution.
+- [x] Extract Core/Engine class/state/function relationships from retail tables; validate ownership/imports and compare Python/C++ lookup across 305 scopes.
+- [x] Validate HGame, GUI, GamePlay and UWindow retail tables and decode 5,807 functions across six packages without errors.
+- [x] Audit lexical versus explicit-receiver named calls; report incomplete native ancestry without fabricating lookup success.
+- [x] Locate standalone System/kwGame.u on the disc; resolve the 429 super links and 2 ownership checks after including its dependencies.
+- [x] Add hybrid disc/archive package inventory for ISO and raw Mode 1 BIN; verify 12 script packages with one standalone package.
+- [x] Add isolated receiver identities, class/state ownership checks and per-instance named dispatch across nested scalar calls.
+- [x] Add typed primitive per-receiver property storage and script reads/writes with explicit host schemas/defaults; verify ten retail getters.
+- [x] Implement Boolean wrappers for local/instance reads and assignment targets; verify 14 wrapped retail getters with true/false test values.
+- [x] Add primitive default-variable reads (including Boolean wrappers) and inherited host-default overrides; test 95 retail-derived read fragments.
+- [ ] Load original serialized class-default objects and validate default-write/class-context semantics.
+- [x] Add bounded primitive instance struct paths, nested members and Boolean wrappers; validate 95 retail-derived read fragments.
+- [x] Add read-only default-rooted primitive struct paths and inherited leaf defaults; verify eight retail-derived read fragments.
+- [x] Resolve imported struct/property metadata across checked packages with kind-qualified identities.
+- [ ] Add local/returned struct values, arrays, default writes and object-context struct access after validating layouts.
+- [ ] Deserialize class defaults and packed/native property layouts; support object references/explicit contexts and real actor allocation.
+- [x] Add isolated ObjectRef, Self/None and non-null object-context reads/calls with caller Self/argument scope and context restoration.
+- [x] Add optional ObjectProperty class constraints with subclass/null checks; validate 1,290 retail-metadata schemas.
+- [x] Add optional object argument/return class constraints; verify 2,891 retail-metadata call slots and return flag handling.
+- [x] Add host-only receiver retirement, stale-handle rejection, no identity reuse and permanent schema freeze.
+- [ ] Implement actual actor Destroy/pending-kill/events/GC/world removal and save/load lifetime semantics.
+- [ ] Add null-context recovery, class contexts, context assignment targets and constrained object locals.
+- [ ] Implement state lifecycle/bytecode execution and validate against retail behavior.
+- [ ] Verify original native behavior against the DLLs before enabling PoA.
+- [ ] Deserialize Class/State payloads and verify original runtime dispatch behavior; check remaining script packages.
+- [ ] Connect the compatibility runtime to Android and pass a real PoA startup test.
+
+These checks do not establish PoA gameplay support.
+
+
 - [ ] Keep HP3 launcher entry disabled/experimental until verified game boot and rendering.
 - [ ] Inventory actual HP3 installation data and package formats; document UE2 differences from HP1/HP2 UE1.
 - [ ] Extend isolated parser/runtime tests for UE2 package imports, exports, name tables, properties and script bytecode.
@@ -245,3 +291,33 @@ The earlier 9.9 MB engine-only 0.4.1 is superseded. Build and recovery evidence 
 - [ ] Confirm full menu, all six slots and touch navigation on the phone; local 0.4.2/code 43 build and signing checks pass; user approved publication as Latest.
 
 - [x] Produce 0.4.2/code 43 locally with both games; verify embedded hashes, permanent certificate, ZIP integrity and alignment. APK 718,674,960 bytes. User approved publishing the new version.
+
+## Local 0.4.3 source consolidation — 2026-11-01
+
+- [x] Version the current local source as 0.4.3 / code 44, preserving package identity and canonical 0.4.2 fixes.
+- [x] Include the complete native engine/dependencies, cumulative PoA work, tests and both roadmaps in a standalone source ZIP; no 0.4.1 ZIP is needed for extraction.
+- [x] Refresh the complete source hash lock and verify every packaged file and ZIP integrity.
+- [ ] Build and sign a 0.4.3 APK with the original certificate and verified HP1/HP2 payloads; not performed by source packaging.
+- [ ] Complete remaining PoA compatibility/acceptance work in the master checklist; PoA remains disabled/unplayable.
+
+## Inventory and build-input checkpoint — 2026-11-01
+
+- [x] DATA-01: inventory all 75 standalone and 766 archived file records, preserving standalone kwGame.u; payload verification is separate.
+- [x] Recover the original signing backup privately and verify the permanent certificate fingerprint; no key replaced or exposed in source.
+- [x] Fix archive build-info generation to accept a complete verified source-lock identity without Git history; reject changed files.
+- [x] Add safe complete inventory and read-only build preflight; 73 PoA Python and 18 packaging/preflight tests pass.
+- [ ] DATA-04: inspect embedded assets in the complete package list; filenames/categories alone do not finish asset-level inventory.
+- [ ] BASE-03: prepare SDK/NDK/compiler/build tools, previous signed APK and complete HP1/HP2 payloads, then verify signed build and device continuity.
+- [ ] BASE-04: complete remaining package payload identities and region evidence. G0–G6 remain open; no APK or live PoA result.
+
+See [inventory/build evidence](docs/POA-INVENTORY-AND-BUILD-INPUTS.md). Local source stays 0.4.3 / code 44; both master and project roadmaps reflect this checkpoint.
+
+## Payload integrity and dependency checkpoint — 2026-11-01
+
+- [x] Add extracted-package size/CRC/SHA/table checks, missing-versus-corrupt reporting and static transitive dependency tracing with cycle handling.
+- [x] Extract and CRC-check ten additional original texture/mesh packages; record SHA-256 identities and table kinds. Current checked set: 24 valid of 110 packages, 86 not yet extracted.
+- [x] Pass 83 PoA Python tests; ten new tests cover integrity and dependency rejection paths. Original assets and private signing inputs remain outside source ZIPs.
+- [ ] Complete DATA-04/05/08: remaining assets, complete dependency closure and production/Android verification remain open. Current static frontiers (16 preamble / 21 story) are not final totals.
+- [ ] Complete BASE-03/04 and all live PoA gates. No APK or live UE2 execution is claimed.
+
+See [payload/dependency evidence](docs/POA-PAYLOAD-INTEGRITY-AND-DEPENDENCIES.md). Local source remains 0.4.3 / code 44.

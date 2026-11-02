@@ -1,0 +1,27 @@
+{
+  "permanentSigningRecovered": true,
+  "certificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
+  "matchesRecordedPermanentCertificate": true,
+  "newKeyGenerated": false,
+  "secretsIncludedInSource": false,
+  "signedApkBuilt": false,
+  "environment": {
+    "javaRuntime": "OpenJDK 17.0.20",
+    "javacOnPath": false,
+    "cmakeOnPath": false,
+    "ninjaOnPath": false,
+    "androidSDKAndNDKPrepared": false,
+    "previousSignedAPKPrepared": false,
+    "completeHP1HP2PayloadsPrepared": false
+  },
+  "sourceArchiveBuildFix": {
+    "gitHistoryRequired": false,
+    "verifiedCheckpointLockFallback": true,
+    "modifiedSourceRejected": true,
+    "scope": "source revision metadata; not a native build"
+  },
+  "hostTests": {
+    "poaPython": 73,
+    "androidPackagingAndPreflight": 18
+  }
+}

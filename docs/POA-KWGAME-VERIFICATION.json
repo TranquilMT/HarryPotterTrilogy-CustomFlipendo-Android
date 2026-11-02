@@ -1,0 +1,71 @@
+{
+  "packages": [
+    {
+      "name": "Core.u",
+      "sha256": "cb6a84a03279b9f6c597c296b43a89b5d865e406e4654866c55216b3b0982b39",
+      "version": 129
+    },
+    {
+      "name": "Engine.u",
+      "sha256": "3b5c2b2002dbc8522e8a932e2733228f7f60711d55a9ccb1a033621b3a12f1ef",
+      "version": 129
+    },
+    {
+      "name": "GUI.u",
+      "sha256": "11bb138c85a01872444b2ba9ddfb33872c331fa62e724a3204165ad91d5c133e",
+      "version": 129
+    },
+    {
+      "name": "GamePlay.u",
+      "sha256": "36a0510efbf0d2bc040546f68f555bc89be5bc854377675b634ed45f1e143e1b",
+      "version": 129
+    },
+    {
+      "name": "HGame.u",
+      "sha256": "d0981cc5fc704391e3f152f1e94295b2e0440b2660b2b5027dba7eb2cd889ef1",
+      "version": 129
+    },
+    {
+      "name": "UDebugMenu.u",
+      "sha256": "f66d4b07234fe597a014808bbccf3b4a6efec9edeb0d7a3e01750591b3054205",
+      "version": 129
+    },
+    {
+      "name": "UWindow.u",
+      "sha256": "02b27f429b2f4271d098bb3adf3c06d32933b468ea7c2a6fa0325f2f58ab531f",
+      "version": 129
+    },
+    {
+      "name": "kwGame.u",
+      "sha256": "9ee25ea5d804d9892a23276ef9e1bf4e5c4dfc452ad66aa09895fd0d6abb61f3",
+      "version": 129
+    }
+  ],
+  "scopeCounts": {
+    "Class": 1633,
+    "State": 536
+  },
+  "functionCount": 7933,
+  "callAuditCounts": {
+    "decodedFunctions": 7933,
+    "lexicalTargetFound": 5462,
+    "deferredReceiverContext": 5215
+  },
+  "decodeErrors": 0,
+  "unresolvedMetadataRelationships": 0,
+  "pythonTestsPassed": 44,
+  "discInventory": {
+    "scriptPackages": 12,
+    "standaloneScriptPackages": 1,
+    "checkedPackages": 8,
+    "standaloneKWGameSize": 1589327,
+    "method": "Original volume/directory sectors and ZIP central directory tested through a sparse disc image; omitted file bodies not read by inventory"
+  },
+  "runtimeIntegrated": false,
+  "playable": false,
+  "correction": "kwGame.u is at System/kwGame.u directly on the disc, outside compressed.zip; the previous native-only ancestry blocker was an incomplete extraction.",
+  "cppResolvedLookups": 2059010,
+  "cppRejectedAbsentLookups": 276,
+  "cppCorpusPassed": true,
+  "dataFreeSanitizerChecksPassed": true
+}

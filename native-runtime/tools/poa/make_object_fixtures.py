@@ -26,3 +26,4 @@ def main():
    for kind,raw,x,y in cases:u32(kind);u32(len(raw));out.write(raw);u32(x);u32(y)
  print('Real-object fixtures',total,'packages',len(groups),flush=True)
 if __name__=='__main__':main()
+

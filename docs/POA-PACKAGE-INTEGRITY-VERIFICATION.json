@@ -1,0 +1,1559 @@
+{
+  "scope": "extracted package integrity/tables and static imports only",
+  "packages": {
+    "alldialog": {
+      "path": "sounds/alldialog.uax",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "ambientcreatures": {
+      "path": "system/AmbientCreatures.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "system/AmbientCreatures.u",
+      "sha256": "301d6bf08659ce5381dfa40d8d56b43c9e0e141c4940cb252883db3ccbb57f8f",
+      "crc32": "1d5afa49",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 23,
+        "ObjectProperty": 92,
+        "StructProperty": 91,
+        "IntProperty": 25,
+        "Function": 119,
+        "ClassProperty": 10,
+        "FloatProperty": 31,
+        "BoolProperty": 19,
+        "State": 10,
+        "MeshAnimation": 2,
+        "ByteProperty": 1,
+        "TextBuffer": 23,
+        "Palette": 3,
+        "Texture": 6,
+        "Sound": 4,
+        "VertMesh": 2,
+        "SkeletalMesh": 2,
+        "Package": 4
+      },
+      "bytes": 342062,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "core": {
+      "path": "system/Core.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "system/Core.u",
+      "sha256": "cb6a84a03279b9f6c597c296b43a89b5d865e406e4654866c55216b3b0982b39",
+      "crc32": "81c46c96",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Struct": 18,
+        "Class": 7,
+        "FloatProperty": 159,
+        "StrProperty": 71,
+        "IntProperty": 108,
+        "StructProperty": 149,
+        "Function": 201,
+        "ObjectProperty": 11,
+        "ClassProperty": 5,
+        "BoolProperty": 63,
+        "Enum": 6,
+        "NameProperty": 17,
+        "ArrayProperty": 3,
+        "ByteProperty": 28,
+        "Const": 12,
+        "TextBuffer": 7
+      },
+      "bytes": 78510,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "cubemaps": {
+      "path": "textures/CubeMaps.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "decorations": {
+      "path": "system/Decorations.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "fire"
+      ],
+      "actualPath": "system/Decorations.u",
+      "sha256": "1bbdd3fcfab93a3558e18714c361a5272aced091c080a02e3a32b779608d82f5",
+      "crc32": "425153bc",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 6,
+        "Palette": 4,
+        "Texture": 3,
+        "TextBuffer": 6,
+        "FireTexture": 2,
+        "VertMesh": 3,
+        "Sound": 2,
+        "Function": 1,
+        "Package": 3
+      },
+      "bytes": 607980,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "editor": {
+      "path": "system/Editor.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "editor",
+        "engine",
+        "fire"
+      ],
+      "actualPath": "system/Editor.u",
+      "sha256": "af15f16c12eff12f405d700335ce9d24ad6d434ba5ed2c1edfffab2d415e3170",
+      "crc32": "adfbbc16",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "IntProperty": 124,
+        "StructProperty": 18,
+        "Class": 16,
+        "Function": 37,
+        "FloatProperty": 39,
+        "BoolProperty": 44,
+        "StrProperty": 16,
+        "ClassProperty": 4,
+        "ByteProperty": 4,
+        "Enum": 2,
+        "NameProperty": 17,
+        "Palette": 5,
+        "ObjectProperty": 24,
+        "Struct": 1,
+        "ArrayProperty": 5,
+        "StaticMesh": 2,
+        "Texture": 6,
+        "TextBuffer": 16,
+        "Const": 1
+      },
+      "bytes": 514570,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "em_cubemaps_t": {
+      "path": "textures/EM_CubeMaps_T.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "emittertextures": {
+      "path": "textures/EmitterTextures.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "emittertextures2": {
+      "path": "textures/EmitterTextures2.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "engine": {
+      "path": "system/Engine.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "system/Engine.u",
+      "sha256": "3b5c2b2002dbc8522e8a932e2733228f7f60711d55a9ccb1a033621b3a12f1ef",
+      "crc32": "b46b1f90",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 233,
+        "ObjectProperty": 1427,
+        "StructProperty": 1024,
+        "ByteProperty": 277,
+        "StrProperty": 536,
+        "FloatProperty": 1247,
+        "Function": 1950,
+        "BoolProperty": 1205,
+        "ArrayProperty": 120,
+        "IntProperty": 723,
+        "NameProperty": 157,
+        "Enum": 77,
+        "ClassProperty": 188,
+        "Palette": 37,
+        "Texture": 84,
+        "Struct": 45,
+        "State": 65,
+        "Font": 4,
+        "DelegateProperty": 2,
+        "Const": 15,
+        "TextBuffer": 281
+      },
+      "bytes": 2518546,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "entry": {
+      "path": "maps/Entry.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "epicparticles": {
+      "path": "textures/EpicParticles.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "execdemo": {
+      "path": "sounds/execdemo.uax",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "fire": {
+      "path": "system/Fire.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "system/Fire.u",
+      "sha256": "0aebd148d017ba2ec56f787dfe730682fd00b46a86d6d446e833cf703ff99fbf",
+      "crc32": "a7881ac9",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 7,
+        "Enum": 5,
+        "Struct": 2,
+        "TextBuffer": 7,
+        "IntProperty": 16,
+        "ByteProperty": 56,
+        "ObjectProperty": 6,
+        "BoolProperty": 2,
+        "FloatProperty": 6,
+        "StructProperty": 2,
+        "ArrayProperty": 1
+      },
+      "bytes": 6784,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "gameplay": {
+      "path": "system/GamePlay.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp_fx",
+        "uwindow"
+      ],
+      "actualPath": "system/GamePlay.u",
+      "sha256": "36a0510efbf0d2bc040546f68f555bc89be5bc854377675b634ed45f1e143e1b",
+      "crc32": "d4001c7a",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 217,
+        "Function": 214,
+        "ObjectProperty": 191,
+        "IntProperty": 31,
+        "StrProperty": 55,
+        "FloatProperty": 62,
+        "ArrayProperty": 1,
+        "ByteProperty": 15,
+        "StructProperty": 33,
+        "BoolProperty": 137,
+        "NameProperty": 21,
+        "ClassProperty": 10,
+        "Texture": 4,
+        "Palette": 3,
+        "State": 12,
+        "Enum": 1,
+        "TextBuffer": 217
+      },
+      "bytes": 109148,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "gui": {
+      "path": "system/GUI.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "guicontent"
+      ],
+      "actualPath": "system/GUI.u",
+      "sha256": "11bb138c85a01872444b2ba9ddfb33872c331fa62e724a3204165ad91d5c133e",
+      "crc32": "3d060461",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 88,
+        "IntProperty": 209,
+        "ArrayProperty": 27,
+        "ObjectProperty": 377,
+        "StrProperty": 201,
+        "DelegateProperty": 37,
+        "Function": 466,
+        "ByteProperty": 93,
+        "FloatProperty": 198,
+        "BoolProperty": 260,
+        "Enum": 13,
+        "StructProperty": 23,
+        "ClassProperty": 8,
+        "Struct": 6,
+        "NameProperty": 2,
+        "State": 1,
+        "Const": 12,
+        "TextBuffer": 123,
+        "GUISplitter": 1,
+        "moComboBox": 2,
+        "moCheckBox": 2,
+        "moEditBox": 2,
+        "moNumericEdit": 2,
+        "moFloatEdit": 2,
+        "fntMenuFont": 1,
+        "fntDefaultFont": 1,
+        "fntLargeFont": 1,
+        "fntHeaderFont": 1,
+        "fntSmallFont": 1,
+        "fntSmallHeaderFont": 1,
+        "GUILabel": 5,
+        "GUISlider": 1,
+        "GUIHorzScrollZone": 1,
+        "GUIHorzScrollButton": 2,
+        "GUIHorzGripButton": 1,
+        "GUIVertScrollZone": 1,
+        "GUIVertScrollButton": 2,
+        "GUIVertGripButton": 1,
+        "GUIEditBox": 3,
+        "GUISpinnerButton": 4,
+        "GUIButton": 9,
+        "GUITitleBar": 2,
+        "GUITabControl": 1,
+        "GUIVertScrollBar": 1,
+        "GUIScrollText": 1,
+        "GUIMultiColumnListHeader": 1,
+        "GUIList": 1,
+        "GUIMultiColumnListBox": 1,
+        "GUIListBox": 3,
+        "GUIScrollTextBox": 1,
+        "GUIComboButton": 1
+      },
+      "bytes": 146510,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "guicontent": {
+      "path": "textures/GUIContent.utx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "textures/GUIContent.utx",
+      "sha256": "36065188f8f7ccf81a6ebfb28d04d056900cf885c6cae2acdcc933ca17bc94ac",
+      "crc32": "5d2fdac3",
+      "version": 120,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "FadeColor": 2,
+        "Texture": 62,
+        "Combiner": 15,
+        "Shader": 3,
+        "TexPanner": 7,
+        "Package": 2,
+        "FinalBlend": 11
+      },
+      "bytes": 1163433,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "guifonts": {
+      "path": "textures/GUIFONTS.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hgame": {
+      "path": "system/HGame.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "emittertextures",
+        "engine",
+        "fire",
+        "gameplay",
+        "gui",
+        "guicontent",
+        "hp3_cutscenes_sm",
+        "hp3_furniture_sm",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_interioraccents_sm",
+        "hp3_loadlevel",
+        "hp3_menu",
+        "hp3_particles_sm",
+        "hp3_systemicons",
+        "hp_fx",
+        "hpcharacters",
+        "hpcharacters_32",
+        "hpchartextures",
+        "hprops",
+        "kwgame",
+        "kwmenu",
+        "soundeffects",
+        "spellshapes"
+      ],
+      "actualPath": "system/HGame.u",
+      "sha256": "d0981cc5fc704391e3f152f1e94295b2e0440b2660b2b5027dba7eb2cd889ef1",
+      "crc32": "70a4f4a6",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 675,
+        "StrProperty": 257,
+        "IntProperty": 644,
+        "ObjectProperty": 1655,
+        "ArrayProperty": 185,
+        "StructProperty": 677,
+        "Function": 2240,
+        "BoolProperty": 733,
+        "ByteProperty": 58,
+        "ClassProperty": 132,
+        "FloatProperty": 1100,
+        "NameProperty": 240,
+        "WetTexture": 21,
+        "State": 315,
+        "Palette": 145,
+        "Struct": 26,
+        "Enum": 27,
+        "SpriteEmitter": 264,
+        "GUILabel": 55,
+        "Texture": 139,
+        "GUIButton": 140,
+        "HPGenericStudentData": 1,
+        "VertMesh": 5,
+        "Const": 409,
+        "GUIImage": 111,
+        "GUIGFXButton": 63,
+        "TextBuffer": 675,
+        "HPGUIComboBox": 12,
+        "Font": 10,
+        "DelegateProperty": 2,
+        "KWACTION_Sleep": 2,
+        "KWACTION_TakeOver": 2,
+        "KWAction_WalkTo": 1,
+        "KWAction_TurnTo": 1,
+        "KWACTION_PlayAnim": 1,
+        "KWACTION_GotoAction": 1,
+        "AnimNotify_KWSound": 66,
+        "KarmaParamsSkel": 1,
+        "BeamEmitter": 11,
+        "SparkEmitter": 8,
+        "MeshEmitter": 7,
+        "RibbonEmitter": 2,
+        "HPmoCheckBox": 3,
+        "GUISlider": 6,
+        "Package": 7,
+        "FireTexture": 53,
+        "IceTexture": 6
+      },
+      "bytes": 11253595,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "hp3_adv1express": {
+      "path": "maps/HP3_Adv1Express.unr",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "emittertextures",
+        "engine",
+        "gameplay",
+        "hgame",
+        "hp3_cutscenes_sm",
+        "hp3_floors",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_hogwartsexpress",
+        "hp3_hogwartsexpress_sm",
+        "hp3_interioraccents",
+        "hp3_interioraccents_sm",
+        "hp3_natural",
+        "hp3_natural_sm",
+        "hp3_placeholder",
+        "hp3_skybox",
+        "hp3_skyboxes",
+        "hp3_walls",
+        "hp_fx",
+        "hpcharacters",
+        "hprops",
+        "kwgame",
+        "soundeffects"
+      ],
+      "actualPath": "maps/HP3_Adv1Express.unr",
+      "sha256": "f311a8d5e761422811050c4d31a3382dd1402ca25e5871a263e5ad2cb6e7f8e8",
+      "crc32": "db08940e",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "LevelInfo": 6,
+        "Level": 1,
+        "Spotlight": 319,
+        "Sunlight": 5,
+        "ZoneInfo": 13,
+        "Light": 407,
+        "AmbientSoundTrigger": 28,
+        "CompanionTrigger": 32,
+        "TriggerLight": 8,
+        "CompanionCorral": 16,
+        "Texture": 11,
+        "PathNode": 403,
+        "Trigger": 37,
+        "AlohomoraTrigger": 4,
+        "CutMark": 100,
+        "TerrainInfo": 1,
+        "Brush": 278,
+        "SkyZoneInfo": 1,
+        "TexPanner": 2,
+        "KWPawn": 2,
+        "AIMarker": 10,
+        "Door": 9,
+        "KWBlockingVolume": 13,
+        "StaticMeshActor": 526,
+        "Mover": 43,
+        "SpawnThingy": 24,
+        "HPDecoration": 38,
+        "CutSceneTrigger": 19,
+        "MountVolume": 2,
+        "BlockingVolume": 132,
+        "SmartDesk": 8,
+        "MBOMcage": 2,
+        "HPGenericStudent": 6,
+        "ChocolateFrog": 1,
+        "LevelSummary": 1,
+        "gargoyle": 1,
+        "CameraBlockingVolume": 17,
+        "Dispatcher": 27,
+        "CompanionSpellTrigger": 1,
+        "Crabbe": 1,
+        "Goyle": 1,
+        "CameraTrigger": 1,
+        "FlyingBook": 5,
+        "AlohomoraPadLock": 3,
+        "Jellybean": 24,
+        "Hermione": 1,
+        "CompanionClimbBoundaryKeyPoint": 2,
+        "CompanionJumpUpKeyPoint": 5,
+        "PlayerStart": 2,
+        "SaveBook": 1,
+        "Hpgenericspawner": 6,
+        "StaticMesh": 4,
+        "MonsterBook": 2,
+        "Ron": 1,
+        "ParticleTrigger": 2,
+        "Scabbers": 1,
+        "ElevatorTrigger": 2,
+        "Camera": 15,
+        "Draco": 1,
+        "LumosTrigger": 1,
+        "HPSpawnThingy": 1,
+        "PopupTrigger": 5,
+        "DementorCrate": 3,
+        "harry": 1,
+        "TelePit": 1,
+        "BlackDog": 1,
+        "ReachSpec": 2398,
+        "Polys": 443,
+        "Model": 443,
+        "LookTarget": 22,
+        "SpriteEmitter": 77,
+        "CutKeyPointMark": 90,
+        "CutCamPosition": 30,
+        "B_mark": 1,
+        "AmbientSound": 15,
+        "ACTION_TriggerEvent": 2,
+        "StaticMeshInstance": 579,
+        "AnimNotify_KWSound": 13,
+        "Train_Smoke": 2,
+        "TexPannerTriggered": 1,
+        "FinalBlend": 1,
+        "AmbientSoundActor": 3,
+        "Emitter": 27,
+        "navShortcut": 4,
+        "InterpolationPoint": 37,
+        "ElevatorMover": 3,
+        "AntiPortalActor": 12,
+        "ACTION_SetViewTarget": 2,
+        "ACTION_DestroyActor": 2,
+        "ACTION_SpawnActor": 2,
+        "ConvexVolume": 12,
+        "ChangeLevelTrigger": 1,
+        "Lupin": 1,
+        "MusicTrigger": 3,
+        "Sirius": 1,
+        "LumosSparklesEmitter": 4,
+        "LumosSparklesTrigger": 1,
+        "MeshEmitter": 4,
+        "HPGenericStudentData": 1,
+        "KWACTION_Sleep": 17,
+        "Dustsmall": 11,
+        "CloudsBrewing": 1,
+        "MagicDust": 12,
+        "EyeBlinkA": 9,
+        "RonScabbersPaper": 1,
+        "MBOM_Death": 1,
+        "Crookshanks": 1,
+        "TerrainSector": 16,
+        "BeamEmitter": 18,
+        "SubActionTrigger": 2,
+        "ActionPause": 2,
+        "SubActionOrientation": 1,
+        "ActionMoveCamera": 2,
+        "Fire": 2,
+        "CutSequence": 1,
+        "KWCutSceneManager": 1,
+        "F_mark": 1,
+        "MaterialTrigger": 2,
+        "LightningTest": 9,
+        "A_mark": 1,
+        "C_mark": 1,
+        "E_mark": 2,
+        "KWSpecialEventTrigger": 1,
+        "Dementor": 1,
+        "SwirlingLights": 1,
+        "RictusempraTrigger": 2,
+        "Route": 1,
+        "KWACTION_TakeOver": 12,
+        "KWACTION_GotoAction": 6,
+        "KWAction_WalkTo": 6,
+        "KWAction_TurnTo": 6,
+        "KWACTION_PlayAnim": 4,
+        "SpellTrigger": 5,
+        "DementorDoor": 1,
+        "SwirlyBlob": 1,
+        "HPGenericStudentSpawner": 1,
+        "PoxieManager": 1,
+        "MagicCloud": 1,
+        "SwirlySkinny": 1,
+        "HPScriptedSequence": 3,
+        "ACTION_WaitForEvent": 5,
+        "ACTION_GotoAction": 3,
+        "LineOfSightTrigger": 1,
+        "RisingStatic": 1,
+        "ACTION_PlaySound": 1,
+        "CutFactory": 1,
+        "Palette": 1,
+        "D_mark": 1,
+        "DementorEncounter": 1,
+        "HarryPawn": 1,
+        "InventorySpot": 75,
+        "Dumbledore": 1,
+        "BlockAll": 1,
+        "GoldTrunk": 1,
+        "Package": 8,
+        "DefaultPhysicsVolume": 1
+      },
+      "bytes": 4649775,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "hp3_adv2exppatronum": {
+      "path": "maps/HP3_Adv2ExpPatronum.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_adv3library": {
+      "path": "maps/HP3_Adv3Library.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_adv5shack": {
+      "path": "maps/HP3_Adv5Shack.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_adv6paddock": {
+      "path": "maps/HP3_Adv6Paddock.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_archiexterior": {
+      "path": "textures/HP3_ArchiExterior.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_beanbonus": {
+      "path": "maps/HP3_BeanBonus.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_buckyexecuted": {
+      "path": "maps/HP3_BuckyExecuted.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ceilings": {
+      "path": "textures/HP3_Ceilings.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch1carperetractum": {
+      "path": "maps/HP3_Ch1CarpeRetractum.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch1carperetractumb": {
+      "path": "maps/HP3_Ch1CarpeRetractumB.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch2draconifors": {
+      "path": "maps/HP3_Ch2Draconifors.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch2draconiforsb": {
+      "path": "maps/HP3_Ch2DraconiforsB.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch3glacius": {
+      "path": "maps/HP3_Ch3Glacius.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_ch3glaciusb": {
+      "path": "maps/HP3_Ch3GlaciusB.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_comc": {
+      "path": "maps/HP3_COMC.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_cutscenes_sm": {
+      "path": "StaticMeshes/HP3_CutScenes_SM.usx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp3_furniture",
+        "hp3_fx",
+        "hp3_hogwartsexpress",
+        "hp3_interioraccents"
+      ],
+      "actualPath": "StaticMeshes/HP3_CutScenes_SM.usx",
+      "sha256": "2d4e05f246ca9a48f11691860ecda993201e9e5cfb63057ea1a02d60750cc8db",
+      "crc32": "f3c38491",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 3,
+        "StaticMesh": 11
+      },
+      "bytes": 351127,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_darktower": {
+      "path": "maps/HP3_DarkTower.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_deleted2": {
+      "path": "textures/HP3_Deleted2.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_dementorbattle": {
+      "path": "maps/HP3_DementorBattle.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_dungeonhub": {
+      "path": "maps/HP3_DungeonHUB.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_exteriorarch_sm": {
+      "path": "StaticMeshes/HP3_ExteriorArch_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_fa1ron": {
+      "path": "maps/HP3_FA1Ron.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_fa2hermione": {
+      "path": "maps/HP3_FA2Hermione.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_fa3harry": {
+      "path": "maps/HP3_FA3Harry.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_final": {
+      "path": "maps/HP3_Final.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_floors": {
+      "path": "textures/HP3_Floors.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_furniture": {
+      "path": "textures/HP3_Furniture.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_furniture_sm": {
+      "path": "StaticMeshes/HP3_Furniture_SM.usx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp3_furniture"
+      ],
+      "actualPath": "StaticMeshes/HP3_Furniture_SM.usx",
+      "sha256": "ea47cddfa2371bffa8aa2442571d0ca100204388f688cad26cc14de999912582",
+      "crc32": "e09e75a3",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 7,
+        "StaticMesh": 35
+      },
+      "bytes": 1179334,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_fx": {
+      "path": "textures/HP3_FX.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_gameplay": {
+      "path": "textures/HP3_Gameplay.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_gameplay_sm": {
+      "path": "StaticMeshes/HP3_Gameplay_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_glacius_placeholder": {
+      "path": "StaticMeshes/HP3_Glacius_Placeholder.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_groundsdada": {
+      "path": "maps/HP3_GroundsDada.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_groundshub": {
+      "path": "maps/HP3_GroundsHub.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_hogwartsexpress": {
+      "path": "textures/HP3_HogwartsExpress.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_hogwartsexpress_sm": {
+      "path": "StaticMeshes/HP3_HogwartsExpress_SM.usx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp3_hogwartsexpress"
+      ],
+      "actualPath": "StaticMeshes/HP3_HogwartsExpress_SM.usx",
+      "sha256": "77932bc2069d7a4515fe29f09647c284d1721ef3053210954fa49e64e4fd75c2",
+      "crc32": "64d08171",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "KMeshProps": 9,
+        "Model": 9,
+        "Polys": 9,
+        "StaticMesh": 23,
+        "Package": 4
+      },
+      "bytes": 606607,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_infirmary": {
+      "path": "maps/HP3_Infirmary.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_insidehub": {
+      "path": "maps/HP3_InsideHub.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_interarch": {
+      "path": "textures/HP3_InterArch.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_interarch_sm": {
+      "path": "StaticMeshes/HP3_InterArch_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_interioraccents": {
+      "path": "textures/HP3_InteriorAccents.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_interioraccents_sm": {
+      "path": "StaticMeshes/HP3_InteriorAccents_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_loadlevel": {
+      "path": "textures/HP3_LoadLevel.utx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "textures/HP3_LoadLevel.utx",
+      "sha256": "ca0a1d3d1ec3f602624df93f65c06690aaf1b9907b818afd564c4ac1e979eef5",
+      "crc32": "69bae795",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "MovieTexture": 1,
+        "Shader": 1,
+        "ConstantColor": 1,
+        "Package": 1
+      },
+      "bytes": 66151,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_materialswitch_hw": {
+      "path": "textures/HP3_MaterialSwitch_HW.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_materialswitch_sw": {
+      "path": "textures/HP3_MaterialSwitch_SW.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_materialswitch_tx": {
+      "path": "textures/HP3_MaterialSwitch_Tx.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_menu": {
+      "path": "textures/HP3_Menu.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_movers": {
+      "path": "textures/HP3_Movers.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_movers_sm": {
+      "path": "StaticMeshes/HP3_Movers_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_natural": {
+      "path": "textures/HP3_Natural.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_natural_sm": {
+      "path": "StaticMeshes/HP3_Natural_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_particles_sm": {
+      "path": "StaticMeshes/HP3_Particles_SM.usx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_walls"
+      ],
+      "actualPath": "StaticMeshes/HP3_Particles_SM.usx",
+      "sha256": "645b5eb8531b89961b1aec653d4c27a0fb122359d7f1b64466ceb221bac66ae4",
+      "crc32": "d6f5d925",
+      "version": 128,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 3,
+        "StaticMesh": 7
+      },
+      "bytes": 155687,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_placeholder": {
+      "path": "textures/HP3_Placeholder.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_placeholder_sm": {
+      "path": "StaticMeshes/HP3_Placeholder_SM.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_portraitpassword_b": {
+      "path": "maps/HP3_PortraitPassword_B.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_portraitpassword_c": {
+      "path": "maps/HP3_PortraitPassword_C.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_portraitpassword_d": {
+      "path": "maps/HP3_PortraitPassword_D.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_portraitpassword_e": {
+      "path": "maps/HP3_PortraitPassword_E.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_portraitpassword_f": {
+      "path": "maps/HP3_PortraitPassword_F.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_quidditch": {
+      "path": "maps/HP3_Quidditch.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_skybox": {
+      "path": "textures/HP3_Skybox.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_skyboxes": {
+      "path": "StaticMeshes/HP3_SkyBoxes.usx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "hp3_fx",
+        "hp3_skybox"
+      ],
+      "actualPath": "StaticMeshes/HP3_SkyBoxes.usx",
+      "sha256": "1214a650a22c0b27a370aec0aacb1bd3e122c0429ad5efb825489056aff3109e",
+      "crc32": "3955cdd5",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Package": 2,
+        "StaticMesh": 13
+      },
+      "bytes": 162061,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_systemicons": {
+      "path": "textures/HP3_SystemIcons.utx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "textures/HP3_SystemIcons.utx",
+      "sha256": "ba39c6602348458f9dc38227b5856c9d940dceab8b1b27aa28c28f4b4b88b497",
+      "crc32": "267b05ac",
+      "version": 123,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 20,
+        "Package": 1,
+        "Texture": 50
+      },
+      "bytes": 162588,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "hp3_tester": {
+      "path": "StaticMeshes/HP3_Tester.usx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_walls": {
+      "path": "textures/HP3_Walls.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp3_whompingwillow": {
+      "path": "maps/HP3_WhompingWillow.unr",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp_fx": {
+      "path": "textures/HP_FX.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hp_preamble": {
+      "path": "maps/HP_Preamble.unr",
+      "status": "valid",
+      "rootDependencies": [
+        "engine",
+        "gameplay",
+        "hgame",
+        "kwgame"
+      ],
+      "actualPath": "maps/HP_Preamble.unr",
+      "sha256": "b03ce13420bdfde549f38fdf1d23a6eff0cb30803ea7f223d21022abff280545",
+      "crc32": "fa1dcee9",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "LevelInfo": 1,
+        "DefaultPhysicsVolume": 1,
+        "Brush": 2,
+        "Level": 1,
+        "Camera": 15,
+        "MovieTrigger": 3,
+        "PlayerStart": 1,
+        "Model": 3,
+        "Polys": 3,
+        "ACTION_WaitForTimer": 3,
+        "CutFactory": 1,
+        "ACTION_WaitForEvent": 1,
+        "ACTION_GotoMenu": 1,
+        "ACTION_TriggerEvent": 2,
+        "HPHeroPawn": 1,
+        "HPScriptedSequence": 1,
+        "LevelSummary": 1,
+        "harry": 1
+      },
+      "bytes": 174512,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "hpcharacters": {
+      "path": "Animations/HPCharacters.ukx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hpcharacters_16": {
+      "path": "Animations/HPCharacters_16.ukx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hpcharacters_32": {
+      "path": "Animations/HPCharacters_32.ukx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hpchartextures": {
+      "path": "textures/HPCharTextures.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hprops": {
+      "path": "Animations/HProps.ukx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "hpskybox": {
+      "path": "textures/HPSkybox.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "ice2": {
+      "path": "textures/Ice2.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "joint": {
+      "path": "Animations/Joint.ukx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "jointtextures": {
+      "path": "textures/JointTextures.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "kwgame": {
+      "path": "System/kwGame.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "gameplay",
+        "gui",
+        "guicontent",
+        "hp3_menu",
+        "kwmenu",
+        "udebugmenu",
+        "uwindow"
+      ],
+      "actualPath": "system/kwGame.u",
+      "sha256": "9ee25ea5d804d9892a23276ef9e1bf4e5c4dfc452ad66aa09895fd0d6abb61f3",
+      "crc32": "0c9d2f19",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 297,
+        "ObjectProperty": 1262,
+        "StructProperty": 714,
+        "BoolProperty": 905,
+        "StrProperty": 484,
+        "Function": 1969,
+        "ArrayProperty": 140,
+        "IntProperty": 551,
+        "ByteProperty": 115,
+        "FloatProperty": 1052,
+        "NameProperty": 312,
+        "Struct": 29,
+        "Palette": 20,
+        "ClassProperty": 75,
+        "Enum": 28,
+        "State": 140,
+        "Texture": 58,
+        "Const": 107,
+        "Font": 5,
+        "GUIButton": 15,
+        "TextBuffer": 299,
+        "ACTION_WaitForEvent": 1,
+        "GUIListBox": 2,
+        "GUITitleBar": 1,
+        "GUITabControl": 1,
+        "GUIComboBox": 2,
+        "GUILabel": 2,
+        "SpawnerData": 1
+      },
+      "bytes": 1589327,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "kwmenu": {
+      "path": "textures/KWMenu.utx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "textures/KWMenu.utx",
+      "sha256": "07e891a8860a7b4590eee51e69729ddc775e908096f89cd2ccbf3e958056c1a2",
+      "crc32": "4ce6b740",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 4,
+        "Texture": 6,
+        "Package": 1
+      },
+      "bytes": 131159,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "legotextures": {
+      "path": "textures/LegoTextures.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "palettes": {
+      "path": "textures/Palettes.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "quidditchterrain": {
+      "path": "textures/QuidditchTerrain.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "soundeffects": {
+      "path": "sounds/soundeffects.uax",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "spellshapes": {
+      "path": "textures/SpellShapes.utx",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "fire"
+      ],
+      "actualPath": "textures/SpellShapes.utx",
+      "sha256": "32ea1eab8b660a63ce4f71c84d84feb135370927f3d67447b33ae0814e7324cf",
+      "crc32": "f345f80a",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Palette": 14,
+        "Texture": 14,
+        "Package": 2,
+        "WetTexture": 14
+      },
+      "bytes": 106425,
+      "integrityAnchor": "discDeclaredCRC32"
+    },
+    "udebugmenu": {
+      "path": "system/UDebugMenu.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine",
+        "uwindow"
+      ],
+      "actualPath": "system/UDebugMenu.u",
+      "sha256": "f66d4b07234fe597a014808bbccf3b4a6efec9edeb0d7a3e01750591b3054205",
+      "crc32": "a8ff8ac5",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "StructProperty": 25,
+        "ObjectProperty": 283,
+        "IntProperty": 227,
+        "Class": 38,
+        "FloatProperty": 72,
+        "StrProperty": 194,
+        "BoolProperty": 55,
+        "ByteProperty": 33,
+        "Texture": 30,
+        "Palette": 29,
+        "Function": 157,
+        "TextBuffer": 38,
+        "ClassProperty": 1,
+        "State": 1,
+        "Const": 2,
+        "Package": 1
+      },
+      "bytes": 246112,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "udnlevelloadingtex": {
+      "path": "textures/UDNLevelLoadingTex.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "ut2003fonts": {
+      "path": "textures/UT2003Fonts.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "uwindow": {
+      "path": "system/UWindow.u",
+      "status": "valid",
+      "rootDependencies": [
+        "core",
+        "engine"
+      ],
+      "actualPath": "system/UWindow.u",
+      "sha256": "02b27f429b2f4271d098bb3adf3c06d32933b468ea7c2a6fa0325f2f58ab531f",
+      "crc32": "0fef73db",
+      "version": 129,
+      "licenseeVersion": 0,
+      "classCounts": {
+        "Class": 78,
+        "FloatProperty": 877,
+        "ObjectProperty": 688,
+        "IntProperty": 233,
+        "Struct": 4,
+        "StructProperty": 150,
+        "Function": 736,
+        "StrProperty": 205,
+        "BoolProperty": 237,
+        "ByteProperty": 53,
+        "Enum": 9,
+        "ClassProperty": 24,
+        "Texture": 39,
+        "Palette": 17,
+        "NameProperty": 3,
+        "State": 2,
+        "TextBuffer": 78,
+        "Const": 25,
+        "Package": 1
+      },
+      "bytes": 377056,
+      "integrityAnchor": "referenceSHA256"
+    },
+    "uwindowfonts": {
+      "path": "textures/UWindowFonts.utx",
+      "status": "missing",
+      "rootDependencies": []
+    },
+    "warfarefonts": {
+      "path": "textures/WarfareFonts.utx",
+      "status": "missing",
+      "rootDependencies": []
+    }
+  },
+  "summary": {
+    "missing": 86,
+    "valid": 24
+  },
+  "expectedPackages": 110,
+  "unlistedPackageFiles": [],
+  "presentPayloadsValid": true,
+  "requiredPackagesComplete": false,
+  "dependencyRoutes": {
+    "HP_Preamble": {
+      "visitedPackages": [
+        "core",
+        "emittertextures",
+        "engine",
+        "fire",
+        "gameplay",
+        "gui",
+        "guicontent",
+        "hgame",
+        "hp3_cutscenes_sm",
+        "hp3_furniture",
+        "hp3_furniture_sm",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_hogwartsexpress",
+        "hp3_interioraccents",
+        "hp3_interioraccents_sm",
+        "hp3_loadlevel",
+        "hp3_menu",
+        "hp3_particles_sm",
+        "hp3_systemicons",
+        "hp3_walls",
+        "hp_fx",
+        "hp_preamble",
+        "hpcharacters",
+        "hpcharacters_32",
+        "hpchartextures",
+        "hprops",
+        "kwgame",
+        "kwmenu",
+        "soundeffects",
+        "spellshapes",
+        "udebugmenu",
+        "uwindow"
+      ],
+      "missingPayloads": [
+        "emittertextures",
+        "hp3_furniture",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_hogwartsexpress",
+        "hp3_interioraccents",
+        "hp3_interioraccents_sm",
+        "hp3_menu",
+        "hp3_walls",
+        "hp_fx",
+        "hpcharacters",
+        "hpcharacters_32",
+        "hpchartextures",
+        "hprops",
+        "soundeffects"
+      ],
+      "invalidOrUnanchoredPayloads": [],
+      "dependenciesOutsideInventory": [],
+      "staticClosureComplete": false,
+      "dynamicLoadsVerified": false
+    },
+    "HP3_Adv1Express": {
+      "visitedPackages": [
+        "core",
+        "emittertextures",
+        "engine",
+        "fire",
+        "gameplay",
+        "gui",
+        "guicontent",
+        "hgame",
+        "hp3_adv1express",
+        "hp3_cutscenes_sm",
+        "hp3_floors",
+        "hp3_furniture",
+        "hp3_furniture_sm",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_hogwartsexpress",
+        "hp3_hogwartsexpress_sm",
+        "hp3_interioraccents",
+        "hp3_interioraccents_sm",
+        "hp3_loadlevel",
+        "hp3_menu",
+        "hp3_natural",
+        "hp3_natural_sm",
+        "hp3_particles_sm",
+        "hp3_placeholder",
+        "hp3_skybox",
+        "hp3_skyboxes",
+        "hp3_systemicons",
+        "hp3_walls",
+        "hp_fx",
+        "hpcharacters",
+        "hpcharacters_32",
+        "hpchartextures",
+        "hprops",
+        "kwgame",
+        "kwmenu",
+        "soundeffects",
+        "spellshapes",
+        "udebugmenu",
+        "uwindow"
+      ],
+      "missingPayloads": [
+        "emittertextures",
+        "hp3_floors",
+        "hp3_furniture",
+        "hp3_fx",
+        "hp3_gameplay",
+        "hp3_gameplay_sm",
+        "hp3_hogwartsexpress",
+        "hp3_interioraccents",
+        "hp3_interioraccents_sm",
+        "hp3_menu",
+        "hp3_natural",
+        "hp3_natural_sm",
+        "hp3_placeholder",
+        "hp3_skybox",
+        "hp3_walls",
+        "hp_fx",
+        "hpcharacters",
+        "hpcharacters_32",
+        "hpchartextures",
+        "hprops",
+        "soundeffects"
+      ],
+      "invalidOrUnanchoredPayloads": [],
+      "dependenciesOutsideInventory": [],
+      "staticClosureComplete": false,
+      "dynamicLoadsVerified": false
+    }
+  },
+  "nativeLayoutsOrAssetPayloadsDeserialized": false,
+  "runtimeIntegrated": false,
+  "playable": false,
+  "checkpoint": "tq-0.4.3-payload-integrity",
+  "provenance": {
+    "image": "HPPoA_Na.bin",
+    "inventory": "POA-FULL-DISC-INVENTORY.json",
+    "newlyExtractedPackages": 10,
+    "newAssetPayloadsCheckedAgainstOriginalArchiveCRC": true,
+    "pinnedStartupReferencePackages": 14,
+    "originalDataIncludedInSource": false,
+    "unextractedPackagesMayRevealFurtherDependencies": true
+  },
+  "hostTests": {
+    "poaPython": 83,
+    "newIntegrityAndDependencyTests": 10,
+    "androidPackagingPreflightPreviouslyPassed": 18,
+    "cppChanged": false
+  }
+}

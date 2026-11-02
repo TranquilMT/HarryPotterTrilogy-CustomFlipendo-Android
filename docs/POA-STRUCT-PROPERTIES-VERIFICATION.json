@@ -1,0 +1,58 @@
+{
+  "pythonTestsPassed": 44,
+  "dataFreeSanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables",
+    "default_properties",
+    "struct_properties"
+  ],
+  "retailStructReadFragments": {
+    "selection": {
+      "counts": {
+        "nonDirectInstanceRootOccurrencesDeferred": 3258,
+        "importedReferencesDeferred": 319,
+        "nonPrimitiveLayoutDeferred": 24,
+        "primitiveReadFragments": 95
+      },
+      "scope": "Original direct struct-read bytes in synthetic return harnesses; property type/struct ownership checked; whole functions not executed",
+      "defaults": "Host-supplied primitive leaves; no native offsets or retail defaults",
+      "runtimeIntegrated": false
+    },
+    "cases": 95,
+    "invocations": 198,
+    "passed": true,
+    "scope": "Original direct instance struct-read instructions in synthetic return harnesses, with explicit host primitive leaves; whole original functions and native layouts not executed",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "propertyRegressions": {
+    "retailGetters": 24,
+    "getterInvocations": 76,
+    "defaultReadFragments": 95,
+    "defaultFragmentInvocations": 240,
+    "passed": true
+  },
+  "legacyTypedRegression": {
+    "images": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 776,
+    "smokeRejected": 2789,
+    "note": "Smoke completion is not correctness or gameplay coverage",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "serializedDefaultsLoaded": false,
+  "nativeStructLayoutsImplemented": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

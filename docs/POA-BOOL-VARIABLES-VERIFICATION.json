@@ -1,0 +1,58 @@
+{
+  "audit": {
+    "decodedFunctions": 7933,
+    "wrapperChildren": {
+      "0x01": 4700,
+      "0x00": 902,
+      "0x02": 79,
+      "0x36": 110
+    },
+    "letBoolTargets": {
+      "0x2d": 1629,
+      "0x19": 700,
+      "0x12": 6
+    },
+    "supportedWrapperChildren": [
+      "0x00",
+      "0x01"
+    ],
+    "scope": "Original bytecode structure only; packed native Boolean layouts and gameplay unverified"
+  },
+  "pythonTestsPassed": 44,
+  "sanitizerSuitesPassed": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties",
+    "bool_variables"
+  ],
+  "retailGetterCorpus": {
+    "getters": 24,
+    "wrappedBoolGetters": 14,
+    "invocations": 76,
+    "passed": true,
+    "bothBoolValues": true,
+    "defaults": "Explicit host values",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "legacyTypedFrameCorpus": {
+    "registeredImages": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 776,
+    "smokeRejected": 2789,
+    "note": "Finished probes are not correctness or gameplay coverage",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "nativeBooleanPackingImplemented": false,
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

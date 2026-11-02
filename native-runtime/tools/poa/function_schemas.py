@@ -33,3 +33,4 @@ def main():
    except Exception as error:errors.append({'package':path.name,'name':e['name'],'error':str(error)})
  (out/'function-schemas.json').write_text(json.dumps(functions,indent=2));(out/'schema-errors.json').write_text(json.dumps(errors,indent=2));print('Function schemas',len(functions),'native orders verified',natives,'errors',len(errors),flush=True)
 if __name__=='__main__':main()
+

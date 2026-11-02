@@ -77,3 +77,4 @@ def main():
  for x in summaries:totals.update(x['counts'])
  (out/'totals.json').write_text(json.dumps(dict(totals),indent=2));print(dict(totals),flush=True)
 if __name__=='__main__':main()
+

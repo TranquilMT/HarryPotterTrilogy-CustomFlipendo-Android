@@ -54,3 +54,4 @@ def main():
   except Exception as e:reports.append({'path':str(path.relative_to(root)),'error':str(e)})
  (out/'summary.json').write_text(json.dumps(reports,indent=2));print('Packages',len(reports),'errors',sum('error' in r for r in reports),flush=True)
 if __name__=='__main__':main()
+

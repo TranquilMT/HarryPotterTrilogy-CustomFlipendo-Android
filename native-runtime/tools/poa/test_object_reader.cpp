@@ -29,3 +29,4 @@ int main(int argc,char** argv){try{
  std::vector<uint8_t> boolean={1,0x83,0};Reader br(boolean);auto t=readTags(br,names);require(t.size()==1 && t[0].boolean && t[0].payloadBytes==0 && br.remaining()==0);
  std::cout<<"PASS "<<passed<<" real object fixtures, malformed inputs and boolean encoding\n";return 0;
  }catch(const std::exception& e){std::cerr<<e.what()<<"\n";return 1;}}
+

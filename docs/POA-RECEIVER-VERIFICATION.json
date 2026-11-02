@@ -1,0 +1,36 @@
+{
+  "pythonTestsPassed": 44,
+  "newReceiverTests": "Synthetic scripts, ASan/UBSan, strict C++17 warnings",
+  "receiverCoverage": [
+    "Two instances execute the same script with different overrides",
+    "Independent active state selection and class/global bypass",
+    "Receiver environment retained through final/native/named calls",
+    "Caller-local name tables in nested callees",
+    "Function and full state-chain owner checks",
+    "Invalid selection preserves previous state",
+    "Missing bindings and implementations reject",
+    "Shared recursion and instruction limits",
+    "Legacy explicit-link mode unchanged"
+  ],
+  "retailMetadataRegression": {
+    "scopes": 2169,
+    "resolvedLookups": 2059010,
+    "rejectedAbsentLookups": 276,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "legacyPrimitiveFrameRegression": {
+    "registeredImages": 3576,
+    "constantResultsChecked": 269,
+    "originalVoidReturnsChecked": 467,
+    "declaredDefaultsChecked": 7,
+    "boundedSmokeFinished": 771,
+    "boundedSmokeRejected": 2794,
+    "note": "Smoke completion is not correctness coverage; these legacy calls do not use the new receiver environment."
+  },
+  "runtimeIntegrated": false,
+  "androidBuildProduced": false,
+  "playable": false
+}

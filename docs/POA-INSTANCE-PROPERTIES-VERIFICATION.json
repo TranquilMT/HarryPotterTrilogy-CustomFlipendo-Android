@@ -1,0 +1,49 @@
+{
+  "pythonTestsPassed": 44,
+  "dataFreeSanitizerSuites": [
+    "named_calls",
+    "dispatch_resolver",
+    "receiver_program",
+    "instance_properties"
+  ],
+  "retailGetters": {
+    "count": 10,
+    "receiversPerCase": 2,
+    "passed": true,
+    "defaults": "Explicit host values; retail defaults not inferred",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ]
+  },
+  "legacyTypedRegression": {
+    "images": 3576,
+    "constantOracles": 269,
+    "originalVoidReturns": 467,
+    "declaredDefaultReturns": 7,
+    "smokeFinished": 771,
+    "smokeRejected": 2794,
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "scope": "Legacy mode without a receiver environment; smoke success is not gameplay correctness"
+  },
+  "supportedPropertyValues": [
+    "bool",
+    "int32",
+    "float32",
+    "byte 0..255"
+  ],
+  "unsupported": [
+    "Class default deserialization",
+    "Packed Boolean wrapper/mask semantics",
+    "Native object layouts",
+    "Arrays and structs",
+    "Object references and Context/Self",
+    "Live actors and state lifecycle"
+  ],
+  "androidBuildProduced": false,
+  "runtimeIntegrated": false,
+  "playable": false
+}

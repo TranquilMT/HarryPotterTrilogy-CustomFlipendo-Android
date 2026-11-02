@@ -15,3 +15,4 @@ class BoundsTests(unittest.TestCase):
    p=pathlib.Path(d)/'bad.u';p.write_bytes(b)
    with self.assertRaises(ValueError):inspect(p)
 if __name__=='__main__':unittest.main()
+
