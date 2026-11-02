@@ -318,8 +318,14 @@ public class SetupActivity extends Activity {
         unavailable.setTextColor(0xFF989BA5); unavailable.setTextSize(12);
         unavailable.setPadding(dp(12), dp(8), dp(12), dp(8));
         unavailable.setBackground(rounded(0x333D414B, 12, 0x445D626D));
-        unavailable.setEnabled(false); unavailable.setFocusable(false); unavailable.setAlpha(0.55f);
-        unavailable.setContentDescription("Prisoner of Azkaban. Not working yet. Unavailable.");
+        unavailable.setEnabled(true); unavailable.setFocusable(true); unavailable.setAlpha(1.0f);
+        unavailable.setContentDescription("Prisoner of Azkaban. Experimental. Tap to test.");
+        unavailable.setOnClickListener(v -> {
+            getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, "hp3").apply();
+            File f = locateGame(false);
+            if (f != null) { gameDir = f.getPath(); gameReady = true; tryStart(); }
+            else { android.widget.Toast.makeText(this, "No HP3 folder found. Copy game data to /sdcard/FlipendoHP3 or pick a folder in Settings.", android.widget.Toast.LENGTH_LONG).show(); }
+        });
         LinearLayout.LayoutParams disabledLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         disabledLayout.topMargin = dp(8); shelf.addView(unavailable, disabledLayout);
         return shelf;
@@ -1353,6 +1359,7 @@ public class SetupActivity extends Activity {
     static final String PREF_GAME = "game";
     static final String HP2_DIR = "/sdcard/FlipendoHP2";
     static final String PREF_GAME_DIR_HP2 = "gameDir.hp2";
+    static final String PREF_GAME_DIR_HP3 = "gameDir.hp3";
 
     private boolean isHp2() {
         return "hp2".equals(getSharedPreferences("setup", MODE_PRIVATE).getString(PREF_GAME, "hp1"));
@@ -1365,7 +1372,10 @@ public class SetupActivity extends Activity {
 
     /** A folder with the chosen game: System/Game.exe for HP2, System/HP.exe for HP1. */
     static File findGameFor(boolean hp2, File dir, int depth) {
-        return GameFiles.find(hp2, dir, depth);
+        if (hp2) return GameFiles.find(true, dir, depth);
+        File f = GameFiles.find(false, dir, depth);
+        if (f == null) f = GameFiles.findHp3(dir, depth);
+        return f;
     }
 
     /** HP2's own Russian text files, shipped with the Russian edition in a harry2 folder beside System (Core.rus, Engine.rus,
@@ -1788,7 +1798,7 @@ public class SetupActivity extends Activity {
     private String gameDir;
 
     // ---- Game folders: where each game is, picked separately ----
-    private static final int REQUEST_PICK_HP1 = 11, REQUEST_PICK_HP2 = 12;
+    private static final int REQUEST_PICK_HP1 = 11, REQUEST_PICK_HP2 = 12, REQUEST_PICK_HP3 = 13;
     private boolean foldersChanged; // a folder was picked or reset: the game is looked for again when the screen closes
 
     private void pickFolderFor(boolean hp2) {
