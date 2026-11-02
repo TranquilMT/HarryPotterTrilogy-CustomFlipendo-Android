@@ -173,14 +173,6 @@ public class SetupActivity extends Activity {
             root.addView(scroll, bodyLp);
             root.addView(footer, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         }
-        TextView buildTag = new TextView(this);
-        buildTag.setText("Build 0.4.5 (code 46)");
-        buildTag.setTextColor(0x80FFFFFF); buildTag.setTextSize(10);
-        buildTag.setGravity(android.view.Gravity.CENTER);
-        LinearLayout.LayoutParams btl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        btl.topMargin = dp(4); btl.bottomMargin = dp(4);
-        root.addView(buildTag, btl);
-
         showGame();
         startScreen = root;
         setContentView(startScreen);
@@ -704,6 +696,12 @@ public class SetupActivity extends Activity {
         updatePlayLabel();
         play.setVisibility(android.view.View.GONE);
         f.addView(play, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50)));
+        TextView buildTag = new TextView(this);
+        buildTag.setText("Build 0.4.5 (code 46)");
+        buildTag.setTextColor(0x55FFFFFF); buildTag.setTextSize(9);
+        buildTag.setGravity(android.view.Gravity.CENTER);
+        f.addView(buildTag, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         return f;
     }
 
