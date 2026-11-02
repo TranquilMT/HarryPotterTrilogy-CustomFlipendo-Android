@@ -2,11 +2,11 @@
 
 Native Android work on Philosopher’s Stone and Chamber of Secrets, with separate research into Prisoner of Azkaban.
 
-## Local source checkpoint — 0.4.3
+## Local source checkpoint — 0.4.5
 
-The complete local 0.4.3 source archive includes the reconciled 0.4.2 HP1/HP2 fixes, saved engine patches, cumulative PoA tools/tests and updated roadmaps. It is a standalone source archive: no older source ZIP or recovery overlay is needed to extract the project. Version defaults are 0.4.3 / code 44; package identity is unchanged.
+The complete local 0.4.5 source archive includes the 0.4.3/0.4.4 work: HP3 (Prisoner of Azkaban) is now selectable in the launcher for experimental testing, UE2 package container support (version 129), HP3 game-folder detection (hppoa.exe), Italian HP1 detection (issue #15), Windows ARM64 build pipeline, and UE2 compatibility scaffolding (guarded, disabled by default). HP1/HP2 behaviour, saves, and bundled payloads are unchanged. Version defaults are 0.4.5 / code 46; package identity is unchanged.
 
-**This is a source checkpoint, not a newly built APK. PoA remains disabled and unplayable.** Building an Android release still requires the Android toolchain, original signing material, a previous signed APK and both original game payloads. Those private/release inputs are not in this source ZIP. See [0.4.3 source details](docs/RELEASE-0.4.3.md).
+**This is a source checkpoint with a test-signed APK. HP3 is NOT playable — container and detection only; UE2 object serialization, bytecode, native functions and rendering remain.** Building an installable Android release still requires the original signing material, a previous signed APK and both original game payloads. Those private/release inputs are not in this source ZIP. See [0.4.3 source details](docs/RELEASE-0.4.3.md).
 
 ## Download and installation
 
@@ -18,7 +18,7 @@ Install over the existing app without uninstalling to retain app data. The perma
 | --- | --- |
 | Philosopher’s Stone / Sorcerer’s Stone | Previously reported playable; regression testing of 0.4.1 remains pending. |
 | Chamber of Secrets | Story, six save slots, shops, duels, Russian text, subtitles and gamepad support previously reported working. Substantial menu, save and settings changes in 0.4.1 require phone testing. |
-| Prisoner of Azkaban | Disabled and not playable. UE2 compatibility research only. |
+| Prisoner of Azkaban | Selectable for testing (experimental). UE2 container reading, package detection and launcher entry are in place; object serialization, bytecode, native functions and rendering are not. Not playable. |
 
 ## 0.4.2 — Chamber of Secrets menu correction
 

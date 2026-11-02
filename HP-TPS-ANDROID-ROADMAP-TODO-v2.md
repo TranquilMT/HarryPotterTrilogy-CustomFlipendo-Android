@@ -2,7 +2,7 @@
 
 **Project:** [HarryPotterTrilogy-CustomFlipendo-Android](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android)  
 **Upstream:** [Flipendo ROADMAP.md](https://github.com/kroplabeskidu/flipendo/blob/master/ROADMAP.md)  
-**Local source version:** **0.4.3**, version code **44**; complete standalone source ZIP requested and assembled locally. No 0.4.3 APK or device acceptance is claimed.
+**Local source version:** **0.4.5**, version code **46**; complete standalone source ZIP requested and assembled locally. No 0.4.5 APK or device acceptance is claimed.
 
 **Canonical source baseline:** Android **0.4.2**, version code **43**, main `d367c77c745a776c7178ba7218a27b115c75f025`; its release report records a signed Both Games build. This PoA checkpoint reconciles that source; no new APK or physical-device acceptance is claimed.
 
