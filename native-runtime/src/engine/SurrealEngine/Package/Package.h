@@ -32,6 +32,7 @@ public:
 
 	const NameString& GetName(int index) const;
 	int GetVersion() const { return Version; }
+	bool IsUE2() const { return Version >= 100; }
 	NameString GetPackageName() const { return Name; }
 	std::string GetPackageFileName() const { return FileName; }
 	std::string GetPackageFilePath() const { return FilePath; }

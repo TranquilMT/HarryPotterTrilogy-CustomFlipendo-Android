@@ -339,6 +339,9 @@ void Package::ReadTables()
 	if (Version < 60 || Version >= 178)
 		Exception::Throw("Unsupported unreal package version: " + Name.ToString());
 
+	if (Version >= 100)
+		LogMessage("UE2 package detected: " + Name.ToString() + " (version " + std::to_string(Version) + ")");
+
 	Flags = (PackageFlags)stream->ReadUInt32();
 
 	uint32_t nameCount = stream->ReadInt32();
