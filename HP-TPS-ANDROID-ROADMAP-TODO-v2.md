@@ -248,6 +248,7 @@ Source commit: `ae991c1`. Build/test evidence is in `native-runtime/android/veri
 
 | Date | Phase / task | Commit or PR | Automated tests | Android playtest | Outcome / blocker |
 |---|---|---|---|---|---|
+| 2026-11-02 | Allow UE2 package versions (100-177) in Package::ReadTables; verified via Unreal wiki (UT2004=128) and real PoA disc (129) | dd25cbe | engine change; build in progress | Not run | HP3 still not loaded; game folder selection excludes hppoa |
 | 2026-11-02 | Add IsHarryPotter3/IsUE2 to GameLaunchInfo (hppoa.exe); update compatibility matrix executable identity | 4971b29 | engine header only | Not run | HP3 still disabled; no runtime behavior change |
 | 2026-11-02 | Validate real PoA disc: 12/12 .u packages are UE2 v129 (licensee 0); parser passes on retail data | 6a727e6 | 10/10 tests + real-data validation | Not run | ISO provided by user; results in docs/POA-UE2-PACKAGE-HEADER-VERIFICATION.json |
 | 2026-11-02 | Batch E: UE2 header extended (depends offset + generation count) + 3 tests; native function mapping doc (Batch F) | 5091709 | 10/10 tests pass | Not run | No ISO used yet; parser ready for real data |

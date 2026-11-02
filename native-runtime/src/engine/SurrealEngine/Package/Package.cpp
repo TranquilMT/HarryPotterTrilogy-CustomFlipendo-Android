@@ -332,7 +332,11 @@ void Package::ReadTables()
 	Version = stream->ReadInt16();
 	LicenseeMode = stream->ReadInt16();
 
-	if (Version < 60 || Version >= 100)
+	// UE1 (60-99) and UE2 (100-177, compact indices) are supported container
+	// formats. UE3+ (>=178) switched to Int32 indices and is not supported.
+	// Verified against: wiki.beyondunreal.com (package versions: 69=UT99, 128=UT2004/UE2)
+	// and the PoA disc (all 12 packages report version 129).
+	if (Version < 60 || Version >= 178)
 		Exception::Throw("Unsupported unreal package version: " + Name.ToString());
 
 	Flags = (PackageFlags)stream->ReadUInt32();
