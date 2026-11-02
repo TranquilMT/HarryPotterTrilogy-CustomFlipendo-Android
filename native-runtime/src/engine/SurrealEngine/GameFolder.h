@@ -24,8 +24,11 @@ struct GameLaunchInfo
 	bool IsRune() const { return gameExecutableName == "Rune"; }
 	bool IsHarryPotter1() const { return gameExecutableName == "HP"; }
 	bool IsHarryPotter2() const { return gameExecutableName == "Game"; }
+	bool IsHarryPotter3() const { return gameExecutableName == "hppoa" || gameExecutableName == "HPPOA"; }
 	// games running KnowWonder's modified engine, reimplemented in ../knowwonder
 	bool IsKnowWonder() const { return IsHarryPotter1() || IsHarryPotter2(); }
+	// Prisoner of Azkaban uses Unreal Engine 2 (disabled, experimental)
+	bool IsUE2() const { return IsHarryPotter3(); }
 	bool IsNerfArenaBlast() const { return gameExecutableName == "nerf" || gameExecutableName == "Nerf"; }
 };
 

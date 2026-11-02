@@ -10,7 +10,7 @@ Status: **design only**. HP3 remains disabled/experimental. No APK, first frame,
 | Package magic | `0x9E2A83C1` | `0x9E2A83C1` (same magic, different version/licensee) |
 | Package version (observed) | 61–68 | 129 (PoA) |
 | Licensee version | KnowWonder | PoA-specific |
-| Identification rule | Executable SHA1 + package version | Package version **and** original file set; version 129 alone is insufficient |
+| Identification rule | Executable SHA1 + package version | Executable `hppoa.exe` (SHA-256 `1ac9c1e3...`) + package version 129 + file set; version 129 alone is insufficient |
 
 ## Package format
 
