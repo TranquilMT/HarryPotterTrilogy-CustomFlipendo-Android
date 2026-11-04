@@ -8,14 +8,22 @@
 #include <cstring>
 #include "SerializedString.h"
 #include "CompactIndex.h"
+#include "PackageValidation.h"
 
 PackageStream::PackageStream(Package* package, std::shared_ptr<File> file) : package(package), file(file)
 {
+	if (!file) throw std::runtime_error("Missing package file");
+	const int64_t bytes = file->size();
+	if (bytes < 0) throw std::runtime_error("Invalid package file size");
+	fileSize = uint64_t(bytes);
 }
 
 void PackageStream::ReadBytes(void* d, uint32_t s)
 {
-	file->read(d, s);
+	const uint64_t offset = file->tell();
+	if (offset > fileSize || uint64_t(s) > fileSize - offset)
+		throw std::runtime_error("Package read outside " + package->GetPackageName().ToString() + " at " + std::to_string(offset));
+	if (s) file->read(d, s);
 }
 
 int8_t PackageStream::ReadInt8()
@@ -75,17 +83,27 @@ uint64_t PackageStream::ReadUInt64()
 
 void PackageStream::Seek(uint32_t offset)
 {
+	PackageValidation::Range(offset, 0, Size(), "Package seek " + package->GetPackageName().ToString());
 	file->seek(offset);
 }
 
 void PackageStream::Skip(uint32_t bytes)
 {
-	file->seek(file->tell() + bytes);
+	const uint64_t offset = file->tell();
+	PackageValidation::Range(offset, bytes, Size(), "Package skip " + package->GetPackageName().ToString());
+	file->seek(offset + bytes);
 }
 
 uint32_t PackageStream::Tell()
 {
-	return (uint32_t)file->tell();
+	const uint64_t offset = file->tell();
+	if (offset > UINT32_MAX) throw std::runtime_error("Package position exceeds 32-bit offset range");
+	return uint32_t(offset);
+}
+
+uint64_t PackageStream::Size()
+{
+	return fileSize; // immutable read stream; avoid a file-size query for every operand byte
 }
 
 int32_t PackageStream::ReadIndex()

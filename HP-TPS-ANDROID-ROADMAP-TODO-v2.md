@@ -361,3 +361,14 @@ Master task mapping: PKG-03/04/08 remain in progress, G0–G6 open. See the mast
 - [ ] Complete Android SDK/SDL/native compilation and signed Both Games APK packaging.
 - [ ] Verify launcher and multi-touch fixes on the phone and profile each game before claiming FPS/thermal gains.
 - [ ] Complete live PoA UE2 startup/world/rendering and accept original character/creature control sequences.
+
+
+## 2026-11-04 — production package table compatibility continuation
+
+- [x] Add bounded summary/table/reference/payload validation to the actual production package loader, including outer-cycle detection and safe export allocation checks.
+- [x] Preserve UE1 legacy summaries, null references and zero-payload native exports in host regressions.
+- [x] Pass 95 PoA Python regressions, with 100 new actual-production table/stream ASan/UBSan cases; retain passing launcher/control checks.
+- [ ] Verify original PoA packages/dependencies and metadata/default/native layouts through the production path.
+- [ ] Complete the full Android build and device acceptance; HP3 scene/gameplay and G0–G6 remain unverified.
+
+See `docs/POA-PRODUCTION-TABLE-VALIDATION.md`. This batch does not change the 21-workstream scope or establish a playable APK.

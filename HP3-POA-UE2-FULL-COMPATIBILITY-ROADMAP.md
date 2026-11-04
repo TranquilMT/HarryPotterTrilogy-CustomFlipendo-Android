@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 9 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 10 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -17,7 +17,7 @@ It cannot promise that reverse engineering will reveal no further bugs or behavi
 | Disc/scripts | All 841 disc/archive file records inventoried; 24 package payloads now checked offline: 12 scripts, two maps, five texture and five static-mesh packages | Complete production loading of all required game assets |
 | Script metadata | 1,685 classes, 546 states and 8,090 functions checked across all 12 scripts | Correct execution of those classes/states/functions in the game |
 | Isolated runtime | Primitive frames/calls/properties/default reads, bounded struct paths, object contexts/constraints and host receiver retirement | Actual native engine object/world behavior |
-| Latest checkpoint tests | 94 PoA Python regressions (including compilation of actual production reference methods) and 13 C++ sanitizer suites checked in the 4 November package-loading batch; earlier Android packaging results are historical | A percentage of game completion or gameplay acceptance |
+| Latest checkpoint tests | 95 PoA Python regressions, including actual production table/reference method compilation; 100 new table/stream sanitizer cases pass. Earlier 13 C++ suite and Android packaging results remain historical | A percentage of game completion or gameplay acceptance |
 | Native execution | 11 explicitly checked Core primitive intrinsics in the isolated typed runtime | The complete Core/Engine/KWGame native interface |
 | Production package loader | v0.4.5 admits versions 60–177; this batch fixes production FString/index decoding and package reference/path defects; checked main PoA scripts use version 129 | A live UE2 loader; raising the version gate alone is not a solution |
 | Android integration | Existing HP1/HP2 application/build infrastructure is available | The isolated hp3 runtime connected to the live Android game path |
@@ -457,3 +457,11 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - PERF-03/05 in progress: stop background polling, repeated overlay allocations, hidden launcher save scans and hot collision logging; persist graphics/input choices per game and time-scale stick motion. No measured FPS/thermal improvement or tested quality default is claimed.
 - Host checks: 22 Java path/profile/timing checks; actual Overlay method tests; native executable detection with ASan/UBSan; Android Java syntax parse; existing 94 PoA Python regressions pass. Full SDK type checking, native Android linking, original-data launch and phone testing remain unperformed.
 - G0–G6 stay open. This is a source checkpoint on the 0.4.5 base, not a new APK or a completed PoA runtime. Follow the full 21-workstream scope and the device/build acceptance list in the checkpoint report.
+
+
+## 4 November 2026 — production table/stream validation checkpoint
+
+- PKG-02/03/04 remain in progress: validate signed summary/generation counts, minimum table ranges, name/import/export references and disjoint table/payload regions before production object construction. Check mixed import/export outer cycles with bounded, linear traversal.
+- Production PackageStream now bounds reads/seeks/skips with a cached file size. OpenObjectStream rejects invalid/negative/out-of-file payloads before allocation and uses 64-bit allocation arithmetic. Zero-payload native exports retain their no-backing-file path.
+- Evidence: 95 PoA Python regressions pass; the new test executes the actual production reader/table/open-stream methods on 100 synthetic UE1/PoA-format and malformed cases under ASan/UBSan. Launcher/control host checks still pass.
+- Details and limitations: `docs/POA-PRODUCTION-TABLE-VALIDATION.md`. No complete engine compile, original-package runtime acceptance, APK or device play test was performed. UE2 class/default/native/resource layouts and live execution remain open; G0–G6 are not advanced by synthetic fixtures.

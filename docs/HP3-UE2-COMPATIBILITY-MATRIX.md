@@ -81,3 +81,5 @@ Status: **partial implementation from GitHub v0.4.5**. Experimental launcher sel
 Production package reader/reference checkpoint: see `HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md`, 4 November 2026. Complete metadata loading and native/runtime adaptation remain open.
 
 Android-side action mapping and shared lifecycle/performance fixes are recorded in `LAUNCHER-CONTROLS-2026-11-04.md`. PoA PC character selection follows the story automatically. No manual console-style switch is required; the live engine gates are still open.
+
+Production summary/table/reference/payload bounds and outer-cycle validation now have actual-loader host coverage; see `POA-PRODUCTION-TABLE-VALIDATION.md`. Original-data and Android gates remain open.

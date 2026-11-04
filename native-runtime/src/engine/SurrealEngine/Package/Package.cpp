@@ -8,6 +8,7 @@
 #include "Utils/Logger.h" // missing import messages
 #include <set>
 #include "PackageReferences.h"
+#include "PackageValidation.h"
 #include "Packages/Core/UObject.h"
 #include "Packages/Core/UClass.h"
 
@@ -325,35 +326,46 @@ void Package::ReadTables()
 	if (Version >= 100)
 		LogMessage("UE2 package detected: " + Name.ToString() + " (version " + std::to_string(Version) + ")");
 
+	const uint64_t packageBytes = stream->Size();
+	const std::string context = "Package " + Name.ToString();
 	Flags = (PackageFlags)stream->ReadUInt32();
 
-	uint32_t nameCount = stream->ReadInt32();
-	uint32_t nameOffset = stream->ReadInt32();
+	int32_t nameCount = stream->ReadInt32();
+	int32_t nameOffset = stream->ReadInt32();
 
-	uint32_t exportCount = stream->ReadInt32();
-	uint32_t exportOffset = stream->ReadInt32();
+	int32_t exportCount = stream->ReadInt32();
+	int32_t exportOffset = stream->ReadInt32();
 
-	uint32_t importCount = stream->ReadInt32();
-	uint32_t importOffset = stream->ReadInt32();
+	int32_t importCount = stream->ReadInt32();
+	int32_t importOffset = stream->ReadInt32();
 
 	if (Version < 68)
 	{
-		uint32_t heritageCount = stream->ReadInt32();
-		uint32_t heritageOffset = stream->ReadInt32();
+		int32_t heritageCount = stream->ReadInt32();
+		int32_t heritageOffset = stream->ReadInt32();
+		PackageValidation::Table(heritageCount, heritageOffset, packageBytes, stream->Tell(), 16, context + " heritage");
 	}
 	else
 	{
 		stream->ReadBytes(Guid, 16);
-		uint32_t generationCount = stream->ReadInt32();
-		for (uint32_t i = 0; i < generationCount; i++)
+		int32_t generationCount = stream->ReadInt32();
+		PackageValidation::Count(generationCount, packageBytes - stream->Tell(), 8, context + " generations");
+		for (int32_t i = 0; i < generationCount; i++)
 		{
-			uint32_t genExportCount = stream->ReadInt32();
-			uint32_t genNameCount = stream->ReadInt32();
+			int32_t genExportCount = stream->ReadInt32();
+			int32_t genNameCount = stream->ReadInt32();
+			PackageValidation::Count(genExportCount, 1000000, 1, context + " generation exports");
+			PackageValidation::Count(genNameCount, 1000000, 1, context + " generation names");
 		}
 	}
 
-	stream->Seek(nameOffset);
-	for (uint32_t i = 0; i < nameCount; i++)
+	const uint64_t summaryEnd = stream->Tell();
+	PackageValidation::Table(nameCount, nameOffset, packageBytes, summaryEnd, 5, context + " names");
+	PackageValidation::Table(exportCount, exportOffset, packageBytes, summaryEnd, 12, context + " exports");
+	PackageValidation::Table(importCount, importOffset, packageBytes, summaryEnd, 7, context + " imports");
+	PackageValidation::Region namesRegion{0, 0}, exportsRegion{0, 0}, importsRegion{0, 0};
+	if (nameCount) stream->Seek(uint32_t(nameOffset));
+	for (int32_t i = 0; i < nameCount; i++)
 	{
 		NameTableEntry entry;
 		entry.Name = stream->ReadString();
@@ -362,8 +374,9 @@ void Package::ReadTables()
 		NameHash[entry.Name] = i;
 	}
 
-	stream->Seek(exportOffset);
-	for (uint32_t i = 0; i < exportCount; i++)
+	if (nameCount) namesRegion = {uint64_t(nameOffset), stream->Tell()};
+	if (exportCount) stream->Seek(uint32_t(exportOffset));
+	for (int32_t i = 0; i < exportCount; i++)
 	{
 		ExportTableEntry entry;
 		entry.ObjClass = stream->ReadIndex();
@@ -373,28 +386,61 @@ void Package::ReadTables()
 		entry.ObjFlags = (ObjectFlags)stream->ReadInt32();
 		entry.ObjSize = stream->ReadIndex();
 		entry.ObjOffset = (entry.ObjSize > 0) ? stream->ReadIndex() : -1;
+		const std::string item = context + " export " + std::to_string(i + 1);
+		PackageValidation::Name(entry.ObjName, nameCount, item);
+		PackageValidation::Reference(entry.ObjClass, importCount, exportCount, item + " class");
+		PackageValidation::Reference(entry.ObjBase, importCount, exportCount, item + " super");
+		PackageValidation::Reference(entry.ObjOuter, importCount, exportCount, item + " outer");
+		PackageValidation::Payload(entry.ObjSize, entry.ObjOffset, packageBytes, item);
 		ExportTable.push_back(entry);
 	}
 
-	stream->Seek(importOffset);
-	for (uint32_t i = 0; i < importCount; i++)
+	if (exportCount) exportsRegion = {uint64_t(exportOffset), stream->Tell()};
+	if (importCount) stream->Seek(uint32_t(importOffset));
+	for (int32_t i = 0; i < importCount; i++)
 	{
 		ImportTableEntry entry;
 		entry.ClassPackage = stream->ReadIndex();
 		entry.ClassName = stream->ReadIndex();
 		entry.ObjOuter = stream->ReadInt32();
 		entry.ObjName = stream->ReadIndex();
+		const std::string item = context + " import " + std::to_string(-i - 1);
+		PackageValidation::Name(entry.ClassPackage, nameCount, item + " package");
+		PackageValidation::Name(entry.ClassName, nameCount, item + " class");
+		PackageValidation::Name(entry.ObjName, nameCount, item + " name");
+		PackageValidation::Reference(entry.ObjOuter, importCount, exportCount, item + " outer");
 		ImportTable.push_back(entry);
 	}
+	if (importCount) importsRegion = {uint64_t(importOffset), stream->Tell()};
+	PackageValidation::Disjoint(namesRegion, exportsRegion, context + " names/exports");
+	PackageValidation::Disjoint(namesRegion, importsRegion, context + " names/imports");
+	PackageValidation::Disjoint(exportsRegion, importsRegion, context + " exports/imports");
+	for (int32_t i = 0; i < exportCount; ++i)
+	{
+		const auto& entry = ExportTable[i];
+		const std::string item = context + " export " + std::to_string(i + 1);
+		auto data = PackageValidation::Payload(entry.ObjSize, entry.ObjOffset, packageBytes, item);
+		PackageValidation::Disjoint(data, {0, summaryEnd}, item + " summary");
+		PackageValidation::Disjoint(data, namesRegion, item + " name table");
+		PackageValidation::Disjoint(data, exportsRegion, item + " export table");
+		PackageValidation::Disjoint(data, importsRegion, item + " import table");
+	}
+	PackageValidation::Outers(exportCount, importCount,
+		[this](int ref) { return ref > 0 ? ExportTable[ref - 1].ObjOuter : ImportTable[size_t(-int64_t(ref) - 1)].ObjOuter; }, context);
 }
 
 std::unique_ptr<ObjectStream> Package::OpenObjectStream(int index, const NameString& name, UClass* base)
 {
+	if (index < 0 || size_t(index) >= ExportTable.size())
+		Exception::Throw("Object stream export index outside table: " + Name.ToString());
 	const auto& entry = ExportTable[index];
+	if (entry.ObjSize < 0)
+		Exception::Throw("Negative object stream size: " + Name.ToString());
 	if (entry.ObjSize > 0)
 	{
-		std::unique_ptr<uint64_t[]> buffer(new uint64_t[(entry.ObjSize + 7) / 8]);
 		auto stream = Packages->GetStream(this);
+		PackageValidation::Payload(entry.ObjSize, entry.ObjOffset, stream->Size(), "Object stream " + Name.ToString() + "." + name.ToString());
+		std::unique_ptr<uint64_t[]> buffer(new uint64_t[(uint64_t(entry.ObjSize) + 7) / 8]);
 		stream->Seek(entry.ObjOffset);
 		stream->ReadBytes(buffer.get(), entry.ObjSize);
 		return std::make_unique<ObjectStream>(this, std::move(buffer), entry.ObjOffset, entry.ObjSize, name, base);

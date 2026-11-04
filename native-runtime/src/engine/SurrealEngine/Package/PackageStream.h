@@ -29,6 +29,7 @@ public:
 	void Seek(uint32_t offset);
 	void Skip(uint32_t bytes);
 	uint32_t Tell();
+	uint64_t Size();
 
 	Package* GetPackage() const;
 	int GetVersion() const;
@@ -36,6 +37,7 @@ public:
 private:
 	Package* package;
 	std::shared_ptr<File> file;
+	uint64_t fileSize = 0;
 };
 
 class PackageStreamWriter
@@ -81,3 +83,4 @@ private:
 	int propertyPos = -1;
 	Array<uint8_t> propertyBuffer;
 };
+
