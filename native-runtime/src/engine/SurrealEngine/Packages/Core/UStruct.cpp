@@ -9,6 +9,7 @@
 #include "Packages/Core/Properties/UBoolProperty.h"
 #include "Compiler/Frontend/Compiler.h"
 #include "HP2.h"
+#include "Package/StructScriptHeader.h"
 
 UStruct::UStruct(NameString name, UClass* cls, ObjectFlags flags) : UField(std::move(name), cls, flags)
 {
@@ -28,10 +29,11 @@ void UStruct::Load(ObjectStream* stream)
 	if (FriendlyName == "None")
 		Exception::Throw("Struct FriendlyName must not be None");
 
-	Line = stream->ReadUInt32();
-	TextPos = stream->ReadUInt32();
-
-	int ScriptSize = stream->ReadUInt32();
+	const bool poaFunction = engine->LaunchInfo.IsHarryPotter3() && UObject::TryCast<UFunction>(this) != nullptr;
+	const auto scriptHeader = StructScripts::Read(*stream, poaFunction);
+	Line = scriptHeader.line;
+	TextPos = scriptHeader.textPosition;
+	const uint32_t ScriptSize = scriptHeader.memoryBytes;
 	uint32_t rawStart = stream->Tell();
 	while (Bytecode.size() < ScriptSize)
 	{
@@ -158,10 +160,8 @@ void UStruct::Save(PackageStreamWriter* stream)
 	stream->WriteObject(ScriptText);
 	stream->WriteObject(Children);
 	stream->WriteName(FriendlyName);
-	stream->WriteUInt32(Line);
-	stream->WriteUInt32(TextPos);
-
-	stream->WriteUInt32((uint32_t)Bytecode.size());
+	const bool poaFunction = engine->LaunchInfo.IsHarryPotter3() && UObject::TryCast<UFunction>(this) != nullptr;
+	StructScripts::Write(*stream, poaFunction, {Line, TextPos, uint32_t(Bytecode.size())});
 	stream->WriteBytes(BytecodeRaw.data(), (uint32_t)BytecodeRaw.size());
 	//size_t pos = 0;
 	//while (pos < Bytecode.size())
@@ -315,6 +315,11 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 		}
 		tokenbyte = HP2::ToStockToken(tokenbyte);
 	}
+	const bool poa = engine->LaunchInfo.IsHarryPotter3();
+	// UE2 reuses UE1 conversion token values for different instructions. Until
+	// production evaluation exists, reject them rather than building a UE1 AST.
+	if (poa && tokenbyte >= 0x39 && tokenbyte < 0x60)
+		Exception::Throw("Unsupported production PoA bytecode token " + std::to_string(tokenbyte) + " in " + Name.ToString());
 	ExprToken token = (ExprToken)tokenbyte;
 
 #ifdef _DEBUG
@@ -325,7 +330,7 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 	BytecodePlainText += tokendebug;
 #endif
 
-	if (token >= ExprToken::MinConversion && token <= ExprToken::MaxConversion)
+	if (!poa && token >= ExprToken::MinConversion && token <= ExprToken::MaxConversion)
 	{
 		ReadToken(stream, depth);
 	}
@@ -450,11 +455,15 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 
 void UStruct::PushBytes(const void* data, size_t size)
 {
+	if (Bytecode.size() > StructScripts::MaximumBytes || size > StructScripts::MaximumBytes - Bytecode.size())
+		Exception::Throw("Decoded bytecode exceeds memory limit: " + Name.ToString());
 	Bytecode.insert(Bytecode.end(), (const uint8_t*)data, (const uint8_t*)data + size);
 }
 
 void UStruct::PushUInt8(uint8_t value)
 {
+	if (Bytecode.size() >= StructScripts::MaximumBytes)
+		Exception::Throw("Decoded bytecode exceeds memory limit: " + Name.ToString());
 	Bytecode.push_back(value);
 }
 
@@ -485,5 +494,9 @@ void UStruct::PushAsciiZ(const std::string& value)
 
 void UStruct::PushUnicodeZ(const std::wstring& value)
 {
-	PushBytes(value.c_str(), (value.length() + 1) * 2);
+	// ReadUnicodeZ stores UTF-16 code units in wchar_t slots even when wchar_t
+	// is 32 bits (Android/Linux). Serialize units, never the host memory layout.
+	for (wchar_t unit : value) PushUInt16(uint16_t(unit));
+	PushUInt16(0);
 }
+

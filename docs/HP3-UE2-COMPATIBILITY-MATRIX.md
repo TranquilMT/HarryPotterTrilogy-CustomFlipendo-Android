@@ -83,3 +83,5 @@ Production package reader/reference checkpoint: see `HP3-POA-UE2-FULL-COMPATIBIL
 Android-side action mapping and shared lifecycle/performance fixes are recorded in `LAUNCHER-CONTROLS-2026-11-04.md`. PoA PC character selection follows the story automatically. No manual console-style switch is required; the live engine gates are still open.
 
 Production summary/table/reference/payload bounds and outer-cycle validation now have actual-loader host coverage; see `POA-PRODUCTION-TABLE-VALIDATION.md`. Original-data and Android gates remain open.
+
+The verified PoA v129 Function header extension and production extended-native token decoding now have narrow host coverage; unsupported UE2 conversion-overlap opcodes fail explicitly. See `POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md`. Complete Class/State/default layouts, native ABI, VM execution and live startup remain open.

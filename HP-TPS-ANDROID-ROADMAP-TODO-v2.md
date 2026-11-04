@@ -372,3 +372,15 @@ Master task mapping: PKG-03/04/08 remain in progress, G0–G6 open. See the mast
 - [ ] Complete the full Android build and device acceptance; HP3 scene/gameplay and G0–G6 remain unverified.
 
 See `docs/POA-PRODUCTION-TABLE-VALIDATION.md`. This batch does not change the 21-workstream scope or establish a playable APK.
+
+
+## 2026-11-04 — production PoA function metadata compatibility
+
+- [x] Add the verified version-129 PoA Function extension byte to the production header path, with version/value checks and header write consistency.
+- [x] Correct PoA extended-native token 0x60 deserialization; explicitly reject unsupported UE2 tokens overlapping UE1 conversions.
+- [x] Bound decoded script growth and correct UTF-16 bytecode serialization on platforms with 32-bit wchar_t.
+- [x] Pass 96 Python regressions, including 75 new header/actual-token-reader sanitizer cases and the existing production table tests.
+- [ ] Adapt the remaining Class/State/default/property/native/resource layouts and validate original functions through the full engine.
+- [ ] Build/verify the Android APK and perform device startup/gameplay/regression acceptance.
+
+Details: `docs/POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md`. PKG-05/06, the VM and all live playability gates remain open.

@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 10 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 11 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -17,7 +17,7 @@ It cannot promise that reverse engineering will reveal no further bugs or behavi
 | Disc/scripts | All 841 disc/archive file records inventoried; 24 package payloads now checked offline: 12 scripts, two maps, five texture and five static-mesh packages | Complete production loading of all required game assets |
 | Script metadata | 1,685 classes, 546 states and 8,090 functions checked across all 12 scripts | Correct execution of those classes/states/functions in the game |
 | Isolated runtime | Primitive frames/calls/properties/default reads, bounded struct paths, object contexts/constraints and host receiver retirement | Actual native engine object/world behavior |
-| Latest checkpoint tests | 95 PoA Python regressions, including actual production table/reference method compilation; 100 new table/stream sanitizer cases pass. Earlier 13 C++ suite and Android packaging results remain historical | A percentage of game completion or gameplay acceptance |
+| Latest checkpoint tests | 96 PoA Python regressions, including actual production table/reference/token method compilation; 100 table/stream and 75 function-header/token sanitizer cases pass. Earlier 13 C++ suite and Android packaging results remain historical | A percentage of game completion or gameplay acceptance |
 | Native execution | 11 explicitly checked Core primitive intrinsics in the isolated typed runtime | The complete Core/Engine/KWGame native interface |
 | Production package loader | v0.4.5 admits versions 60–177; this batch fixes production FString/index decoding and package reference/path defects; checked main PoA scripts use version 129 | A live UE2 loader; raising the version gate alone is not a solution |
 | Android integration | Existing HP1/HP2 application/build infrastructure is available | The isolated hp3 runtime connected to the live Android game path |
@@ -465,3 +465,12 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - Production PackageStream now bounds reads/seeks/skips with a cached file size. OpenObjectStream rejects invalid/negative/out-of-file payloads before allocation and uses 64-bit allocation arithmetic. Zero-payload native exports retain their no-backing-file path.
 - Evidence: 95 PoA Python regressions pass; the new test executes the actual production reader/table/open-stream methods on 100 synthetic UE1/PoA-format and malformed cases under ASan/UBSan. Launcher/control host checks still pass.
 - Details and limitations: `docs/POA-PRODUCTION-TABLE-VALIDATION.md`. No complete engine compile, original-package runtime acceptance, APK or device play test was performed. UE2 class/default/native/resource layouts and live execution remain open; G0–G6 are not advanced by synthetic fixtures.
+
+
+## 4 November 2026 — PoA function metadata and token-reader checkpoint
+
+- PKG-05/06 in progress: production UFunction loading now reads the verified PoA v129 zero extension byte before Line/TextPos/script-memory-size; unknown versions/extensions fail. Other Struct/Class/State layouts are not inferred from this Function slice. The matching header write helper does not establish game-save compatibility.
+- Production bytecode deserialization treats PoA 0x60 as extended-native syntax rather than UE1's overlapping conversion token. Unsupported PoA 0x39–0x5f opcodes fail explicitly before a UE1 expression can be built. Native registration/call ABI/evaluation remain open.
+- Bound decoded bytecode appends and declared size. Serialize Unicode script code units independently of host wchar_t width, fixing multi-character UTF-16 copying on Android/Linux.
+- Evidence: 96 Python regressions pass, including 75 new header/actual-token-reader ASan/UBSan cases compared to the isolated decoder. See `docs/POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md` for stub boundaries and the remaining acceptance work.
+- G0–G6 remain open; no full engine compile, original-data production startup, APK, first frame or phone gameplay test was performed. The complete 21-workstream scope remains authoritative.
