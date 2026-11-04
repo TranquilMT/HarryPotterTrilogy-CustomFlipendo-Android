@@ -487,6 +487,13 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 ## 5 November 2026 — full Android startup build audit
 
 - Priority switched to the complete Android build/startup trace rather than another isolated decoder addition.
-- Verified blockers: partial local source checkout; no configured SDK/NDK, cmake/ninja/adb; SDL build dependency not present; Google's SDK download endpoint timed out through the available proxy; Desktop Commander reports no connected devices.
+- Verified blockers: partial local source checkout; no configured SDK/NDK, cmake/ninja/adb; SDL build dependency not present; Google's SDK download endpoint timed out through the available proxy. These findings apply to scratch; a browser Codespace is now available (see continuation below).
 - No complete Android compile, APK installation or actual PoA startup occurred. G0 is blocked on build inputs/access; G1–G6 retain their existing open runtime/device requirements. Host regression count remains 97 and is not promoted to build/launch evidence.
-- Exact findings and next executable sequence: `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`. Continue on a connected build computer, prepare the complete source/toolchain, compile/package, then capture the actual phone startup trace.
+- Exact findings and next executable sequence: `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`. Continue in the browser Codespace, prepare the Android toolchain, compile/package, then capture the actual phone startup trace.
+
+## Browser build continuation
+
+- A complete compatibility-branch checkout is running in GitHub Codespaces. Desktop Commander and a user-owned computer are not required.
+- CMake 3.28/GCC 13.3/Java are available. Native build dependencies installed; full host engine configuration succeeds.
+- Production SurrealCommon compilation exposed an Android-only KWProf include used unconditionally in Engine.cpp. The include is now unconditional; the rerun compiled Engine.cpp and advanced into rendering sources.
+- Android ARM64, APK packaging and phone startup gates remain open; no new APK or original-data launch is verified.

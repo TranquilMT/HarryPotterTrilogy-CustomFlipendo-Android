@@ -1,7 +1,7 @@
 
 #include "Precomp.h"
-#ifdef __ANDROID__
 #include "KWProf.h"
+#ifdef __ANDROID__
 #include <atomic>
 extern std::atomic<bool> g_androidMenuActive; // defined in android_main.cpp: true while a menu wants the touch cursor
 #endif

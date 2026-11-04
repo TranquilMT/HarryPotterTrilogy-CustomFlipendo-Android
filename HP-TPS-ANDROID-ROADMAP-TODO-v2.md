@@ -400,7 +400,9 @@ Source/evidence details: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.
 ## 2026-11-05 — complete Android build/startup audit
 
 - [x] Check the actual build environment and remote build-computer availability; record concrete blockers in `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`.
-- [ ] Connect a build computer, recover the complete checkout and prepare SDK/NDK/CMake/Ninja/SDL and existing signing/payload inputs.
+- [x] Open the compatibility branch in a browser Codespace; obtain the complete checkout and configure the full host engine.
+- [x] Repair the Engine.cpp profiler include discovered by real production compilation; verify that translation unit compiles.
+- [ ] Complete production compilation, then prepare Android SDK/NDK/SDL and existing signing/payload inputs in the cloud workspace.
 - [ ] Compile/link the full ARM64 engine and Java/SDL integration; produce and verify the test APK.
 - [ ] Install on the phone and capture a real PoA launch trace, then address its concrete runtime failures.
 
