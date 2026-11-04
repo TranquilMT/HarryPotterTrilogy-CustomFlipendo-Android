@@ -314,17 +314,19 @@ public class SetupActivity extends Activity {
         shelf.setOrientation(LinearLayout.VERTICAL);
         shelf.addView(row, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
         TextView unavailable = new TextView(this);
-        unavailable.setText("PRISONER OF AZKABAN\nNot working yet · compatibility work in progress");
-        unavailable.setTextColor(0xFF989BA5); unavailable.setTextSize(12);
+        unavailable.setText("PRISONER OF AZKABAN\nExperimental - tap to test");
+        unavailable.setTextColor(0xFFE0C080); unavailable.setTextSize(12);
         unavailable.setPadding(dp(12), dp(8), dp(12), dp(8));
         unavailable.setBackground(rounded(0x333D414B, 12, 0x445D626D));
         unavailable.setEnabled(true); unavailable.setFocusable(true); unavailable.setAlpha(1.0f);
         unavailable.setContentDescription("Prisoner of Azkaban. Experimental. Tap to test.");
         unavailable.setOnClickListener(v -> {
             getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, "hp3").apply();
-            File f = locateGame(false);
-            if (f != null) { gameDir = f.getPath(); gameReady = true; tryStart(); }
-            else { android.widget.Toast.makeText(this, "No HP3 folder found. Copy game data to /sdcard/FlipendoHP3 or pick a folder in Settings.", android.widget.Toast.LENGTH_LONG).show(); }
+            try {
+                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_PICK_HP3);
+            } catch (RuntimeException e) {
+                android.widget.Toast.makeText(this, "No folder picker on this phone: copy the game to /sdcard/FlipendoHP3 instead", android.widget.Toast.LENGTH_LONG).show();
+            }
         });
         LinearLayout.LayoutParams disabledLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         disabledLayout.topMargin = dp(8); shelf.addView(unavailable, disabledLayout);
@@ -694,6 +696,12 @@ public class SetupActivity extends Activity {
         updatePlayLabel();
         play.setVisibility(android.view.View.GONE);
         f.addView(play, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50)));
+        TextView buildTag = new TextView(this);
+        buildTag.setText("Build 0.4.5 (code 46)");
+        buildTag.setTextColor(0x55FFFFFF); buildTag.setTextSize(9);
+        buildTag.setGravity(android.view.Gravity.CENTER);
+        f.addView(buildTag, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
         return f;
     }
 
@@ -2005,6 +2013,21 @@ public class SetupActivity extends Activity {
             }
             getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_HD_ZIP, zip.toString()).putBoolean(PREF_HD, true).apply();
             android.widget.Toast.makeText(this, displayName(this, zip) + tr(" will be unpacked when you press Play"), android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (requestCode == REQUEST_PICK_HP3) {
+            if (resultCode == RESULT_OK && data != null) {
+                String picked = treeUriToPath(data.getData());
+                if (picked == null) {
+                    android.widget.Toast.makeText(this, "That place can't be read as a folder", android.widget.Toast.LENGTH_LONG).show();
+                } else if (GameFiles.findHp3(new File(picked), 2) == null) {
+                    android.widget.Toast.makeText(this, "No Prisoner of Azkaban in " + picked + " (System/hppoa.exe not found)", android.widget.Toast.LENGTH_LONG).show();
+                } else {
+                    getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME_DIR, picked).apply();
+                    foldersChanged = true;
+                    android.widget.Toast.makeText(this, "HP3 folder set. Press Play.", android.widget.Toast.LENGTH_LONG).show();
+                }
+            }
             return;
         }
         if (requestCode == REQUEST_PICK_HP1 || requestCode == REQUEST_PICK_HP2) {
