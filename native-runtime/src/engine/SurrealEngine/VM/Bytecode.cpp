@@ -3,6 +3,7 @@
 #include "Bytecode.h"
 #include "Engine.h"
 #include "Packages/Core/UFunction.h"
+#include "Package/PoaPrimitiveCast.h"
 
 // Note: this never frees the memory again.
 // We may want to maintain a list of Bytecode instances in the process and compact if it grows too big
@@ -34,6 +35,8 @@ Expression* Bytecode::ReadToken(BytecodeStream* stream, int depth)
 		return expr;
 	}
 	ExprToken token = stream->ReadToken();
+	token = static_cast<ExprToken>(PoaPrimitiveCasts::ExpressionToken(*stream,
+		uint8_t(token), engine->LaunchInfo.IsHarryPotter3()));
 
 	if (token >= ExprToken::FirstNative)
 	{
@@ -458,3 +461,4 @@ Expression* Bytecode::ReadToken(BytecodeStream* stream, int depth)
 		}
 	}
 }
+

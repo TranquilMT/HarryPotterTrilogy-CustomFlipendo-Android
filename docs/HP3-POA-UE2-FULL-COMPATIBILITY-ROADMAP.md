@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 11 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 12 · 5 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -17,7 +17,7 @@ It cannot promise that reverse engineering will reveal no further bugs or behavi
 | Disc/scripts | All 841 disc/archive file records inventoried; 24 package payloads now checked offline: 12 scripts, two maps, five texture and five static-mesh packages | Complete production loading of all required game assets |
 | Script metadata | 1,685 classes, 546 states and 8,090 functions checked across all 12 scripts | Correct execution of those classes/states/functions in the game |
 | Isolated runtime | Primitive frames/calls/properties/default reads, bounded struct paths, object contexts/constraints and host receiver retirement | Actual native engine object/world behavior |
-| Latest checkpoint tests | 96 PoA Python regressions, including actual production table/reference/token method compilation; 100 table/stream and 75 function-header/token sanitizer cases pass. Earlier 13 C++ suite and Android packaging results remain historical | A percentage of game completion or gameplay acceptance |
+| Latest checkpoint tests | 97 PoA Python regressions; 100 table/stream, 88 function-header/token and 312 scalar-cast bridge sanitizer cases pass. Earlier full isolated C++ suite and Android packaging results remain historical | A percentage of game completion or gameplay acceptance |
 | Native execution | 11 explicitly checked Core primitive intrinsics in the isolated typed runtime | The complete Core/Engine/KWGame native interface |
 | Production package loader | v0.4.5 admits versions 60–177; this batch fixes production FString/index decoding and package reference/path defects; checked main PoA scripts use version 129 | A live UE2 loader; raising the version gate alone is not a solution |
 | Android integration | Existing HP1/HP2 application/build infrastructure is available | The isolated hp3 runtime connected to the live Android game path |
@@ -474,3 +474,11 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - Bound decoded bytecode appends and declared size. Serialize Unicode script code units independently of host wchar_t width, fixing multi-character UTF-16 copying on Android/Linux.
 - Evidence: 96 Python regressions pass, including 75 new header/actual-token-reader ASan/UBSan cases compared to the isolated decoder. See `docs/POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md` for stub boundaries and the remaining acceptance work.
 - G0–G6 remain open; no full engine compile, original-data production startup, APK, first frame or phone gameplay test was performed. The complete 21-workstream scope remains authoritative.
+
+
+## 5 November 2026 — scalar primitive-cast bridge
+
+- PKG-06/VM remain in progress: production UStruct decoding now accepts the UE2 0x39 prefix for the 12 scalar byte/int/bool/float cast codes. The expression builder selects the corresponding existing conversion nodes without shortening script bytes or shifting offsets.
+- Other cast codes and bare overlapping UE2 opcodes remain explicit failures. Legacy UE1 conversion decoding retains its original path. This reuses existing evaluator implementations; original PoA numeric parity is not yet established.
+- Evidence: all 97 Python regressions pass; production token checks expand to 88 ASan/UBSan cases, and a new 312-case bridge/actual-expression-construction harness covers selections, nesting, offsets, invalid codes and legacy forms. Details and source pin: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.
+- Class/State/default/property/native/resource and other UE2 opcode work remains open. No complete engine compile, APK, original-data run or phone play test occurred; G0–G6 remain open.

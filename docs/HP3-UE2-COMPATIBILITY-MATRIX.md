@@ -85,3 +85,5 @@ Android-side action mapping and shared lifecycle/performance fixes are recorded 
 Production summary/table/reference/payload bounds and outer-cycle validation now have actual-loader host coverage; see `POA-PRODUCTION-TABLE-VALIDATION.md`. Original-data and Android gates remain open.
 
 The verified PoA v129 Function header extension and production extended-native token decoding now have narrow host coverage; unsupported UE2 conversion-overlap opcodes fail explicitly. See `POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md`. Complete Class/State/default layouts, native ABI, VM execution and live startup remain open.
+
+5 November: the 0x39 primitive-cast prefix is now decoded and connected to existing scalar conversion expressions for 12 byte/int/bool/float codes. Non-scalar casts and other unsupported overlapping opcodes remain rejected. Encoding/AST host evidence is in `POA-SCALAR-CAST-CHECKPOINT.md`; original numeric behaviour and live engine acceptance remain unverified.

@@ -2,6 +2,8 @@
 
 4 November 2026. Continues the v0.4.5 compatibility branch. Source changes only; no APK or live gameplay acceptance.
 
+Follow-up, 5 November: `POA-SCALAR-CAST-CHECKPOINT.md` supersedes the blanket 0x39 rejection described below for 12 scalar casts. This report retains the earlier checkpoint evidence; its token suite has since expanded from 75 to 88 cases.
+
 ## Verified metadata slice
 
 The retained original-data inspectors (`ObjectReader.h` and `object_payloads.py`) place a zero-valued extension byte after a version-129 PoA Function export's friendly name. Production `UStruct::Load` previously read that byte as part of Line, shifting the following metadata and script size.

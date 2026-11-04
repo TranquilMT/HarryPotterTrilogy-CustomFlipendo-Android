@@ -10,6 +10,7 @@
 #include "Compiler/Frontend/Compiler.h"
 #include "HP2.h"
 #include "Package/StructScriptHeader.h"
+#include "Package/PoaPrimitiveCast.h"
 
 UStruct::UStruct(NameString name, UClass* cls, ObjectFlags flags) : UField(std::move(name), cls, flags)
 {
@@ -316,9 +317,14 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 		tokenbyte = HP2::ToStockToken(tokenbyte);
 	}
 	const bool poa = engine->LaunchInfo.IsHarryPotter3();
-	// UE2 reuses UE1 conversion token values for different instructions. Until
-	// production evaluation exists, reject them rather than building a UE1 AST.
-	if (poa && tokenbyte >= 0x39 && tokenbyte < 0x60)
+	if (poa && tokenbyte == 0x39)
+	{
+		PushUInt8(PoaPrimitiveCasts::ReadCode(*stream));
+		ReadToken(stream, depth);
+		return static_cast<ExprToken>(tokenbyte);
+	}
+	// The remaining UE2 opcodes overlap legacy conversions but mean different operations.
+	if (poa && tokenbyte >= 0x3a && tokenbyte < 0x60)
 		Exception::Throw("Unsupported production PoA bytecode token " + std::to_string(tokenbyte) + " in " + Name.ToString());
 	ExprToken token = (ExprToken)tokenbyte;
 

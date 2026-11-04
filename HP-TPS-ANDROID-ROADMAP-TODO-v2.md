@@ -384,3 +384,14 @@ See `docs/POA-PRODUCTION-TABLE-VALIDATION.md`. This batch does not change the 21
 - [ ] Build/verify the Android APK and perform device startup/gameplay/regression acceptance.
 
 Details: `docs/POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md`. PKG-05/06, the VM and all live playability gates remain open.
+
+
+## 2026-11-05 — PoA scalar primitive-cast integration
+
+- [x] Decode the UE2 primitive-cast prefix for the 12 byte/int/bool/float conversions and connect it to existing production expression nodes.
+- [x] Preserve encoded memory offsets for nested casts/following statements; reject unsupported casts and retain the legacy UE1 path.
+- [x] Pass 97 Python regressions, including 88 token/header and 312 scalar-cast bridge sanitizer cases.
+- [ ] Verify numeric edge cases and original PoA functions in the complete engine; continue the remaining metadata/native/resource/opcode work.
+- [ ] Complete Android build, signing and device acceptance. All live compatibility gates remain open.
+
+Source/evidence details: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.

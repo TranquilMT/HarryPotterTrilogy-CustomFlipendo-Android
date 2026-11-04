@@ -30,6 +30,7 @@ class ProductionStructScripts(unittest.TestCase):
 #include <cassert>
 #include <iostream>
 #include "Package/StructScriptHeader.h"
+#include "Package/PoaPrimitiveCast.h"
 #include "Package/CompactIndex.h"
 #include "compat/ue2/BytecodeReader.h"
 struct NameString {std::string ToString()const{return "SyntheticFunction";}};
@@ -80,6 +81,8 @@ int main(){
  same({0x1b,1,0x16},6);same({0x1c,1,0x16},6);same({0x29,1},5);
  same({0x34,0x41,0,0xe9,0,0,0},7); // UTF-16 units, independent of 32-bit wchar_t
  same({0x34,0x3d,0xd8,0x00,0xde,0,0},7);
+ for(int code=0x3a;code<=0x45;++code) same({0x39,uint8_t(code),0x25},3);
+ same({0x39,0x3f,0x39,0x41,0x27},5); // nested casts retain both prefix bytes
  for(int op=0x39;op<0x60;++op){ObjectStream stream;stream.data={uint8_t(op),0x25};UStruct f;rejects([&]{f.ReadToken(&stream,0);});}
  ObjectStream truncated;truncated.data={0x60};UStruct f;rejects([&]{f.ReadToken(&truncated,0);});
  ObjectStream depth;depth.data={0x25};rejects([&]{f.ReadToken(&depth,64);});
