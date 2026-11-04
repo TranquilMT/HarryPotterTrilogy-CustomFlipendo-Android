@@ -2,7 +2,7 @@
 
 **Project:** [HarryPotterTrilogy-CustomFlipendo-Android](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android)  
 **Upstream:** [Flipendo ROADMAP.md](https://github.com/kroplabeskidu/flipendo/blob/master/ROADMAP.md)  
-**Local source version:** **0.4.5**, version code **46**; complete standalone source ZIP requested and assembled locally. No 0.4.5 APK or device acceptance is claimed.
+**Current base:** GitHub **v0.4.5**, commit `94c75369030e867e24d5aab8c050e6eac968f24b`. The published release has an experimental HP3 launcher and Both Games APK. This 4 November source patch does not produce a new APK or establish HP3 device acceptance.
 
 **Canonical source baseline:** Android **0.4.2**, version code **43**, main `d367c77c745a776c7178ba7218a27b115c75f025`; its release report records a signed Both Games build. This PoA checkpoint reconciles that source; no new APK or physical-device acceptance is claimed.
 
@@ -335,3 +335,16 @@ See [inventory/build evidence](docs/POA-INVENTORY-AND-BUILD-INPUTS.md). Local so
 - [ ] Complete BASE-03/04 and all live PoA gates. No APK or live UE2 execution is claimed.
 
 See [payload/dependency evidence](docs/POA-PAYLOAD-INTEGRITY-AND-DEPENDENCIES.md). Local source remains 0.4.3 / code 44.
+
+
+
+## 2026-11-04 — v0.4.5 loader compatibility batch
+
+- [x] Use exact GitHub v0.4.5 source as the new implementation base.
+- [x] Add bounded production ANSI/UTF-16LE FString and compact-index decoding, including surrogate pairs and overflow rejection.
+- [x] Fix one-based export/class indexing, import negation overflow, nested group ordering and destructive export-name lookup; bound outer cycles.
+- [x] Add data-free sanitizer regressions and tests compiling the actual production reference methods.
+- [ ] Build the complete Android engine/APK and verify HP1/HP2 regressions, signing/update continuity and both payloads.
+- [ ] Validate original PoA metadata/default/native layouts through production loading, then confirm live startup and first rendered Android scene.
+
+Master task mapping: PKG-03/04/08 remain in progress, G0–G6 open. See the master PoA roadmap for the complete remaining scope and test limitations.

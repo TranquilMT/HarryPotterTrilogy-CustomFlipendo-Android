@@ -1,6 +1,6 @@
 # HP3 (Prisoner of Azkaban) — UE1 vs UE2 compatibility matrix
 
-Status: **design only**. HP3 remains disabled/experimental. No APK, first frame, or gameplay support is claimed. This matrix tracks engine-level differences between the UE1 runtime used for HP1/HP2 and the UE2 runtime required for HP3, so the port can add an explicit UE2 profile instead of overloading UE1 paths.
+Status: **partial implementation from GitHub v0.4.5**. Experimental launcher selection and permissive UE2 container version handling exist. The 4 November patch adds bounded production strings/indices and reference fixes. No new APK, first frame or gameplay support is claimed by this patch. This matrix tracks engine-level differences between the UE1 runtime used for HP1/HP2 and the UE2 runtime required for HP3, so the port can add an explicit UE2 profile instead of overloading UE1 paths.
 
 ## Version and identity
 
@@ -57,7 +57,7 @@ Status: **design only**. HP3 remains disabled/experimental. No APK, first frame,
 
 | Item | Status |
 | --- | --- |
-| Launcher entry | Disabled/experimental |
+| Launcher entry | Enabled for experimental testing in v0.4.5; playability unverified |
 | Build flag | `HP3_ENABLED` (default off) — to be added in Batch C |
 | First scene | Not achieved |
 | Gameplay | Not achieved |
@@ -76,3 +76,6 @@ Status: **design only**. HP3 remains disabled/experimental. No APK, first frame,
 - `docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md` (master backlog)
 - `docs/POA-PRODUCTION-ARCHITECTURE.md` (architecture decision)
 - `native-runtime/docs/re/hp3/` (implementation notes)
+
+
+Production package reader/reference checkpoint: see `HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md`, 4 November 2026. Complete metadata loading and native/runtime adaptation remain open.

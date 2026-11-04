@@ -27,7 +27,7 @@ def main():
 
     run(sys.executable, '-m', 'unittest', 'discover', '-s', 'tools/poa', '-p', 'test_*.py')
     with tempfile.TemporaryDirectory(prefix='poa-checks-') as tmp:
-        for name in ('named_calls', 'dispatch_resolver', 'receiver_program', 'instance_properties', 'bool_variables', 'default_properties', 'struct_properties', 'struct_defaults', 'object_context', 'object_constraints', 'object_call_constraints', 'receiver_lifetime'):
+        for name in ('package_loading', 'named_calls', 'dispatch_resolver', 'receiver_program', 'instance_properties', 'bool_variables', 'default_properties', 'struct_properties', 'struct_defaults', 'object_context', 'object_constraints', 'object_call_constraints', 'receiver_lifetime'):
             binary = pathlib.Path(tmp) / name
             run('g++', '-std=c++17', '-O1', '-Wall', '-Wextra', '-Werror',
                 '-fsanitize=address,undefined', '-fno-omit-frame-pointer',
@@ -55,3 +55,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

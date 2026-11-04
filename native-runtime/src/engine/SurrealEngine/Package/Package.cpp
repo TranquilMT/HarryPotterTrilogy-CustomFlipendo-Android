@@ -7,6 +7,7 @@
 #include "Utils/File.h"
 #include "Utils/Logger.h" // missing import messages
 #include <set>
+#include "PackageReferences.h"
 #include "Packages/Core/UObject.h"
 #include "Packages/Core/UClass.h"
 
@@ -146,7 +147,7 @@ UObject* Package::GetUObject(int objref)
 	{
 		int index = objref - 1;
 
-		if ((size_t)index > ExportObjects.size())
+		if ((size_t)index >= ExportObjects.size())
 			Exception::Throw("Invalid object reference");
 
 		if (!ExportObjects[index])
@@ -170,15 +171,14 @@ UObject* Package::GetUObject(int objref)
 			return nullptr; // This is a root package object. We don't have an UObject for those currently
 
 		// Find the path for the outer object (we can't just grab the object pointer due to UnrealI/UnrealShare)
-		std::string group;
+		// Validate the complete chain before resolving another package.
+		std::string group = PackageReferences::OuterPath(entry->ObjOuter,
+			[this](int ref) { return ref > 0 ? GetExportEntry(ref)->ObjOuter : GetImportEntry(ref)->ObjOuter; },
+			[this](int ref) { return GetName(ref > 0 ? GetExportEntry(ref)->ObjName : GetImportEntry(ref)->ObjName).ToString(); },
+			true);
 		ImportTableEntry* outerEntry = GetImportEntry(entry->ObjOuter);
 		while (outerEntry->ObjOuter != 0)
-		{
-			if (!group.empty())
-				group += '.';
-			group += GetName(outerEntry->ObjName).ToString();
 			outerEntry = GetImportEntry(outerEntry->ObjOuter);
-		}
 
 		NameString packageName = GetName(outerEntry->ObjName);
 
@@ -226,26 +226,9 @@ int Package::FindObjectReference(const NameString& className, const NameString& 
 
 		if (!ignoreGroup)
 		{
-			// Find the path for the outer object
-			std::string entryGroup;
-			int outerRef = entry.ObjOuter;
-			while (outerRef != 0)
-			{
-				if (!entryGroup.empty())
-					entryGroup += '.';
-				if (outerRef > 0)
-				{
-					auto outerEntry = GetExportEntry(outerRef);
-					entryGroup += GetName(outerEntry->ObjName).ToString();
-					outerRef = outerEntry->ObjOuter;
-				}
-				else// if (outerRef < 0)
-				{
-					auto outerEntry = GetImportEntry(outerRef);
-					entryGroup += GetName(outerEntry->ObjName).ToString();
-					outerRef = outerEntry->ObjOuter;
-				}
-			}
+			std::string entryGroup = PackageReferences::OuterPath(entry.ObjOuter,
+				[this](int ref) { return ref > 0 ? GetExportEntry(ref)->ObjOuter : GetImportEntry(ref)->ObjOuter; },
+				[this](int ref) { return GetName(ref > 0 ? GetExportEntry(ref)->ObjName : GetImportEntry(ref)->ObjName).ToString(); });
 			if ((group.IsNone() && !entryGroup.empty()) || (!group.IsNone() && group != entryGroup))
 				continue;
 		}
@@ -264,7 +247,7 @@ int Package::FindObjectReference(const NameString& className, const NameString& 
 			}
 			else
 			{
-				auto classExport = &ExportTable[entry.ObjClass + 1];
+				auto classExport = GetExportEntry(entry.ObjClass);
 				if (classExport && className == GetName(classExport->ObjName))
 					return (int)index + 1;
 			}
@@ -313,7 +296,7 @@ ImportTableEntry* Package::GetImportEntry(int objref)
 	else if (objref > 0)
 		Exception::Throw("Expected an import table entry: " + Name.ToString());
 
-	int index = -objref - 1;
+	size_t index = size_t(-int64_t(objref) - 1);
 	if ((size_t)index >= ImportTable.size())
 		Exception::Throw("Import table entry out of bounds!: " + Name.ToString());
 
@@ -427,15 +410,8 @@ std::string Package::GetExportName(int objref)
 	if (objref <= 0)
 		return "None";
 
-	ExportTableEntry& entry = ExportTable[objref];
-	std::string objname = NameTable[entry.ObjName].Name.ToString();
-
-	while (entry.ObjOuter != 0)
-	{
-		entry = ExportTable[entry.ObjOuter - 1];
-		objname = NameTable[entry.ObjName].Name.ToString() + '.' + objname;
-	}
-
-	objname = Name.ToString() + '.' + objname;
-	return objname;
+	// One-based references; never assign a parent into the child's table slot.
+	return Name.ToString() + "." + PackageReferences::OuterPath(objref,
+		[this](int ref) { return ref > 0 ? GetExportEntry(ref)->ObjOuter : GetImportEntry(ref)->ObjOuter; },
+		[this](int ref) { return GetName(ref > 0 ? GetExportEntry(ref)->ObjName : GetImportEntry(ref)->ObjName).ToString(); });
 }

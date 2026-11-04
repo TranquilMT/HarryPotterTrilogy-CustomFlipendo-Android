@@ -6,6 +6,8 @@
 #include "Packages/Core/UObject.h"
 #include "Utils/File.h"
 #include <cstring>
+#include "SerializedString.h"
+#include "CompactIndex.h"
 
 PackageStream::PackageStream(Package* package, std::shared_ptr<File> file) : package(package), file(file)
 {
@@ -88,35 +90,16 @@ uint32_t PackageStream::Tell()
 
 int32_t PackageStream::ReadIndex()
 {
-	uint8_t value = ReadInt8();
-	bool signbit = value & (1 << 7);
-	bool nextbyte = value & (1 << 6);
-	int32_t index = value & 0x3f;
-	if (nextbyte)
-	{
-		int shift = 6;
-		do
-		{
-			value = ReadInt8();
-			index |= static_cast<int32_t>(value & 0x7f) << shift;
-			shift += 7;
-		} while ((value & (1 << 7)) && shift < 32);
-	}
-	if (signbit)
-		index = -index;
-	return index;
+	return PackageIndices::Read([this]() { return ReadUInt8(); });
 }
 
 std::string PackageStream::ReadString()
 {
 	if (GetVersion() >= 64)
 	{
-		int len = ReadIndex();
-		Array<char> s;
-		s.resize(len);
-		ReadBytes(s.data(), (int)s.size());
-		s.push_back(0);
-		return s.data();
+		const int32_t length = ReadIndex();
+		return PackageStrings::Read(length,
+			[this]() { return ReadUInt8(); });
 	}
 	else
 	{
@@ -388,3 +371,4 @@ void PackageStreamWriter::EndProperty(PropertyHeader header)
 
 	WriteBytes(propertyBuffer.data(), header.size);
 }
+

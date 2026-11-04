@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Package.h"
+#include "CompactIndex.h"
+#include "SerializedString.h"
 #include <string.h>
 #include "Utils/Exception.h"
 #include "Utils/UTF16.h"
@@ -65,48 +67,15 @@ public:
 
 	int32_t ReadIndex()
 	{
-		uint8_t value = ReadInt8();
-		bool signbit = value & (1 << 7);
-		bool nextbyte = value & (1 << 6);
-		int32_t index = value & 0x3f;
-		if (nextbyte)
-		{
-			int shift = 6;
-			do
-			{
-				value = ReadInt8();
-				index |= static_cast<int32_t>(value & 0x7f) << shift;
-				shift += 7;
-			} while ((value & (1 << 7)) && shift < 32);
-		}
-		if (signbit)
-			index = -index;
-		return index;
+		return PackageIndices::Read([this]() { return ReadUInt8(); });
 	}
 
 	std::string ReadString()
 	{
 		if (GetVersion() >= 64)
 		{
-			int len = ReadIndex();
-			if (len < 0 && len >= -1024 * 1024)
-			{
-				// Unicode builds store a string with a character above 0xFF as UTF-16, the count negated
-				// (terminator included; HP1's Lev_Tut3b has one)
-				std::wstring s;
-				for (int i = 0; i < -len; i++)
-					s.push_back((wchar_t)ReadUInt16());
-				while (!s.empty() && s.back() == 0)
-					s.pop_back();
-				return from_utf16(s);
-			}
-			if (len < 0 || len > 1024 * 1024)
-				Exception::Throw("ObjectStream::ReadString: Invalid size in " + package->GetPackageName().ToString());
-			Array<char> s;
-			s.resize(len);
-			ReadBytes(s.data(), (int)s.size());
-			s.push_back(0);
-			return s.data();
+			const int32_t length = ReadIndex();
+			return PackageStrings::Read(length, [this]() { return ReadUInt8(); });
 		}
 		else
 		{
@@ -181,3 +150,4 @@ private:
 	NameString name;
 	UClass* base = nullptr;
 };
+

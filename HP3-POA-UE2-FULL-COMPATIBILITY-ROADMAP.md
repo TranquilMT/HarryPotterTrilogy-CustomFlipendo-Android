@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 7 · 1 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 8 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -8,7 +8,7 @@ This is the master backlog for making the **PC version of Prisoner of Azkaban ru
 
 It cannot promise that reverse engineering will reveal no further bugs or behaviors. Those discoveries belong in the explicit discovery ledger below. They must be reported as discoveries within this scope, not as a surprise after claiming the port is almost complete.
 
-**Current result: PoA is not playable. There is no verified live PoA startup, rendered map, interactive phone session or PoA-enabled APK from these compatibility checkpoints.**
+**Current result: PoA is not verified playable. GitHub v0.4.5 enables experimental HP3 selection; live startup, a rendered map and interactive phone play remain unverified. This source checkpoint does not supply a new APK.**
 
 ## Audited baseline
 
@@ -17,11 +17,11 @@ It cannot promise that reverse engineering will reveal no further bugs or behavi
 | Disc/scripts | All 841 disc/archive file records inventoried; 24 package payloads now checked offline: 12 scripts, two maps, five texture and five static-mesh packages | Complete production loading of all required game assets |
 | Script metadata | 1,685 classes, 546 states and 8,090 functions checked across all 12 scripts | Correct execution of those classes/states/functions in the game |
 | Isolated runtime | Primitive frames/calls/properties/default reads, bounded struct paths, object contexts/constraints and host receiver retirement | Actual native engine object/world behavior |
-| Latest checkpoint tests | 83 PoA Python tests and 18 Android packaging/preflight tests pass; 12 C++ sanitizer suites passed at the earlier source baseline (C++ unchanged in this batch) | A percentage of game completion or gameplay acceptance |
+| Latest checkpoint tests | 94 PoA Python regressions (including compilation of actual production reference methods) and 13 C++ sanitizer suites checked in the 4 November package-loading batch; earlier Android packaging results are historical | A percentage of game completion or gameplay acceptance |
 | Native execution | 11 explicitly checked Core primitive intrinsics in the isolated typed runtime | The complete Core/Engine/KWGame native interface |
-| Production package loader | Existing source rejects package versions >=100; checked main PoA scripts use version 129 | A live UE2 loader; raising the version gate alone is not a solution |
+| Production package loader | v0.4.5 admits versions 60–177; this batch fixes production FString/index decoding and package reference/path defects; checked main PoA scripts use version 129 | A live UE2 loader; raising the version gate alone is not a solution |
 | Android integration | Existing HP1/HP2 application/build infrastructure is available | The isolated hp3 runtime connected to the live Android game path |
-| Startup target / gameplay | Original configuration and two map tables select preamble → front end → New Game → HP3_Adv1Express; PoA remains disabled/unplayable | Boot, menus, rendering, controls, saves or a full playthrough |
+| Startup target / gameplay | Original configuration and two map tables select preamble → front end → New Game → HP3_Adv1Express; v0.4.5 permits experimental selection; PoA remains unverified/unplayable | Boot, menus, rendering, controls, saves or a full playthrough |
 
 Source audit: `native-runtime/src/compat/ue2/*`, `native-runtime/tools/poa/*`, `native-runtime/android/CMakeLists.txt`, `native-runtime/src/engine/SurrealEngine/Package/Package.cpp`, and the latest `docs/POA-*-VERIFICATION.json` reports. Existing renderer/audio/input code is a reuse candidate, not proof of PoA compatibility.
 
@@ -36,7 +36,9 @@ Source audit: `native-runtime/src/compat/ue2/*`, `native-runtime/tools/poa/*`, `
 
 ## Current work and update policy
 
-**Active workstream: 1 of 21 — BASE.** Source reconciliation and architecture design are complete at the source/design level; complete original-data identity and signing/build acceptance remain open; the startup test route is selected. Workstreams 2–21 remain open. The current DATA-04/05/08 batch supports the open BASE-04 identity work; baseline build acceptance remains incomplete.
+**Active source baseline: GitHub `v0.4.5`, commit `94c75369030e867e24d5aab8c050e6eac968f24b`. Active implementation: PKG-03/PKG-04/PKG-08 loader prerequisites, while BASE acceptance remains open.**
+
+**Baseline workstream: 1 of 21 — BASE.** Source reconciliation and architecture design are complete at the source/design level; complete original-data identity and signing/build acceptance remain open; the startup test route is selected. Workstreams 2–21 remain open. The current DATA-04/05/08 batch supports the open BASE-04 identity work; baseline build acceptance remains incomplete.
 
 Update this document and the project roadmap at each completed work batch, fix, new finding or scope change:
 
@@ -406,7 +408,7 @@ Workstreams can overlap, but the implementation plan should aim at a live vertic
 - Fix: D-002 saved Canvas patch now preserves canonical 0.4.2 behavior after patch reset/reapply. D-001 source reconciliation resolved.
 - Verification: 54 PoA Python tests, 13 Android packaging Python tests, 12 isolated PoA ASan/UBSan suites and the Canvas clipping regression pass. Leak detection is unavailable under ptrace and was disabled; no leak-check claim. All 11 engine patches reversed to upstream hashes and reapplied byte-for-byte.
 - Remaining BASE acceptance: BASE-03 signing/build/payload/device continuity; BASE-04 original-data identity; BASE-07 verified startup and first scene; BASE-08 ongoing evidence reviews.
-- Live PoA Android evidence: none. No new APK. PoA remains disabled/unplayable; G0–G6 remain open.
+- Live PoA Android evidence: none. No new APK. v0.4.5 permits experimental selection; PoA remains unverified/unplayable; G0–G6 remain open.
 - Next bounded batch: original PoA configuration/identity audit for BASE-04/BASE-07, alongside the remaining build/signing input audit. This does not complete the 21-workstream backlog.
 
 ### 2026-11-01 — Tracking policy and baseline correction
@@ -416,7 +418,7 @@ Workstreams can overlap, but the implementation plan should aim at a live vertic
 - Partial work: BASE-01/BASE-02 baseline audit; BASE-08 acceptance and update policy.
 - Discovery: D-001, newer canonical 0.4.2 baseline. Exact code/payload reconciliation remains open.
 - Fix status: the 0.4.2 HP2 clipping correction is reported in canonical release documentation; preservation in this local baseline and phone acceptance remain unverified.
-- Live PoA Android evidence: none. PoA remains disabled/unplayable.
+- Live PoA Android evidence: none. v0.4.5 permits experimental selection; PoA remains unverified/unplayable.
 - Release gate: G0 open; G1–G6 open.
 - Next bounded batch: reconcile 0.4.2 source/patch changes, record dependency provenance and preserve the cumulative compatibility overlay. Remaining work is the full 21-workstream backlog.
 
@@ -433,3 +435,14 @@ Workstreams can overlap, but the implementation plan should aim at a live vertic
 ## Explicitly outside the required compatibility scope
 
 HD remaster packs, new game modes, added content, modernized art, achievements, cosmetic redesigns and implementing every unused UE2/editor feature are not required merely to make PoA compatible. Any such expansion needs its own explicit scope. Conversely, a feature cannot be excluded as “unused” until the game's required data/routes confirm that.
+
+
+
+## 4 November 2026 — v0.4.5 production package-loading checkpoint
+
+- Base: exact GitHub tag v0.4.5 / 94c75369030e867e24d5aab8c050e6eac968f24b. Source version remains 0.4.5 until a verified APK release; no version-code or signing changes.
+- PKG-03/04/08 in progress: production PackageStream and ObjectStream share bounded signed compact-index and ANSI/UTF-16LE string readers. Surrogate pairs decode to UTF-8; oversized, malformed and truncated data fail explicitly.
+- PKG-04 fixes: reject export references at the end boundary; use one-based class/export lookup correctly; avoid signed overflow for INT_MIN imports; resolve nested groups in root-to-leaf order; detect cyclic/excessive outer chains; export-name lookup no longer overwrites its own table entry.
+- Regression evidence: package helper suite covers valid UE1-style ANSI, Unicode, malformed inputs and reference chains. A separate test compiles the actual Package.cpp reference accessor/name methods with in-memory tables and sanitizers. This is a narrow production-code test, not a complete engine build.
+- G0–G6 remain open. No original PoA assets, Android SDK/NDK or signing key were available in this workspace; no new APK, original-data launch or device test was performed. Existing HP1/HP2 saves, payloads and certificate handling are not altered by this source patch; game regressions still require device checks.
+- Next bounded work: verify production summary/table layouts with retained PoA packages; adapt Class/Struct/State/Function/default layouts and native bindings, then exercise the real startup route. All 21 workstreams remain authoritative.
