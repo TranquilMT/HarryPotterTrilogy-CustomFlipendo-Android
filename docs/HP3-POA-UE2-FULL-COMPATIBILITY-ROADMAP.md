@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 12 · 5 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 13 · 5 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -482,3 +482,11 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - Other cast codes and bare overlapping UE2 opcodes remain explicit failures. Legacy UE1 conversion decoding retains its original path. This reuses existing evaluator implementations; original PoA numeric parity is not yet established.
 - Evidence: all 97 Python regressions pass; production token checks expand to 88 ASan/UBSan cases, and a new 312-case bridge/actual-expression-construction harness covers selections, nesting, offsets, invalid codes and legacy forms. Details and source pin: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.
 - Class/State/default/property/native/resource and other UE2 opcode work remains open. No complete engine compile, APK, original-data run or phone play test occurred; G0–G6 remain open.
+
+
+## 5 November 2026 — full Android startup build audit
+
+- Priority switched to the complete Android build/startup trace rather than another isolated decoder addition.
+- Verified blockers: partial local source checkout; no configured SDK/NDK, cmake/ninja/adb; SDL build dependency not present; Google's SDK download endpoint timed out through the available proxy; Desktop Commander reports no connected devices.
+- No complete Android compile, APK installation or actual PoA startup occurred. G0 is blocked on build inputs/access; G1–G6 retain their existing open runtime/device requirements. Host regression count remains 97 and is not promoted to build/launch evidence.
+- Exact findings and next executable sequence: `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`. Continue on a connected build computer, prepare the complete source/toolchain, compile/package, then capture the actual phone startup trace.

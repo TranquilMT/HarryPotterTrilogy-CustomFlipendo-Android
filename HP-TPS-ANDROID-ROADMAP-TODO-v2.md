@@ -395,3 +395,13 @@ Details: `docs/POA-FUNCTION-SCRIPT-HEADER-CHECKPOINT.md`. PKG-05/06, the VM and 
 - [ ] Complete Android build, signing and device acceptance. All live compatibility gates remain open.
 
 Source/evidence details: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.
+
+
+## 2026-11-05 — complete Android build/startup audit
+
+- [x] Check the actual build environment and remote build-computer availability; record concrete blockers in `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`.
+- [ ] Connect a build computer, recover the complete checkout and prepare SDK/NDK/CMake/Ninja/SDL and existing signing/payload inputs.
+- [ ] Compile/link the full ARM64 engine and Java/SDL integration; produce and verify the test APK.
+- [ ] Install on the phone and capture a real PoA launch trace, then address its concrete runtime failures.
+
+No new compatibility feature, Android compilation, APK or device milestone is claimed by this environment audit. Existing runtime backlog and G0–G6 remain open.
