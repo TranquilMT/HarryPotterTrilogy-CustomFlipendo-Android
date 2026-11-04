@@ -8,6 +8,13 @@ import java.util.*;
 public final class GameFiles {
  public interface Defaults { InputStream open(boolean hp2,String name) throws IOException; }
  public static boolean supported(String id){return "hp1".equals(id)||"hp2".equals(id)||"hp3".equals(id);}
+ public static String folderKey(String id){if(!supported(id))throw new IllegalArgumentException("Unknown game: "+id);return "hp1".equals(id)?"gameDir":"gameDir."+id;}
+ public static String title(String id){return "hp3".equals(id)?"Prisoner of Azkaban":("hp2".equals(id)?"Chamber of Secrets":"Philosopher's Stone");}
+ public static String executable(String id){if(!supported(id))throw new IllegalArgumentException("Unknown game: "+id);return "hp3".equals(id)?"hppoa.exe":("hp2".equals(id)?"Game.exe":"HP.exe");}
+ public static File find(String id,File dir,int depth){
+  if(!supported(id))throw new IllegalArgumentException("Unknown game: "+id);
+  return "hp3".equals(id)?findHp3(dir,depth):find("hp2".equals(id),dir,depth);
+ }
  public static File child(File dir,String name){
   File exact=new File(dir,name);if(exact.exists())return exact;
   File[] list=dir.listFiles();if(list!=null)for(File f:list)if(f.getName().equalsIgnoreCase(name))return f;
@@ -22,6 +29,7 @@ public final class GameFiles {
   return null;
  }
  public static File findHp3(File dir,int depth){
+  if(dir.getName().equalsIgnoreCase("System")&&present(child(dir,"hppoa.exe")))return dir.getParentFile();
   if(present(path(dir,"System/hppoa.exe")))return dir;
   File[] list=depth>0?dir.listFiles():null;
   if(list!=null)for(File f:list)if(f.isDirectory()&&!f.getName().startsWith(".")){File found=findHp3(f,depth-1);if(found!=null)return found;}
@@ -37,18 +45,23 @@ public final class GameFiles {
  }
  public static List<String> missingHp3(File root){
   List<String> result=new ArrayList<>();
-  String[] system=new String[]{"hppoa.exe","Core.u","Engine.u","HGame.u","HProps.u","HPModels.u","HPSounds.u","Default.ini","DefUser.ini"};
+  // Verified PoA script names; HP2's HProps/HPModels/HPSounds.u are not PoA requirements.
+  String[] system={"hppoa.exe","Core.u","Engine.u","HGame.u","kwGame.u","GUI.u","UWindow.u","GamePlay.u","Default.ini","DefUser.ini"};
   for(String n:system)if(!present(path(root,"System/"+n)))result.add("System/"+n);
-  for(String n:new String[]{"Maps","Textures"}){File d=child(root,n);File[] files=d.listFiles();boolean found=false;if(files!=null)for(File f:files)if(present(f)&&f.getName().toLowerCase(Locale.ROOT).endsWith(n.equals("Maps")?".unr":".utx"))found=true;if(!found)result.add(n+"/ (original game packages)");}
-  if(!present(path(root,"Sounds/AllDialog.uax")))result.add("Sounds/AllDialog.uax");
+  for(String n:new String[]{"Maps","Textures"}){File[] files=child(root,n).listFiles();boolean found=false;if(files!=null)for(File f:files)if(present(f)&&f.getName().toLowerCase(Locale.ROOT).endsWith(n.equals("Maps")?".unr":".utx"))found=true;if(!found)result.add(n+"/ (original game packages)");}
   return result;
  }
  public static void validatePackages(boolean hp2,File root) throws IOException {
-  for(String name:new String[]{"Core.u","Engine.u",hp2?"HGame.u":"HarryPotter.u"}){
+  validatePackages(hp2 ? "hp2" : "hp1",root);
+ }
+ public static void validatePackages(String id,File root) throws IOException {
+  if(!supported(id))throw new IOException("Unknown game: "+id);
+  for(String name:("hp3".equals(id)?new String[]{"Core.u","Engine.u","HGame.u","kwGame.u","GUI.u"}:new String[]{"Core.u","Engine.u","hp2".equals(id)?"HGame.u":"HarryPotter.u"})){
    File p=path(root,"System/"+name);byte[] h=new byte[8];
    try(DataInputStream in=new DataInputStream(new FileInputStream(p))){in.readFully(h);}
    if((h[0]&255)!=0xc1||(h[1]&255)!=0x83||(h[2]&255)!=0x2a||(h[3]&255)!=0x9e)throw new IOException("Invalid original game package: "+p);
    int version=(h[4]&255)|((h[5]&255)<<8);
+   if("hp3".equals(id)&&version!=129)throw new IOException("PoA script package version must be 129, found "+version+": "+p);
    if(version<60||version>=178)throw new IOException("Unsupported engine package version "+version+".");
   }
  }
@@ -73,3 +86,4 @@ public final class GameFiles {
  }
  private GameFiles(){}
 }
+

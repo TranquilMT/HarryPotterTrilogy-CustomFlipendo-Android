@@ -338,8 +338,28 @@ public class FlipendoActivity extends SDLActivity {
         if (save) saveScales();
     }
 
+    private android.content.SharedPreferences performancePreferences() {
+        String id = getIntent() == null ? null : getIntent().getStringExtra("game");
+        if (!GameFiles.supported(id)) {
+            File root = new File(gameDir());
+            id = GameFiles.find("hp3", root, 0) != null ? "hp3" : (SetupActivity.isHp2Folder(root.getPath()) ? "hp2" : "hp1");
+        }
+        android.content.SharedPreferences profile = getSharedPreferences("performance." + id, MODE_PRIVATE);
+        if (!profile.getBoolean("initialized", false)) {
+            android.content.SharedPreferences old = getSharedPreferences("flipendo", MODE_PRIVATE);
+            android.content.SharedPreferences.Editor copy = profile.edit();
+            for (String key : new String[]{"renderScale","uiScale","fovOffset","wandSens"})
+                if (old.contains(key)) copy.putFloat(key, old.getFloat(key, 1f));
+            for (String key : new String[]{"dpad","showFps","autoJump","invertWand","noSkip","noQuickSave","perfLog","firstPerson"})
+                if (old.contains(key)) copy.putBoolean(key, old.getBoolean(key, false));
+            if (old.contains("fpsLimit")) copy.putInt("fpsLimit", old.getInt("fpsLimit", 60));
+            copy.putBoolean("initialized", true).apply();
+        }
+        return profile;
+    }
+
     private void saveScales() {
-        getSharedPreferences("flipendo", MODE_PRIVATE).edit()
+        performancePreferences().edit()
                 .putFloat("renderScale", surfaceScale).putFloat("uiScale", uiScale)
                 .putFloat("fovOffset", fovOffset).putBoolean("debugMode", debugMode).putBoolean("showFps", showFps).putBoolean("autoJump", autoJump).putBoolean("invertWand", invertWand).putFloat("wandSens", wandSens).putBoolean("noSkip", noSkip).putBoolean("noQuickSave", noQuickSave).putBoolean("perfLog", perfLog).putBoolean("firstPerson", firstPerson).putInt("fpsLimit", fpsLimit).apply();
     }
@@ -697,9 +717,20 @@ public class FlipendoActivity extends SDLActivity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            allowDrawUnderCutout();
-        }
+        if (hasFocus) allowDrawUnderCutout();
+        if (overlay != null) overlay.setInputActive(hasFocus);
+    }
+
+    @Override
+    protected void onPause() {
+        if (overlay != null) overlay.setInputActive(false);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (overlay != null) overlay.setInputActive(hasWindowFocus());
     }
 
     @Override
@@ -713,7 +744,7 @@ public class FlipendoActivity extends SDLActivity {
         getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         allowDrawUnderCutout();
         // The player's scales (menu sliders), then render at a reduced fixed surface size: the compositor scales it up.
-        android.content.SharedPreferences prefs = getSharedPreferences("flipendo", MODE_PRIVATE);
+        android.content.SharedPreferences prefs = performancePreferences();
         dpadMode = prefs.getBoolean("dpad", false);
         applyUiScale(prefs.getFloat("uiScale", 1.0f), false);
         applyFovOffset(prefs.getFloat("fovOffset", 0f), false);
@@ -861,6 +892,7 @@ public class FlipendoActivity extends SDLActivity {
 
         final Runnable poll = new Runnable() {
             public void run() {
+                if (!inputActive) return;
                 boolean m = menuActive(), l = lessonDrawing(), cs = cutsceneActive(), br = onBroom();
                 if (m != menuShown || l != lessonShown || cs != cutsceneShown || br != broomShown) {
                     menuShown = m;
@@ -870,7 +902,7 @@ public class FlipendoActivity extends SDLActivity {
                         broomShown = br;
                         if (jump.down) setButton(jump, false); // the boost toggle ends with the flight (and vice versa)
                     }
-                    if (cs) releaseGameplayControls();
+                    releaseAllControls(); // state transitions must not retain gameplay presses
                     invalidate();
                 }
                 // a level where the game fixes the camera, with the mod on: offer to switch the mod off (once per level)
@@ -898,16 +930,60 @@ public class FlipendoActivity extends SDLActivity {
 
         @Override
         protected void onDetachedFromWindow() {
-            removeCallbacks(poll);
+            setInputActive(false);
             super.onDetachedFromWindow();
+        }
+
+        boolean inputActive = true;
+        int inputEpoch;
+        int mouseButtons;
+        final java.util.HashSet<Integer> pressedKeys = new java.util.HashSet<>();
+
+        void setInputActive(boolean active) {
+            inputActive = active;
+            removeCallbacks(poll);
+            if (active) post(poll); else releaseAllControls();
+        }
+
+        void postInputDelayed(final Runnable action, long delay) {
+            final int epoch = inputEpoch;
+            postDelayed(() -> { if (inputActive && epoch == inputEpoch) action.run(); }, delay);
+        }
+
+        void releaseAllControls() {
+            ++inputEpoch; // invalidate pending menu clicks and short key releases
+            removeCallbacks(aimTick); removeCallbacks(padTick); removeCallbacks(navRepeat); removeCallbacks(padSkipFire);
+            if (menuHeld != null) { removeCallbacks(menuHeld); menuHeld = null; }
+            stickPointer = aimPointer = -1;
+            aimFrameTime = padFrameTime = 0;
+            aimDx = aimDy = 0;
+            padLx = padLy = padRx = padRy = padHatX = padHatY = 0;
+            padCastKey = padCastBumper = padCastTrigger = padCasting = false;
+            padA = padJumpBumper = padJumpTrigger = padJumping = padSkipHeld = false;
+            navX = navY = 0;
+            padClicking = false;
+            layoutDragPointer = -1;
+            padDrawX = padDrawY = 0;
+            for (Btn b : buttons) { b.down = false; b.pointer = -1; }
+            for (Integer code : pressedKeys) SDLActivity.onNativeKeyUp(code);
+            pressedKeys.clear();
+            java.util.Arrays.fill(dirDown, false);
+            mouseButtons = 0;
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP, 0f, 0f, true);
+            nativeSetTouch(0.5f, 0.5f, false);
+            roles.clear(); last.clear(); start.clear(); downAt.clear(); twoTapDone.clear(); arrowFingers.clear();
+            activeSlider = -1;
+            settingsScrolling = false;
+            invalidate();
         }
 
         /** Gameplay buttons are hidden while a menu is open; MENU stays as the way back. */
         boolean visible(Btn b) {
+            if (isHp3Extra(b) && !isHp3Game()) return false;
             if (layoutEdit) return b != skip; // the layout editor shows every control
             if (b == menu || b == gear) return true;
             if (b == skip) return cutsceneShown && !noSkip; // the skip button exists only in cutscenes (and not with Settings > No cutscene skip)
-            if (b == save && (noQuickSave || isHp2Game())) return false;
+            if (b == save && (noQuickSave || isHp2Game() || isHp3Game())) return false;
             if (cutsceneShown) return false;       // and they leave only the skip, settings and menu buttons
             if (padActive && (b == cast || b == jump || isArrow(b))) return false; // a gamepad is in use
             boolean game = !(menuShown || lessonShown);
@@ -917,6 +993,7 @@ public class FlipendoActivity extends SDLActivity {
             return game;
         }
 
+        static final float[] ARROW_ANGLES = { 0f, 180f, 270f, 90f };
         final android.graphics.Path arrowPath = new android.graphics.Path();
 
         int arrowIndex(Btn b) {
@@ -980,7 +1057,7 @@ public class FlipendoActivity extends SDLActivity {
         // Languages carried by this APK ({code, label}) and the Language button, which opens them as a list; its last row
         // adds a dubbing from a folder (ADD_VOICE, not a language)
         static final String ADD_VOICE = "+voice";
-        final java.util.List<String[]> languages = isHp2Game()
+        final java.util.List<String[]> languages = isHp3Game() ? new java.util.ArrayList<String[]>() : isHp2Game()
                 ? SetupActivity.readHp2Languages(new File(((FlipendoActivity) getContext()).gameDir()))
                 : withAddVoice(SetupActivity.readLanguages(getContext()));
 
@@ -992,7 +1069,15 @@ public class FlipendoActivity extends SDLActivity {
             return list;
         }
         final String appVersion = LogReport.version(getContext()); // in the settings header
-        private Boolean hp2Game;
+        private Boolean hp2Game, hp3Game;
+        boolean isHp3Game() {
+            if (hp3Game == null) {
+                FlipendoActivity activity = (FlipendoActivity)getContext();
+                String id = activity.getIntent().getStringExtra("game");
+                hp3Game = "hp3".equals(id) || GameFiles.find("hp3", new File(activity.gameDir()), 0) != null;
+            }
+            return hp3Game;
+        }
 
         /** Whether the running game is HP2 (its folder has System/Game.exe and no System/HP.exe). */
         boolean isHp2Game() {
@@ -1104,7 +1189,7 @@ public class FlipendoActivity extends SDLActivity {
         final boolean modOn;
         {
             String id = SetupActivity.readSmallFile(new File(((FlipendoActivity) getContext()).gameDir(), SetupActivity.MOD_MARKER));
-            modOn = id != null && !id.isEmpty() && !id.equals("none");
+            modOn = !isHp3Game() && id != null && !id.isEmpty() && !id.equals("none");
         }
 
         // The renderer (android_main.cpp reads .flipendo-renderer): Vulkan, or OpenGL ES chosen here or picked by the engine
@@ -1129,21 +1214,12 @@ public class FlipendoActivity extends SDLActivity {
 
         /** The other game, from inside this one: the first tap asks, the second (within 5 s) restarts the engine into it by itself. */
         void switchGameTap() {
-            long now = android.os.SystemClock.uptimeMillis();
-            if (switchAsk && now - switchAskTime < 5000) {
-                switchAsk = false;
-                // the launcher starts the other game without waiting for Play
-                ((FlipendoActivity) getContext()).restartWithGame(new File(GAME_DIR), null, null, isHp2Game() ? "hp1" : "hp2");
-                return;
-            }
-            switchAsk = true;
-            switchAskTime = now;
-            postDelayed(new Runnable() { public void run() {
-                if (switchAsk && android.os.SystemClock.uptimeMillis() - switchAskTime >= 5000) {
-                    switchAsk = false;
-                    invalidate();
-                }
-            } }, 5100);
+            releaseAllControls();
+            final String[] ids = {"hp1", "hp2", "hp3"};
+            new android.app.AlertDialog.Builder(getContext()).setTitle("Choose game")
+                .setItems(new String[]{"Philosopher's Stone", "Chamber of Secrets", "Prisoner of Azkaban (experimental)"},
+                    (dialog, which) -> ((FlipendoActivity)getContext()).restartWithGame(new File(GAME_DIR), null, null, ids[which]))
+                .setNegativeButton("Cancel", null).show();
         }
 
         void rendererTap() {
@@ -1157,7 +1233,7 @@ public class FlipendoActivity extends SDLActivity {
             }
             rendererAsk = true;
             rendererAskTime = now;
-            postDelayed(new Runnable() { public void run() {
+            postInputDelayed(new Runnable() { public void run() {
                 if (rendererAsk && android.os.SystemClock.uptimeMillis() - rendererAskTime >= 5000) {
                     rendererAsk = false;
                     invalidate();
@@ -1171,19 +1247,23 @@ public class FlipendoActivity extends SDLActivity {
         float aimDx, aimDy; // knob offset from the centre, in pixels (clamped to aimR)
         static final float AIM_GAIN = 24f;      // mouse counts per frame at full deflection
         static final float AIM_DEADZONE = 0.12f;
+        long aimFrameTime, padFrameTime;
 
         final Runnable aimTick = new Runnable() {
             public void run() {
-                if (aimPointer == -1) return;
-                float mag = (float) Math.hypot(aimDx, aimDy) / aimR;
+                if (!inputActive || aimPointer == -1) return;
+                long now = android.os.SystemClock.uptimeMillis();
+                float frameStep = ControlTiming.step(now, aimFrameTime);
+                aimFrameTime = now;
+                float mag = aimR > 0 ? (float) Math.hypot(aimDx, aimDy) / aimR : 0;
                 if (mag > AIM_DEADZONE) {
                     float scaled = (Math.min(mag, 1f) - AIM_DEADZONE) / (1f - AIM_DEADZONE);
                     float length = (float) Math.hypot(aimDx, aimDy); // the knob offset, at most aimR
                     float yFlip = (isHp2Game() ? -1f : 1f) * (invertWand ? -1f : 1f); // HP2: the stick looks the other way up and down than in HP1; Invert wand flips it
                     SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE,
-                            aimDx / length * scaled * AIM_GAIN * wandSens, yFlip * aimDy / length * scaled * AIM_GAIN * wandSens, true);
+                            aimDx / length * scaled * AIM_GAIN * wandSens * frameStep, yFlip * aimDy / length * scaled * AIM_GAIN * wandSens * frameStep, true);
                 }
-                postDelayed(this, 16);
+                postOnAnimation(this);
             }
         };
 
@@ -1208,7 +1288,9 @@ public class FlipendoActivity extends SDLActivity {
         }
 
         void releaseAim() {
+            removeCallbacks(aimTick);
             aimPointer = -1;
+            aimFrameTime = 0;
             aimDx = aimDy = 0;
         }
 
@@ -1233,6 +1315,7 @@ public class FlipendoActivity extends SDLActivity {
 
         void padUsed() {
             if (!padActive) {
+                releaseAllControls();
                 padActive = true;
                 setLessonTimeScale(1.35f); // drawing a spell with a stick takes longer than with a finger
                 releaseStick();
@@ -1252,6 +1335,7 @@ public class FlipendoActivity extends SDLActivity {
 
         /** Sticks, triggers and the d-pad hat. */
         boolean padMotion(MotionEvent e) {
+            if (!inputActive) return true;
             padUsed();
             padLx = deadzone(e.getAxisValue(MotionEvent.AXIS_X));
             padLy = deadzone(e.getAxisValue(MotionEvent.AXIS_Y));
@@ -1274,6 +1358,7 @@ public class FlipendoActivity extends SDLActivity {
 
         /** Buttons. Returns true when the key was the pad's. */
         boolean padKey(KeyEvent e) {
+            if (!inputActive) return true;
             int code = e.getKeyCode();
             boolean down = e.getAction() == KeyEvent.ACTION_DOWN;
             if (e.getAction() != KeyEvent.ACTION_DOWN && e.getAction() != KeyEvent.ACTION_UP) return false;
@@ -1300,6 +1385,8 @@ public class FlipendoActivity extends SDLActivity {
                 case KeyEvent.KEYCODE_BUTTON_Y:
                     if (cutsceneShown) {
                         if (!noSkip) padSkipHold(down); // a cutscene is skipped by holding Y, so a touch on a stick or button skips nothing
+                    } else if (isHp3Game()) {
+                        if (!settingsOpen && !menuShown) setButton(use, down);
                     } else if (down && !menuShown && !lessonShown && !noQuickSave) {
                         if (isHp2Game()) ((FlipendoActivity)getContext()).openHp2GameMenu();
                         else nativeRequestSave();
@@ -1360,6 +1447,7 @@ public class FlipendoActivity extends SDLActivity {
                 case KeyEvent.KEYCODE_BUTTON_THUMBL:
                 case KeyEvent.KEYCODE_BUTTON_THUMBR:
                     if (down && isHp2Game() && !menuShown && !lessonShown && !cutsceneShown && !settingsOpen && !promptOpen && !layoutEdit) drinkPotion(); // HP2: the Wiggenweld potion
+                    if (isHp3Game() && !menuShown && !settingsOpen && !cutsceneShown) setButton(code == KeyEvent.KEYCODE_BUTTON_THUMBL ? walk : map, down);
                     return true; // otherwise not used: keep them away from the game
                 default:
                     return false;
@@ -1386,11 +1474,11 @@ public class FlipendoActivity extends SDLActivity {
                 if (down) {
                     padClicking = true;
                     SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, x, y, false);
-                    postDelayed(new Runnable() { public void run() {
+                    postInputDelayed(new Runnable() { public void run() {
                         if (padA) SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, MotionEvent.ACTION_DOWN, x, y, false);
                     } }, 60);
                 } else {
-                    postDelayed(new Runnable() { public void run() {
+                    postInputDelayed(new Runnable() { public void run() {
                         padClicking = false;
                         SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP, x, y, false);
                     } }, 120);
@@ -1416,7 +1504,7 @@ public class FlipendoActivity extends SDLActivity {
             public void run() {
                 if (!padSkipHeld || !cutsceneShown) return;
                 key(KeyEvent.KEYCODE_SPACE, true);
-                postDelayed(new Runnable() { public void run() { key(KeyEvent.KEYCODE_SPACE, false); } }, 120);
+                postInputDelayed(new Runnable() { public void run() { key(KeyEvent.KEYCODE_SPACE, false); } }, 120);
             }
         };
 
@@ -1487,7 +1575,10 @@ public class FlipendoActivity extends SDLActivity {
         /** 60 times a second while the right stick is out: the camera, the menu cursor or the lesson's wand. */
         final Runnable padTick = new Runnable() {
             public void run() {
-                if (padRx == 0f && padRy == 0f) return;
+                if (!inputActive || (padRx == 0f && padRy == 0f)) { padFrameTime = 0; return; }
+                long now = android.os.SystemClock.uptimeMillis();
+                float frameStep = ControlTiming.step(now, padFrameTime);
+                padFrameTime = now;
                 float speed = (float) Math.hypot(padRx, padRy);
                 float curve = speed * speed / Math.max(speed, 1e-3f); // squared response: fine aim near the centre
                 float dx = padRx * curve, dy = padRy * curve;
@@ -1498,7 +1589,7 @@ public class FlipendoActivity extends SDLActivity {
                     if (menuFocus >= 0) {
                         menuFocus = -1; // the stick takes over from the item highlight
                     }
-                    float step = 0.025f * Math.min(getWidth(), getHeight());
+                    float step = 0.025f * Math.min(getWidth(), getHeight()) * frameStep;
                     padCursorX = Math.max(0, Math.min(getWidth() - 1, padCursorX + dx * step));
                     padCursorY = Math.max(0, Math.min(getHeight() - 1, padCursorY + dy * step));
                     SDLActivity.onNativeMouse(padA ? MotionEvent.BUTTON_PRIMARY : 0, MotionEvent.ACTION_MOVE,
@@ -1508,16 +1599,16 @@ public class FlipendoActivity extends SDLActivity {
                     // the lesson moves its wand by SmoothMouse * 30 * dt / 64000: 4 counts a frame at full tilt, slow and precise
                     // (the stick's squared response makes small tilts slower still)
                     // the engine takes whole mouse counts: the fractions add up here, so a slow stick still moves the wand
-                    padDrawX += dx * PAD_DRAW;
-                    padDrawY += dy * PAD_DRAW;
+                    padDrawX += dx * PAD_DRAW * frameStep;
+                    padDrawY += dy * PAD_DRAW * frameStep;
                     int sx = (int) padDrawX, sy = (int) padDrawY;
                     padDrawX -= sx;
                     padDrawY -= sy;
                     if (sx != 0 || sy != 0) SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, sx, sy, true);
                 } else if (!cutsceneShown) {
-                    SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, dx * PAD_LOOK, dy * PAD_LOOK, true);
+                    SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, dx * PAD_LOOK * frameStep * wandSens, dy * PAD_LOOK * frameStep * wandSens * (invertWand ? -1f : 1f), true);
                 }
-                postDelayed(this, 16);
+                postOnAnimation(this);
             }
         };
 
@@ -1527,7 +1618,7 @@ public class FlipendoActivity extends SDLActivity {
 
         final Runnable navRepeat = new Runnable() {
             public void run() {
-                if (navX == 0 && navY == 0) return;
+                if (!inputActive || (navX == 0 && navY == 0)) return;
                 padNav(navX, navY);
                 postDelayed(this, 150);
             }
@@ -1819,12 +1910,7 @@ public class FlipendoActivity extends SDLActivity {
         void openSettings() {
             settingsFocus = -1; // the pad's View button puts it on the first entry
             langListOpen = false;
-            releaseStick();
-            for (Btn a : arrows) {
-                if (a.down) setButton(a, false);
-                a.pointer = -1;
-            }
-            arrowFingers.clear();
+            releaseAllControls();
             settingsOpen = true;
             invalidate();
         }
@@ -1847,7 +1933,7 @@ public class FlipendoActivity extends SDLActivity {
             if (dpadMode == on) return;
             releaseStick();
             dpadMode = on;
-            ((FlipendoActivity) getContext()).getSharedPreferences("flipendo", MODE_PRIVATE).edit().putBoolean("dpad", on).apply();
+            ((FlipendoActivity) getContext()).performancePreferences().edit().putBoolean("dpad", on).apply();
             invalidate();
         }
 
@@ -1880,7 +1966,14 @@ public class FlipendoActivity extends SDLActivity {
         final Btn[] arrows = {
             new Btn("UP", KeyEvent.KEYCODE_DPAD_UP, 0, false), new Btn("DOWN", KeyEvent.KEYCODE_DPAD_DOWN, 0, false),
             new Btn("LEFT", KeyEvent.KEYCODE_DPAD_LEFT, 0, false), new Btn("RIGHT", KeyEvent.KEYCODE_DPAD_RIGHT, 0, false) };
-        final Btn[] buttons = { cast, jump, menu, save, gear, skip, arrows[0], arrows[1], arrows[2], arrows[3] };
+        final Btn use = new Btn("USE", KeyEvent.KEYCODE_ENTER, 0, false);
+        final Btn map = new Btn("MAP", KeyEvent.KEYCODE_TAB, 0, false);
+        final Btn zoom = new Btn("ZOOM", 0, MotionEvent.BUTTON_TERTIARY, false);
+        final Btn walk = new Btn("WALK", KeyEvent.KEYCODE_SHIFT_LEFT, 0, false);
+        final Btn[] hp3Extras = { use, map, zoom, walk };
+        boolean isHp3Extra(Btn b) { return b == use || b == map || b == zoom || b == walk; }
+        final Btn[] toolbarButtons = { gear, save, skip, menu };
+        final Btn[] buttons = { cast, jump, menu, save, gear, skip, arrows[0], arrows[1], arrows[2], arrows[3], use, map, zoom, walk };
 
         // The prompt for a fixed-camera level (the movement mod can't aim there): a small panel that takes every touch.
         boolean promptOpen;
@@ -1899,7 +1992,7 @@ public class FlipendoActivity extends SDLActivity {
             promptDeclinedLevel = levelShown; // whatever happens, no second prompt for this level
             modOffAfterSave = true;
             nativeRequestSave(); // the game thread saves at its next tick: onSaved switches the mod off and restarts
-            postDelayed(new Runnable() { public void run() {
+            postInputDelayed(new Runnable() { public void run() {
                 if (modOffAfterSave) {
                     modOffAfterSave = false;
                     android.widget.Toast.makeText(getContext(), tr("Could not save: the mod stays on"), android.widget.Toast.LENGTH_LONG).show();
@@ -1985,6 +2078,7 @@ public class FlipendoActivity extends SDLActivity {
         int stickPointer = -1;
         float stickX, stickY, knobX, knobY;
         final boolean[] dirDown = new boolean[4]; // up, down, left, right
+        static final int[] HP3_KEYS = { KeyEvent.KEYCODE_W, KeyEvent.KEYCODE_S, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_D };
         static final int[] DIR_KEYS = { KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT };
 
@@ -2064,6 +2158,12 @@ public class FlipendoActivity extends SDLActivity {
             arrows[3].cx = padX + ad; arrows[3].cy = padY;
             for (Btn a : arrows) a.r = 0.08f * u;
             applyLayout(w, h);
+            for (int i = 0; i < hp3Extras.length; ++i) {
+                Btn b = hp3Extras[i];
+                b.r = Math.max(0.045f * u, 24f * dp);
+                b.cx = sl + (sr - sl) / 2f + (i - 1.5f) * (b.r * 2.3f);
+                b.cy = sb - m - b.r;
+            }
 
             // The panel is laid out for a wide phone (about 2.1:1). On a squarer screen (a foldable opened) the text would outgrow the
             // columns, so the panel's height and text unit follow its width instead of the tall screen
@@ -2442,8 +2542,7 @@ public class FlipendoActivity extends SDLActivity {
                 debugBtn.setEmpty(); // Debug controls are excluded from the TQ test UI.
                 drawValueRow(c, fixBtn, tr("Graphics fix"), tr("For OpenGL glitches"), tr("Open"), false);
                 drawSwitchRow(c, perfBtn, tr("Performance log"), tr("Frame timings in the log, to send"), perfLog, false);
-                drawValueRow(c, switchBtn, isHp2Game() ? tr("Play Harry Potter 1") : tr("Play Harry Potter 2"), switchAsk ? tr("Tap again: the game restarts") : tr("Switch to the other game"),
-                        switchAsk ? tr("Tap again") : tr("Play"), switchAsk);
+                drawValueRow(c, switchBtn, "Choose game", "Philosopher's Stone · Chamber of Secrets · Prisoner of Azkaban", "Choose", false);
             }
             if (padActive && settingsFocus >= 0 && !langListOpen) {
                 buildSettingsEntries();
@@ -2479,19 +2578,19 @@ public class FlipendoActivity extends SDLActivity {
             c.drawRoundRect(panel, 0.035f * u, 0.035f * u, line);
             titlePaint.setTextAlign(Paint.Align.LEFT);
             c.drawText(tr("How to play"), colL0, headerY, titlePaint);
-            boolean hp2 = isHp2Game();
+            boolean hp2 = isHp2Game(), hp3 = isHp3Game();
             String[][] rows = {
                 { tr("Left thumb"), tr("Drag anywhere on the left half to walk (or the arrow pad, if Settings > Controls has it)") },
                 { tr("Right thumb"), tr("Drag to look around. In menus the finger is the mouse: tap, drag the sliders") },
-                { tr("Wand button"), tr("Cast the spell. In a spell lesson draw the symbol with your finger") },
+                { tr("Wand button"), hp3 ? "Hold to cast; drag while held to aim. Jump also flaps wings." : tr("Cast the spell. In a spell lesson draw the symbol with your finger") },
                 { tr("Jump button"), tr("Jump (Auto jump does it at ledges). The same key skips a cutscene") },
-                { tr("Toolbar"), tr("Settings, save anywhere (the book) and the pause menu (Esc). Hold Esc to send the logs") },
+                { tr("Toolbar"), hp3 ? "USE returns from creature control; MAP, ZOOM and WALK use the PC bindings." : tr("Settings, save anywhere (the book) and the pause menu (Esc). Hold Esc to send the logs") },
                 { tr("Control layout"), tr("Settings > Control layout: drag the buttons where you want them, and resize them") },
-                hp2 ? new String[] { tr("Two-finger tap"), tr("Tap the screen with two fingers: drink a Wiggenweld potion") } : null,
-                { tr("Gamepad"), hp2 ? tr("A jump, X wand, Y save, B menu, a stick click drinks the potion. Hold Y to skip a cutscene") : tr("A jump, X wand, Y save, B menu. Hold Y to skip a cutscene") },
+                hp3 ? new String[] {"Characters", "The PC game selects Harry, Ron or Hermione as the story requires."} : hp2 ? new String[] { tr("Two-finger tap"), tr("Tap the screen with two fingers: drink a Wiggenweld potion") } : null,
+                { tr("Gamepad"), hp3 ? "A jump, X cast, Y use, B menu; L-stick click walk, R-stick click map. Hold Y in cutscenes to skip." : hp2 ? tr("A jump, X wand, Y save, B menu, a stick click drinks the potion. Hold Y to skip a cutscene") : tr("A jump, X wand, Y save, B menu. Hold Y to skip a cutscene") },
             };
             float y = dividerY + 0.07f * h;
-            float step = (panel.bottom - 0.12f * h - y) / (hp2 ? 8 : 7);
+            float step = (panel.bottom - 0.12f * h - y) / (hp2 || hp3 ? 8 : 7);
             for (String[] row : rows) {
                 if (row == null) continue;
                 rowPaint.setTextAlign(Paint.Align.LEFT);
@@ -2633,7 +2732,7 @@ public class FlipendoActivity extends SDLActivity {
 
         Btn hitButton(float x, float y) {
             for (Btn b : buttons) {
-                if (!visible(b)) continue;
+                if (!visible(b) || b.pointer != -1) continue;
                 float dx = x - b.cx, dy = y - b.cy;
                 if (dx * dx + dy * dy <= b.r * b.r * 1.3f) return b;
             }
@@ -2641,8 +2740,14 @@ public class FlipendoActivity extends SDLActivity {
         }
 
         void key(int keycode, boolean down) {
-            if (noSkip && cutsceneShown && keycode == KeyEvent.KEYCODE_SPACE) return; // Space is the skip: nothing sends it in a cutscene
-            if (down) SDLActivity.onNativeKeyDown(keycode); else SDLActivity.onNativeKeyUp(keycode);
+            if (down && noSkip && cutsceneShown && keycode == KeyEvent.KEYCODE_SPACE) return;
+            if (isHp3Game()) {
+                for (int i = 0; i < DIR_KEYS.length; ++i) if (keycode == DIR_KEYS[i]) { keycode = HP3_KEYS[i]; break; }
+                if (keycode == KeyEvent.KEYCODE_SPACE && cutsceneShown) keycode = KeyEvent.KEYCODE_ENTER;
+            }
+            if (down) {
+                if (pressedKeys.add(keycode)) SDLActivity.onNativeKeyDown(keycode);
+            } else if (pressedKeys.remove(keycode)) SDLActivity.onNativeKeyUp(keycode);
         }
 
         void setButton(Btn b, boolean down) {
@@ -2653,7 +2758,7 @@ public class FlipendoActivity extends SDLActivity {
             }
             if (b == save) {
                 b.down = down;
-                if (down && !noQuickSave) nativeRequestSave(); // saved by the game thread at its next tick, see onSaved
+                if (down && !noQuickSave && !isHp3Game()) nativeRequestSave(); // saved by the game thread at its next tick, see onSaved
                 return;
             }
             if (b == gear) {
@@ -2661,10 +2766,14 @@ public class FlipendoActivity extends SDLActivity {
                 if (down) openSettings();
                 return;
             }
+            if (b.down == down) return;
             b.down = down;
-            if (b.mouse != 0)
-                SDLActivity.onNativeMouse(down ? b.mouse : 0, down ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP,
-                        0f, 0f, true); // a click without moving the cursor: an absolute position here turned the mod's camera
+            if (isHp3Game() && b == jump) { key(KeyEvent.KEYCODE_SPACE, down); return; }
+            if (b.mouse != 0) {
+                mouseButtons = down ? mouseButtons | b.mouse : mouseButtons & ~b.mouse;
+                SDLActivity.onNativeMouse(mouseButtons, down ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP,
+                        0f, 0f, true);
+            } // a click without moving the cursor: an absolute position here turned the mod's camera
             else
                 key(b.key, down);
         }
@@ -2698,7 +2807,7 @@ public class FlipendoActivity extends SDLActivity {
             eggPending = true;
             VersionSound.play(getContext());
             android.widget.Toast.makeText(getContext(), isHp2Game() ? "КАКОГО ДЬЯВОЛА ТЫ ЗДЕСЬ ШУМИШЬ" : "Я должен был наложить здесь кирпичей, профессор Макгоннагал", android.widget.Toast.LENGTH_SHORT).show();
-            postDelayed(new Runnable() {
+            postInputDelayed(new Runnable() {
                 public void run() {
                     eggPending = false;
                     openEgg();
@@ -2777,17 +2886,18 @@ public class FlipendoActivity extends SDLActivity {
 
         void drinkPotion() {
             key(KeyEvent.KEYCODE_Q, true);
-            postDelayed(new Runnable() { public void run() { key(KeyEvent.KEYCODE_Q, false); } }, 90);
+            postInputDelayed(new Runnable() { public void run() { key(KeyEvent.KEYCODE_Q, false); } }, 90);
         }
 
         void click(final float sx, final float sy) {
+            if (!menuShown && mouseButtons != 0) return; // don't release another finger's held cast/jump
             // The menu reads the cursor position once per frame: move first, then press and release on later frames.
             final float x = sx * surfaceScale, y = sy * surfaceScale;
             SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, x, y, false);
-            postDelayed(new Runnable() { public void run() {
+            postInputDelayed(new Runnable() { public void run() {
                 SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, MotionEvent.ACTION_DOWN, x, y, false);
             } }, 80);
-            postDelayed(new Runnable() { public void run() {
+            postInputDelayed(new Runnable() { public void run() {
                 SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP, x, y, false);
             } }, 200);
         }
@@ -2795,6 +2905,8 @@ public class FlipendoActivity extends SDLActivity {
         @Override
         public boolean onTouchEvent(MotionEvent e) {
             int action = e.getActionMasked();
+            if (action == MotionEvent.ACTION_CANCEL) { releaseAllControls(); return true; }
+            if (!inputActive) return true;
             int idx = e.getActionIndex();
             int id = e.getPointerId(idx);
             if (layoutEdit) {
@@ -2807,6 +2919,7 @@ public class FlipendoActivity extends SDLActivity {
                 case MotionEvent.ACTION_POINTER_DOWN: {
                     float x = e.getX(idx), y = e.getY(idx);
                     if (padActive) {
+                        releaseAllControls();
                         padActive = false; // a touch: the on-screen controls are back
                         setLessonTimeScale(1f);
                         menuFocus = -1;
@@ -2917,7 +3030,7 @@ public class FlipendoActivity extends SDLActivity {
                         menuX = x * surfaceScale;
                         menuY = y * surfaceScale;
                         SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, menuX, menuY, false);
-                        postDelayed(new Runnable() { public void run() {
+                        postInputDelayed(new Runnable() { public void run() {
                             SDLActivity.onNativeMouse(MotionEvent.BUTTON_PRIMARY, MotionEvent.ACTION_DOWN, menuX, menuY, false);
                         } }, 60);
                     } else if (lessonDrawing()) {
@@ -2985,7 +3098,7 @@ public class FlipendoActivity extends SDLActivity {
                             }
                         } else if (role == Role.LOOK && moved > slop) {
                             SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE,
-                                    (x - l[0]) * 1.5f, (y - l[1]) * 1.5f, true);
+                                    (x - l[0]) * 1.5f * wandSens, (y - l[1]) * 1.5f * wandSens * (invertWand ? -1f : 1f), true);
                         }
                         l[0] = x;
                         l[1] = y;
@@ -3021,7 +3134,7 @@ public class FlipendoActivity extends SDLActivity {
                         long held = e.getEventTime() - menuDownTime;
                         long delay = Math.max(40, 140 - held);
                         final float ux = menuX, uy = menuY;
-                        postDelayed(new Runnable() { public void run() {
+                        postInputDelayed(new Runnable() { public void run() {
                             SDLActivity.onNativeMouse(0, MotionEvent.ACTION_UP, ux, uy, false);
                         } }, delay);
                     } else if (role == Role.BUTTON) {
@@ -3202,7 +3315,7 @@ public class FlipendoActivity extends SDLActivity {
             g = ctl[G_BAR];
             ox = g[0] * w; oy = g[1] * h; s = g[2];
             float tcx = toolbar.centerX(), tcy = toolbar.centerY(), hw = toolbar.width() / 2f * s, hh = toolbar.height() / 2f * s;
-            for (Btn b : new Btn[] { gear, save, skip, menu }) {
+            for (Btn b : toolbarButtons) {
                 b.cx = tcx + ox + (b.cx - tcx) * s;
                 b.cy = tcy + oy + (b.cy - tcy) * s;
                 b.r *= s;
@@ -3432,7 +3545,6 @@ public class FlipendoActivity extends SDLActivity {
 
         /** A chevron pointing up, rotated: up, down, left, right. */
         void drawChevron(Canvas c, Btn b, int color) {
-            float[] angle = { 0f, 180f, 270f, 90f };
             float k = b.r * 0.38f;
             arrowPath.reset();
             arrowPath.moveTo(b.cx - k, b.cy + k * 0.45f);
@@ -3443,7 +3555,7 @@ public class FlipendoActivity extends SDLActivity {
             line.setStrokeCap(Paint.Cap.ROUND);
             line.setStrokeJoin(Paint.Join.ROUND);
             c.save();
-            c.rotate(angle[arrowIndex(b)], b.cx, b.cy);
+            c.rotate(ARROW_ANGLES[arrowIndex(b)], b.cx, b.cy);
             c.drawPath(arrowPath, line);
             c.restore();
             line.setStrokeCap(Paint.Cap.BUTT);
@@ -3472,7 +3584,7 @@ public class FlipendoActivity extends SDLActivity {
             float sep1 = (gear.cx + save.cx) / 2f, sep2 = (save.cx + menu.cx) / 2f;
             c.drawLine(sep1, sepTop, sep1, sepBottom, line);
             c.drawLine(sep2, sepTop, sep2, sepBottom, line);
-            for (Btn b : new Btn[] { gear, save, skip, menu }) {
+            for (Btn b : toolbarButtons) {
                 if (!visible(b)) continue;
                 if (b.down) {
                     fill.setColor(0xE6E8C15A);
@@ -3530,6 +3642,14 @@ public class FlipendoActivity extends SDLActivity {
                 c.restore();
             }
 
+            for (Btn b : hp3Extras) {
+                if (!visible(b)) continue;
+                drawDisc(c, b.cx, b.cy, b.r, b.down);
+                text.setTextSize(b.r * 0.43f);
+                text.setColor(b.down ? DARK : 0xFFFFFFFF);
+                c.drawText(b.label, b.cx, b.cy + text.getTextSize() * 0.35f, text);
+            }
+            text.setTextSize(0.035f * u);
             // the floating stick, where the finger went down
             if (stickPointer != -1) {
                 float r = 0.12f * u;
@@ -3550,3 +3670,4 @@ public class FlipendoActivity extends SDLActivity {
         }
     }
 }
+

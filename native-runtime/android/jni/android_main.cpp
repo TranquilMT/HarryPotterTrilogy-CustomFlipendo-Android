@@ -22,6 +22,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <strings.h>
+#include <stdexcept>
 #include <stdio.h>
 #include <SDL3/SDL_system.h>
 
@@ -386,12 +388,27 @@ static bool LastFatalIsVulkan()
 // A game copied one level too deep (/sdcard/FlipendoHP/FlipendoHP/System/...) is a common mistake.
 static bool HasGame(const std::string& dir)
 {
-	for (const char* exe : { "/System/HP.exe", "/system/HP.exe", "/System/Game.exe", "/system/Game.exe" })
-	{
-		if (access((dir + exe).c_str(), F_OK) == 0)
-			return true;
-	}
-	return false;
+    // Windows copies have arbitrary casing. Only executables under System identify a root.
+    DIR* root = opendir(dir.c_str());
+    if (!root) return false;
+    bool found = false;
+    while (dirent* entry = readdir(root))
+    {
+        if (strcasecmp(entry->d_name, "System") != 0) continue;
+        std::string system = dir + "/" + entry->d_name;
+        DIR* files = opendir(system.c_str());
+        if (!files) continue;
+        while (dirent* file = readdir(files))
+        {
+            if (strcasecmp(file->d_name, "HP.exe") && strcasecmp(file->d_name, "Game.exe") && strcasecmp(file->d_name, "hppoa.exe")) continue;
+            struct stat info;
+            if (stat((system + "/" + file->d_name).c_str(), &info) == 0 && S_ISREG(info.st_mode) && info.st_size > 0) { found = true; break; }
+        }
+        closedir(files);
+        if (found) break;
+    }
+    closedir(root);
+    return found;
 }
 
 static std::string FindGame(const std::string& dir, int depth)
@@ -527,9 +544,10 @@ extern "C" __attribute__((visibility("default"))) int SDL_main(int argc, char** 
 		args.push_back("--logfile=/sdcard/FlipendoHP/flipendo.log");
 		// The game folder: the one the launcher found or the player picked (SetupActivity passes it as the first argument),
 		// else the default place.
-		std::string gameDir = argc > 1 && argv[1] && argv[1][0] ? FindGame(argv[1], 0) : std::string();
-		if (gameDir.empty())
-			gameDir = FindGameDir();
+        const bool explicitGameDir = argc > 1 && argv[1] && argv[1][0];
+        std::string gameDir = explicitGameDir ? FindGame(argv[1], 0) : FindGameDir();
+        if (explicitGameDir && gameDir.empty())
+            throw std::runtime_error("Selected game folder is missing System/HP.exe, Game.exe or hppoa.exe: " + std::string(argv[1]));
 		// the Russian text translation is installed in that folder (SetupActivity): its Cyrillic needs drawn glyphs
 		if (access((gameDir + "/.flipendo-text").c_str(), F_OK) == 0)
 			args.push_back("--cyrillic");
@@ -565,3 +583,4 @@ extern "C" __attribute__((visibility("default"))) int SDL_main(int argc, char** 
 	NotifyGameStopped(code);
 	return code;
 }
+

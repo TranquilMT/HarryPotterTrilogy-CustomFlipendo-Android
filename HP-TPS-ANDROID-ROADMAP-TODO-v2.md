@@ -348,3 +348,16 @@ See [payload/dependency evidence](docs/POA-PAYLOAD-INTEGRITY-AND-DEPENDENCIES.md
 - [ ] Validate original PoA metadata/default/native layouts through production loading, then confirm live startup and first rendered Android scene.
 
 Master task mapping: PKG-03/04/08 remain in progress, G0–G6 open. See the master PoA roadmap for the complete remaining scope and test limitations.
+
+
+## 2026-11-04 — three-game launcher, input and shared optimization source fixes
+
+- [x] Separate HP3 selection/folder preference/setup from HP1; fix picker request-code collision, PoA validation names, native executable detection and silent fallback to another game.
+- [x] Include all three games in folder settings and the in-game game chooser; preserve the 0.4.5 base and original game files.
+- [x] Add PoA PC action bindings and document story-controlled characters rather than console-style free swapping.
+- [x] Release all inputs on cancellation/focus/pause/settings transitions; cancel stale input callbacks and preserve held mouse chords.
+- [x] Reduce background polling, redraw allocations, hidden HP2 save scans and hot touch logging; keep graphics/input preferences separately per game and use elapsed-time stick motion.
+- [x] Pass data-free host logic/sanitizer checks and 94 existing PoA Python regressions. See `docs/LAUNCHER-CONTROLS-2026-11-04.md` for exact validation limits.
+- [ ] Complete Android SDK/SDL/native compilation and signed Both Games APK packaging.
+- [ ] Verify launcher and multi-touch fixes on the phone and profile each game before claiming FPS/thermal gains.
+- [ ] Complete live PoA UE2 startup/world/rendering and accept original character/creature control sequences.

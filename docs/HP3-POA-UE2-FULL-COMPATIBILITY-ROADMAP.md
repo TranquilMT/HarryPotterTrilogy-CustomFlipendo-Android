@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 8 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 9 · 4 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
 
 ## What this document means
 
@@ -446,3 +446,14 @@ HD remaster packs, new game modes, added content, modernized art, achievements, 
 - Regression evidence: package helper suite covers valid UE1-style ANSI, Unicode, malformed inputs and reference chains. A separate test compiles the actual Package.cpp reference accessor/name methods with in-memory tables and sanitizers. This is a narrow production-code test, not a complete engine build.
 - G0–G6 remain open. No original PoA assets, Android SDK/NDK or signing key were available in this workspace; no new APK, original-data launch or device test was performed. Existing HP1/HP2 saves, payloads and certificate handling are not altered by this source patch; game regressions still require device checks.
 - Next bounded work: verify production summary/table layouts with retained PoA packages; adapt Class/Struct/State/Function/default layouts and native bindings, then exercise the real startup route. All 21 workstreams remain authoritative.
+
+
+## 4 November 2026 — three-game launcher/input checkpoint
+
+Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-11-04.md`.
+
+- ANDROID-01/03/09, GUI-08 in progress: unique HP3 picker ID, separate folder preference/preflight/setup, three-state selection and explicit native folder recognition. HP3 no longer enters HP1 preparation or silently falls back to another title.
+- ANDROID-05/06/07/08 in progress: PoA's original PC WASD, held cast, jump/flap, Use/possession-return, Map, Zoom, Walk and menu bindings; shared cancellation/lifecycle release, mouse chords and delayed-input invalidation. PC characters change with the story; no manual console-style swapping is required. Live native input acceptance remains open.
+- PERF-03/05 in progress: stop background polling, repeated overlay allocations, hidden launcher save scans and hot collision logging; persist graphics/input choices per game and time-scale stick motion. No measured FPS/thermal improvement or tested quality default is claimed.
+- Host checks: 22 Java path/profile/timing checks; actual Overlay method tests; native executable detection with ASan/UBSan; Android Java syntax parse; existing 94 PoA Python regressions pass. Full SDK type checking, native Android linking, original-data launch and phone testing remain unperformed.
+- G0–G6 stay open. This is a source checkpoint on the 0.4.5 base, not a new APK or a completed PoA runtime. Follow the full 21-workstream scope and the device/build acceptance list in the checkpoint report.

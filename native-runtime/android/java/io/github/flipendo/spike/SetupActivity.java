@@ -124,7 +124,7 @@ public class SetupActivity extends Activity {
             edit.apply();
         }
         String requested = getIntent().getStringExtra("game");
-        if ("hp1".equals(requested) || "hp2".equals(requested)) {
+        if (GameFiles.supported(requested)) {
             getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, requested).commit();
         }
         splashUntil = android.os.SystemClock.uptimeMillis() + 2500;
@@ -320,14 +320,8 @@ public class SetupActivity extends Activity {
         unavailable.setBackground(rounded(0x333D414B, 12, 0x445D626D));
         unavailable.setEnabled(true); unavailable.setFocusable(true); unavailable.setAlpha(1.0f);
         unavailable.setContentDescription("Prisoner of Azkaban. Experimental. Tap to test.");
-        unavailable.setOnClickListener(v -> {
-            getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, "hp3").apply();
-            try {
-                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_PICK_HP3);
-            } catch (RuntimeException e) {
-                android.widget.Toast.makeText(this, "No folder picker on this phone: copy the game to /sdcard/FlipendoHP3 instead", android.widget.Toast.LENGTH_LONG).show();
-            }
-        });
+        hp3Pill = unavailable;
+        unavailable.setOnClickListener(v -> chooseGame("hp3"));
         LinearLayout.LayoutParams disabledLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         disabledLayout.topMargin = dp(8); shelf.addView(unavailable, disabledLayout);
         return shelf;
@@ -578,7 +572,7 @@ public class SetupActivity extends Activity {
         hdToggle.setButtonTintList(android.content.res.ColorStateList.valueOf(GOLD));
         refreshHdToggle();
         hdToggle.setOnCheckedChangeListener((button, enabled) -> {
-            if (refreshingHdToggle) return;
+            if (refreshingHdToggle || "hp3".equals(selectedGame())) return;
             getSharedPreferences("setup", MODE_PRIVATE).edit().putBoolean(hdPreference(isHp2()), enabled).apply();
             if (started) backToStart();
         });
@@ -589,6 +583,10 @@ public class SetupActivity extends Activity {
         android.widget.Button manageHd = new android.widget.Button(this);
         manageHd.setText("Import or remove HD packs");
         manageHd.setOnClickListener(v -> {
+            if ("hp3".equals(selectedGame())) {
+                android.widget.Toast.makeText(this, "HP3 texture compatibility is still in progress.", android.widget.Toast.LENGTH_LONG).show();
+                return;
+            }
             if (!gameReady || gameDir == null) {
                 android.widget.Toast.makeText(this, "Set up the selected game first.", android.widget.Toast.LENGTH_LONG).show();
                 return;
@@ -608,8 +606,10 @@ public class SetupActivity extends Activity {
     private void refreshHdToggle() {
         if (hdToggle == null) return;
         refreshingHdToggle = true;
-        hdToggle.setText("Enable HD textures — " + (isHp2() ? "HP2" : "HP1"));
-        hdToggle.setChecked(getSharedPreferences("setup", MODE_PRIVATE).getBoolean(hdPreference(isHp2()), false));
+        boolean hp3 = "hp3".equals(selectedGame());
+        hdToggle.setEnabled(!hp3);
+        hdToggle.setText(hp3 ? "HP3 HD packs are not supported yet" : "Enable HD textures — " + (isHp2() ? "HP2" : "HP1"));
+        hdToggle.setChecked(!hp3 && getSharedPreferences("setup", MODE_PRIVATE).getBoolean(hdPreference(isHp2()), false));
         refreshingHdToggle = false;
     }
 
@@ -710,11 +710,12 @@ public class SetupActivity extends Activity {
         if (play == null) {
             return;
         }
-        String text = tr("Play");
+        String text = "hp3".equals(selectedGame()) ? "Test Prisoner of Azkaban" : tr("Play");
         play.setText("\u25B6  " + text);
     }
 
-    private android.view.View hp1Pill, hp2Pill; // the covers
+    private android.view.View hp1Pill, hp2Pill;
+    private TextView hp3Pill; // the covers
     private LinearLayout slotsBox, slotsRow;
     private TextView deleteSave; // under the slots: deletes the selected saved game
     static final String PREF_START = "hp2Start"; // "new" or "load:N": what Play does in HP2
@@ -740,8 +741,14 @@ public class SetupActivity extends Activity {
         refreshHdToggle();
         boolean two = isHp2();
         if (hp1Pill != null) {
-            styleCover(hp1Pill, !two);
+            styleCover(hp1Pill, "hp1".equals(selectedGame()));
             styleCover(hp2Pill, two);
+        }
+        if (hp3Pill != null) {
+            boolean selected = "hp3".equals(selectedGame());
+            hp3Pill.setSelected(selected);
+            hp3Pill.setText("PRISONER OF AZKABAN\n" + (selected ? "Selected · experimental testing" : "Experimental · tap to select"));
+            hp3Pill.setBackground(rounded(selected ? 0x665C4A20 : 0x333D414B, 12, selected ? GOLD : 0x445D626D));
         }
         refreshSlots();
         updatePlayLabel();
@@ -751,7 +758,7 @@ public class SetupActivity extends Activity {
     private void chooseGame(String value) {
         if (!GameFiles.supported(value)) return;
         playPressed = false;
-        if (value.equals(isHp2() ? "hp2" : "hp1")) {
+        if (value.equals(selectedGame())) {
             return;
         }
         getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME, value).apply();
@@ -843,62 +850,8 @@ public class SetupActivity extends Activity {
         if (slotsBox == null) {
             return;
         }
-        boolean two = isHp2();
-        // HP2 now owns New Game and Load Game in its front end.
+        // HP2 owns its saves in the front end; never scan/rebuild hidden slot cards on the UI thread.
         slotsBox.setVisibility(android.view.View.GONE);
-        if (!two) {
-            updatePlayLabel();
-            return;
-        }
-        SlotInfo[] slots = readSlots();
-        File game = hasStorageAccess(this) ? hp2Folder() : null;
-        android.content.SharedPreferences prefs = getSharedPreferences("setup", MODE_PRIVATE);
-        String start = prefs.getString(PREF_START, null);
-        // the newest save is the default; without one, a new game
-        int newest = -1;
-        for (int i = 0; i < 6; i++) {
-            if (slots[i].exists && (newest < 0 || slots[i].time > slots[newest].time)) {
-                newest = i;
-            }
-        }
-        boolean valid = "new".equals(start);
-        if (start != null && start.startsWith("load:")) {
-            try {
-                int n = Integer.parseInt(start.substring(5));
-                valid = n >= 0 && n < 6 && slots[n].exists;
-            } catch (NumberFormatException ignored) {
-            }
-        }
-        if (!valid) {
-            start = newest >= 0 ? "load:" + newest : "new";
-            prefs.edit().putString(PREF_START, start).apply();
-        }
-
-        // the button for the selected saved game
-        if (start.startsWith("load:")) {
-            deleteSave.setText(tr("Delete the saved game in slot ") + (Integer.parseInt(start.substring(5)) + 1));
-            deleteSave.setVisibility(android.view.View.VISIBLE);
-        } else {
-            deleteSave.setVisibility(android.view.View.GONE);
-        }
-
-        slotsRow.removeAllViews();
-        slotsRow.addView(slotCard(tr("New game"), tr("Start from the beginning"), null, "new", start.equals("new")));
-        for (int i = 0; i < 6; i++) {
-            String title = tr("Slot ") + (i + 1);
-            String sub;
-            android.graphics.Bitmap pic = null;
-            if (slots[i].exists) {
-                sub = slots[i].map.isEmpty() ? tr("Saved game") : slots[i].map;
-                if (slots[i].time > 0) {
-                    sub += "\n" + android.text.format.DateFormat.format("d MMM, HH:mm", slots[i].time * 1000L);
-                }
-                pic = thumbnail(game, slots[i].map);
-            } else {
-                sub = tr("Empty");
-            }
-            slotsRow.addView(slotCard(title, sub, pic, slots[i].exists ? "load:" + i : null, start.equals("load:" + i)));
-        }
         updatePlayLabel();
     }
 
@@ -1160,10 +1113,15 @@ public class SetupActivity extends Activity {
     /** Unpacks the game data if this APK carries it, then starts the game. */
     private void begin() {
         final int generation = ++setupGeneration;
-        final boolean selectedHp2 = isHp2();
+        final String gameId = selectedGame();
+        final boolean selectedHp2 = "hp2".equals(gameId);
         new Thread(new Runnable() {
             public void run() {
                 try {
+                if ("hp3".equals(gameId)) {
+                    prepareHp3(generation);
+                    return;
+                }
                 // a folder with only Game.exe picked under the HP1 key (an early build) belongs to HP2
                 {
                     android.content.SharedPreferences p = getSharedPreferences("setup", MODE_PRIVATE);
@@ -1324,6 +1282,41 @@ public class SetupActivity extends Activity {
         }).start();
     }
 
+    private String defaultGameDir(String id) {
+        return "hp3".equals(id) ? "/sdcard/FlipendoHP3" : ("hp2".equals(id) ? HP2_DIR : FlipendoActivity.GAME_DIR);
+    }
+
+    private File locateGame(String id) {
+        if (!"hp3".equals(id)) return locateGame("hp2".equals(id));
+        String picked = getSharedPreferences("setup", MODE_PRIVATE).getString(GameFiles.folderKey(id), null);
+        File found = picked == null ? null : GameFiles.find(id, new File(picked), 2);
+        if (found == null) found = GameFiles.find(id, new File(defaultGameDir(id)), 2);
+        return found;
+    }
+
+    private void prepareHp3(final int generation) throws IOException {
+        // Recover the old HP3 path without replacing HP1's preference or touching game files.
+        android.content.SharedPreferences prefs = getSharedPreferences("setup", MODE_PRIVATE);
+        if (prefs.getString(PREF_GAME_DIR_HP3, null) == null) {
+            String old = prefs.getString(PREF_GAME_DIR, null);
+            File legacy = old == null ? null : GameFiles.find("hp3", new File(old), 2);
+            if (legacy != null) prefs.edit().putString(PREF_GAME_DIR_HP3, legacy.getAbsolutePath()).apply();
+        }
+        final File found = locateGame("hp3");
+        if (found != null) {
+            List<String> missing = GameFiles.missingHp3(found);
+            if (!missing.isEmpty()) throw new IOException("Missing original PoA files in " + found + ":\n" + android.text.TextUtils.join("\n", missing));
+            GameFiles.validatePackages("hp3", found);
+        }
+        ui.post(() -> {
+            if (generation != setupGeneration) return;
+            if (found == null) { showMissingGame(); return; }
+            gameDir = found.getAbsolutePath();
+            gameReady = true;
+            tryStart();
+        });
+    }
+
     private final Runnable launch = new Runnable() {
         public void run() {
             tryStart();
@@ -1358,6 +1351,7 @@ public class SetupActivity extends Activity {
         Intent intent = new Intent(this, FlipendoActivity.class);
         if (gameDir != null) {
             intent.putExtra(EXTRA_GAME_DIR, gameDir);
+            intent.putExtra("game", selectedGame());
         }
         startActivity(intent);
         finish();
@@ -1369,21 +1363,21 @@ public class SetupActivity extends Activity {
     static final String PREF_GAME_DIR_HP2 = "gameDir.hp2";
     static final String PREF_GAME_DIR_HP3 = "gameDir.hp3";
 
-    private boolean isHp2() {
-        return "hp2".equals(getSharedPreferences("setup", MODE_PRIVATE).getString(PREF_GAME, "hp1"));
+    private String selectedGame() {
+        String id = getSharedPreferences("setup", MODE_PRIVATE).getString(PREF_GAME, "hp1");
+        return GameFiles.supported(id) ? id : "hp1";
     }
+
+    private boolean isHp2() { return "hp2".equals(selectedGame()); }
 
     /** The pref that holds the folder the player picked for the chosen game. */
     private String gameDirKey() {
-        return isHp2() ? PREF_GAME_DIR_HP2 : PREF_GAME_DIR;
+        return GameFiles.folderKey(selectedGame());
     }
 
     /** A folder with the chosen game: System/Game.exe for HP2, System/HP.exe for HP1. */
     static File findGameFor(boolean hp2, File dir, int depth) {
-        if (hp2) return GameFiles.find(true, dir, depth);
-        File f = GameFiles.find(false, dir, depth);
-        if (f == null) f = GameFiles.findHp3(dir, depth);
-        return f;
+        return GameFiles.find(hp2, dir, depth);
     }
 
     /** HP2's own Russian text files, shipped with the Russian edition in a harry2 folder beside System (Core.rus, Engine.rus,
@@ -1806,8 +1800,17 @@ public class SetupActivity extends Activity {
     private String gameDir;
 
     // ---- Game folders: where each game is, picked separately ----
-    private static final int REQUEST_PICK_HP1 = 11, REQUEST_PICK_HP2 = 12, REQUEST_PICK_HP3 = 13;
+    private static final int REQUEST_PICK_HP1 = 11, REQUEST_PICK_HP2 = 12, REQUEST_PICK_HP3 = 14;
     private boolean foldersChanged; // a folder was picked or reset: the game is looked for again when the screen closes
+
+    private void pickFolderFor(String id) {
+        try {
+            int request = "hp3".equals(id) ? REQUEST_PICK_HP3 : ("hp2".equals(id) ? REQUEST_PICK_HP2 : REQUEST_PICK_HP1);
+            startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), request);
+        } catch (RuntimeException e) {
+            android.widget.Toast.makeText(this, "Copy " + GameFiles.title(id) + " to " + defaultGameDir(id), android.widget.Toast.LENGTH_LONG).show();
+        }
+    }
 
     private void pickFolderFor(boolean hp2) {
         try {
@@ -1819,11 +1822,12 @@ public class SetupActivity extends Activity {
     }
 
     /** One game's folder in the settings: its name, where it is (or why not), Choose folder and Use default. */
-    private android.view.View folderRow(final boolean hp2) {
-        String key = hp2 ? PREF_GAME_DIR_HP2 : PREF_GAME_DIR;
+    private android.view.View folderRow(final String id) {
+        final boolean hp2 = "hp2".equals(id);
+        String key = GameFiles.folderKey(id);
         final String picked = getSharedPreferences("setup", MODE_PRIVATE).getString(key, null);
-        String fallback = hp2 ? HP2_DIR : FlipendoActivity.GAME_DIR;
-        File found = hasStorageAccess(this) ? locateGame(hp2) : null;
+        String fallback = defaultGameDir(id);
+        File found = hasStorageAccess(this) ? locateGame(id) : null;
 
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.VERTICAL);
@@ -1835,7 +1839,7 @@ public class SetupActivity extends Activity {
         name.setTextSize(12);
         name.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         name.setLetterSpacing(0.12f);
-        name.setText(hp2 ? tr("HARRY POTTER 2: CHAMBER OF SECRETS") : tr("HARRY POTTER 1: PHILOSOPHER'S STONE"));
+        name.setText(GameFiles.title(id).toUpperCase(java.util.Locale.ROOT));
         row.addView(name);
 
         TextView where = new TextView(this);
@@ -1847,7 +1851,7 @@ public class SetupActivity extends Activity {
             where.setText(found.getPath() + (picked == null || !new File(picked).equals(found) ? tr("  (default place)") : ""));
         } else if (picked != null) {
             where.setTextColor(0xFFFF8A80);
-            where.setText(tr("No game in ") + picked + tr(" (looked for System/") + (hp2 ? "Game.exe" : "HP.exe") + tr(" there and one or two folders deeper)"));
+            where.setText(tr("No game in ") + picked + tr(" (looked for System/") + GameFiles.executable(id) + tr(" there and one or two folders deeper)"));
         } else {
             where.setTextColor(MUTED);
             where.setText(tr("Not found yet. Looked in ") + fallback + ".");
@@ -1860,22 +1864,22 @@ public class SetupActivity extends Activity {
         buttons.setOrientation(LinearLayout.HORIZONTAL);
         TextView choose = pill(tr("Choose folder"), false, new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
-                pickFolderFor(hp2);
+                pickFolderFor(id);
             }
         });
         choose.setTextSize(14);
         choose.setPadding(dp(16), dp(8), dp(16), dp(8));
         buttons.addView(choose);
         TextView zipImport = pill("Import game ZIP", false, v -> startActivity(new Intent(this, GameZipImportActivity.class).putExtra("game", hp2 ? "hp2" : "hp1")));
-        buttons.addView(zipImport);
-        if (!hp2) {
+        if (!"hp3".equals(id)) buttons.addView(zipImport);
+        if ("hp1".equals(id)) {
             TextView iso = pill("Import PC ISO", false, v -> startActivity(new Intent(this, IsoImportActivity.class)));
             iso.setTextSize(14); iso.setPadding(dp(16), dp(8), dp(16), dp(8)); buttons.addView(iso);
         }
         if (picked != null) {
             TextView reset = pill(tr("Use default"), false, new android.view.View.OnClickListener() {
                 public void onClick(android.view.View v) {
-                    getSharedPreferences("setup", MODE_PRIVATE).edit().remove(hp2 ? PREF_GAME_DIR_HP2 : PREF_GAME_DIR).apply();
+                    getSharedPreferences("setup", MODE_PRIVATE).edit().remove(GameFiles.folderKey(id)).apply();
                     foldersChanged = true;
                     showFolderSettings();
                 }
@@ -1913,10 +1917,10 @@ public class SetupActivity extends Activity {
                 + tr("Textures and Sounds); a folder one or two levels above it works too. The games are independent: ")
                 + tr("either one starts without the other's files."));
         body.addView(intro);
-        for (int i = 0; i < 2; i++) {
+        for (String id : new String[]{"hp1", "hp2", "hp3"}) {
             LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             rp.topMargin = dp(12);
-            body.addView(folderRow(i == 1), rp);
+            body.addView(folderRow(id), rp);
         }
         scroll.addView(body);
         card.addView(scroll, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
@@ -2018,16 +2022,16 @@ public class SetupActivity extends Activity {
         if (requestCode == REQUEST_PICK_HP3) {
             if (resultCode == RESULT_OK && data != null) {
                 String picked = treeUriToPath(data.getData());
-                if (picked == null) {
-                    android.widget.Toast.makeText(this, "That place can't be read as a folder", android.widget.Toast.LENGTH_LONG).show();
-                } else if (GameFiles.findHp3(new File(picked), 2) == null) {
-                    android.widget.Toast.makeText(this, "No Prisoner of Azkaban in " + picked + " (System/hppoa.exe not found)", android.widget.Toast.LENGTH_LONG).show();
+                File found = picked == null ? null : GameFiles.find("hp3", new File(picked), 2);
+                if (found == null) {
+                    android.widget.Toast.makeText(this, "Choose the PoA PC folder containing System/hppoa.exe", android.widget.Toast.LENGTH_LONG).show();
                 } else {
-                    getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME_DIR, picked).apply();
+                    getSharedPreferences("setup", MODE_PRIVATE).edit().putString(PREF_GAME_DIR_HP3, found.getAbsolutePath()).apply();
                     foldersChanged = true;
-                    android.widget.Toast.makeText(this, "HP3 folder set. Press Play.", android.widget.Toast.LENGTH_LONG).show();
+                    if (!inFolderSettings) { foldersChanged = false; backToStart(); }
                 }
             }
+            if (inFolderSettings) showFolderSettings();
             return;
         }
         if (requestCode == REQUEST_PICK_HP1 || requestCode == REQUEST_PICK_HP2) {
@@ -2057,7 +2061,7 @@ public class SetupActivity extends Activity {
         }
         // remembered even when it's the wrong one: the next start says so instead of asking from scratch
         getSharedPreferences("setup", MODE_PRIVATE).edit().putString(gameDirKey(), path).apply();
-        if (findGameFor(isHp2(), new File(path), 2) == null) {
+        if (GameFiles.find(selectedGame(), new File(path), 2) == null) {
             showWrongFolder(path);
         } else {
             backToStart();
@@ -2066,11 +2070,11 @@ public class SetupActivity extends Activity {
 
     /** There is no game on the phone yet: say where to put it, or let the player pick the folder it is in. */
     private void showMissingGame() {
-        showUnavailable((isHp2() ? "Chamber of Secrets" : "Philosopher's Stone") + " data not found. Import the original game or choose its extracted folder.\nChamber of Secrets is included in this APK; select its cover to install it.");
+        showUnavailable(GameFiles.title(selectedGame()) + " data not found. Import the original game or choose its extracted folder.\nChamber of Secrets is included in this APK; select its cover to install it.");
     }
 
     private void showWrongFolder(String path) {
-        showUnavailable("The selected folder does not contain " + (isHp2() ? "System/Game.exe" : "System/HP.exe") + ":\n" + path + "\nUse Game folders or Import game. You can still select the other game.");
+        showUnavailable("The selected folder does not contain " + ("System/" + GameFiles.executable(selectedGame())) + ":\n" + path + "\nUse Game folders or Import game. You can still select the other game.");
     }
 
     private void showUnavailable(String message) {
@@ -2093,6 +2097,7 @@ public class SetupActivity extends Activity {
     }
 
     private void showImportOptions() {
+        if ("hp3".equals(selectedGame())) { pickFolderFor("hp3"); return; }
         new android.app.AlertDialog.Builder(this).setTitle("Import original game data")
                 .setItems(new String[]{"Extracted game ZIP (HP1 or HP2)", "Philosopher's Stone PC ISO", "Choose an extracted game folder"}, (d, which) -> {
                     if (which == 0) startActivity(new Intent(this, GameZipImportActivity.class).putExtra("game", isHp2() ? "hp2" : "hp1"));
@@ -3132,5 +3137,6 @@ public class SetupActivity extends Activity {
         }
     }
 }
+
 
 
