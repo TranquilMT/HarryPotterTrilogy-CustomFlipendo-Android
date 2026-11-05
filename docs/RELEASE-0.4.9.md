@@ -33,3 +33,5 @@ Version 0.4.9, Android code 50, package com.tranquil.hp1native. All three game p
 - APK certificate matches the permanent 0.4.2 pin.
 - Original PC game libraries under assets are data, not Android native libraries.
 - No Android device execution was performed.
+
+Published 5 November 2026 as [Latest v0.4.9](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9). GitHub byte counts and SHA-256 digests match all four local release artifacts. Phone gameplay acceptance remains open.

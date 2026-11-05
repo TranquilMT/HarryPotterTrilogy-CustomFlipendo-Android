@@ -534,6 +534,6 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Identify missing optional TestMaps directory as the next startup blocker.
 - [x] Skip absent map folders and handle errors during map directory enumeration.
 - [x] Remove the unwanted launcher settings dialogs; retain the established Android settings panel.
-- [ ] Build and publish the signed three-game 0.4.9 APK.
+- [x] Build and publish the signed three-game 0.4.9 APK as [Latest](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9).
 - [ ] Phone: confirm startup passes map discovery; retain the next engine result.
 - [ ] Complete UE2 object, native-function, rendering and gameplay acceptance gates above.

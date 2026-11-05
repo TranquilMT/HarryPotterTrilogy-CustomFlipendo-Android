@@ -416,3 +416,10 @@ No new compatibility feature, Android compilation, APK or device milestone is cl
 - [x] Pass 100 compatibility regressions, 28 release tests and native/Java build checks.
 - [ ] Phone: confirm startup passes Core loading, test settings and retain the next report.
 - [ ] Resolve 431 remaining static metadata relationships; complete UE2 gameplay acceptance remains open.
+
+## 0.4.9 — PoA map discovery hotfix
+
+- [x] Skip absent optional TestMaps directories without aborting map discovery.
+- [x] Remove separate launcher settings dialogs; retain the custom Android settings panel.
+- [x] Publish APK, full source, checksum and build verification as [Latest v0.4.9](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9).
+- [ ] Phone: verify progress beyond map discovery and retain the next report.
