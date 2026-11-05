@@ -9,6 +9,8 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 - Fix the first reported phone startup failure: **Could not find package Core**.
 - Read PoA’s repeated package paths and separate user configuration correctly.
 - Include the selected game’s installed folder and core/config file checks in diagnostic exports.
+- Add pre-launch Display, Controls, Diagnostics and performance preset settings for all three games.
+- Connect PoA frame pacing and widescreen/FOV settings; preserve independent game profiles.
 - Preserve all three game payloads, game saves and application identity.
 - PoA remains experimental; the next phone launch must confirm progress beyond package discovery.
 

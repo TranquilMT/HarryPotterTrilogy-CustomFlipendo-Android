@@ -15,3 +15,12 @@
 - Stop with a specific configuration error if neither active nor default configuration provides any package paths.
 - Keep all legacy UE1 configuration choices unchanged, with production-policy coverage for HP1/HP2, old Unreal, Rune and KHG.
 - Validate the six EU script package tables: Core (865 exports), Engine (9,697), HGame (11,194), GUI (2,204), GamePlay (1,224), UWindow (3,459); all package version 129. This is a static check, not object execution.
+
+## Settings and performance
+
+- Add a Game settings button before launch for every game: Display, Controls, Diagnostics and performance presets. HP3 settings are accessible even when native startup fails.
+- Keep independent settings profiles for all three games. Offer 35%/30 FPS battery, 50%/60 FPS balanced and 75%/60 FPS quality presets. These are user-selectable targets, not measured device benchmarks.
+- Connect PoA’s FPS setting to native frame pacing independently of the UE1 mod registry, capped at 60 FPS for initial compatibility testing.
+- Connect PoA’s FOV setting to the camera calculation and widescreen correction. Retain the shared runtime settings panel and include PoA aim sensitivity in controller navigation.
+- Hide UE1-specific first-person, auto-jump and HUD-scale modifications in PoA until implemented.
+- Static EU call audit: 6,121 functions decoded, zero decode errors. Metadata still has 431 unresolved relationships; complete corpus execution was withheld.

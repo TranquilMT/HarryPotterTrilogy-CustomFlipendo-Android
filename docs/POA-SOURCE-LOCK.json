@@ -847,8 +847,8 @@
       "sha256": "a42b024d4fee3296fad922ef0e3d08561a3468eab2d99bbd3d4f360da674d099"
     },
     "native-runtime/src/engine/SurrealEngine/Engine.cpp": {
-      "bytes": 76890,
-      "sha256": "b31a837719fa1fa9a7c4698ab572ae7b4ffeae3dc5c2620e04607965cf7d3b8a"
+      "bytes": 77157,
+      "sha256": "63dc415f7c0a26f225a030bf53fdaecdae9265af142247d8b00cb0fdb80d223b"
     },
     "native-runtime/src/engine/SurrealEngine/UE1GameDatabase.h": {
       "bytes": 10785,
@@ -14135,8 +14135,8 @@
       "sha256": "b6821be2c06c9d5fd71e713e49589c1ad86e1f04b12a5567cbeb8c1fa3d78a43"
     },
     "native-runtime/src/hp1/mods/FrameLimit.cpp": {
-      "bytes": 5907,
-      "sha256": "5d9d1263e249fb7f013bdb6ef7534ea12e339338979e7a3c3d3fdea2e2a844b6"
+      "bytes": 6128,
+      "sha256": "3c259afb8e8a3a65b02689fa9a6681fe3f4de30e8ddc17094b28182242e56ef0"
     },
     "native-runtime/src/hp1/mods/CutsceneSkip.cpp": {
       "bytes": 8161,
@@ -14351,12 +14351,16 @@
       "sha256": "259598280319974c7f431a1a6645ea70952918387ea122fb5f1e8de0a4d5ac37"
     },
     "native-runtime/android/java/io/github/flipendo/spike/FlipendoActivity.java": {
-      "bytes": 187756,
-      "sha256": "a411d115eed924000365e591961f473f9a2e18efb9cee2f18ed4f205c6d0a4e1"
+      "bytes": 188273,
+      "sha256": "d58d35a142129d291a425574d53866d25e0268807e2cb4fda1925e74072f5898"
     },
     "native-runtime/android/java/io/github/flipendo/spike/SetupActivity.java": {
-      "bytes": 155164,
-      "sha256": "672c50e978840fb14da5dc529ff49ce85c7778eb22651125faeb5675399b9866"
+      "bytes": 155436,
+      "sha256": "c3e2d98d2e91e2f9bce695d37b218db987e065d640e6850beb08096135f0edb0"
+    },
+    "native-runtime/android/java/io/github/flipendo/spike/GameProfileUI.java": {
+      "bytes": 4681,
+      "sha256": "af59ff4210a1dcbb2ea15886813e8776c45d04425909de2caf28518715d16e61"
     },
     "native-runtime/android/java/io/github/flipendo/spike/Tr.java": {
       "bytes": 95966,
@@ -22745,6 +22749,10 @@
     "native-runtime/tools/poa/test_struct_properties.cpp": {
       "bytes": 4534,
       "sha256": "ce5e741b8c5d5d036e1258874eff1eed095d3d9d602289846c05aff5b1968015"
+    },
+    "native-runtime/tools/poa/test_mobile_settings.py": {
+      "bytes": 2159,
+      "sha256": "bb590064df8eff0ac914164b1b84702b1e709924fd05937ddb895375c77fec9d"
     },
     "native-runtime/tools/poa/inspect_packages.py": {
       "bytes": 3781,

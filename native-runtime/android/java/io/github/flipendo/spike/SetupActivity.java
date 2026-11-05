@@ -224,7 +224,7 @@ public class SetupActivity extends Activity {
         tagline.setTextSize(13);
         tagline.setSingleLine(true);
         tagline.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        tagline.setText(tr("Harry Potter 1 and 2 on Android"));
+        tagline.setText(tr("Harry Potter trilogy on Android"));
         tagline.setTextSize(12);
         names.addView(tagline);
         bar.addView(names, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -683,6 +683,9 @@ public class SetupActivity extends Activity {
         updatePlayLabel();
         play.setVisibility(android.view.View.GONE);
         f.addView(play, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50)));
+        TextView gameOptions = chip("Game settings", GOLD, v -> GameProfileUI.show(this, selectedGame(), null));
+        gameOptions.setGravity(Gravity.CENTER);
+        f.addView(gameOptions, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(40)));
         TextView buildTag = new TextView(this);
         buildTag.setText("Version " + LogReport.version(this));
         buildTag.setTextColor(0x55FFFFFF); buildTag.setTextSize(9);

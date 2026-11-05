@@ -8,6 +8,7 @@ extern std::atomic<bool> g_androidMenuActive; // defined in android_main.cpp: tr
 #include "Engine.h"
 #include "KW.h"
 #include "HP1.h"
+namespace HP1::Mods { void TickFrameLimit(); }
 #include "HP2.h"
 #include "Utils/File.h"
 #include "Utils/StrTools.h"
@@ -254,6 +255,7 @@ void Engine::Run()
 			CallEvent(console, EventName::Tick, { ExpressionValue::FloatValue(stepElapsed) });
 			if (step == 0 && LaunchInfo.IsKnowWonder()) // src/hp1/mods (cutscene skip, launch skips; HP2: the frame limit)
 				{ KWProf::Scope prof_(KWProf::Mods); HP1::TickMods(realTimeElapsed); }
+			if (step == 0 && LaunchInfo.IsUE2()) HP1::Mods::TickFrameLimit();
 			if (step == 0 && LaunchInfo.IsHarryPotter2()) // the main menu at boot (src/hp2/HP2GameState.cpp)
 			{
 				HP2::OpenStartMenu();
@@ -1177,6 +1179,8 @@ void Engine::CalcView()
 			CameraFovAngle = KW::ViewFovAngle(CameraFovAngle, window->GetPixelWidth(), window->GetPixelHeight());
 			KW::DebugCamera(CameraLocation, CameraRotation);
 		}
+        else if (LaunchInfo.IsUE2())
+            CameraFovAngle = KW::ViewFovAngle(CameraFovAngle, window->GetPixelWidth(), window->GetPixelHeight());
 	}
 }
 
@@ -2401,3 +2405,4 @@ const char* Engine::keynames[256] =
 	/*F8*/ "ExSel", "ErEof", "Play", "Zoom",
 	/*FC*/ "NoName", "PA1", "OEMClear", ""
 };
+

@@ -1,5 +1,6 @@
 #include "Precomp.h"
 #include "HP1Mods.h"
+#include "Engine.h"
 #include "Utils/CommandLine.h"
 #include <algorithm>
 #include <atomic>
@@ -37,6 +38,9 @@ namespace HP1::Mods
 		int FrameLimit()
 		{
 			int runtime = runtimeLimit.load();
+            // PoA uses the mobile cap independently of UE1's mod registry.
+            if (engine && engine->LaunchInfo.IsUE2())
+                return std::clamp(runtime < 0 ? 60 : runtime, 25, 60);
 			if (runtime >= 0)
 				return IsOn("frame-limit") ? runtime : 0;
 			static int fps = -1;
@@ -176,3 +180,4 @@ namespace HP1::Mods
 #endif
 	}
 }
+

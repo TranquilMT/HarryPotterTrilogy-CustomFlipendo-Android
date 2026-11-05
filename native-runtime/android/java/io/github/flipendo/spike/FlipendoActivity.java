@@ -61,7 +61,7 @@ public class FlipendoActivity extends SDLActivity {
     static native void nativeSetFpsLimit(int fps);
 
     void applyFpsLimit(int fps, boolean save) {
-        fpsLimit = Math.max(FPS_LIMIT_MIN, Math.min(FPS_LIMIT_MAX, fps));
+        fpsLimit = Math.max(FPS_LIMIT_MIN, Math.min(getIntent() != null && "hp3".equals(getIntent().getStringExtra("game")) ? 60 : FPS_LIMIT_MAX, fps));
         try {
             nativeSetFpsLimit(fpsLimit);
         } catch (UnsatisfiedLinkError ignored) {
@@ -1782,6 +1782,7 @@ public class FlipendoActivity extends SDLActivity {
             addEntry(closeBtn, SET_DONE);
             if (settingsTab == 0) {
                 for (int i = 0; i < SLIDERS; i++) {
+                    if (isHp3Game() && i == 1) continue;
                     setRects.add(new android.graphics.RectF(colL0 - 0.01f * h, sliderLabelY[i] - 0.055f * h, colL1 + 0.01f * h, sliderY[i] + 0.035f * h));
                     setIds.add(sliderId(i));
                 }
@@ -1790,7 +1791,7 @@ public class FlipendoActivity extends SDLActivity {
             addEntry(fpsBtn, SET_FPS);
             if (!segStick.isEmpty()) { setRects.add(new android.graphics.RectF(segStick.left, segStick.top, segDpad.right, segDpad.bottom)); setIds.add(SET_SEG); }
             addEntry(autoJumpBtn, SET_JUMP);
-            if (aimStick() || isHp2Game()) addEntry(invertBtn, SET_INVERT);
+            if (aimStick() || isHp2Game() || isHp3Game()) addEntry(invertBtn, SET_INVERT);
             addEntry(layoutBtn, SET_LAYOUT);
             addEntry(noSkipBtn, SET_NOSKIP);
             addEntry(noSaveBtn, SET_NOSAVE);
@@ -2250,12 +2251,12 @@ public class FlipendoActivity extends SDLActivity {
                 rightSection = tr("VIEW");
                 float slot = 0.14f * h;
                 for (int i = 0; i < SLIDERS; i++) {
-                    sliderLabelY[i] = yl + i * slot + 0.06f * h;
+                    if (isHp3Game() && i == 1) continue;
+                    sliderLabelY[i] = yl + (isHp3Game() && i > 1 ? i - 1 : i) * slot + 0.06f * h;
                     sliderY[i] = sliderLabelY[i] + 0.052f * h;
                 }
-                yl += SLIDERS * slot;
-                fpBtn.set(colR0, yr, colR1, yr + rowH);
-                yr += rowH + rowGap;
+                yl += (isHp3Game() ? SLIDERS - 1 : SLIDERS) * slot;
+                if (!isHp3Game()) { fpBtn.set(colR0, yr, colR1, yr + rowH); yr += rowH + rowGap; }
                 fpsBtn.set(colR0, yr, colR1, yr + rowH);
                 yr += rowH + rowGap;
             } else if (settingsTab == 1) {
@@ -2265,17 +2266,15 @@ public class FlipendoActivity extends SDLActivity {
                 segStick.set(colL0, yl, (colL0 + colL1) / 2f, yl + rowH);
                 segDpad.set((colL0 + colL1) / 2f, yl, colL1, yl + rowH);
                 yl += rowH + rowGap;
-                autoJumpBtn.set(colL0, yl, colL1, yl + rowH);
-                yl += rowH + rowGap;
+                if (!isHp3Game()) { autoJumpBtn.set(colL0, yl, colL1, yl + rowH); yl += rowH + rowGap; }
                 invertBtn.set(colL0, yl, colL1, yl + rowH);
                 yl += rowH + rowGap;
                 layoutBtn.set(colL0, yl, colL1, yl + rowH);
                 yl += rowH + rowGap;
                 noSkipBtn.set(colR0, yr, colR1, yr + rowH);
                 yr += rowH + rowGap;
-                noSaveBtn.set(colR0, yr, colR1, yr + rowH);
-                yr += rowH + rowGap;
-                if (aimStick() || isHp2Game()) {
+                if (!isHp3Game()) { noSaveBtn.set(colR0, yr, colR1, yr + rowH); yr += rowH + rowGap; }
+                if (aimStick() || isHp2Game() || isHp3Game()) {
                     wandSensBtn.set(colR0, yr, colR1, yr + rowH);
                     yr += rowH + rowGap;
                 }
@@ -2374,7 +2373,7 @@ public class FlipendoActivity extends SDLActivity {
 
         float sliderMin(int i) { return i == 0 ? RENDER_SCALE_MIN : i == 1 ? UI_SCALE_MIN : i == 2 ? FOV_MIN : FPS_LIMIT_MIN; }
 
-        float sliderMax(int i) { return i == 0 ? RENDER_SCALE_MAX : i == 1 ? UI_SCALE_MAX : i == 2 ? FOV_MAX : FPS_LIMIT_MAX; }
+        float sliderMax(int i) { return i == 0 ? RENDER_SCALE_MAX : i == 1 ? UI_SCALE_MAX : i == 2 ? FOV_MAX : (isHp3Game() ? 60 : FPS_LIMIT_MAX); }
 
         float sliderStep(int i) { return i == 0 ? 0.05f : i == 1 ? 0.1f : 5f; }
 
@@ -2392,6 +2391,7 @@ public class FlipendoActivity extends SDLActivity {
             if (!settingsOpen || settingsTab != 0 || !viewport.contains(x, y)) return -1;
             float u = lu;
             for (int i = 0; i < SLIDERS; i++) {
+                    if (isHp3Game() && i == 1) continue;
                 if (Math.abs(y - sliderY[i]) < 0.055f * u && x > sliderX0 - 0.05f * u && x < sliderX1 + 0.05f * u) return i;
             }
             return -1;
@@ -2476,7 +2476,7 @@ public class FlipendoActivity extends SDLActivity {
             fill.setColor(GOLD);
             c.drawRoundRect(colL0, headerY - 0.05f * h, colL0 + 0.008f * u, headerY + 0.008f * h, 4f, 4f, fill);
             titlePaint.setTextAlign(Paint.Align.LEFT);
-            c.drawText(tr("Settings"), colL0 + 0.025f * u, headerY, titlePaint);
+            c.drawText(isHp3Game() ? "PoA Settings" : tr("Settings"), colL0 + 0.025f * u, headerY, titlePaint);
             drawIconButton(c, telegramBtn, true);
             drawIconButton(c, helpBtn, false);
             fill.setColor(GOLD);
@@ -2509,7 +2509,7 @@ public class FlipendoActivity extends SDLActivity {
             line.setStrokeWidth(2f);
             c.drawLine(colL0, versionRect.top, colR1, versionRect.top, line);
             subPaint.setTextAlign(Paint.Align.CENTER);
-            c.drawText(fit(tr("Flipendo for Android ") + appVersion, subPaint, versionRect.width()), versionRect.centerX(), versionRect.centerY() + subPaint.getTextSize() * 0.35f, subPaint);
+            c.drawText(fit("HP:Trilogy Mobile " + appVersion, subPaint, versionRect.width()), versionRect.centerX(), versionRect.centerY() + subPaint.getTextSize() * 0.35f, subPaint);
             subPaint.setTextAlign(Paint.Align.LEFT);
 
             // the page: it scrolls inside the viewport
@@ -2522,15 +2522,15 @@ public class FlipendoActivity extends SDLActivity {
             drawSection(c, rightSection, colR0, secRightY);
             if (settingsTab == 0) {
                 drawSliders(c);
-                drawSwitchRow(c, fpBtn, tr("First person"), tr("Camera in Harry's head while walking"), firstPerson, false);
+                if (!isHp3Game()) drawSwitchRow(c, fpBtn, tr("First person"), tr("Camera in Harry's head while walking"), firstPerson, false);
                 drawSwitchRow(c, fpsBtn, tr("FPS counter"), tr("Frames per second by the toolbar"), showFps, false);
             } else if (settingsTab == 1) {
                 drawSegments(c);
-                drawSwitchRow(c, autoJumpBtn, tr("Auto jump"), tr("Harry jumps by himself at ledges"), autoJump, false);
+                if (!isHp3Game()) drawSwitchRow(c, autoJumpBtn, tr("Auto jump"), tr("Harry jumps by himself at ledges"), autoJump, false);
                 drawSwitchRow(c, invertBtn, tr("Invert wand"), tr("Flip the wand's up/down aim"), invertWand, false);
                 drawValueRow(c, layoutBtn, tr("Control layout"), tr("Move and resize the buttons"), tr("Edit"), false);
                 drawSwitchRow(c, noSkipBtn, tr("No cutscene skip"), tr("No SKIP button, no hold-Y skip"), noSkip, false);
-                drawSwitchRow(c, noSaveBtn, tr("No quick save"), tr("No save button, no pad save"), noQuickSave, false);
+                if (!isHp3Game()) drawSwitchRow(c, noSaveBtn, tr("No quick save"), tr("No save button, no pad save"), noQuickSave, false);
                 if (!wandSensBtn.isEmpty()) drawValueRow(c, wandSensBtn, tr("Wand sensitivity"), tr("How fast the wand stick turns the camera"), Math.round(wandSens * 100f) + "%", false);
             } else {
                 if (languages.size() > 1) {
@@ -2702,6 +2702,7 @@ public class FlipendoActivity extends SDLActivity {
             int[] size = ((FlipendoActivity) getContext()).viewSize();
             int longSide = size[0], shortSide = size[1];
             for (int i = 0; i < SLIDERS; i++) {
+                    if (isHp3Game() && i == 1) continue;
                 float v = sliderValue(i);
                 String name = i == 0 ? tr("Render scale") : i == 1 ? tr("Subtitles and HUD size") : i == 2 ? tr("Field of view") : tr("FPS limit");
                 String value = i == 0 ? Math.round(v * 100) + "%  ·  " + (int) (longSide * v) + "×" + (int) (shortSide * v)
