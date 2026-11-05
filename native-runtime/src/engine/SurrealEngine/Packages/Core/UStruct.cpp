@@ -391,7 +391,8 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 			ReadToken(stream, depth);
 		}
 	}
-	else if (token == ExprToken::DynArrayToInt_HP1 && (engine->LaunchInfo.IsHarryPotter1() || engine->LaunchInfo.IsHarryPotter2()))
+	else if (token == ExprToken::DynArrayToInt_HP1 &&
+		(engine->LaunchInfo.IsHarryPotter1() || engine->LaunchInfo.IsHarryPotter2() || engine->LaunchInfo.IsHarryPotter3()))
 	{
 		ReadToken(stream, depth);
 	}

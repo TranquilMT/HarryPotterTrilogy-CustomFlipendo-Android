@@ -1,8 +1,9 @@
-"""Audit PoA v129 struct headers and script-free class tails without executing them."""
+"""Audit PoA v129 struct headers, bytecode and record tails without executing them."""
 import argparse
 from collections import Counter
 from pathlib import Path
 
+from bytecode import Decoder
 from inspect_packages import Reader, inspect
 from object_payloads import name, tags
 
@@ -42,8 +43,21 @@ def audit(system):
                 if script_size > 64 * 1024 * 1024:
                     raise ValueError('Invalid script length')
                 counts[kind] += 1
-                if kind == 'Class' and not script_size:
-                    reader.read(22 + 4 + 16)
+                if script_size:
+                    decoder = Decoder(reader, names, len(model['imports']),
+                                      len(model['exports']), script_size)
+                    decoder.decode()
+                    counts['Script bodies'] += 1
+                    counts['Dynamic-array length tokens'] += sum(
+                        token['opcode'] == 0x37 for token in decoder.tokens)
+                if kind == 'Function':
+                    reader.read(3)  # NativeFuncIndex and OperatorPrecedence
+                    if reader.u32() & 0x40:
+                        reader.read(2)  # ReplicationOffset
+                if kind in ('Class', 'State'):
+                    reader.read(22)  # UState fields
+                if kind == 'Class':
+                    reader.read(4 + 16)
                     dependencies = reader.compact()
                     if dependencies < 0 or dependencies > len(reader.data) - reader.p:
                         raise ValueError('Invalid dependency count')
@@ -63,9 +77,10 @@ def audit(system):
                     for _ in range(categories):
                         name(reader, names)
                     tags(reader, names)
-                    if reader.p != len(reader.data):
-                        raise ValueError('Unconsumed class bytes')
-                    counts['Script-free class tails'] += 1
+                    if not script_size:
+                        counts['Script-free class tails'] += 1
+                if reader.p != len(reader.data):
+                    raise ValueError(f'Unconsumed {kind} bytes')
             except (IndexError, ValueError) as exc:
                 raise ValueError(f"{path.name}/{export['name']}: {exc}") from exc
     return counts

@@ -108,7 +108,8 @@ Expression* Bytecode::ReadToken(BytecodeStream* stream, int depth)
 		}
 		return expr;
 	}
-	else if (token == ExprToken::DynArrayToInt_HP1 && (engine->LaunchInfo.IsHarryPotter1() || engine->LaunchInfo.IsHarryPotter2()))
+	else if (token == ExprToken::DynArrayToInt_HP1 &&
+		(engine->LaunchInfo.IsHarryPotter1() || engine->LaunchInfo.IsHarryPotter2() || engine->LaunchInfo.IsHarryPotter3()))
 	{
 		DynArrayToIntExpression* expr = Create<DynArrayToIntExpression>(exproffset);
 		expr->Value = ReadToken(stream, depth);

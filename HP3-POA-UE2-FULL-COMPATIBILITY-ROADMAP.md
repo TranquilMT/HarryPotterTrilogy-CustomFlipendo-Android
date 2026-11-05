@@ -545,3 +545,11 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Load and save hidden class categories before tagged defaults and include `LastStateName` in the PoA native Core.Object layout.
 - [x] Pass 97 host regression tests and syntax-check the two changed C++ translation units. Audit the retained package set, including 85 non-null CppText references and 1,660 class tails with no script body.
 - [ ] Build a signed Android test APK and verify that PoA loads past Core.Object on the phone. Record the next startup result before checking the remaining gameplay gates.
+
+## PoA bytecode loading follow-up
+
+- [x] Route PoA dynamic-array length (0x37) through the production array-length expression. The retained scripts contain 620 occurrences.
+- [x] Enable 14 additional observed primitive cast codes with existing production evaluators. Core.Main uses integer-to-string and float-to-string, which the scalar-only bridge rejected.
+- [x] Extend the offline audit through 8,661 script bodies and validate the complete tails of 10,452 class, function, state and struct records.
+- [x] Pass 97 host tests, including the production token and expression bridge harnesses, and syntax-check both changed C++ translation units.
+- [ ] Implement the remaining production array insertion, array removal and delegate operations observed in the corpus. Verify startup order and execution on the next signed Android build.
