@@ -15,3 +15,21 @@
 - Keep supported FPS/FOV/render and touch settings and independent game profiles. UE1-only first-person, auto-jump and HUD-scale modifications remain unavailable for PoA.
 
 Version 0.4.9, Android code 50, package com.tranquil.hp1native. All three game payloads and permanent signing certificate retained. Phone acceptance remains open.
+
+## Verification
+
+- 101 compatibility regressions and 28 release checks passed.
+- Seven production directory-visitor cases passed: missing folder, normal folder, non-directory, empty folder, broken symlink, removed folder and preserved file-processing exceptions.
+- The production directory visitor also scanned the actual EU data: Maps contains 34 files; absent TestMaps and Saves folders were skipped without throwing. This is not native game execution.
+- Android API 36 Java compilation, ARM64 native build, 16 KiB alignment, permanent certificate and all three payload hashes passed.
+- The signed APK contains the new directory scanner and excludes the retired GameProfileUI class.
+
+## Verified build evidence
+
+- ARM64 native build and Android API 36 Java compilation passed.
+- 101 PoA regressions, 28 release checks, 13 installer checks, 12 ZIP importer checks and 22 launcher/path/timing checks passed.
+- All three payloads checked by size and SHA-256 after signing.
+- Four Android native libraries are AArch64 with 16 KiB LOAD alignment; packaged library alignment checked.
+- APK certificate matches the permanent 0.4.2 pin.
+- Original PC game libraries under assets are data, not Android native libraries.
+- No Android device execution was performed.
