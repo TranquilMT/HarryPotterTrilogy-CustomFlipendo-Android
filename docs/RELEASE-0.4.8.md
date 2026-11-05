@@ -34,3 +34,5 @@
 - APK certificate matches the permanent 0.4.2 pin.
 - Original PC game libraries under assets are data, not Android native libraries.
 - No Android device execution was performed.
+
+Published 5 November 2026. All four uploaded release artifacts match local byte counts and SHA-256 digests. Phone gameplay remains unverified.

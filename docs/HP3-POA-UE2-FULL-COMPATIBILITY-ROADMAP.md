@@ -518,7 +518,7 @@ All other incomplete compatibility gates above remain open. Bundling a game does
 - [x] Fix PoA configuration layout selection: repeated `Paths=` entries and separate user/default-user files regardless of its unset UE1 ancestry field.
 - [x] Add production policy regressions covering PoA, HP1/HP2, old Unreal, Rune and KHG.
 - [x] Add selected-game managed-folder inventory to diagnostic reports.
-- [ ] Build and publish the corrected signed three-game APK.
+- [x] Build and publish the corrected signed three-game APK as [v0.4.8](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.8).
 - [ ] Phone: confirm Core resolves and record the next startup result.
 
 This fixes the reported configuration-selection cause; further UE2 compatibility gates remain open.

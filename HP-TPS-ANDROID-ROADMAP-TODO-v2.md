@@ -401,9 +401,18 @@ Source/evidence details: `docs/POA-SCALAR-CAST-CHECKPOINT.md`.
 
 - [x] Check the actual build environment and remote build-computer availability; record concrete blockers in `docs/ANDROID-STARTUP-BUILD-BLOCKERS-2026-11-05.md`.
 - [x] Open the compatibility branch in a browser Codespace; obtain the complete checkout and configure the full host engine.
-- [x] Repair the Engine.cpp profiler include discovered by real production compilation; verify that translation unit compiles.
 - [ ] Complete production compilation, then prepare Android SDK/NDK/SDL and existing signing/payload inputs in the cloud workspace.
 - [ ] Compile/link the full ARM64 engine and Java/SDL integration; produce and verify the test APK.
 - [ ] Install on the phone and capture a real PoA launch trace, then address its concrete runtime failures.
 
 No new compatibility feature, Android compilation, APK or device milestone is claimed by this environment audit. Existing runtime backlog and G0–G6 remain open.
+
+## 0.4.8 — PoA engine/settings release milestone
+
+- [x] Publish three-game APK, complete source, checksums and build verification as [latest v0.4.8](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.8).
+- [x] Correct PoA package-path and separate user-config selection from the first phone startup report.
+- [x] Add default-path recovery and package discovery diagnostics.
+- [x] Add pre-launch game settings, native PoA frame pacing/FOV, and performance presets.
+- [x] Pass 100 compatibility regressions, 28 release tests and native/Java build checks.
+- [ ] Phone: confirm startup passes Core loading, test settings and retain the next report.
+- [ ] Resolve 431 remaining static metadata relationships; complete UE2 gameplay acceptance remains open.
