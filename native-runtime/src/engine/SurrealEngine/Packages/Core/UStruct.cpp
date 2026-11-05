@@ -30,8 +30,8 @@ void UStruct::Load(ObjectStream* stream)
 	if (FriendlyName == "None")
 		Exception::Throw("Struct FriendlyName must not be None");
 
-	const bool poaFunction = engine->LaunchInfo.IsHarryPotter3() && UObject::TryCast<UFunction>(this) != nullptr;
-	const auto scriptHeader = StructScripts::Read(*stream, poaFunction);
+	const bool poaStruct = engine->LaunchInfo.IsHarryPotter3();
+	const auto scriptHeader = StructScripts::Read(*stream, poaStruct, [&] { CppText = stream->ReadObject<UTextBuffer>(); });
 	Line = scriptHeader.line;
 	TextPos = scriptHeader.textPosition;
 	const uint32_t ScriptSize = scriptHeader.memoryBytes;
@@ -161,12 +161,20 @@ void UStruct::Save(PackageStreamWriter* stream)
 	stream->WriteObject(ScriptText);
 	stream->WriteObject(Children);
 	stream->WriteName(FriendlyName);
-	const bool poaFunction = engine->LaunchInfo.IsHarryPotter3() && UObject::TryCast<UFunction>(this) != nullptr;
-	StructScripts::Write(*stream, poaFunction, {Line, TextPos, uint32_t(Bytecode.size())});
+	const bool poaStruct = engine->LaunchInfo.IsHarryPotter3();
+	StructScripts::Write(*stream, poaStruct, {Line, TextPos, uint32_t(Bytecode.size())}, [&] { stream->WriteObject(CppText); });
 	stream->WriteBytes(BytecodeRaw.data(), (uint32_t)BytecodeRaw.size());
 	//size_t pos = 0;
 	//while (pos < Bytecode.size())
 	//	pos = WriteToken(stream, pos, 0);
+}
+
+GCAllocation* UStruct::Mark(GCAllocation* marklist)
+{
+    marklist = UField::Mark(marklist);
+    if (CppText)
+        marklist = GC::MarkObject(marklist, CppText);
+    return marklist;
 }
 
 bool UStruct::IsEqual(const void* v1, const void* v2)

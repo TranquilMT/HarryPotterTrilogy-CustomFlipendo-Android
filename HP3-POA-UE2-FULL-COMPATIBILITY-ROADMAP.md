@@ -535,5 +535,13 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Skip absent map folders and handle errors during map directory enumeration.
 - [x] Remove the unwanted launcher settings dialogs; retain the established Android settings panel.
 - [x] Build and publish the signed three-game 0.4.9 APK as [Latest](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9).
-- [ ] Phone: confirm startup passes map discovery; retain the next engine result.
+- [x] Third phone report confirms startup passes map discovery and reaches `Core.u`.
 - [ ] Complete UE2 object, native-function, rendering and gameplay acceptance gates above.
+
+## PoA Core.Object startup checkpoint
+
+- [x] Trace the third 0.4.9 phone report. The launcher finds 109 packages and one map directory, then Core version 129 fails while loading the `Object` class with an invalid compact package index.
+- [x] Read and preserve the PoA v129 compact `CppText` reference in class, function, state and struct headers. A missing read shifted the script size and sent Core.Object class metadata to the bytecode decoder.
+- [x] Load and save hidden class categories before tagged defaults and include `LastStateName` in the PoA native Core.Object layout.
+- [x] Pass 97 host regression tests and syntax-check the two changed C++ translation units. Audit the retained package set, including 85 non-null CppText references and 1,660 class tails with no script body.
+- [ ] Build a signed Android test APK and verify that PoA loads past Core.Object on the phone. Record the next startup result before checking the remaining gameplay gates.

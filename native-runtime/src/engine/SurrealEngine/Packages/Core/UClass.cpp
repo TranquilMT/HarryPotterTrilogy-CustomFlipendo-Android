@@ -49,6 +49,8 @@ UClass::UClass(NameString name, UClass* base, ObjectFlags flags) : UState(std::m
 		Properties.push_back(GC::Alloc<UIntProperty>("ObjectFlags", nullptr, ObjectFlags::Native));
 		Properties.push_back(GC::Alloc<UNameProperty>("Name", nullptr, ObjectFlags::Native));
 		Properties.push_back(GC::Alloc<UClassProperty>("Class", nullptr, ObjectFlags::Native));
+		if (engine->LaunchInfo.IsHarryPotter3())
+			Properties.push_back(GC::Alloc<UNameProperty>("LastStateName", nullptr, ObjectFlags::Native));
 
 		size_t offset = 0;
 		size_t structAlignment = 1;
@@ -97,6 +99,16 @@ void UClass::Load(ObjectStream* stream)
 		ClassWithin = stream->ReadIndex();
 		ClassConfigName = stream->ReadName();
 	}
+
+    if (engine->LaunchInfo.IsHarryPotter3())
+    {
+        const int count = stream->ReadIndex();
+        if (count < 0 || count > 65536)
+            Exception::Throw("Invalid PoA class category count");
+        HiddenCategories.reserve(count);
+        for (int i = 0; i < count; ++i)
+            HiddenCategories.push_back(stream->ReadName());
+    }
 
 	PropertyData.Init(this);
 	PropertyData.Load(stream);
@@ -148,6 +160,13 @@ void UClass::Save(PackageStreamWriter* stream)
 		stream->WriteIndex(ClassWithin);
 		stream->WriteName(ClassConfigName);
 	}
+
+    if (engine->LaunchInfo.IsHarryPotter3())
+    {
+        stream->WriteIndex(static_cast<int>(HiddenCategories.size()));
+        for (const auto& category : HiddenCategories)
+            stream->WriteName(category);
+    }
 
 	PropertyData.Save(stream, nullptr);
 }
@@ -494,3 +513,4 @@ void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
 		}
 	}
 }
+

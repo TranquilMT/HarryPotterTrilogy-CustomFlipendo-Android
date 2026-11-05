@@ -61,6 +61,7 @@ public:
 	Guid ClassGuid;
 	Array<ClassDependency> Dependencies;
 	Array<int> PackageImports;
+	Array<NameString> HiddenCategories;
 	int ClassWithin = 0;
 	NameString ClassConfigName;
 

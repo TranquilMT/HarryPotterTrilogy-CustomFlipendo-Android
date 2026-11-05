@@ -18,12 +18,14 @@ public:
 
 	void Load(ObjectStream* stream) override;
 	void Save(PackageStreamWriter* stream) override;
+	GCAllocation* Mark(GCAllocation* marklist) override;
 
 	bool IsEqual(const void* v1, const void* v2);
 
 	UStruct* BaseStruct = nullptr;
 
 	UTextBuffer* ScriptText = nullptr;
+	UTextBuffer* CppText = nullptr;
 	UField* Children = nullptr;
 	NameString FriendlyName;
 	uint32_t Line = 0;
@@ -164,3 +166,4 @@ inline bool operator<(ExprToken a, ExprToken b) { return (uint8_t)a < (uint8_t)b
 inline bool operator<=(ExprToken a, ExprToken b) { return (uint8_t)a <= (uint8_t)b; }
 inline bool operator>(ExprToken a, ExprToken b) { return (uint8_t)a > (uint8_t)b; }
 inline bool operator>=(ExprToken a, ExprToken b) { return (uint8_t)a >= (uint8_t)b; }
+

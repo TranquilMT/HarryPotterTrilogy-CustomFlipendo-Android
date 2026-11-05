@@ -15,9 +15,9 @@ class ProductionStructScripts(unittest.TestCase):
         root = pathlib.Path(__file__).resolve().parents[2]
         source = (root / 'src/engine/SurrealEngine/Packages/Core/UStruct.cpp').read_text()
         header = (root / 'src/engine/SurrealEngine/Packages/Core/UStruct.h').read_text()
-        self.assertIn('StructScripts::Read(*stream, poaFunction)', source)
-        self.assertIn('StructScripts::Write(*stream, poaFunction', source)
-        self.assertIn('IsHarryPotter3() && UObject::TryCast<UFunction>(this) != nullptr', source)
+        self.assertIn('StructScripts::Read(*stream, poaStruct,', source)
+        self.assertIn('StructScripts::Write(*stream, poaStruct', source)
+        self.assertIn('const bool poaStruct = engine->LaunchInfo.IsHarryPotter3();', source)
         tokens = source[source.index('ExprToken UStruct::ReadToken('):]
         enum = header[header.index('enum class ExprToken : uint8_t\n{'):]
         harness = r'''
@@ -62,19 +62,29 @@ struct UStruct {
 '''
         harness += tokens + r'''
 int checks=0;
+auto readHeader(ObjectStream& s,bool poa,int32_t* cpp=nullptr){
+ return StructScripts::Read(s,poa,[&]{const auto ref=s.ReadIndex();if(cpp)*cpp=ref;});
+}
+void writeHeader(ObjectStream& s,bool poa,StructScripts::Header h){
+ StructScripts::Write(s,poa,h,[&]{s.WriteUInt8(0);});
+}
 template<class F>void rejects(F f){bool failed=false;try{f();}catch(const std::runtime_error&){failed=true;}assert(failed);++checks;}
 void same(const std::vector<uint8_t>&raw,uint32_t memory){ObjectStream stream;stream.data=raw;UStruct function;function.ReadToken(&stream,0);assert(stream.pos==raw.size());hp3::Reader reader(raw);const std::vector<std::string> names={"None","Function"};hp3::BytecodeReader decoder(reader,names,1,1,memory);auto expected=decoder.read();assert(function.Bytecode==expected.memory);++checks;}
 int main(){
- StructScripts::Header values{123,456,3};ObjectStream encoded;StructScripts::Write(encoded,true,values);assert(encoded.data.size()==13);++checks;
+ StructScripts::Header values{123,456,3};ObjectStream encoded;writeHeader(encoded,true,values);assert(encoded.data.size()==13);++checks;
  std::vector<uint8_t> original={0,0,0,0,0,1};original.insert(original.end(),encoded.data.begin(),encoded.data.end());
  hp3::Reader oracle(original);auto expected=hp3::readFunctionHeader(oracle,{"None","Function"});
- encoded.data.push_back(0xaa);auto actual=StructScripts::Read(encoded,true);assert(actual.line==expected.line&&actual.textPosition==expected.textPosition&&actual.memoryBytes==expected.bytecodeMemoryBytes&&encoded.pos+6==oracle.position()&&encoded.ReadUInt8()==0xaa);++checks;
- ObjectStream legacy;legacy.version=69;StructScripts::Write(legacy,false,values);assert(legacy.data.size()==12);auto old=StructScripts::Read(legacy,false);assert(old.line==123&&old.textPosition==456&&old.memoryBytes==3);++checks;
- for(size_t n=0;n<13;++n){ObjectStream shortHeader;shortHeader.data.assign(encoded.data.begin(),encoded.data.begin()+n);rejects([&]{StructScripts::Read(shortHeader,true);});}
- ObjectStream unknown;unknown.version=128;rejects([&]{StructScripts::Read(unknown,true);});rejects([&]{StructScripts::Write(unknown,true,values);});
- ObjectStream bad;bad.data=encoded.data;bad.data[0]=1;rejects([&]{StructScripts::Read(bad,true);});
- ObjectStream huge;huge.WriteUInt8(0);huge.WriteUInt32(0);huge.WriteUInt32(0);huge.WriteUInt32(StructScripts::MaximumBytes+1);rejects([&]{StructScripts::Read(huge,true);});
- ObjectStream output;rejects([&]{StructScripts::Write(output,true,{0,0,StructScripts::MaximumBytes+1});});assert(output.data.empty());
+ encoded.data.push_back(0xaa);auto actual=readHeader(encoded,true);assert(actual.line==expected.line&&actual.textPosition==expected.textPosition&&actual.memoryBytes==expected.bytecodeMemoryBytes&&encoded.pos+6==oracle.position()&&encoded.ReadUInt8()==0xaa);++checks;
+ ObjectStream legacy;legacy.version=69;writeHeader(legacy,false,values);assert(legacy.data.size()==12);auto old=readHeader(legacy,false);assert(old.line==123&&old.textPosition==456&&old.memoryBytes==3);++checks;
+ for(size_t n=0;n<13;++n){ObjectStream shortHeader;shortHeader.data.assign(encoded.data.begin(),encoded.data.begin()+n);rejects([&]{readHeader(shortHeader,true);});}
+ ObjectStream unknown;unknown.version=128;rejects([&]{readHeader(unknown,true);});rejects([&]{writeHeader(unknown,true,values);});
+ ObjectStream cppText;cppText.data={0x40,0x21};
+ cppText.data.insert(cppText.data.end(),encoded.data.begin()+1,encoded.data.end());
+ int32_t cppRef=0;auto cppHeader=readHeader(cppText,true,&cppRef);
+ assert(cppRef==2112&&cppHeader.line==123&&cppText.ReadUInt8()==0xaa);++checks;
+ ObjectStream malformed;malformed.data={0x40,0x80,0x80,0x80,0xff};rejects([&]{readHeader(malformed,true);});
+ ObjectStream huge;huge.WriteUInt8(0);huge.WriteUInt32(0);huge.WriteUInt32(0);huge.WriteUInt32(StructScripts::MaximumBytes+1);rejects([&]{readHeader(huge,true);});
+ ObjectStream output;rejects([&]{writeHeader(output,true,{0,0,StructScripts::MaximumBytes+1});});assert(output.data.empty());
  engine->LaunchInfo.poa=true;
  same({0x60,0x01,0x16},3); // extended native 1, not UE1's conversion token 0x60
  same({0x61,0x23,0x25,0x16},4);same({0x6f,0xfe,0x16},3);same({0x70,0x25,0x16},3);
