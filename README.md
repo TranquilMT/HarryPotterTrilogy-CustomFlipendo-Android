@@ -4,6 +4,14 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 [Download 0.4.9 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9)
 
+## 0.4.10-test — PoA engine update
+
+- Fix version 129 class and struct metadata loading, including the `Core.Object` startup failure reported on 0.4.9.
+- Read additional UE2 primitive casts and dynamic array operations used by the retail game.
+- Load, assign and call UE2 script delegates, including menu callback bindings.
+- The signed ARM64 test APK uses Android version code 51 and the permanent release certificate. Install it over 0.4.9 after that version has extracted the PoA files.
+- The test APK uses existing game files. Phone startup and gameplay remain unverified. The bundled three-game release is pending payload recovery.
+
 ## 0.4.9 — PoA folder-scan hotfix and settings correction
 
 - Fix the new phone startup failure caused by the absent optional `TestMaps` folder.

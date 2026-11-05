@@ -560,3 +560,11 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Register the PoA DelegateProperty class. Preserve its function signature, tagged bindings and bound object references. Route delegate assignments and calls through the production VM, with the encoded fallback function when unbound.
 - [x] Audit 41 delegate declarations, 61 calls, 187 assignments and three tagged delegate values in class defaults. Pass 97 host tests and syntax-check the seven changed C++ translation units.
 - [ ] Verify array mutation, GUI callback dispatch and startup on a signed Android APK. This checkpoint has host and corpus verification only.
+
+## 0.4.10-test Android build
+
+- [x] Build and link the full native ARM64 runtime from `395b3117` using NDK r27c.
+- [x] Pass 101 compatibility tests and 28 Android release checks.
+- [x] Build a signed test APK with package `com.tranquil.hp1native`, version code 51, the permanent release certificate and 16 KiB ELF alignment.
+- [ ] Verify PoA startup and menu interaction on a phone with the game files extracted by 0.4.9.
+- [ ] Recover and verify the original three game payloads for the bundled release.
