@@ -1,5 +1,5 @@
 {
-  "checkpoint": "HP-Trilogy-Mobile-0.4.7",
+  "checkpoint": "HP-Trilogy-Mobile-0.4.8",
   "scope": "native-runtime build source and dependencies; documentation and generated outputs excluded",
   "files": {
     "native-runtime/.gitignore": {
@@ -56,7 +56,7 @@
     },
     "native-runtime/android/AndroidManifest.xml": {
       "bytes": 4040,
-      "sha256": "f29646bdafd6803d001187ca7a2ad49e8436f176af86594548cc42c7128b7090"
+      "sha256": "3b07ace405b9838a8364a5d6c1c3ccb2318ce2ee3bbbe275cd6354f51f1dc424"
     },
     "native-runtime/android/build_windows.py": {
       "bytes": 9879,
@@ -64,7 +64,7 @@
     },
     "native-runtime/android/build_linux.py": {
       "bytes": 8272,
-      "sha256": "a66dd14dcf93040f75f05f3175a88b24723c215aaf20a97d0cb4649071681332"
+      "sha256": "bb26848e36fccd56bd4dc6af40a2b6e3a8d58e4d6d84c7a610f6c51c2a1657d9"
     },
     "native-runtime/android/iso-verification.json": {
       "bytes": 362,
@@ -96,7 +96,7 @@
     },
     "native-runtime/android/VERSION": {
       "bytes": 6,
-      "sha256": "b908034df92dbedd142741ee10b5da8ac50837c4994e15c0840b47b022e8e263"
+      "sha256": "8dc19b59c6f48b20d0e0a6c88776e3ba06ec397e58c41694a785ad610ba67df2"
     },
     "native-runtime/android/README-WINDOWS-TQ.md": {
       "bytes": 2489,
@@ -9814,6 +9814,10 @@
       "bytes": 1079,
       "sha256": "b4ddf6e81bcea7f1ff14f0c3194c497f43f3bb2a435ef67d9d728f4ed21cf14b"
     },
+    "native-runtime/src/engine/SurrealEngine/Package/GameIniLayout.h": {
+      "bytes": 735,
+      "sha256": "1df594d3f56a0b34dd4e2eecc7cbad5ecf2dc7ff19ad9faf4a0bebfe3c81ed88"
+    },
     "native-runtime/src/engine/SurrealEngine/Package/PackageWriter.cpp": {
       "bytes": 6531,
       "sha256": "4340c5166df00582a96e445e0f51ae5e0503d82fdf407b51ef2855e60c53ad73"
@@ -9863,8 +9867,8 @@
       "sha256": "a6550020a0df7b7eae66b0bf7c8cd443d0aac8c0979770a3c0352bb01f783ab1"
     },
     "native-runtime/src/engine/SurrealEngine/Package/PackageManager.cpp": {
-      "bytes": 68543,
-      "sha256": "36f357995e557c8487ae7d85b83ec75c21ee3cb7d81f2c14f20feefc069fe195"
+      "bytes": 69742,
+      "sha256": "31681b7bab7adea3f0730e45f223a2205cc272f89c27d5d51001bd1b7750aca2"
     },
     "native-runtime/src/engine/SurrealEngine/Package/PackageValidation.h": {
       "bytes": 3553,
@@ -14254,6 +14258,10 @@
       "bytes": 1616,
       "sha256": "af4fb151a6b04ea00b3aa44cfa3d13dbfbf24e123d9e09ffd1505363f813a51b"
     },
+    "native-runtime/android/tests/PoAZipChecks.java": {
+      "bytes": 1765,
+      "sha256": "f17164492d7a1f70526b388086bae73d3c027253f0d52486f89f9984c30ab8e9"
+    },
     "native-runtime/android/tests/LauncherTests.java": {
       "bytes": 5492,
       "sha256": "8d9e33c431014f85e348675d4104d7963626e98ca59a2f816cc5c8ebface7e64"
@@ -14383,8 +14391,8 @@
       "sha256": "4e2a850c2ea6d2921bfd7a200b5aae6b7ef00a6036aab0ee22da7d24871dc27c"
     },
     "native-runtime/android/java/io/github/flipendo/spike/LogReport.java": {
-      "bytes": 15817,
-      "sha256": "ce78d6acad1b725eb18fc0cc0ac4e23ffa08e9adfb72d5781a709122fa0b3232"
+      "bytes": 16841,
+      "sha256": "48fda628cf3972549741a8b993c9a5a486ca077b9a0a57298c020e34dd3a1ee3"
     },
     "native-runtime/android/java/io/github/flipendo/spike/HDPackActivity.java": {
       "bytes": 4745,
@@ -22614,6 +22622,10 @@
       "bytes": 2899,
       "sha256": "65e3dbac89f06448ffc9998c296e270cd43481e545e70e529de3b342d4dce241"
     },
+    "native-runtime/tools/poa/test_ini_layout.cpp": {
+      "bytes": 1307,
+      "sha256": "6004f8de84753b588fe1be12350e326e89055b3df8025cbfb4b44c13002a119b"
+    },
     "native-runtime/tools/poa/test_object_call_constraint_corpus.cpp": {
       "bytes": 2851,
       "sha256": "914501faaf4b346a2cc0e14aaec9e7b38a779b944b9a4d953d1b8cca69a5a701"
@@ -22769,6 +22781,10 @@
     "native-runtime/tools/poa/test_typed_program.cpp": {
       "bytes": 9189,
       "sha256": "82a0cc31dc49c7249b7bd2565d3ff42967d0a5b98985676e88ae74a225ba3679"
+    },
+    "native-runtime/tools/poa/test_ini_layout.py": {
+      "bytes": 788,
+      "sha256": "139ca3cd1db8deda7372cb8e34f232a6d0b6f7672eabbe4de032a4955edf5079"
     },
     "native-runtime/tools/poa/test_struct_corpus.cpp": {
       "bytes": 2278,

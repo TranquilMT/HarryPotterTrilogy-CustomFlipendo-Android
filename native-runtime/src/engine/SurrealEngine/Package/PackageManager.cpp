@@ -4,6 +4,7 @@
 #include "Package.h"
 #include "PackageStream.h"
 #include "IniFile.h"
+#include "GameIniLayout.h"
 #include "PackageWriter.h"
 #include "Utils/File.h"
 #include "Utils/Logger.h" // missing data messages
@@ -552,7 +553,7 @@ void PackageManager::ScanFolder(const std::string& packagedir, const std::string
 void PackageManager::ScanPaths()
 {
 	Array<std::string> paths;
-	if (!IsRune() && launchInfo.ue1Version <= 219) // khg with 219 uses old format. unreal uses new in 226
+	if (UsesIndexedPackagePaths(launchInfo)) // khg with 219 uses old format. unreal uses new in 226
 	{
 		for (int i = 0; i < 16; i++)
 		{
@@ -566,11 +567,27 @@ void PackageManager::ScanPaths()
 		paths = GetIniValues("system", "Core.System", "Paths");
 	}
 
+    // A previously generated/partial SE-hppoa.ini must not hide the retail
+    // Default.ini package list. Never replace a nonempty player's path list.
+    if (UsesDefaultPackagePaths(launchInfo, !paths.empty()))
+    {
+        paths = GetDefaultIniValues("Core.System", "Paths");
+        LogMessage("PoA: active configuration has no package paths; using Default.ini Paths entries");
+    }
+    if (launchInfo.IsUE2() && paths.empty())
+        Exception::Throw("PoA configuration contains no [Core.System] Paths= entries in the active ini or Default.ini. Restore the original EU Default.ini; game files were not deleted.");
+
 	// Handle SavePath and CachePath
-	const auto savePath = convert_path_separators(GetIniValue("System", "Core.System", "SavePath"));
+	std::string savePathValue = GetIniValue("System", "Core.System", "SavePath");
+    if (launchInfo.IsUE2() && savePathValue.empty())
+        savePathValue = GetDefaultIniValue("Core.System", "SavePath", "../Save");
+    const auto savePath = convert_path_separators(savePathValue);
 	gameSaveFolderPath = (gameSystemFolderPath / savePath).lexically_normal();
 
-	const auto cachePath = convert_path_separators(GetIniValue("System", "Core.System", "CachePath"));
+	std::string cachePathValue = GetIniValue("System", "Core.System", "CachePath");
+    if (launchInfo.IsUE2() && cachePathValue.empty())
+        cachePathValue = GetDefaultIniValue("Core.System", "CachePath", "../Cache");
+    const auto cachePath = convert_path_separators(cachePathValue);
 	gameCacheFolderPath = (gameSystemFolderPath / cachePath).lexically_normal();
 
 	// Unreal 227j+ and UT 469d+ store localization files in SystemLocalized folder
@@ -613,6 +630,9 @@ void PackageManager::ScanPaths()
 
 		ScanFolder(finalPath.string(), filename.string());
 	}
+
+    if (launchInfo.IsUE2())
+        LogMessage("PoA package discovery: " + std::to_string(searchPaths.size()) + " search paths, " + std::to_string(packageFilenames.size()) + " packages, " + std::to_string(mapFolders.size()) + " map folders");
 
 	if (IsKlingonHonorGuard())
 	{
@@ -755,7 +775,7 @@ std::unique_ptr<IniFile> PackageManager::GetIniFile(NameString iniName)
 
 std::unique_ptr<IniFile> PackageManager::GetUserIniFile()
 {
-	if (IsKlingonHonorGuard() || launchInfo.ue1Version <= 219)
+	if (UsesCombinedUserIni(launchInfo))
 		return std::make_unique<IniFile>(*iniFiles[launchInfo.gameExecutableName]);
 
 	return std::make_unique<IniFile>(*iniFiles["User"]);
@@ -857,7 +877,7 @@ Array<std::string> PackageManager::GetDefaultIniValues(const NameString& section
 
 std::string PackageManager::GetDefUserIniValue(const NameString& sectionName, const NameString& keyName, std::string default_value, const int index)
 {
-	if (IsKlingonHonorGuard() || launchInfo.ue1Version <= 219)
+	if (UsesCombinedUserIni(launchInfo))
 		return defaultIniFile->GetValue(sectionName, keyName, default_value, index);
 
 	return defaultUserFile->GetValue(sectionName, keyName, default_value, index);
@@ -865,7 +885,7 @@ std::string PackageManager::GetDefUserIniValue(const NameString& sectionName, co
 
 Array<std::string> PackageManager::GetDefUserIniValues(const NameString& sectionName, const NameString& keyName, Array<std::string> default_values)
 {
-	if (IsKlingonHonorGuard() || launchInfo.ue1Version <= 219)
+	if (UsesCombinedUserIni(launchInfo))
 		return defaultIniFile->GetValues(sectionName, keyName, default_values);
 
 	return defaultUserFile->GetValues(sectionName, keyName, default_values);
@@ -929,7 +949,7 @@ void PackageManager::LoadEngineIniFiles()
 
 	iniFiles[systemIniName] = std::make_unique<IniFile>(File::find_ignoring_case(gameSystemFolderPath / systemIniFileName).string());
 
-	if (launchInfo.ue1Version > 219)
+	if (LoadsSeparateUserIni(launchInfo))
 	{
 		if (!File::try_open_existing(File::find_ignoring_case(gameSystemFolderPath / userIniName).string()))
 		{
@@ -1629,3 +1649,4 @@ void PackageManager::RegisterNativeClass(const NameString& packageName, const Na
 	nativeClass.CreateFunc = [](const NameString& name, UClass* cls, ObjectFlags flags) -> UObject* { return GC::Alloc<T>(name, cls, flags); };
 	NativeClasses[className] = std::move(nativeClass);
 }
+

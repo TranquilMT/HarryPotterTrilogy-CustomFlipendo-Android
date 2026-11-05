@@ -511,3 +511,14 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - [ ] Measure frame time and memory before claiming optimisation gains.
 
 All other incomplete compatibility gates above remain open. Bundling a game does not establish engine compatibility.
+
+## 0.4.8 — first phone startup report
+
+- [x] Phone confirmed 0.4.7 reaches the native engine and fails before a map loads: `Could not find package Core`, with no scanned paths.
+- [x] Fix PoA configuration layout selection: repeated `Paths=` entries and separate user/default-user files regardless of its unset UE1 ancestry field.
+- [x] Add production policy regressions covering PoA, HP1/HP2, old Unreal, Rune and KHG.
+- [x] Add selected-game managed-folder inventory to diagnostic reports.
+- [ ] Build and publish the corrected signed three-game APK.
+- [ ] Phone: confirm Core resolves and record the next startup result.
+
+This fixes the reported configuration-selection cause; further UE2 compatibility gates remain open.

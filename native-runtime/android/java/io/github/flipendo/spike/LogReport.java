@@ -75,6 +75,17 @@ final class LogReport {
         try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(out))) {
             addText(zip, "device-info.txt", deviceInfo(context));
             addText(zip, "exit-info.txt", exitInfo(context, zip));
+            android.content.SharedPreferences prefs = context.getSharedPreferences("setup", Context.MODE_PRIVATE);
+            String selected = prefs.getString(SetupActivity.PREF_GAME, "hp1");
+            if (!GameFiles.supported(selected)) selected = "hp1";
+            String selectedPath = prefs.getString(GameFiles.folderKey(selected), null);
+            File managedBase = context.getExternalFilesDir(null);
+            if (managedBase == null) managedBase = context.getFilesDir();
+            File managed = new File(managedBase, "games/" + selected);
+            StringBuilder selectedInfo = new StringBuilder("selected game: " + selected + "\n");
+            selectedInfo.append("Managed folder:\n").append(gameFolder(managed));
+            if (selectedPath != null) selectedInfo.append("\nSelected folder:\n").append(gameFolder(new File(selectedPath)));
+            addText(zip, "selected-game-folder.txt", selectedInfo.toString());
             addText(zip, "logcat.txt", logcat());
             String picked = context.getSharedPreferences("setup", Context.MODE_PRIVATE).getString(SetupActivity.PREF_GAME_DIR, null);
             addText(zip, "game-folder.txt", gameFolder(game)
@@ -228,7 +239,7 @@ final class LogReport {
                 s.append('\n');
             }
         }
-        for (String check : new String[] { "System/HP.exe", "system/HP.exe", "System/Game.exe", "system/Game.exe", "System/Engine.u", "system/Engine.u", "Maps/Startup.unr", "maps/Startup.unr" }) {
+        for (String check : new String[] { "System/HP.exe", "system/HP.exe", "System/Game.exe", "system/Game.exe", "System/hppoa.exe", "System/Core.u", "System/Default.ini", "System/DefUser.ini", "System/Engine.u", "system/Engine.u", "Maps/Startup.unr", "maps/Startup.unr" }) {
             File f = new File(game, check);
             s.append(check).append(": ").append(f.isFile() ? f.length() + " bytes" : "missing").append('\n');
         }

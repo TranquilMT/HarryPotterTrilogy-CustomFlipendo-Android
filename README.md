@@ -4,6 +4,14 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 [Download 0.4.7 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.7)
 
+## 0.4.8 — PoA startup hotfix
+
+- Fix the first reported phone startup failure: **Could not find package Core**.
+- Read PoA’s repeated package paths and separate user configuration correctly.
+- Include the selected game’s installed folder and core/config file checks in diagnostic exports.
+- Preserve all three game payloads, game saves and application identity.
+- PoA remains experimental; the next phone launch must confirm progress beyond package discovery.
+
 ## 0.4.7 — Trilogy testing update
 
 - Rename the app to **HP:Trilogy Mobile**; retain application ID `com.tranquil.hp1native`.

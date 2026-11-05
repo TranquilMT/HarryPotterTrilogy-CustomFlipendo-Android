@@ -1,9 +1,9 @@
 {
-  "versionName": "0.4.7",
-  "versionCode": 48,
+  "versionName": "0.4.8",
+  "versionCode": 49,
   "package": "com.tranquil.hp1native",
-  "status": "APK built and host verified; phone acceptance pending",
-  "apkBuilt": true,
+  "status": "PoA startup configuration hotfix; build verification pending",
+  "apkBuilt": false,
   "poaPlayable": false,
   "canonicalBaseCommit": "d367c77c745a776c7178ba7218a27b115c75f025",
   "previousCheckpoint": "poa-startup-20261101",
