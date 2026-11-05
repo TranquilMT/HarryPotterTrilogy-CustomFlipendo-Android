@@ -24,3 +24,13 @@
 - Connect PoA’s FOV setting to the camera calculation and widescreen correction. Retain the shared runtime settings panel and include PoA aim sensitivity in controller navigation.
 - Hide UE1-specific first-person, auto-jump and HUD-scale modifications in PoA until implemented.
 - Static EU call audit: 6,121 functions decoded, zero decode errors. Metadata still has 431 unresolved relationships; complete corpus execution was withheld.
+
+## Verified build evidence
+
+- ARM64 native build and Android API 36 Java compilation passed.
+- 100 PoA regressions, 28 release checks, 13 installer checks, 12 ZIP importer checks and 22 launcher/path/timing checks passed.
+- All three payloads checked by size and SHA-256 after signing.
+- Four Android native libraries are AArch64 with 16 KiB LOAD alignment; packaged library alignment checked.
+- APK certificate matches the permanent 0.4.2 pin.
+- Original PC game libraries under assets are data, not Android native libraries.
+- No Android device execution was performed.

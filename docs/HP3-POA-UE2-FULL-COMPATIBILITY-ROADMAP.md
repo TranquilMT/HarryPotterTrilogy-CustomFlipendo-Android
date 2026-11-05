@@ -522,3 +522,8 @@ All other incomplete compatibility gates above remain open. Bundling a game does
 - [ ] Phone: confirm Core resolves and record the next startup result.
 
 This fixes the reported configuration-selection cause; further UE2 compatibility gates remain open.
+
+- [x] Add pre-launch settings for all three games and native PoA frame pacing/FOV controls.
+- [x] Build and verify the 0.4.8 signed APK with all three payloads; 100 compatibility regressions and 28 release checks passed.
+- [ ] Phone: confirm startup passes Core discovery and verify the new settings in play.
+- [ ] Resolve remaining 431 static metadata relationships before claiming complete script corpus support.
