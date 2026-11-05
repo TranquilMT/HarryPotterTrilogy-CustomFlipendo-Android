@@ -683,9 +683,6 @@ public class SetupActivity extends Activity {
         updatePlayLabel();
         play.setVisibility(android.view.View.GONE);
         f.addView(play, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50)));
-        TextView gameOptions = chip("Game settings", GOLD, v -> GameProfileUI.show(this, selectedGame(), null));
-        gameOptions.setGravity(Gravity.CENTER);
-        f.addView(gameOptions, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(40)));
         TextView buildTag = new TextView(this);
         buildTag.setText("Version " + LogReport.version(this));
         buildTag.setTextColor(0x55FFFFFF); buildTag.setTextSize(9);

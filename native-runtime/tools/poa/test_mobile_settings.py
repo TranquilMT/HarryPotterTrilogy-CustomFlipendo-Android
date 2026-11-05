@@ -21,11 +21,9 @@ int main(){instance.LaunchInfo.ue2=true;mod=false;for(int n:{-1,0,15,25,30,45,60
 """
   with tempfile.TemporaryDirectory() as tmp:
    p=pathlib.Path(tmp);(p/'test.cpp').write_text(program);subprocess.run(['g++','-std=c++17',str(p/'test.cpp'),'-o',str(p/'test')],check=True);subprocess.run([str(p/'test')],check=True)
- def test_runtime_and_launcher_settings_wiring(self):
+ def test_runtime_settings_wiring(self):
   engine=(ROOT/'src/engine/SurrealEngine/Engine.cpp').read_text();java=ROOT/'android/java/io/github/flipendo/spike'
   self.assertIn('if (step == 0 && LaunchInfo.IsUE2()) HP1::Mods::TickFrameLimit();',engine)
   self.assertIn('else if (LaunchInfo.IsUE2())',engine)
-  self.assertIn('GameProfileUI.show(this, selectedGame(), null)',(java/'SetupActivity.java').read_text())
-  profile=(java/'GameProfileUI.java').read_text();self.assertIn('performance."+game',profile);self.assertIn('Performance presets',profile)
   activity=(java/'FlipendoActivity.java').read_text();self.assertIn('(isHp3Game() ? 60 : FPS_LIMIT_MAX)',activity);self.assertIn('if (!isHp3Game()) drawSwitchRow(c, autoJumpBtn',activity)
 if __name__=='__main__':unittest.main()

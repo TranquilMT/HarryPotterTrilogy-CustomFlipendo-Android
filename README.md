@@ -2,7 +2,17 @@
 
 An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Potter trilogy into one launcher.
 
-[Download 0.4.8 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.8)
+[Download 0.4.9 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9)
+
+## 0.4.9 — PoA folder-scan hotfix and settings correction
+
+- Fix the new phone startup failure caused by the absent optional `TestMaps` folder.
+- Skip unavailable configured map folders and tolerate directory-access errors during map discovery.
+- Preserve errors raised while parsing files; missing optional folders do not mask required package failures.
+- Remove the separate launcher settings button and dated native dialogs introduced in 0.4.8.
+- Keep the existing Android **Display / Controls / Game** settings panel for HP3, with supported render-scale, FOV, FPS and touch controls.
+- Retain the native PoA configuration, frame-pacing and FOV fixes from 0.4.8.
+- The phone report confirms 109 packages are discovered; gameplay remains unverified.
 
 ## 0.4.8 — PoA startup hotfix
 
@@ -46,7 +56,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 ## Installation and testing
 
-- Download the three-game APK and checksum file from the [latest 0.4.8 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.8).
+- Download the three-game APK and checksum file from the [latest 0.4.9 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9).
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.

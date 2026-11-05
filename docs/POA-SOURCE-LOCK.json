@@ -1,5 +1,5 @@
 {
-  "checkpoint": "HP-Trilogy-Mobile-0.4.8",
+  "checkpoint": "HP-Trilogy-Mobile-0.4.9",
   "scope": "native-runtime build source and dependencies; documentation and generated outputs excluded",
   "files": {
     "native-runtime/.gitignore": {
@@ -56,7 +56,7 @@
     },
     "native-runtime/android/AndroidManifest.xml": {
       "bytes": 4040,
-      "sha256": "3b07ace405b9838a8364a5d6c1c3ccb2318ce2ee3bbbe275cd6354f51f1dc424"
+      "sha256": "33b94680923a51014e857407500f5e4949a6187f71b2c7bb565cea515aa19201"
     },
     "native-runtime/android/build_windows.py": {
       "bytes": 9879,
@@ -64,7 +64,7 @@
     },
     "native-runtime/android/build_linux.py": {
       "bytes": 8272,
-      "sha256": "bb26848e36fccd56bd4dc6af40a2b6e3a8d58e4d6d84c7a610f6c51c2a1657d9"
+      "sha256": "e743c6aa584146675c0ad633e2d69edbe6834b5b709c266868292da400a372e4"
     },
     "native-runtime/android/iso-verification.json": {
       "bytes": 362,
@@ -96,7 +96,7 @@
     },
     "native-runtime/android/VERSION": {
       "bytes": 6,
-      "sha256": "8dc19b59c6f48b20d0e0a6c88776e3ba06ec397e58c41694a785ad610ba67df2"
+      "sha256": "1c43c7b1a49f08db663e5ab8b3fc9e3ff84743543ce0b5e2a5fc3c2d33c574e6"
     },
     "native-runtime/android/README-WINDOWS-TQ.md": {
       "bytes": 2489,
@@ -9830,6 +9830,10 @@
       "bytes": 565,
       "sha256": "110c610a48e67a312ec4e39ee79bfed44e25d90e106a438c38d8c1b6e486286b"
     },
+    "native-runtime/src/engine/SurrealEngine/Package/DataDirectory.h": {
+      "bytes": 793,
+      "sha256": "6a782b10ae192e85df8715e56869da53fd40c3bde86102caf439d3da4b63463d"
+    },
     "native-runtime/src/engine/SurrealEngine/Package/Package.h": {
       "bytes": 2527,
       "sha256": "4307f0a1302f4a3223bcc63b3c4f84df3a0dc7e5adcac12b9a70717486358964"
@@ -9867,8 +9871,8 @@
       "sha256": "a6550020a0df7b7eae66b0bf7c8cd443d0aac8c0979770a3c0352bb01f783ab1"
     },
     "native-runtime/src/engine/SurrealEngine/Package/PackageManager.cpp": {
-      "bytes": 69742,
-      "sha256": "31681b7bab7adea3f0730e45f223a2205cc272f89c27d5d51001bd1b7750aca2"
+      "bytes": 70067,
+      "sha256": "eeb64f6e78679cbe45e7552a6c56e0afb097274fd82622671ed5304f4195e6a1"
     },
     "native-runtime/src/engine/SurrealEngine/Package/PackageValidation.h": {
       "bytes": 3553,
@@ -14355,12 +14359,8 @@
       "sha256": "d58d35a142129d291a425574d53866d25e0268807e2cb4fda1925e74072f5898"
     },
     "native-runtime/android/java/io/github/flipendo/spike/SetupActivity.java": {
-      "bytes": 155436,
-      "sha256": "c3e2d98d2e91e2f9bce695d37b218db987e065d640e6850beb08096135f0edb0"
-    },
-    "native-runtime/android/java/io/github/flipendo/spike/GameProfileUI.java": {
-      "bytes": 4681,
-      "sha256": "af59ff4210a1dcbb2ea15886813e8776c45d04425909de2caf28518715d16e61"
+      "bytes": 155164,
+      "sha256": "2700314f1f0edc7a1297762f9406917401eb07a646e12e0104e61b4e14a2ad22"
     },
     "native-runtime/android/java/io/github/flipendo/spike/Tr.java": {
       "bytes": 95966,
@@ -22626,6 +22626,10 @@
       "bytes": 2899,
       "sha256": "65e3dbac89f06448ffc9998c296e270cd43481e545e70e529de3b342d4dce241"
     },
+    "native-runtime/tools/poa/test_data_directory.cpp": {
+      "bytes": 1353,
+      "sha256": "d4a13186a6a4937f921784851fdf1f49c6661ecb8756769864f3fbe020fce7ea"
+    },
     "native-runtime/tools/poa/test_ini_layout.cpp": {
       "bytes": 1307,
       "sha256": "6004f8de84753b588fe1be12350e326e89055b3df8025cbfb4b44c13002a119b"
@@ -22681,6 +22685,10 @@
     "native-runtime/tools/poa/test_bool_variables.cpp": {
       "bytes": 2885,
       "sha256": "be41fa2bdae4a6b33766ac0d134aab0cca42dc127cb163af2dedd4627c5bcdbb"
+    },
+    "native-runtime/tools/poa/test_data_directory.py": {
+      "bytes": 520,
+      "sha256": "a404515b7a20f13c963a3638c3e08b31117cb504fef929b359314ec86d768ae1"
     },
     "native-runtime/tools/poa/check_package_tables.py": {
       "bytes": 4173,
@@ -22751,8 +22759,8 @@
       "sha256": "ce5e741b8c5d5d036e1258874eff1eed095d3d9d602289846c05aff5b1968015"
     },
     "native-runtime/tools/poa/test_mobile_settings.py": {
-      "bytes": 2159,
-      "sha256": "bb590064df8eff0ac914164b1b84702b1e709924fd05937ddb895375c77fec9d"
+      "bytes": 1901,
+      "sha256": "bdfd5ef78834642abda9122f91e6c2d75e5dc83c345c5528d356c331ecc7c0b5"
     },
     "native-runtime/tools/poa/inspect_packages.py": {
       "bytes": 3781,

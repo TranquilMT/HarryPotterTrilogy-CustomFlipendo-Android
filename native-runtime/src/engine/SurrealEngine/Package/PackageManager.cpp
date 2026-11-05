@@ -5,6 +5,7 @@
 #include "PackageStream.h"
 #include "IniFile.h"
 #include "GameIniLayout.h"
+#include "DataDirectory.h"
 #include "PackageWriter.h"
 #include "Utils/File.h"
 #include "Utils/Logger.h" // missing data messages
@@ -474,9 +475,11 @@ void PackageManager::ScanForMaps()
 {
 	for (auto& mapFolderPath : mapFolders)
 	{
-		for (const auto& dir_entry: fs::directory_iterator{mapFolderPath})
-			if (dir_entry.is_regular_file())
-				maps.push_back(dir_entry.path().filename().string());
+        const auto error = VisitDataFiles(mapFolderPath, [&](const auto& entry) {
+            maps.push_back(entry.path().filename().string());
+        });
+        if (error)
+            LogMessage("Skipping unavailable map folder: " + mapFolderPath + " (" + error.message() + ")");
 	}
 }
 
@@ -621,14 +624,16 @@ void PackageManager::ScanPaths()
 
 		// remember the search folders for missing data messages, and report missing ones right away
 		searchPaths.push_back({ currentPathStr, finalPath.string() });
-		if (!fs::exists(finalPath))
-			LogMessage("Game data folder missing: " + finalPath.string() + " (Paths=" + currentPathStr + " in [Core.System])");
+        std::error_code folderError;
+        const bool folderAvailable = fs::is_directory(finalPath, folderError);
+        if (!folderAvailable)
+            LogMessage("Skipping unavailable game data folder: " + finalPath.string() + " (Paths=" + currentPathStr + " in [Core.System])");
 
 		// Add map folders in a separate list, so ScanForMaps() can use them
-		if (filename.string() == "*." + GetMapExtension())
+		if (folderAvailable && filename.string() == "*." + GetMapExtension())
 			mapFolders.push_back(finalPath.string());
 
-		ScanFolder(finalPath.string(), filename.string());
+		if (folderAvailable) ScanFolder(finalPath.string(), filename.string());
 	}
 
     if (launchInfo.IsUE2())

@@ -527,3 +527,13 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Build and verify the 0.4.8 signed APK with all three payloads; 100 compatibility regressions and 28 release checks passed.
 - [ ] Phone: confirm startup passes Core discovery and verify the new settings in play.
 - [ ] Resolve remaining 431 static metadata relationships before claiming complete script corpus support.
+
+## 0.4.9 — second phone report and settings correction
+
+- [x] Phone confirms 109 packages discovered after the 0.4.8 path-format fix.
+- [x] Identify missing optional TestMaps directory as the next startup blocker.
+- [x] Skip absent map folders and handle errors during map directory enumeration.
+- [x] Remove the unwanted launcher settings dialogs; retain the established Android settings panel.
+- [ ] Build and publish the signed three-game 0.4.9 APK.
+- [ ] Phone: confirm startup passes map discovery; retain the next engine result.
+- [ ] Complete UE2 object, native-function, rendering and gameplay acceptance gates above.
