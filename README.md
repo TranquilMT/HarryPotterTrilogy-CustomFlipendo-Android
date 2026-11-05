@@ -2,6 +2,8 @@
 
 An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Potter trilogy into one launcher.
 
+[Download 0.4.7 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.7)
+
 ## 0.4.7 — Trilogy testing update
 
 - Rename the app to **HP:Trilogy Mobile**; retain application ID `com.tranquil.hp1native`.
@@ -34,7 +36,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 ## Installation and testing
 
-- Download the three-game APK and checksum file from Releases when 0.4.7 is published. Source checkpoints are not finished APK releases.
+- Download the three-game APK and checksum file from the [latest 0.4.7 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.7).
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.

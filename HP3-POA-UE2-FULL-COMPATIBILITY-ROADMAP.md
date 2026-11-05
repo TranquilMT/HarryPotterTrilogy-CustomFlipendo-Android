@@ -505,7 +505,7 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - [x] Remove unsupported KWGame.u prerequisite; retain actual v129 script validation.
 - [x] Compile Android Java sources against API 36.
 - [x] Complete ARM64 native build and signed three-game APK verification.
-- [ ] Publish APK, complete source and SHA-256 checksums as latest release.
+- [x] Publish APK, complete source and SHA-256 checksums as latest release: [v0.4.7](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.7).
 - [ ] Phone: launch PoA to first runtime failure or rendered menu and retain report.
 - [ ] Phone: verify movement, casting, character swapping, menu, save/load and level transitions.
 - [ ] Measure frame time and memory before claiming optimisation gains.

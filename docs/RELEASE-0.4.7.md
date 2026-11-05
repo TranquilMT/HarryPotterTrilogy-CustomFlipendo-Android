@@ -8,7 +8,7 @@
 - APK verification checks payload contents, AArch64 libraries, 16 KiB alignment and the permanent signing certificate.
 - Native compilation, Java compilation and host checks are build evidence only.
 - Phone acceptance remains open for all games. PoA startup, rendering, native functions, character swapping, save/load and optimisation remain unverified.
-- Build state: signed three-game APK verified; GitHub publication follows. Phone acceptance remains open.
+- Build state: signed three-game APK verified; Published as GitHub latest release [v0.4.7](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.7). Phone acceptance remains open.
 
 ## PC controls reference
 
