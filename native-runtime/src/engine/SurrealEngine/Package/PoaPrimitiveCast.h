@@ -3,6 +3,15 @@
 #include <stdexcept>
 #include <string>
 
+namespace PoaScriptTokens
+{
+constexpr uint8_t ArrayInsert = 0x40;
+constexpr uint8_t ArrayRemove = 0x41;
+constexpr uint8_t DelegateCall = 0x43;
+constexpr uint8_t DelegateBinding = 0x44;
+constexpr uint8_t DelegateAssign = 0x45;
+}
+
 namespace PoaPrimitiveCasts
 {
 // UE2 EX_PrimitiveCast (0x39) is followed by a cast code and one expression.

@@ -17,6 +17,7 @@ class GotoLabelExpression;
 class EatStringExpression;
 class LetExpression;
 class DynArrayElementExpression;
+class PoaArrayEditExpression;
 class NewExpression;
 class ClassContextExpression;
 class MetaCastExpression;
@@ -112,6 +113,7 @@ public:
 	virtual void Expr(EatStringExpression* expr) = 0;
 	virtual void Expr(LetExpression* expr) = 0;
 	virtual void Expr(DynArrayElementExpression* expr) = 0;
+	virtual void Expr(PoaArrayEditExpression* expr) = 0;
 	virtual void Expr(NewExpression* expr) = 0;
 	virtual void Expr(ClassContextExpression* expr) = 0;
 	virtual void Expr(MetaCastExpression* expr) = 0;

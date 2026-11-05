@@ -3,6 +3,7 @@
 #include "Packages/Core/UField.h"
 
 struct PropertyHeader;
+class UFunction;
 
 enum class PropertyFlags : uint32_t
 {
@@ -51,7 +52,8 @@ enum class ExpressionValueType
 	ValueStruct,
 	ValueCoords,
 	ValueQuat,
-	ValueArray
+	ValueArray,
+	ValuePoaDelegate
 };
 
 class UProperty : public UField
@@ -136,6 +138,37 @@ public:
 	bool CompareLessElement(const void* v1, const void* v2) override { return *static_cast<const T*>(v1) < *static_cast<const T*>(v2); }
 
 	GCAllocation* MarkPropertyElement(GCAllocation* marklist, void* data) override { return marklist; }
+};
+
+struct PoaDelegateBinding
+{
+	UObject* Object = nullptr;
+	NameString Function;
+
+	bool operator==(const PoaDelegateBinding& other) const = default;
+	bool operator<(const PoaDelegateBinding& other) const
+	{
+		return Object == other.Object ? Function < other.Function : std::less<UObject*>{}(Object, other.Object);
+	}
+};
+
+class UPoaDelegateProperty : public UPropertyT<PoaDelegateBinding>
+{
+public:
+	UPoaDelegateProperty(NameString name, UClass* cls, ObjectFlags flags);
+	void Load(ObjectStream* stream) override;
+	void Save(PackageStreamWriter* stream) override;
+	void LoadValue(void* data, ObjectStream* stream, const PropertyHeader& header) override;
+	void SaveHeader(void* data, PropertyHeader& header) override;
+	void SaveValue(void* data, PackageStreamWriter* stream) override;
+	GCAllocation* MarkPropertyElement(GCAllocation* marklist, void* data) override;
+	void ResolveBinding(UObject*& receiver, NameString& function);
+
+protected:
+	GCAllocation* Mark(GCAllocation* marklist) override;
+
+private:
+	UFunction* Signature = nullptr;
 };
 
 // Dummy property class so we can keep the virtual functions in UProperty abstract

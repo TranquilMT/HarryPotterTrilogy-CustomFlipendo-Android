@@ -88,6 +88,10 @@ int main(){
  engine->LaunchInfo.poa=true;
  same({0x60,0x01,0x16},3); // extended native 1, not UE1's conversion token 0x60
  same({0x61,0x23,0x25,0x16},4);same({0x6f,0xfe,0x16},3);same({0x70,0x25,0x16},3);
+ same({0x40,0x01,1,0x25,0x26},8); // Insert(Array, 0, 1)
+ same({0x41,0x01,1,0x25,0x26},8); // Remove(Array, 0, 1)
+ same({0x43,1,1,0x26,0x16},11); // Delegate property, fallback name, argument, terminator
+ same({0x45,0x01,1,0x44,1},11); // Bind an instance delegate to a function name
  same({0x37,0x01,1},6); // PoA dynamic-array length with a compact property reference
  same({0x1b,1,0x16},6);same({0x1c,1,0x16},6);same({0x29,1},5);
  same({0x34,0x41,0,0xe9,0,0,0},7); // UTF-16 units, independent of 32-bit wchar_t
@@ -96,7 +100,7 @@ int main(){
  same({0x39,0x53,0x25},3); // IntToString in Core.Main
  same({0x39,0x55,0x1e,0,0,0,0},7); // FloatToString in Core.Main
  same({0x39,0x3f,0x39,0x41,0x27},5); // nested casts retain both prefix bytes
- for(int op=0x39;op<0x60;++op){ObjectStream stream;stream.data={uint8_t(op),0x25};UStruct f;rejects([&]{f.ReadToken(&stream,0);});}
+ for(int op=0x39;op<0x60;++op){ObjectStream stream;stream.data={uint8_t(op)};UStruct f;rejects([&]{f.ReadToken(&stream,0);});}
  ObjectStream truncated;truncated.data={0x60};UStruct f;rejects([&]{f.ReadToken(&truncated,0);});
  ObjectStream depth;depth.data={0x25};rejects([&]{f.ReadToken(&depth,64);});
  engine->LaunchInfo.poa=false;ObjectStream conversion;conversion.version=69;conversion.data={0x39,0x25};UStruct ue1;ue1.ReadToken(&conversion,0);assert(ue1.Bytecode==conversion.data);++checks;

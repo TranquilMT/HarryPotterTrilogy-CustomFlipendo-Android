@@ -2,10 +2,50 @@
 import argparse
 from collections import Counter
 from pathlib import Path
+from struct import unpack_from
 
 from bytecode import Decoder
 from inspect_packages import Reader, inspect
 from object_payloads import name, tags
+
+
+def reference_entry(model, reference):
+    if not reference:
+        return None
+    entries = model['exports'] if reference > 0 else model['imports']
+    return entries[abs(reference) - 1]
+
+
+def audit_delegate_property(reader, model):
+    names = model['names']
+    tags(reader, names)
+    reader.compact()  # BaseField
+    reader.compact()  # Next
+    reader.u32()  # ArrayDimension
+    flags = reader.u32()
+    name(reader, names)
+    if flags & 0x20:
+        reader.read(2)  # ReplicationOffset
+    signature = reference_entry(model, reader.compact())
+    if signature is None or signature['class'] != 'Function':
+        raise ValueError('Invalid delegate signature')
+    if reader.p != len(reader.data):
+        raise ValueError('Unconsumed delegate declaration bytes')
+
+
+def audit_delegate_values(reader, model, counts):
+    for tag in tags(reader, model['names']):
+        if not tag['name'].endswith('__Delegate'):
+            continue
+        if tag['type'] != 7:
+            raise ValueError('Invalid delegate value tag')
+        offset = tag['offset']
+        value = Reader(reader.data[offset:offset + tag['size']])
+        reference_entry(model, value.compact())
+        name(value, model['names'])
+        if value.p != len(value.data):
+            raise ValueError('Unconsumed delegate value bytes')
+        counts['Tagged delegate values'] += 1
 
 
 def audit(system):
@@ -19,12 +59,18 @@ def audit(system):
         data = path.read_bytes()
         for export in model['exports']:
             kind = export['class']
-            if not export['size'] or kind not in ('Class', 'Struct', 'State', 'Function'):
+            if not export['size']:
                 continue
             offset = export['offset']
             reader = Reader(data[offset:offset + export['size']])
             names = model['names']
             try:
+                if kind == 'DelegateProperty':
+                    audit_delegate_property(reader, model)
+                    counts['Delegate declarations'] += 1
+                    continue
+                if kind not in ('Class', 'Struct', 'State', 'Function'):
+                    continue
                 if kind != 'Class':
                     tags(reader, names)
                 for _ in range(4):
@@ -48,8 +94,20 @@ def audit(system):
                                       len(model['exports']), script_size)
                     decoder.decode()
                     counts['Script bodies'] += 1
-                    counts['Dynamic-array length tokens'] += sum(
-                        token['opcode'] == 0x37 for token in decoder.tokens)
+                    for token in decoder.tokens:
+                        opcode = token['opcode']
+                        if opcode == 0x37:
+                            counts['Dynamic-array length tokens'] += 1
+                        elif opcode in (0x40, 0x41):
+                            counts['Array insertion tokens' if opcode == 0x40 else 'Array removal tokens'] += 1
+                        elif opcode == 0x43:
+                            reference, = unpack_from('<i', decoder.expanded, token['offset'] + 1)
+                            target = reference_entry(model, reference)
+                            if target is None or target['class'] != 'DelegateProperty':
+                                raise ValueError('Invalid delegate call property')
+                            counts['Delegate calls'] += 1
+                        elif opcode == 0x45:
+                            counts['Delegate assignments'] += 1
                 if kind == 'Function':
                     reader.read(3)  # NativeFuncIndex and OperatorPrecedence
                     if reader.u32() & 0x40:
@@ -76,7 +134,7 @@ def audit(system):
                         raise ValueError('Invalid category count')
                     for _ in range(categories):
                         name(reader, names)
-                    tags(reader, names)
+                    audit_delegate_values(reader, model, counts)
                     if not script_size:
                         counts['Script-free class tails'] += 1
                 if reader.p != len(reader.data):

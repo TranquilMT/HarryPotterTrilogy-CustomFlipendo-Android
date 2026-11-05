@@ -331,6 +331,31 @@ ExprToken UStruct::ReadToken(ObjectStream* stream, int depth)
 		ReadToken(stream, depth);
 		return static_cast<ExprToken>(tokenbyte);
 	}
+	if (poa && (tokenbyte == PoaScriptTokens::ArrayInsert || tokenbyte == PoaScriptTokens::ArrayRemove))
+	{
+		ReadToken(stream, depth); // Array
+		ReadToken(stream, depth); // Index
+		ReadToken(stream, depth); // Count
+		return static_cast<ExprToken>(tokenbyte);
+	}
+	if (poa && tokenbyte == PoaScriptTokens::DelegateCall)
+	{
+		PushIndex(stream->ReadIndex()); // Delegate property
+		PushIndex(stream->ReadIndex()); // Default function name
+		while (ReadToken(stream, depth) != ExprToken::EndFunctionParms);
+		return static_cast<ExprToken>(tokenbyte);
+	}
+	if (poa && tokenbyte == PoaScriptTokens::DelegateBinding)
+	{
+		PushIndex(stream->ReadIndex());
+		return static_cast<ExprToken>(tokenbyte);
+	}
+	if (poa && tokenbyte == PoaScriptTokens::DelegateAssign)
+	{
+		ReadToken(stream, depth);
+		ReadToken(stream, depth);
+		return static_cast<ExprToken>(tokenbyte);
+	}
 	// The remaining UE2 opcodes overlap legacy conversions but mean different operations.
 	if (poa && tokenbyte >= 0x3a && tokenbyte < 0x60)
 		Exception::Throw("Unsupported production PoA bytecode token " + std::to_string(tokenbyte) + " in " + Name.ToString());

@@ -670,6 +670,14 @@ void PrintExpression::Expr(StringToNameExpression* expr)
 	Print(console, "Value", expr->Value, depth + 1);
 }
 
+void PrintExpression::Expr(PoaArrayEditExpression* expr)
+{
+	WriteRow("", name, expr->Insert ? "Dynamic array insert" : "Dynamic array remove");
+	Print(console, "Array", expr->Array, depth + 1);
+	Print(console, "Index", expr->Index, depth + 1);
+	Print(console, "Count", expr->Count, depth + 1);
+}
+
 void PrintExpression::Expr(DynArrayToIntExpression* expr)
 {
 	WriteRow("", name, "DynArray to int");
@@ -1329,6 +1337,16 @@ void PrintPrettyExpression::Expr(StringToNameExpression* expr)
 {
 	writeOutput("stringToName(");
 	Print(writeOutput, expr->Value);
+	writeOutput(")");
+}
+
+void PrintPrettyExpression::Expr(PoaArrayEditExpression* expr)
+{
+	Print(writeOutput, expr->Array);
+	writeOutput(expr->Insert ? ".Insert(" : ".Remove(");
+	Print(writeOutput, expr->Index);
+	writeOutput(", ");
+	Print(writeOutput, expr->Count);
 	writeOutput(")");
 }
 

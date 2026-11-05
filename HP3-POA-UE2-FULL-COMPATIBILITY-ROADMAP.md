@@ -552,4 +552,11 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Enable 14 additional observed primitive cast codes with existing production evaluators. Core.Main uses integer-to-string and float-to-string, which the scalar-only bridge rejected.
 - [x] Extend the offline audit through 8,661 script bodies and validate the complete tails of 10,452 class, function, state and struct records.
 - [x] Pass 97 host tests, including the production token and expression bridge harnesses, and syntax-check both changed C++ translation units.
-- [ ] Implement the remaining production array insertion, array removal and delegate operations observed in the corpus. Verify startup order and execution on the next signed Android build.
+- [x] Implement the observed production array insertion, removal and delegate operations. See the checkpoint below.
+
+## PoA array edits and delegates
+
+- [x] Add production decoding and VM execution for dynamic-array Insert and Remove with checked ranges and a bounded allocation. The retained script audit found 21 Insert and 34 Remove instructions.
+- [x] Register the PoA DelegateProperty class. Preserve its function signature, tagged bindings and bound object references. Route delegate assignments and calls through the production VM, with the encoded fallback function when unbound.
+- [x] Audit 41 delegate declarations, 61 calls, 187 assignments and three tagged delegate values in class defaults. Pass 97 host tests and syntax-check the seven changed C++ translation units.
+- [ ] Verify array mutation, GUI callback dispatch and startup on a signed Android APK. This checkpoint has host and corpus verification only.

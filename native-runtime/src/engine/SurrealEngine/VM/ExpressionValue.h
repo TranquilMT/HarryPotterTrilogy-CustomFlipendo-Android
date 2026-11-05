@@ -150,6 +150,13 @@ public:
 	static ExpressionValue VectorValue(vec3 value) { ExpressionValue v(ExpressionValueType::ValueVector); *v.PtrVector = value; return v; }
 	static ExpressionValue RotatorValue(Rotator value) { ExpressionValue v(ExpressionValueType::ValueRotator); *v.PtrRotator = value; return v; }
 	static ExpressionValue StringValue(std::string value) { ExpressionValue v(ExpressionValueType::ValueString); *v.PtrString = value; return v; }
+	static ExpressionValue DelegateValue(UObject* object, NameString function)
+	{
+		ExpressionValue value(ExpressionValueType::ValuePoaDelegate);
+		*value.PtrDelegate = { function.IsNone() ? nullptr : object, function };
+		return value;
+	}
+
 	static ExpressionValue NameValue(NameString value) { ExpressionValue v(ExpressionValueType::ValueName); *v.PtrName = value; return v; }
 	static ExpressionValue ColorValue(Color value) { ExpressionValue v(ExpressionValueType::ValueColor); *v.PtrColor = value; return v; }
 	static ExpressionValue CoordsValue(Coords value) { ExpressionValue v(ExpressionValueType::ValueCoords); *v.PtrCoords = value; return v; }
@@ -176,6 +183,33 @@ public:
 		if (v->GetSize() <= index)
 			v->Resize(index + 1);
 		return ExpressionValue(v->GetItem(index), v->GetType());
+	}
+
+	void EditDynamicArray(bool insert, int32_t index, int32_t count)
+	{
+		CheckType(ExpressionValueType::ValueArray);
+		if (!IsVariable() || !HasData())
+			Exception::Throw("Dynamic array edit requires an array variable");
+		auto& array = *static_cast<ScriptArray*>(Ptr);
+		if (index < 0 || count < 0 || size_t(index) > array.GetSize())
+			Exception::Throw("Dynamic array edit range out of bounds");
+		if (count == 0)
+			return;
+		if (insert)
+		{
+			constexpr size_t maximumBytes = 64 * 1024 * 1024;
+			const size_t pitch = array.GetType()->ElementPitch();
+			const size_t limit = pitch ? maximumBytes / pitch : 0;
+			if (array.GetSize() > limit || size_t(count) > limit - array.GetSize())
+				Exception::Throw("Dynamic array insertion exceeds memory limit");
+			array.Insert(size_t(index), size_t(count));
+		}
+		else
+		{
+			if (size_t(count) > array.GetSize() - size_t(index))
+				Exception::Throw("Dynamic array removal range out of bounds");
+			array.Remove(size_t(index), size_t(count));
+		}
 	}
 
 	ExpressionValue Member(UProperty* field)
@@ -206,6 +240,7 @@ private:
 		case ExpressionValueType::ValueRotator: new(PtrByte) Rotator(); break;
 		case ExpressionValueType::ValueString: new(PtrByte) std::string(); break;
 		case ExpressionValueType::ValueName: new(PtrByte) NameString(); break;
+		case ExpressionValueType::ValuePoaDelegate: new(PtrByte) PoaDelegateBinding(); break;
 		case ExpressionValueType::ValueColor: new(PtrByte) Color(); break;
 		case ExpressionValueType::ValueStruct: new(PtrByte) StructValue(); Ptr = GetStructValue()->Ptr; break;
 		case ExpressionValueType::ValueArray: new(PtrByte) ArrayValue(); Ptr = GetArrayValue()->Ptr; break;
@@ -266,6 +301,7 @@ private:
 		uint8_t Rotator_[sizeof(Rotator)];
 		uint8_t String[sizeof(std::string)];
 		uint8_t Name[sizeof(NameString)];
+		alignas(PoaDelegateBinding) uint8_t Delegate[sizeof(PoaDelegateBinding)];
 		uint8_t Color_[sizeof(Color)];
 		uint8_t Struct[sizeof(StructValue)];
 		uint8_t Array[sizeof(ArrayValue)];
@@ -287,6 +323,7 @@ private:
 		Rotator* PtrRotator;
 		std::string* PtrString;
 		NameString* PtrName;
+		PoaDelegateBinding* PtrDelegate;
 		Color* PtrColor;
 		IpAddr* PtrIpAddr;
 		Coords* PtrCoords;
@@ -424,6 +461,10 @@ inline void ExpressionValue::Store(const ExpressionValue& rvalue)
 	case ExpressionValueType::ValueRotator: *PtrRotator = rvalue.ToRotator(); break;
 	case ExpressionValueType::ValueString: *PtrString = rvalue.ToString(); break;
 	case ExpressionValueType::ValueName: *PtrName = rvalue.ToName(); break;
+	case ExpressionValueType::ValuePoaDelegate:
+		rvalue.CheckType(ExpressionValueType::ValuePoaDelegate);
+		*PtrDelegate = *rvalue.PtrDelegate;
+		break;
 	case ExpressionValueType::ValueColor: *PtrColor = rvalue.ToColor(); break;
 	case ExpressionValueType::ValueStruct:
 		if (rvalue.Type == ExpressionValueType::Nothing || !rvalue.Ptr || !Ptr) break; // an Accessed None value: the struct keeps its value
@@ -465,6 +506,7 @@ inline void ExpressionValue::Load()
 		case ExpressionValueType::ValueRotator: *value.PtrRotator = *PtrRotator; break;
 		case ExpressionValueType::ValueString: *value.PtrString = *PtrString; break;
 		case ExpressionValueType::ValueName: *value.PtrName = *PtrName; break;
+		case ExpressionValueType::ValuePoaDelegate: *value.PtrDelegate = *PtrDelegate; break;
 		case ExpressionValueType::ValueColor: *value.PtrColor = *PtrColor; break;
 		case ExpressionValueType::ValueStruct:
 			value.GetStructValue()->Load(UObject::Cast<UStructProperty>(VariableProperty)->Struct, Ptr);
@@ -496,6 +538,8 @@ inline bool ExpressionValue::IsEqual(const ExpressionValue& value) const
 	case ExpressionValueType::ValueRotator: return ToRotator() == value.ToRotator();
 	case ExpressionValueType::ValueString: return ToString() == value.ToString();
 	case ExpressionValueType::ValueName: return ToName() == value.ToName();
+	case ExpressionValueType::ValuePoaDelegate:
+		return value.Type == Type && *PtrDelegate == *value.PtrDelegate;
 	case ExpressionValueType::ValueColor: return ToColor() == value.ToColor();
 	case ExpressionValueType::ValueStruct:
 		if (!VariableProperty)

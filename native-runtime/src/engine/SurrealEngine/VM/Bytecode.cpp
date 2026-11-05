@@ -35,6 +35,49 @@ Expression* Bytecode::ReadToken(BytecodeStream* stream, int depth)
 		return expr;
 	}
 	ExprToken token = stream->ReadToken();
+	const auto rawToken = uint8_t(token);
+	if (engine->LaunchInfo.IsHarryPotter3() &&
+		(rawToken == PoaScriptTokens::ArrayInsert || rawToken == PoaScriptTokens::ArrayRemove))
+	{
+		auto expr = Create<PoaArrayEditExpression>(exproffset);
+		expr->Insert = rawToken == PoaScriptTokens::ArrayInsert;
+		expr->Array = ReadToken(stream, depth);
+		expr->Index = ReadToken(stream, depth);
+		expr->Count = ReadToken(stream, depth);
+		return expr;
+	}
+	if (engine->LaunchInfo.IsHarryPotter3())
+	{
+		switch (rawToken)
+		{
+		case PoaScriptTokens::DelegateCall:
+		{
+			auto expr = Create<VirtualFunctionExpression>(exproffset);
+			expr->DelegateProperty = stream->ReadObject<UPoaDelegateProperty>();
+			if (!expr->DelegateProperty)
+				Exception::Throw("PoA delegate call is missing its property");
+			expr->Name = stream->ReadName();
+			while (stream->PeekToken() != ExprToken::EndFunctionParms)
+				expr->Args.push_back(ReadToken(stream, depth));
+			stream->ReadToken();
+			return expr;
+		}
+		case PoaScriptTokens::DelegateBinding:
+		{
+			auto expr = Create<NameConstExpression>(exproffset);
+			expr->Value = stream->ReadName();
+			expr->IsDelegateBinding = true;
+			return expr;
+		}
+		case PoaScriptTokens::DelegateAssign:
+		{
+			auto expr = Create<LetExpression>(exproffset);
+			expr->LeftSide = ReadToken(stream, depth);
+			expr->RightSide = ReadToken(stream, depth);
+			return expr;
+		}
+		}
+	}
 	token = static_cast<ExprToken>(PoaPrimitiveCasts::ExpressionToken(*stream,
 		uint8_t(token), engine->LaunchInfo.IsHarryPotter3()));
 

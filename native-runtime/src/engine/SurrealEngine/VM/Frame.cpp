@@ -1056,6 +1056,25 @@ ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UO
 				}
 				break;
 
+			case ExpressionType::PoaArrayEdit:
+				if (pass == 0)
+				{
+					const auto* edit = static_cast<PoaArrayEditExpression*>(expr);
+					PushExpr(edit->Count);
+					PushExpr(edit->Index);
+					PushExpr(edit->Array);
+				}
+				else
+				{
+					const int32_t count = PopValue().ToInt();
+					const int32_t index = PopValue().ToInt();
+					auto array = PopValue();
+					array.EditDynamicArray(static_cast<PoaArrayEditExpression*>(expr)->Insert, index, count);
+					PushValue(ExpressionValue::NothingValue());
+					PopExpr();
+				}
+				break;
+
 			case ExpressionType::New:
 				if (pass == 0)
 				{
@@ -1237,9 +1256,13 @@ ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UO
 				break;
 
 			case ExpressionType::NameConst:
-				PushValue(ExpressionValue::NameValue(static_cast<NameConstExpression*>(expr)->Value));
+			{
+				auto constant = static_cast<NameConstExpression*>(expr);
+				PushValue(constant->IsDelegateBinding ? ExpressionValue::DelegateValue(self, constant->Value)
+				                                      : ExpressionValue::NameValue(constant->Value));
 				PopExpr();
 				break;
+			}
 
 			case ExpressionType::RotationConst:
 				PushValue(ExpressionValue::RotatorValue({
@@ -1909,23 +1932,27 @@ ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UO
 					auto funcExpr = static_cast<VirtualFunctionExpression*>(expr);
 					ArrayView<ExpressionValue> funcArgs((ExpressionValue*)vmstack.value[vmstack.valueEnd - funcExpr->Args.size()].buffer, funcExpr->Args.size());
 
-					UClass* contextClass = UObject::TryCast<UClass>(context);
+					UObject* receiver = context;
+					NameString function = funcExpr->Name;
+					if (funcExpr->DelegateProperty)
+						funcExpr->DelegateProperty->ResolveBinding(receiver, function);
+					UClass* contextClass = UObject::TryCast<UClass>(receiver);
 					if (!contextClass)
-						contextClass = context->Class;
+						contextClass = receiver->Class;
 
 					// Search states first
 
-					NameString stateName = context->GetStateName();
+					NameString stateName = receiver->GetStateName();
 					bool found = false;
 					for (UClass* cls = contextClass; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
 					{
 						UState* state = cls->GetState(stateName);
 						if (state)
 						{
-							UFunction* func = state->GetFunction(funcExpr->Name);
+							UFunction* func = state->GetFunction(function);
 							if (func)
 							{
-								auto callresult = Frame::Call(func, context, funcArgs);
+								auto callresult = Frame::Call(func, receiver, funcArgs);
 								PopValues(funcExpr->Args.size());
 								PushValue(callresult);
 								PopExpr();
@@ -1940,9 +1967,9 @@ ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UO
 						// Search normal member functions next
 						for (UClass* cls = contextClass; !found && cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
 						{
-							if (UFunction* func = cls->GetFunction(funcExpr->Name))
+							if (UFunction* func = cls->GetFunction(function))
 							{
-								auto callresult = Frame::Call(func, context, funcArgs);
+								auto callresult = Frame::Call(func, receiver, funcArgs);
 								PopValues(funcExpr->Args.size());
 								PushValue(callresult);
 								PopExpr();
@@ -1954,7 +1981,7 @@ ExpressionEvalResult Frame::RunExpr(Expression* statementExpr, UObject* self, UO
 
 					if (!found)
 					{
-						Frame::ThrowException("Script virtual function " + funcExpr->Name.ToString() + " not found!");
+						Frame::ThrowException("Script virtual function " + function.ToString() + " not found!");
 						for (size_t i = 0, count = funcExpr->Args.size(); i < count; i++)
 							PopValue();
 						PushValue(ExpressionValue::NothingValue());

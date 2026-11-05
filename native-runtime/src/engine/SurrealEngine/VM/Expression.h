@@ -8,6 +8,7 @@ class UClass;
 class UStruct;
 class UFunction;
 class UProperty;
+class UPoaDelegateProperty;
 
 enum class ExpressionType : uint8_t
 {
@@ -102,6 +103,7 @@ enum class ExpressionType : uint8_t
 	NativeFunction,
 	FunctionArguments,
 	Construct,
+	PoaArrayEdit,
 };
 
 class Expression
@@ -267,6 +269,18 @@ public:
 	Expression* Array = nullptr;
 };
 
+class PoaArrayEditExpression : public Expression
+{
+public:
+	PoaArrayEditExpression() : Expression(ExpressionType::PoaArrayEdit) {}
+	void Visit(ExpressionVisitor* visitor) override { visitor->Expr(this); }
+
+	bool Insert = false;
+	Expression* Array = nullptr;
+	Expression* Index = nullptr;
+	Expression* Count = nullptr;
+};
+
 class NewExpression : public Expression
 {
 public:
@@ -402,6 +416,7 @@ public:
 	void Visit(ExpressionVisitor* visitor) override { visitor->Expr(this); }
 
 	NameString Value;
+	bool IsDelegateBinding = false;
 };
 
 class RotationConstExpression : public Expression
@@ -904,6 +919,7 @@ public:
 	void Visit(ExpressionVisitor* visitor) override { visitor->Expr(this); }
 
 	NameString Name;
+	UPoaDelegateProperty* DelegateProperty = nullptr;
 	Array<Expression*> Args;
 };
 

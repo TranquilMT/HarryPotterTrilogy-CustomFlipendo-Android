@@ -1393,6 +1393,9 @@ void PackageManager::RegisterNativeClasses()
 	RegisterNativeClass<UStringProperty>(corePackage, "StringProperty", "Property");
 	RegisterNativeClass<UTextBuffer>(corePackage, "TextBuffer", "Object");
 
+	if (launchInfo.IsHarryPotter3())
+		RegisterNativeClass<UPoaDelegateProperty>(corePackage, "DelegateProperty", "Property");
+
 	if (launchInfo.IsUnreal1_227())
 	{
 		RegisterNativeClass<UAnyProperty>(corePackage, "AnyProperty", "Property");

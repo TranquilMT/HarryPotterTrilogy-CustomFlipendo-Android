@@ -38,6 +38,7 @@ private:
 	void Expr(EatStringExpression* expr) override;
 	void Expr(LetExpression* expr) override;
 	void Expr(DynArrayElementExpression* expr) override;
+	void Expr(PoaArrayEditExpression* expr) override;
 	void Expr(NewExpression* expr) override;
 	void Expr(ClassContextExpression* expr) override;
 	void Expr(MetaCastExpression* expr) override;
@@ -145,6 +146,7 @@ private:
 	void Expr(EatStringExpression* expr) override;
 	void Expr(LetExpression* expr) override;
 	void Expr(DynArrayElementExpression* expr) override;
+	void Expr(PoaArrayEditExpression* expr) override;
 	void Expr(NewExpression* expr) override;
 	void Expr(ClassContextExpression* expr) override;
 	void Expr(MetaCastExpression* expr) override;

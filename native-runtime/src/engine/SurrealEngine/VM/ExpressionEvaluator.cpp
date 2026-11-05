@@ -172,6 +172,15 @@ void ExpressionEvaluator::Expr(DynArrayElementExpression* expr)
 	}
 }
 
+void ExpressionEvaluator::Expr(PoaArrayEditExpression* expr)
+{
+	auto array = Eval(expr->Array).Value;
+	const int32_t index = Eval(expr->Index).Value.ToInt();
+	const int32_t count = Eval(expr->Count).Value.ToInt();
+	array.EditDynamicArray(expr->Insert, index, count);
+	Result.Value = ExpressionValue::NothingValue();
+}
+
 void ExpressionEvaluator::Expr(NewExpression* expr)
 {
 	ExpressionValue outer = Eval(expr->ParentExpr).Value;
@@ -294,7 +303,8 @@ void ExpressionEvaluator::Expr(ObjectConstExpression* expr)
 
 void ExpressionEvaluator::Expr(NameConstExpression* expr)
 {
-	Result.Value = ExpressionValue::NameValue(expr->Value);
+	Result.Value = expr->IsDelegateBinding ? ExpressionValue::DelegateValue(Self, expr->Value)
+	                                       : ExpressionValue::NameValue(expr->Value);
 }
 
 void ExpressionEvaluator::Expr(RotationConstExpression* expr)
@@ -617,22 +627,26 @@ void ExpressionEvaluator::Expr(DynArrayToIntExpression* expr)
 
 void ExpressionEvaluator::Expr(VirtualFunctionExpression* expr)
 {
-	UClass* contextClass = UObject::TryCast<UClass>(Context);
+	UObject* receiver = Context;
+	NameString function = expr->Name;
+	if (expr->DelegateProperty)
+		expr->DelegateProperty->ResolveBinding(receiver, function);
+	UClass* contextClass = UObject::TryCast<UClass>(receiver);
 	if (!contextClass)
-		contextClass = Context->Class;
+		contextClass = receiver->Class;
 
 	// Search states first
 
-	NameString stateName = Context->GetStateName();
+	NameString stateName = receiver->GetStateName();
 	for (UClass* cls = contextClass; cls != nullptr; cls = static_cast<UClass*>(cls->BaseStruct))
 	{
 		UState* state = cls->GetState(stateName);
 		if (state)
 		{
-			UFunction* func = state->GetFunction(expr->Name);
+			UFunction* func = state->GetFunction(function);
 			if (func)
 			{
-				Call(func, expr->Args);
+				Call(func, expr->Args, receiver);
 				return;
 			}
 		}
@@ -645,15 +659,15 @@ void ExpressionEvaluator::Expr(VirtualFunctionExpression* expr)
 		for (UField* field = cls->Children; field != nullptr; field = field->Next)
 		{
 			UFunction* func = UObject::TryCast<UFunction>(field);
-			if (func && func->Name == expr->Name)
+			if (func && func->Name == function)
 			{
-				Call(func, expr->Args);
+				Call(func, expr->Args, receiver);
 				return;
 			}
 		}
 	}
 
-	Frame::ThrowException("Script virtual function " + expr->Name.ToString() + " not found!");
+	Frame::ThrowException("Script virtual function " + function.ToString() + " not found!");
 }
 
 void ExpressionEvaluator::Expr(FinalFunctionExpression* expr)
@@ -692,7 +706,7 @@ void ExpressionEvaluator::Expr(ConstructExpression* expr)
 	Frame::ThrowException("Construct expression not implemented");
 }
 
-void ExpressionEvaluator::Call(UFunction* func, const Array<Expression*>& exprArgs)
+void ExpressionEvaluator::Call(UFunction* func, const Array<Expression*>& exprArgs, UObject* receiver)
 {
 	if (func->NativeFuncIndex == 130)
 	{
@@ -708,7 +722,7 @@ void ExpressionEvaluator::Call(UFunction* func, const Array<Expression*>& exprAr
 		args.reserve(exprArgs.size());
 		for (Expression* arg : exprArgs)
 			args.push_back(Eval(arg, Self, Self, LocalVariables).Value);
-		Result.Value = Frame::Call(func, Context, { args.data(), args.size() });
+		Result.Value = Frame::Call(func, receiver ? receiver : Context, { args.data(), args.size() });
 	}
 }
 

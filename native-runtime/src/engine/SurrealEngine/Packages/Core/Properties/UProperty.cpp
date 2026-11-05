@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "UProperty.h"
+#include "Packages/Core/UFunction.h"
 #include "Package/PackageManager.h"
 #include "Utils/AlignedAlloc.h"
 #include "Utils/Logger.h"
@@ -62,7 +63,8 @@ GCAllocation* UProperty::MarkProperty(GCAllocation* marklist, void* data)
 {
 	if (ValueType == ExpressionValueType::ValueObject ||
 		ValueType == ExpressionValueType::ValueStruct ||
-		ValueType == ExpressionValueType::ValueArray)
+		ValueType == ExpressionValueType::ValueArray ||
+		ValueType == ExpressionValueType::ValuePoaDelegate)
 	{
 		for (int i = 0; i < ArrayDimension; i++)
 		{
@@ -70,6 +72,71 @@ GCAllocation* UProperty::MarkProperty(GCAllocation* marklist, void* data)
 		}
 	}
 	return marklist;
+}
+
+UPoaDelegateProperty::UPoaDelegateProperty(NameString name, UClass* cls, ObjectFlags flags)
+	: UPropertyT(std::move(name), cls, flags)
+{
+	ValueType = ExpressionValueType::ValuePoaDelegate;
+}
+
+void UPoaDelegateProperty::Load(ObjectStream* stream)
+{
+	UProperty::Load(stream);
+	Signature = stream->ReadObject<UFunction>();
+}
+
+void UPoaDelegateProperty::Save(PackageStreamWriter* stream)
+{
+	UProperty::Save(stream);
+	stream->WriteObject(Signature);
+}
+
+void UPoaDelegateProperty::LoadValue(void* data, ObjectStream* stream, const PropertyHeader& header)
+{
+	ThrowIfTypeMismatch(header, UPT_String); // PoA v129 uses tag 7 for delegates.
+	const auto start = stream->Tell();
+	PoaDelegateBinding binding;
+	binding.Object = stream->ReadObject<UObject>();
+	binding.Function = stream->ReadName();
+	if (stream->Tell() - start != header.size)
+		Exception::Throw("Invalid PoA delegate payload length");
+	*static_cast<PoaDelegateBinding*>(data) = binding;
+}
+
+void UPoaDelegateProperty::SaveHeader(void*, PropertyHeader& header)
+{
+	header.type = UPT_String;
+}
+
+void UPoaDelegateProperty::SaveValue(void* data, PackageStreamWriter* stream)
+{
+	const auto& binding = *static_cast<PoaDelegateBinding*>(data);
+	stream->WriteObject(binding.Object);
+	stream->WriteName(binding.Function);
+}
+
+GCAllocation* UPoaDelegateProperty::Mark(GCAllocation* marklist)
+{
+	marklist = UProperty::Mark(marklist);
+	return Signature ? GC::MarkObject(marklist, Signature) : marklist;
+}
+
+GCAllocation* UPoaDelegateProperty::MarkPropertyElement(GCAllocation* marklist, void* data)
+{
+	auto object = static_cast<PoaDelegateBinding*>(data)->Object;
+	return object ? GC::MarkObject(marklist, object) : marklist;
+}
+
+void UPoaDelegateProperty::ResolveBinding(UObject*& receiver, NameString& function)
+{
+	const auto& binding = *static_cast<const PoaDelegateBinding*>(receiver->PropertyData.Ptr(this));
+	if (!binding.Function.IsNone())
+	{
+		if (binding.Object)
+			receiver = binding.Object;
+		function = binding.Function;
+	}
 }
 
 void UProperty::ConstructArray(void* data)
