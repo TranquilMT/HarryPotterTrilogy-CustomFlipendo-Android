@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+raise SystemExit("Legacy packager retired. Use build_linux.py with all three game payloads and permanent signing inputs.")
 """Build launcher release using verified unchanged native libraries from a prior APK.
 Private signing files and original game data are supplied separately, never in source.
 """

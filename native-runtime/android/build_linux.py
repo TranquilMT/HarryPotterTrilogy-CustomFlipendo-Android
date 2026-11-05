@@ -63,7 +63,7 @@ elfReports=[]
 with zipfile.ZipFile(out) as z:
  assert z.testzip() is None
  verify_bundled_games(z,*inventories)
- for name in sorted(n for n in z.namelist() if n.endswith('.so')):
+ for name in sorted(n for n in z.namelist() if n.startswith('lib/') and n.endswith('.so')):
   data=z.read(name);assert data[:4]==b'\x7fELF' and data[4]==2 and struct.unpack_from('<H',data,18)[0]==183
   phoff=struct.unpack_from('<Q',data,32)[0];phsize,phcount=struct.unpack_from('<HH',data,54);alignments=[]
   for i in range(phcount):

@@ -8,7 +8,7 @@ This is the master backlog for making the **PC version of Prisoner of Azkaban ru
 
 It cannot promise that reverse engineering will reveal no further bugs or behaviors. Those discoveries belong in the explicit discovery ledger below. They must be reported as discoveries within this scope, not as a surprise after claiming the port is almost complete.
 
-**Current result: PoA is not verified playable. GitHub v0.4.5 enables experimental HP3 selection; live startup, a rendered map and interactive phone play remain unverified. This source checkpoint does not supply a new APK.**
+**Current result: PoA is not verified playable. GitHub v0.4.5 enables experimental HP3 selection; live startup, a rendered map and interactive phone play remain unverified. The 0.4.7 release supplies a signed three-game test APK; phone acceptance remains open.**
 
 ## Audited baseline
 
@@ -504,7 +504,7 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 - [x] Add matching PoA launcher tile and separate folder/ZIP import.
 - [x] Remove unsupported KWGame.u prerequisite; retain actual v129 script validation.
 - [x] Compile Android Java sources against API 36.
-- [ ] Complete ARM64 native build and signed three-game APK verification.
+- [x] Complete ARM64 native build and signed three-game APK verification.
 - [ ] Publish APK, complete source and SHA-256 checksums as latest release.
 - [ ] Phone: launch PoA to first runtime failure or rendered menu and retain report.
 - [ ] Phone: verify movement, casting, character swapping, menu, save/load and level transitions.

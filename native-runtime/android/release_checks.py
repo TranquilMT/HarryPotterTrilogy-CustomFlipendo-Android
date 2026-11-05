@@ -78,6 +78,10 @@ def verify_bundled_games(apk, hp1, hp2, hp3=None):
         if prefix + '.stamp' not in apk.namelist() or len(apk.read(prefix + '.stamp')) != 64:
             raise ValueError('Missing game installation stamp')
         verify_embedded_game(apk, inventory, prefix)
+        if prefix == 'assets/hp3data/':
+            expected = ''.join(r['sha256'] + '\t' + str(r['bytes']) + '\t' + r['path'] + '\n' for r in inventory).encode()
+            if apk.read(prefix + '.inventory.tsv') != expected:
+                raise ValueError('PoA installation inventory differs from bundled files')
 
 
 def hp3_inventory(root):

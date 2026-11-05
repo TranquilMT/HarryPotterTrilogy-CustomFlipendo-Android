@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+raise SystemExit("Windows trilogy packaging is not implemented; use the verified build_linux.py three-game release builder.")
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Windows ARM64 native build/packager.
 
@@ -35,8 +36,8 @@ p.add_argument('--jobs', default='4')
 p.add_argument('--skip-native', action='store_true')
 p.add_argument('--game-data', required=True)
 p.add_argument('--hp2-data', required=True)
-p.add_argument('--version-name', default='0.4.1')
-p.add_argument('--version-code', default='42')
+p.add_argument('--version-name', default='0.4.7')
+p.add_argument('--version-code', default='48')
 p.add_argument('--previous-apk', required=True)
 p.add_argument('--source-commit', default='')
 p.add_argument('--allow-certificate-change', action='store_true')
@@ -225,3 +226,4 @@ report = dict(
     allGamePayloadHashesVerified=True)
 (dist / 'build-verification.json').write_text(json.dumps(report, indent=2))
 print(json.dumps(report, indent=2))
+

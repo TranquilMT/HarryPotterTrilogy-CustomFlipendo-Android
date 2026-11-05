@@ -22,7 +22,7 @@ public final class BundledGameInstaller {
    if(!keep){
     if(target.exists()&&!target.isFile())throw new IOException("Bundle destination is not a file");File parent=target.getParentFile();if(!parent.isDirectory()&&!parent.mkdirs())throw new IOException("Cannot create bundle folder");File tmp=File.createTempFile(".bundle-",".tmp",parent);
     try{MessageDigest hash;try{hash=MessageDigest.getInstance("SHA-256");}catch(NoSuchAlgorithmException e){throw new IOException(e);}long bytes=0;
-     try(InputStream in=source.open(r[2]);FileOutputStream out=new FileOutputStream(tmp)){int n;while((n=in.read(buffer))!=-1){bytes+=n;if(bytes>Long.parseLong(r[1]))throw new IOException("Bundled file exceeds expected size");hash.update(buffer,0,n);out.write(buffer,0,n);}out.getFD().sync();}
+     try(InputStream in=source.open(r[2]);FileOutputStream out=new FileOutputStream(tmp)){int n;while((n=in.read(buffer))!=-1){if(Thread.currentThread().isInterrupted())throw new IOException("Installation cancelled");bytes+=n;if(bytes>Long.parseLong(r[1]))throw new IOException("Bundled file exceeds expected size");hash.update(buffer,0,n);out.write(buffer,0,n);}out.getFD().sync();}
      StringBuilder hex=new StringBuilder();for(byte b:hash.digest())hex.append(String.format(Locale.ROOT,"%02x",b&255));if(bytes!=Long.parseLong(r[1])||!r[0].equals(hex.toString()))throw new IOException("Bundled checksum mismatch: "+r[2]);
      try{Files.move(tmp.toPath(),target.toPath(),StandardCopyOption.ATOMIC_MOVE,StandardCopyOption.REPLACE_EXISTING);}catch(AtomicMoveNotSupportedException e){Files.move(tmp.toPath(),target.toPath(),StandardCopyOption.REPLACE_EXISTING);}
     }finally{tmp.delete();}

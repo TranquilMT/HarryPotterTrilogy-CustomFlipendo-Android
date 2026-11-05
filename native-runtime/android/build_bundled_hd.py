@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+raise SystemExit("Legacy packager retired. Use build_linux.py with all three game payloads and permanent signing inputs.")
 """Package HD modules into a signed APK, reusing compressed game/runtime assets.
 Requires a verified 0.3.0 base APK, the twelve profile-labelled HD module ZIPs,
 Android SDK 36.0.0/platform 36, Java 17, and the existing private signing key.
