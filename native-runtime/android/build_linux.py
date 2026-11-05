@@ -3,11 +3,11 @@
 """Linux ARM64 native build/packager. Requires prepared, patched source/dependencies.
 Optional private game-data bundle. Reuse the same keystore and password file for every release.
 """
-from release_checks import hp1_inventory,hp2_inventory,verify_bundled_games
+from release_checks import hp1_inventory,hp2_inventory,hp3_inventory,verify_bundled_games
 from build_preflight import source_identity
 import argparse,pathlib,subprocess,os,shutil,zipfile,json,hashlib,struct,re
-p=argparse.ArgumentParser();p.add_argument('--sdk',required=True);p.add_argument('--ndk',required=True);p.add_argument('--jdk',required=True);p.add_argument('--cmake',default='cmake');p.add_argument('--ninja',default='ninja');p.add_argument('--keystore',required=True);p.add_argument('--password-file',required=True);p.add_argument('--jobs',default='4');p.add_argument('--skip-native',action='store_true');p.add_argument('--game-data',required=True);p.add_argument('--hp2-data',required=True);p.add_argument('--version-name',default='0.4.3');p.add_argument('--version-code',default='44');p.add_argument('--previous-apk',required=True);a=p.parse_args();root=pathlib.Path(__file__).resolve().parent.parent;sdk=pathlib.Path(a.sdk).resolve();ndk=pathlib.Path(a.ndk).resolve();jdk=pathlib.Path(a.jdk).resolve();key=pathlib.Path(a.keystore).resolve();password=pathlib.Path(a.password_file).resolve();game=pathlib.Path(a.game_data).resolve() if a.game_data else None;os.chdir(root);env=os.environ.copy();env['JAVA_HOME']=str(jdk);env['PATH']=str(jdk/'bin')+os.pathsep+env['PATH'];bt=sdk/'build-tools/36.0.0';aj=sdk/'platforms/android-36/android.jar'
-hp2=pathlib.Path(a.hp2_data).resolve();inventories=[hp1_inventory(game),hp2_inventory(hp2)]
+p=argparse.ArgumentParser();p.add_argument('--sdk',required=True);p.add_argument('--ndk',required=True);p.add_argument('--jdk',required=True);p.add_argument('--cmake',default='cmake');p.add_argument('--ninja',default='ninja');p.add_argument('--keystore',required=True);p.add_argument('--password-file',required=True);p.add_argument('--jobs',default='4');p.add_argument('--skip-native',action='store_true');p.add_argument('--game-data',required=True);p.add_argument('--hp2-data',required=True);p.add_argument('--version-name',default='0.4.7');p.add_argument('--version-code',default='48');p.add_argument('--hp3-data',required=True);p.add_argument('--native-build');p.add_argument('--expected-certificate');p.add_argument('--previous-apk');a=p.parse_args();root=pathlib.Path(__file__).resolve().parent.parent;sdk=pathlib.Path(a.sdk).resolve();ndk=pathlib.Path(a.ndk).resolve();jdk=pathlib.Path(a.jdk).resolve();key=pathlib.Path(a.keystore).resolve();password=pathlib.Path(a.password_file).resolve();game=pathlib.Path(a.game_data).resolve() if a.game_data else None;os.chdir(root);env=os.environ.copy();env['JAVA_HOME']=str(jdk);env['PATH']=str(jdk/'bin')+os.pathsep+env['PATH'];bt=sdk/'build-tools/36.0.0';aj=sdk/'platforms/android-36/android.jar'
+hp2=pathlib.Path(a.hp2_data).resolve();hp3=pathlib.Path(a.hp3_data).resolve();inventories=[hp1_inventory(game),hp2_inventory(hp2),hp3_inventory(hp3)]
 def run(args):subprocess.run(list(map(str,args)),env=env,check=True)
 if not key.is_file() or not password.is_file():raise ValueError('Permanent signing recovery is required; refusing to generate a new key')
 def certificate(apk):
@@ -15,9 +15,10 @@ def certificate(apk):
  match=re.search(r'Signer #1 certificate SHA-256 digest: ([0-9a-fA-F]{64})',result)
  if not match:raise ValueError('Cannot verify signing certificate')
  return match.group(1).lower()
-previous_certificate=certificate(pathlib.Path(a.previous_apk).resolve())
+previous_certificate=certificate(pathlib.Path(a.previous_apk).resolve()) if a.previous_apk else a.expected_certificate
+if not previous_certificate or not re.fullmatch('[0-9a-f]{64}', previous_certificate):raise ValueError('A verified certificate pin or previous APK is required')
 source_revision=source_identity(root)
-build=root/'build-android'
+build=pathlib.Path(a.native_build).resolve() if a.native_build else root/'build-android'
 if not a.skip_native:
  run([a.cmake,'-S','android','-B',build,'-G','Ninja','-DCMAKE_MAKE_PROGRAM='+str(pathlib.Path(a.ninja).resolve()),'-DCMAKE_TOOLCHAIN_FILE='+str(ndk/'build/cmake/android.toolchain.cmake'),'-DANDROID_ABI=arm64-v8a','-DANDROID_PLATFORM=android-29','-DCMAKE_BUILD_TYPE=Release','-DCMAKE_SHARED_LINKER_FLAGS=-Wl,-z,max-page-size=16384','-DCMAKE_POLICY_VERSION_MINIMUM=3.5'])
  run([a.cmake,'--build',build,'--target','main','-j',a.jobs])
@@ -33,7 +34,7 @@ shutil.copytree(root/'images/android',assets/'icons',dirs_exist_ok=True)
 shutil.copytree(root/'android/launcher-assets',assets,dirs_exist_ok=True)
 ru=assets/'rutext';ru.mkdir(exist_ok=True)
 for f in (root/'android/lang/ru-text').glob('*.rus'):(ru/(f.stem+'.int')).write_bytes(f.read_text(encoding='utf-16').encode('cp1251'))
-(assets/'build-info.txt').write_text('Harry Potter TQ '+a.version_name+'; local ARM64 test build; source '+source_revision+'\n')
+(assets/'build-info.txt').write_text('HP:Trilogy Mobile '+a.version_name+'; local ARM64 test build; source '+source_revision+'\n')
 sources=list((root/'android/deps/SDL/android-project/app/src/main/java/org/libsdl/app').glob('*.java'))+list((root/'android/java/io/github/flipendo/spike').glob('*.java'))
 run([jdk/'bin/java','-m','jdk.compiler/com.sun.tools.javac.Main','-source','8','-target','8','-Xlint:-options','-cp',aj,'-d',classes,*sources]);classfiles=sorted(classes.rglob('*.class'));argfile=stage/'classes.list';argfile.write_text('\n'.join(str(f) for f in classfiles));run([bt/'d8','--lib',aj,'--output',stage,'@'+str(argfile)])
 run([bt/'aapt2','compile','--dir',root/'android/res','-o',stage/'res.zip']);run([bt/'aapt2','link','-o',stage/'base.apk','--manifest',root/'android/AndroidManifest.xml','-I',aj,'-R',stage/'res.zip','--min-sdk-version','29','--target-sdk-version','35','--version-code',a.version_code,'--version-name',a.version_name])
@@ -46,20 +47,22 @@ with zipfile.ZipFile(unsigned,'a',zipfile.ZIP_DEFLATED) as z:
 # Both payloads are mandatory. Verify inventories before signing so an
 # engine-only APK cannot accidentally be issued as the bundled release.
 with zipfile.ZipFile(unsigned,'a',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
- for game_root,prefix,inventory in [(game,'assets/gamedata/',inventories[0]),(hp2,'assets/hp2data/',inventories[1])]:
+ for game_root,prefix,inventory in [(game,'assets/gamedata/',inventories[0]),(hp2,'assets/hp2data/',inventories[1]),(hp3,'assets/hp3data/',inventories[2])]:
   stamp=hashlib.sha256()
   for row in inventory:
    stamp.update(row['path'].encode());stamp.update(bytes.fromhex(row['sha256']))
    z.write(game_root/row['path'],prefix+row['path'])
   z.writestr(prefix+'.stamp',stamp.hexdigest())
+  if prefix=='assets/hp3data/':z.writestr(prefix+'.inventory.tsv', ''.join(r['sha256']+'\t'+str(r['bytes'])+'\t'+r['path']+'\n' for r in inventory))
  verify_bundled_games(z,*inventories)
 run([bt/'zipalign','-f','-P','16','4',unsigned,stage/'aligned.apk'])
-out=dist/('Harry-Potter-TQ-'+a.version_name+'-Both-Games.apk');run([bt/'apksigner','sign','--ks',key,'--ks-key-alias','hp-native','--ks-pass','file:'+str(password),'--out',out,stage/'aligned.apk']);run([bt/'apksigner','verify','--verbose',out]);
+out=dist/('HP-Trilogy-Mobile-'+a.version_name+'-Three-Games.apk');run([bt/'apksigner','sign','--ks',key,'--ks-key-alias','hp-native','--ks-pass','file:'+str(password),'--out',out,stage/'aligned.apk']);run([bt/'apksigner','verify','--verbose',out]);
 if certificate(out)!=previous_certificate:raise ValueError('APK signing certificate changed')
 run([bt/'zipalign','-c','-P','16','4',out])
 elfReports=[]
 with zipfile.ZipFile(out) as z:
  assert z.testzip() is None
+ verify_bundled_games(z,*inventories)
  for name in sorted(n for n in z.namelist() if n.endswith('.so')):
   data=z.read(name);assert data[:4]==b'\x7fELF' and data[4]==2 and struct.unpack_from('<H',data,18)[0]==183
   phoff=struct.unpack_from('<Q',data,32)[0];phsize,phcount=struct.unpack_from('<HH',data,54);alignments=[]
@@ -69,4 +72,5 @@ with zipfile.ZipFile(out) as z:
     assert align>=16384 and off%align==va%align
     alignments.append(align)
   assert alignments;elfReports.append(dict(path=name,architecture='AArch64',loadAlignments=alignments))
-report=dict(versionName=a.version_name,versionCode=int(a.version_code),signingCertificateSHA256=previous_certificate,apk=str(out),bytes=out.stat().st_size,sha256=hashlib.sha256(out.read_bytes()).hexdigest(),nativeLibraries=[x.name for x in libs],elfVerification=elfReports,deviceExecutionTested=False,isoImporterHostTested=False,bundledGameData=True,gamePayloads=[dict(game=game_id,files=len(rows),bytes=sum(row['bytes'] for row in rows)) for game_id,rows in zip(['HP1','HP2'],inventories)],allGamePayloadHashesVerified=True);(dist/'build-verification.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+report=dict(versionName=a.version_name,versionCode=int(a.version_code),signingCertificateSHA256=previous_certificate,apk=str(out),bytes=out.stat().st_size,sha256=hashlib.sha256(out.read_bytes()).hexdigest(),nativeLibraries=[x.name for x in libs],elfVerification=elfReports,deviceExecutionTested=False,isoImporterHostTested=False,bundledGameData=True,gamePayloads=[dict(game=game_id,files=len(rows),bytes=sum(row['bytes'] for row in rows)) for game_id,rows in zip(['HP1','HP2','HP3'],inventories)],allGamePayloadHashesVerified=True);(dist/'build-verification.json').write_text(json.dumps(report,indent=2));print(json.dumps(report,indent=2))
+

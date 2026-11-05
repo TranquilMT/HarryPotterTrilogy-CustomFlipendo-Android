@@ -51,7 +51,7 @@ def verify_embedded_game(apk, inventory, prefix):
     if any(n.lower().endswith(('.jks', '.keystore', '/password.txt')) for n in names):
         raise ValueError('Private signing material must never be packaged')
     expected = {prefix + row['path'] for row in inventory}
-    actual = {n for n in names if n.startswith(prefix) and not n.endswith('/') and n != prefix + '.stamp'}
+    actual = {n for n in names if n.startswith(prefix) and not n.endswith('/') and n not in (prefix + '.stamp', prefix + '.inventory.tsv')}
     if len(names) != len(set(names)):
         raise ValueError('Duplicate APK entries')
     if actual != expected:
@@ -70,11 +70,42 @@ def verify_embedded_game(apk, inventory, prefix):
 def verify_embedded_hp2(apk, inventory):
     verify_embedded_game(apk, inventory, 'assets/hp2data/')
 
-def verify_bundled_games(apk, hp1, hp2):
-    for prefix, inventory in [('assets/gamedata/', hp1), ('assets/hp2data/', hp2)]:
+def verify_bundled_games(apk, hp1, hp2, hp3=None):
+    for prefix, inventory in [('assets/gamedata/', hp1), ('assets/hp2data/', hp2)] + ([('assets/hp3data/', hp3)] if hp3 is not None else []):
         paths = {r['path'].lower() for r in inventory}
         if not {'system/default.ini', 'system/defuser.ini'} <= paths:
             raise ValueError('Both games require bundled startup configuration')
         if prefix + '.stamp' not in apk.namelist() or len(apk.read(prefix + '.stamp')) != 64:
             raise ValueError('Missing game installation stamp')
         verify_embedded_game(apk, inventory, prefix)
+
+
+def hp3_inventory(root):
+    root = Path(root)
+    files = {}
+    for p in root.rglob('*'):
+        if p.is_symlink():
+            raise ValueError('Symbolic link in PoA payload')
+        if p.is_file() and not any(x.startswith('.') for x in p.relative_to(root).parts):
+            name = p.relative_to(root).as_posix()
+            if name.lower() in files:
+                raise ValueError('Case-colliding PoA path: ' + name)
+            files[name.lower()] = (name, p)
+    for name in ('hppoa.exe','core.u','engine.u','hgame.u','gui.u','uwindow.u','gameplay.u','default.ini','defuser.ini'):
+        item = files.get('system/' + name)
+        if not item or not item[1].stat().st_size:
+            raise ValueError('Missing PoA System/' + name)
+        if name.endswith('.u'):
+            with item[1].open('rb') as f:
+                header = f.read(8)
+            if header[:4] != bytes.fromhex('c1832a9e') or int.from_bytes(header[4:6], 'little') != 129:
+                raise ValueError('Invalid PoA v129 package: ' + name)
+    for folder, suffix in [('maps/', '.unr'), ('textures/', '.utx'), ('animations/', '.ukx'), ('staticmeshes/', '.usx')]:
+        if not any(k.startswith(folder) and k.endswith(suffix) for k in files):
+            raise ValueError('Missing PoA resource: ' + folder)
+    rows = []
+    for _, (name, p) in sorted(files.items()):
+        with p.open('rb') as f:
+            digest = hashlib.file_digest(f, 'sha256').hexdigest()
+        rows.append(dict(path=name, bytes=p.stat().st_size, sha256=digest))
+    return rows

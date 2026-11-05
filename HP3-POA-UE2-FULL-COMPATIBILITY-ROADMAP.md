@@ -1,6 +1,6 @@
 # PoA PC → Android UE2 compatibility: full known scope
 
-Version 13 · 5 November 2026 · Project: Harry Potter TQ / Custom Flipendo Android
+Version 14 · 5 November 2026 · Project: HP:Trilogy Mobile
 
 ## What this document means
 
@@ -494,6 +494,20 @@ Source fixes and host regressions are detailed in `docs/LAUNCHER-CONTROLS-2026-1
 ## Browser build continuation
 
 - A complete compatibility-branch checkout is running in GitHub Codespaces. Desktop Commander and a user-owned computer are not required.
-- CMake 3.28/GCC 13.3/Java are available. Native build dependencies installed; full host engine configuration succeeds.
-- Production SurrealCommon compilation exposed an Android-only KWProf include used unconditionally in Engine.cpp. The include is now unconditional; the rerun compiled Engine.cpp and advanced into rendering sources.
-- Android ARM64, APK packaging and phone startup gates remain open; no new APK or original-data launch is verified.
+- CMake 3.28/GCC 13.3/Java are available. Native build dependencies installed; full host engine configuration succeeds. Production SurrealCommon compilation started.
+- This does not close Android ARM64, APK packaging or phone startup gates; no new APK or original-data launch is verified.
+
+## 0.4.7 packaging acceptance — 5 November 2026
+
+- [x] Recover the full source and merge retained compatibility changes onto the 0.4.5 base.
+- [x] Extract original HP1/HP2 payloads and new EU PoA common/English assets; verify archive integrity.
+- [x] Add matching PoA launcher tile and separate folder/ZIP import.
+- [x] Remove unsupported KWGame.u prerequisite; retain actual v129 script validation.
+- [x] Compile Android Java sources against API 36.
+- [ ] Complete ARM64 native build and signed three-game APK verification.
+- [ ] Publish APK, complete source and SHA-256 checksums as latest release.
+- [ ] Phone: launch PoA to first runtime failure or rendered menu and retain report.
+- [ ] Phone: verify movement, casting, character swapping, menu, save/load and level transitions.
+- [ ] Measure frame time and memory before claiming optimisation gains.
+
+All other incomplete compatibility gates above remain open. Bundling a game does not establish engine compatibility.

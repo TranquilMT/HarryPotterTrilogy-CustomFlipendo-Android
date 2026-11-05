@@ -163,7 +163,7 @@ public class SetupActivity extends Activity {
         } else {
             LinearLayout col = new LinearLayout(this);
             col.setOrientation(LinearLayout.VERTICAL);
-            col.addView(covers, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(170)));
+            col.addView(covers, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(200)));
             LinearLayout.LayoutParams dl = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             dl.topMargin = dp(8);
             col.addView(details, dl);
@@ -194,7 +194,7 @@ public class SetupActivity extends Activity {
         title.setTextSize(24);
         title.setIncludeFontPadding(false);
         title.setTypeface(SERIF_BOLD);
-        title.setText("Harry Potter TQ");
+        title.setText("HP:Trilogy Mobile");
         LinearLayout names = new LinearLayout(this);
         names.setOrientation(LinearLayout.VERTICAL);
         // the name, and the version beside it in gold: one tap on it is an easter egg (the link of the game picked below)
@@ -297,44 +297,26 @@ public class SetupActivity extends Activity {
         return c;
     }
 
-    /** The two games side by side, as covers: a tap picks the one to play. */
+    /** Three matching game tiles, including controller focus and selection. */
     private LinearLayout coverShelf(boolean wide) {
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        hp1Pill = cover(false);
-        hp2Pill = cover(true);
-        LinearLayout.LayoutParams a = wide ? new LinearLayout.LayoutParams(dp(142), LinearLayout.LayoutParams.MATCH_PARENT)
-                : new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
-        row.addView(hp1Pill, a);
-        LinearLayout.LayoutParams b = wide ? new LinearLayout.LayoutParams(dp(142), LinearLayout.LayoutParams.MATCH_PARENT)
-                : new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
-        b.leftMargin = dp(12);
-        row.addView(hp2Pill, b);
-        LinearLayout shelf = new LinearLayout(this);
-        shelf.setOrientation(LinearLayout.VERTICAL);
-        shelf.addView(row, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
-        TextView unavailable = new TextView(this);
-        unavailable.setText("PRISONER OF AZKABAN\nExperimental - tap to test");
-        unavailable.setTextColor(0xFFE0C080); unavailable.setTextSize(12);
-        unavailable.setPadding(dp(12), dp(8), dp(12), dp(8));
-        unavailable.setBackground(rounded(0x333D414B, 12, 0x445D626D));
-        unavailable.setEnabled(true); unavailable.setFocusable(true); unavailable.setAlpha(1.0f);
-        unavailable.setContentDescription("Prisoner of Azkaban. Experimental. Tap to test.");
-        hp3Pill = unavailable;
-        unavailable.setOnClickListener(v -> chooseGame("hp3"));
-        LinearLayout.LayoutParams disabledLayout = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        disabledLayout.topMargin = dp(8); shelf.addView(unavailable, disabledLayout);
-        return shelf;
+        LinearLayout row=new LinearLayout(this);row.setOrientation(LinearLayout.HORIZONTAL);
+        hp1Pill=cover("hp1");hp2Pill=cover("hp2");hp3Pill=cover("hp3");
+        android.view.View[] tiles={hp1Pill,hp2Pill,hp3Pill};
+        for(int i=0;i<tiles.length;i++){
+            LinearLayout.LayoutParams lp=wide?new LinearLayout.LayoutParams(dp(112),LinearLayout.LayoutParams.MATCH_PARENT):new LinearLayout.LayoutParams(0,LinearLayout.LayoutParams.MATCH_PARENT,1f);
+            if(i>0)lp.leftMargin=dp(8);row.addView(tiles[i],lp);
+        }return row;
     }
 
-    private android.view.View cover(final boolean hp2) {
+    private android.view.View cover(final String id) {
+        final boolean hp2="hp2".equals(id), hp3="hp3".equals(id);
         android.widget.FrameLayout f = new android.widget.FrameLayout(this);
-        f.setBackground(new CoverDrawable(hp2, dp(1)));
+        f.setBackground(new CoverDrawable(id, dp(1)));
         TextView year = new TextView(this);
         year.setTextColor(0xB3F1E6CC);
         year.setTextSize(11);
         year.setLetterSpacing(0.08f);
-        year.setText(hp2 ? "2002" : "2001");
+        year.setText(hp3 ? "2004 · TEST" : (hp2 ? "2002" : "2001"));
         android.widget.FrameLayout.LayoutParams yl = new android.widget.FrameLayout.LayoutParams(
                 android.widget.FrameLayout.LayoutParams.WRAP_CONTENT, android.widget.FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.START);
         yl.setMargins(dp(12), dp(10), 0, 0);
@@ -356,13 +338,13 @@ public class SetupActivity extends Activity {
         name.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
         name.setTypeface(SERIF_BOLD);
         name.setLineSpacing(0f, 0.95f);
-        name.setText(hp2 ? tr("Chamber of Secrets") : tr("Philosopher's Stone"));
+        name.setText(GameFiles.title(id));
         text.addView(name);
         f.addView(text, new android.widget.FrameLayout.LayoutParams(android.widget.FrameLayout.LayoutParams.MATCH_PARENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT));
         f.setFocusable(true);
-        f.setContentDescription(hp2 ? tr("Harry Potter and the Chamber of Secrets") : tr("Harry Potter and the Philosopher's Stone"));
+        f.setContentDescription(GameFiles.title(id)+(hp3?". Experimental testing.":""));
         f.setOnClickListener(new android.view.View.OnClickListener() {
-            public void onClick(android.view.View v) { chooseGame(hp2 ? "hp2" : "hp1"); }
+            public void onClick(android.view.View v) { chooseGame(id); }
         });
         f.setOnFocusChangeListener(new android.view.View.OnFocusChangeListener() {
             public void onFocusChange(android.view.View v, boolean focused) { showGame(); }
@@ -382,15 +364,16 @@ public class SetupActivity extends Activity {
     /** A game's cover: its colour from top to bottom, a line drawing of what the game is named after (the Stone, a cut gem;
      *  the Chamber's serpent), darker at the foot for the title, and the edge. */
     private static final class CoverDrawable extends android.graphics.drawable.Drawable {
-        final boolean hp2;
+        final boolean hp2, hp3;
         final float px;
         boolean selected, focused;
         final android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
         final android.graphics.RectF box = new android.graphics.RectF();
         final android.graphics.Path path = new android.graphics.Path();
 
-        CoverDrawable(boolean hp2, float px) {
-            this.hp2 = hp2;
+        CoverDrawable(String id, float px) {
+            this.hp2 = "hp2".equals(id);
+            this.hp3 = "hp3".equals(id);
             this.px = px;
         }
 
@@ -400,7 +383,7 @@ public class SetupActivity extends Activity {
             float r = 14f * px, w = box.width(), h = box.height();
             paint.setStyle(android.graphics.Paint.Style.FILL);
             paint.setShader(new android.graphics.LinearGradient(0, box.top, 0, box.bottom,
-                    hp2 ? EMERALD : CRIMSON, hp2 ? EMERALD_DEEP : CRIMSON_DEEP, android.graphics.Shader.TileMode.CLAMP));
+                    hp3?0xFF344F75:(hp2?EMERALD:CRIMSON), hp3?0xFF111C32:(hp2?EMERALD_DEEP:CRIMSON_DEEP), android.graphics.Shader.TileMode.CLAMP));
             c.drawRoundRect(box, r, r, paint);
             paint.setShader(null);
             c.save();
@@ -412,7 +395,11 @@ public class SetupActivity extends Activity {
             paint.setStrokeCap(android.graphics.Paint.Cap.ROUND);
             // in the upper part, clear of the title at the foot
             float s = Math.min(w * 0.32f, h * 0.2f), cx = box.left + w * 0.62f, cy = box.top + h * 0.24f;
-            if (!hp2) {
+            if (hp3) {
+                paint.setColor(0x99D3E5F4);paint.setStrokeWidth(2f*px);c.drawCircle(cx,cy+s*0.2f,s,paint);
+                c.drawLine(cx-s*.55f,cy-s*.5f,cx+s*.55f,cy-s*.5f,paint);c.drawLine(cx-s*.55f,cy+s*.9f,cx+s*.55f,cy+s*.9f,paint);
+                path.reset();path.moveTo(cx-s*.45f,cy-s*.5f);path.lineTo(cx+s*.45f,cy+s*.9f);path.lineTo(cx-s*.45f,cy+s*.9f);path.lineTo(cx+s*.45f,cy-s*.5f);c.drawPath(path,paint);
+            } else if (!hp2) {
                 paint.setColor(0x66E8C15A);
                 paint.setStrokeWidth(1.6f * px);
                 float tx = s * 0.5f, ty = cy - s * 0.35f, gx = s * 0.85f, mx = s * 0.25f, by = cy + s * 0.95f;
@@ -697,7 +684,7 @@ public class SetupActivity extends Activity {
         play.setVisibility(android.view.View.GONE);
         f.addView(play, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dp(50)));
         TextView buildTag = new TextView(this);
-        buildTag.setText("Build 0.4.5 (code 46)");
+        buildTag.setText("Version " + LogReport.version(this));
         buildTag.setTextColor(0x55FFFFFF); buildTag.setTextSize(9);
         buildTag.setGravity(android.view.Gravity.CENTER);
         f.addView(buildTag, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -715,7 +702,7 @@ public class SetupActivity extends Activity {
     }
 
     private android.view.View hp1Pill, hp2Pill;
-    private TextView hp3Pill; // the covers
+    private android.view.View hp3Pill; // the covers
     private LinearLayout slotsBox, slotsRow;
     private TextView deleteSave; // under the slots: deletes the selected saved game
     static final String PREF_START = "hp2Start"; // "new" or "load:N": what Play does in HP2
@@ -744,12 +731,7 @@ public class SetupActivity extends Activity {
             styleCover(hp1Pill, "hp1".equals(selectedGame()));
             styleCover(hp2Pill, two);
         }
-        if (hp3Pill != null) {
-            boolean selected = "hp3".equals(selectedGame());
-            hp3Pill.setSelected(selected);
-            hp3Pill.setText("PRISONER OF AZKABAN\n" + (selected ? "Selected · experimental testing" : "Experimental · tap to select"));
-            hp3Pill.setBackground(rounded(selected ? 0x665C4A20 : 0x333D414B, 12, selected ? GOLD : 0x445D626D));
-        }
+        if(hp3Pill!=null)styleCover(hp3Pill,"hp3".equals(selectedGame()));
         refreshSlots();
         updatePlayLabel();
     }
@@ -1290,11 +1272,13 @@ public class SetupActivity extends Activity {
         if (!"hp3".equals(id)) return locateGame("hp2".equals(id));
         String picked = getSharedPreferences("setup", MODE_PRIVATE).getString(GameFiles.folderKey(id), null);
         File found = picked == null ? null : GameFiles.find(id, new File(picked), 2);
+        if(found==null)found=GameFiles.find(id,managedHp3Dir(),0);
         if (found == null) found = GameFiles.find(id, new File(defaultGameDir(id)), 2);
         return found;
     }
 
     private void prepareHp3(final int generation) throws IOException {
+        installHp3Data();
         // Recover the old HP3 path without replacing HP1's preference or touching game files.
         android.content.SharedPreferences prefs = getSharedPreferences("setup", MODE_PRIVATE);
         if (prefs.getString(PREF_GAME_DIR_HP3, null) == null) {
@@ -1861,7 +1845,7 @@ public class SetupActivity extends Activity {
         row.addView(where, wp);
 
         LinearLayout buttons = new LinearLayout(this);
-        buttons.setOrientation(LinearLayout.HORIZONTAL);
+        buttons.setOrientation(LinearLayout.VERTICAL);
         TextView choose = pill(tr("Choose folder"), false, new android.view.View.OnClickListener() {
             public void onClick(android.view.View v) {
                 pickFolderFor(id);
@@ -1870,8 +1854,8 @@ public class SetupActivity extends Activity {
         choose.setTextSize(14);
         choose.setPadding(dp(16), dp(8), dp(16), dp(8));
         buttons.addView(choose);
-        TextView zipImport = pill("Import game ZIP", false, v -> startActivity(new Intent(this, GameZipImportActivity.class).putExtra("game", hp2 ? "hp2" : "hp1")));
-        if (!"hp3".equals(id)) buttons.addView(zipImport);
+        TextView zipImport = pill("Import game ZIP", false, v -> startActivity(new Intent(this, GameZipImportActivity.class).putExtra("game", id)));
+        buttons.addView(zipImport);
         if ("hp1".equals(id)) {
             TextView iso = pill("Import PC ISO", false, v -> startActivity(new Intent(this, IsoImportActivity.class)));
             iso.setTextSize(14); iso.setPadding(dp(16), dp(8), dp(16), dp(8)); buttons.addView(iso);
@@ -2084,6 +2068,15 @@ public class SetupActivity extends Activity {
         play.setVisibility(android.view.View.VISIBLE); play.setText("Import game files");
     }
 
+    private File managedHp3Dir(){File base=getExternalFilesDir(null);if(base==null)base=getFilesDir();return new File(base,"games/hp3");}
+    private synchronized void installHp3Data() throws IOException {
+        String stamp;try(InputStream in=getAssets().open("hp3data/.stamp")){byte[] b=new byte[128];int n=in.read(b);stamp=new String(b,0,Math.max(n,0),java.nio.charset.StandardCharsets.UTF_8).trim();}catch(java.io.FileNotFoundException absent){return;}
+        File game=managedHp3Dir(),marker=new File(game,MARKER);
+        if(stamp.equals(readSmallFile(marker))&&GameFiles.missingHp3(game).isEmpty())return;
+        BundledGameInstaller.install(path->getAssets().open("hp3data/"+path),game,(path,done,total)->say("Installing Prisoner of Azkaban "+done+" / "+total+"\n"+path,done,total));
+        List<String> missing=GameFiles.missingHp3(game);if(!missing.isEmpty())throw new IOException("Bundled PoA files missing: "+android.text.TextUtils.join(", ",missing));
+        GameFiles.validatePackages("hp3",game);writeSmallFile(marker,stamp);
+    }
     private File managedGameDir(boolean hp2) {
         File base = getExternalFilesDir(null);
         if (base == null) base = getFilesDir();
@@ -2097,7 +2090,7 @@ public class SetupActivity extends Activity {
     }
 
     private void showImportOptions() {
-        if ("hp3".equals(selectedGame())) { pickFolderFor("hp3"); return; }
+        if("hp3".equals(selectedGame())){new android.app.AlertDialog.Builder(this).setTitle("Prisoner of Azkaban game data").setItems(new String[]{"Import extracted game ZIP","Choose extracted game folder"},(d,which)->{if(which==0)startActivity(new Intent(this,GameZipImportActivity.class).putExtra("game","hp3"));else pickFolderFor("hp3");}).show();return;}
         new android.app.AlertDialog.Builder(this).setTitle("Import original game data")
                 .setItems(new String[]{"Extracted game ZIP (HP1 or HP2)", "Philosopher's Stone PC ISO", "Choose an extracted game folder"}, (d, which) -> {
                     if (which == 0) startActivity(new Intent(this, GameZipImportActivity.class).putExtra("game", isHp2() ? "hp2" : "hp1"));

@@ -2,6 +2,11 @@
 cmake_minimum_required(VERSION 3.22)
 project(flipendo_android LANGUAGES C CXX)
 
+# Keep every shared library compatible with 16 KiB Android pages.
+if(ANDROID)
+  add_link_options("-Wl,-z,max-page-size=16384")
+endif()
+
 set(ENGINE ${CMAKE_CURRENT_LIST_DIR}/../src/engine)
 set(ENABLE_SDL2 OFF CACHE BOOL "" FORCE)
 set(SDL_SHARED ON CACHE BOOL "" FORCE)
@@ -15,3 +20,4 @@ add_library(main SHARED jni/android_main.cpp)
 target_include_directories(main PRIVATE ${ENGINE}/SurrealEngine ${ENGINE}/Thirdparty/openal-soft/include)
 set_target_properties(main PROPERTIES CXX_STANDARD 20)
 target_link_libraries(main PRIVATE -Wl,--whole-archive SurrealCommon -Wl,--no-whole-archive SDL3::SDL3 surrealwidgets surrealgpu openmpt SurrealVideo OpenAL GLESv3 EGL log android)
+
