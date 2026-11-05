@@ -2,7 +2,7 @@
 
 An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Potter trilogy into one launcher.
 
-[Download 0.4.9 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9)
+[Download 0.4.10 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10)
 
 ## 0.4.10 — PoA engine update
 
@@ -16,7 +16,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 - Read additional UE2 primitive casts and dynamic array operations used by the retail game.
 - Load, assign and call UE2 script delegates, including menu callback bindings.
 - The signed ARM64 test APK uses Android version code 51 and the permanent release certificate. Install it over 0.4.9 after that version has extracted the PoA files.
-- The test APK uses existing game files. Phone startup and gameplay remain unverified. The bundled three-game release is pending payload recovery.
+- The test APK uses existing game files. Phone startup and gameplay remain unverified. The bundled three-game release is available above.
 
 ## 0.4.9 — PoA folder-scan hotfix and settings correction
 
@@ -70,7 +70,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 ## Installation and testing
 
-- Download the three-game APK and checksum file from the [latest 0.4.9 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.9).
+- Download the three-game APK and checksum file from the [latest 0.4.10 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10).
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.

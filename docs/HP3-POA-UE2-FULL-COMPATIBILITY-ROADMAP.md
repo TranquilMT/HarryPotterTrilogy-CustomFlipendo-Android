@@ -567,4 +567,11 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Pass 101 compatibility tests and 28 Android release checks.
 - [x] Build a signed test APK with package `com.tranquil.hp1native`, version code 51, the permanent release certificate and 16 KiB ELF alignment.
 - [ ] Verify PoA startup and menu interaction on a phone with the game files extracted by 0.4.9.
-- [ ] Recover and verify the original three game payloads for the bundled release.
+- [x] Recover and verify the original three game payloads for the bundled release.
+
+## 0.4.10 bundled release
+
+- [x] Match the 0.4.9 input APK against GitHub's published SHA-256.
+- [x] Verify all 2,006 game files, signing continuity, version code 52 and 16 KiB native alignment in the signed APK.
+- [x] Publish [0.4.10 as Latest](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10) and match the four asset digests to the local files.
+- [ ] Verify PoA startup and menu interaction on an Android phone.
