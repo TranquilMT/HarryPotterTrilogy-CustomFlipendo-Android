@@ -4,6 +4,14 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 
 [Download 0.4.10 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10)
 
+## 0.4.11 — EU PoA configuration hotfix
+
+- Fix the reported launch failure opening `System/UnrealEd.ini`.
+- Prepare the missing configuration from the EU game's own `DefUnrealEd.ini`, preserving existing configuration.
+- Verify the EU script and startup configuration layout and make the EU hash profile the default for inspection tools.
+- Record the outstanding `KWGame.KWConsole` native dependency separately.
+- Use Android version code 53 and the permanent release signing certificate.
+
 ## 0.4.10 — PoA engine update
 
 - Include the `Core.Object` loader, UE2 casts, dynamic array operations and delegate fixes from 0.4.10-test.

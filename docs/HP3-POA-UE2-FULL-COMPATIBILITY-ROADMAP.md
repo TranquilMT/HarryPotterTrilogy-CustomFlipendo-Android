@@ -575,3 +575,14 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [x] Verify all 2,006 game files, signing continuity, version code 52 and 16 KiB native alignment in the signed APK.
 - [x] Publish [0.4.10 as Latest](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10) and match the four asset digests to the local files.
 - [ ] Verify PoA startup and menu interaction on an Android phone.
+
+## 0.4.11 EU configuration checkpoint
+
+- [x] Trace the reported missing UnrealEd.ini to EU Engine.ReachSpec configuration loading.
+- [x] Prepare the generated INI from the EU DefUnrealEd.ini before native startup, preserving existing files.
+- [x] Audit the 11 EU script packages and record an independent EU reference profile.
+- [x] Record the missing KWGame.KWConsole native implementation as an open runtime requirement.
+- [ ] Confirm startup progresses past this configuration load on a phone.
+- [ ] Complete the native functions, rendering, animation, physics and gameplay acceptance gates.
+
+See [EU edition audit](docs/POA-EU-EDITION-AUDIT.md).

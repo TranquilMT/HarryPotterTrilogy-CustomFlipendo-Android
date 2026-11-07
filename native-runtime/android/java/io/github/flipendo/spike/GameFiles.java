@@ -49,6 +49,37 @@ public final class GameFiles {
   if(!present(path(root,"Sounds/AllDialog.uax")))result.add("Sounds/AllDialog.uax");
   return result;
  }
+    /** Seed the EU editor config requested by class defaults before native startup. */
+    public static synchronized boolean repairHp3EditorConfig(File root) throws IOException {
+        File system = child(root, "System");
+        File target = new File(system, "UnrealEd.ini");
+        if (target.isFile()) return false;
+        File existing = child(system, "UnrealEd.ini");
+        if (existing.exists() && !existing.isFile())
+            throw new IOException("PoA editor configuration is not a file: " + existing);
+        File source = existing.isFile() ? existing : child(system, "DefUnrealEd.ini");
+        if (!source.isFile()) throw new IOException("Missing original PoA editor configuration template: " + source);
+        File temporary = File.createTempFile(".editor-config-", ".tmp", system);
+        try {
+            try (InputStream input = new FileInputStream(source);
+                 FileOutputStream output = new FileOutputStream(temporary)) {
+                byte[] buffer = new byte[16384];
+                int count;
+                while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
+                output.getFD().sync();
+            }
+            try {
+                Files.move(temporary.toPath(), target.toPath());
+            } catch (FileAlreadyExistsException concurrent) {
+                if (!target.isFile()) throw concurrent;
+                return false;
+            }
+            return true;
+        } finally {
+            Files.deleteIfExists(temporary.toPath());
+        }
+    }
+
  public static List<String> missingHp3(File root){
   List<String> result=new ArrayList<>();
   // Verified PoA script names; HP2's HProps/HPModels/HPSounds.u are not PoA requirements.

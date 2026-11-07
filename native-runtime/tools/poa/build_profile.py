@@ -13,7 +13,12 @@ def main():
   key=row['path'].replace('\\','/').casefold()
   if key not in files or hashlib.sha256(files[key].read_bytes()).hexdigest()!=m['sha256']:raise ValueError('Stale package audit: '+row['path'])
   counts.update(m['classCounts']);names=sorted({e['name'] for e in m['imports'] if e['class']=='Package' and e['outer']==0})
-  deps.append({'package':row['path'],'rootDependencies':names,'missingRootPackages':[n for n in names if n.lower() not in paths]})
+  native_modules = [name for name in names if name.lower() not in paths
+                    and 'system/' + name.lower() + '.dll' in files]
+  deps.append({'package': row['path'], 'rootDependencies': names,
+               'externalNativeModules': native_modules,
+               'missingRootPackages': [name for name in names
+                   if name.lower() not in paths and name not in native_modules]})
  bindings={};aliases=[];section=''
  for line in files['system/defuser.ini'].read_text(encoding='latin1').splitlines():
   line=line.strip()
@@ -22,9 +27,9 @@ def main():
    key,value=line.split('=',1)
    if key.startswith('Aliases['):aliases.append({'key':key,'value':value})
    elif value.strip():bindings[key]=value.strip()
- profile={'id':'hp3-pc-na','title':'Harry Potter and the Prisoner of Azkaban (PC)','status':'inspection-only','runtimeSupported':False,'originalExecutable':startup['executable']['path'],'exeSHA256':startup['executable']['sha256'],'packageCount':len(reports),'packageVersions':dict(collections.Counter(str(r['version'])+':'+str(r['licenseeVersion']) for r in reports)),'exportClassCounts':dict(counts),'requiredSubsystems':['UE2 serialization','UE2 UnrealScript VM and native bindings','static meshes and material graph','skeletal animation','collision and Karma-dependent behavior','emitters','GUI','audio and movie playback','save serialization','Android input adapter']}
+ profile={'id':'hp3-pc-unrecognized','title':'Harry Potter and the Prisoner of Azkaban (PC)','status':'inspection-only','runtimeSupported':False,'originalExecutable':startup['executable']['path'],'exeSHA256':startup['executable']['sha256'],'packageCount':len(reports),'packageVersions':dict(collections.Counter(str(r['version'])+':'+str(r['licenseeVersion']) for r in reports)),'exportClassCounts':dict(counts),'requiredSubsystems':['UE2 serialization','UE2 UnrealScript VM and native bindings','static meshes and material graph','skeletal animation','collision and Karma-dependent behavior','emitters','GUI','audio and movie playback','save serialization','Android input adapter']}
  profile.update(startup['route']);profile['startupEvidence']=startup
- reference=json.loads((pathlib.Path(__file__).parent/'reference-profile/hp3-pc-na.json').read_text())
+ reference=json.loads((pathlib.Path(__file__).parent/'reference-profile/hp3-pc-eu.json').read_text())
  profile['id']=profile_identity(profile['exeSHA256'],startup['scriptPackages'],reference)
  (out/(profile['id']+'.json')).write_text(json.dumps(profile,indent=2));(out/'package-dependencies.json').write_text(json.dumps(deps,indent=2))
  controls={'status':'mapping-only; no Android runtime integration yet','source':startup['configuration'][1]['path'],'originalBindings':bindings,'originalAliases':aliases,'touchProposal':{'leftStick':['MoveForward','MoveBackward','StrafeLeft','StrafeRight'],'look':'relative camera input; engine adapter pending','cast':bindings['LeftMouse'],'jump':bindings['Space'],'interact':bindings['Enter'],'map':bindings['Tab'],'menu':bindings['Escape'],'zoom':bindings['MiddleMouse'],'walk':bindings['Shift']}}

@@ -1,5 +1,19 @@
 # Prisoner of Azkaban compatibility tooling
 
+## Current EU baseline
+
+The active profile generator uses `reference-profile/hp3-pc-eu.json`, derived from
+the supplied EU installation bundled in 0.4.9. It verifies executable and script
+hashes before assigning the EU identity. The earlier North American profile and
+the historical checkpoints below remain available as separate inspection data.
+
+The EU installation has 11 script packages. It supplies `KWGame.dll` without
+`KWGame.u`. Startup inspection records `KWGame.KWConsole` as an external native
+dependency whose Android implementation is still pending. The launcher prepares
+`UnrealEd.ini` from this installation's `DefUnrealEd.ini` before native startup.
+See `docs/POA-EU-EDITION-AUDIT.md` in the repository root.
+
+
 This directory adds UE2 package-table inspection and a non-playable HP3 profile.
 It does not change the runtime version gate or claim UE2 gameplay support.
 

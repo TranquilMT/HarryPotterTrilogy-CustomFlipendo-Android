@@ -75,6 +75,20 @@ class StartupProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Startup class unavailable'):
             audit_startup(self.root)
 
+    def test_eu_console_dependency_is_recorded_as_unimplemented_native_code(self):
+        (self.root / 'System' / 'kwGame.u').unlink()
+        (self.root / 'System' / 'KWGame.dll').write_bytes(b'native module fixture')
+        report = audit_startup(self.root)
+        self.assertNotIn('consoleClass', report['classesVerifiedInPackageTables'])
+        self.assertEqual(report['classesRequiringNativeModule'][0]['class'], 'KWGame.KWConsole')
+        self.assertFalse(report['classesRequiringNativeModule'][0]['runtimeImplemented'])
+        self.assertFalse(report['liveStartupVerified'])
+
+    def test_missing_eu_native_module_is_rejected(self):
+        (self.root / 'System' / 'kwGame.u').unlink()
+        with self.assertRaisesRegex(ValueError, 'Startup class unavailable'):
+            audit_startup(self.root)
+
     def test_configured_server_package_must_exist(self):
         self.write_config(self.config.replace('ServerPackages=HGame', 'ServerPackages=Absent'))
         with self.assertRaisesRegex(ValueError, 'server package missing'):

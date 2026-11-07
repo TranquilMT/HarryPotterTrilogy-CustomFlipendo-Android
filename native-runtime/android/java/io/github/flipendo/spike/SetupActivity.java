@@ -1291,6 +1291,8 @@ public class SetupActivity extends Activity {
             List<String> missing = GameFiles.missingHp3(found);
             if (!missing.isEmpty()) throw new IOException("Missing original PoA files in " + found + ":\n" + android.text.TextUtils.join("\n", missing));
             GameFiles.validatePackages("hp3", found);
+            if (GameFiles.repairHp3EditorConfig(found))
+                android.util.Log.i("Flipendo", "Prepared PoA UnrealEd.ini from the selected game's DefUnrealEd.ini");
         }
         ui.post(() -> {
             if (generation != setupGeneration) return;

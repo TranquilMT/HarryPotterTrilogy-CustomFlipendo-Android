@@ -80,7 +80,8 @@ def map_path(value):
     return 'maps/' + value.casefold()
 
 
-def validate_classes(route, models):
+def validate_classes(route, models, files=None):
+    external = []
     for field in CLASS_FIELDS:
         value = route[field]
         if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*\.[A-Za-z_][A-Za-z0-9_]*', value):
@@ -90,7 +91,15 @@ def validate_classes(route, models):
         found = [] if model is None else [e for e in model['exports']
                  if e['class'].casefold() == 'class' and not e['outer'] and e['name'].casefold() == name]
         if len(found) != 1:
+            module = None if files is None else files.get('system/kwgame.dll')
+            if model is None and value.casefold() == 'kwgame.kwconsole' and module is not None:
+                external.append({'field': field, 'class': value,
+                                 'module': module.name,
+                                 'sha256': hashlib.sha256(module.read_bytes()).hexdigest(),
+                                 'runtimeImplemented': False})
+                continue
             raise ValueError('Startup class unavailable or ambiguous: ' + value)
+    return external
 
 
 def audit_startup(root):
@@ -115,7 +124,7 @@ def audit_startup(root):
             if name in models:
                 raise ValueError('Ambiguous script package: ' + name)
             models[name] = inspect(path)
-    validate_classes(route, models)
+    external_classes = validate_classes(route, models, files)
     server_packages = ini.get('engine.gameengine', {}).get('serverpackages', [])
     for name in server_packages:
         if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', name) or name.casefold() not in models:
@@ -140,7 +149,10 @@ def audit_startup(root):
                                 'classes': model['classCounts'].get('Class', 0),
                                 'functions': model['classCounts'].get('Function', 0)}
                                for _, model in sorted(models.items())],
-            'maps': selected_maps, 'classesVerifiedInPackageTables': list(CLASS_FIELDS),
+            'maps': selected_maps,
+            'classesVerifiedInPackageTables': [field for field in CLASS_FIELDS
+                if field not in {item['field'] for item in external_classes}],
+            'classesRequiringNativeModule': external_classes,
             'dependencyClosureVerified': False, 'liveStartupVerified': False,
             'interactiveGameplayVerified': False}
 
