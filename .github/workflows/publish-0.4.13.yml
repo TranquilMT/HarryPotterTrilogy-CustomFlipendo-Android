@@ -35,11 +35,12 @@ jobs:
           sha256sum -c HP-Trilogy-Mobile-0.4.13-SHA256.txt
       - name: Verify Android package and signing continuity
         run: |
-          tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
-          "$tools/apksigner" verify --verbose --print-certs dist/*Three-Games.apk > signature.txt
+          tools="$ANDROID_HOME/build-tools/36.0.0"
+          if [ ! -x "$tools/apksigner" ]; then "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'build-tools;36.0.0'; fi
+          "$tools/apksigner" verify --verbose --print-certs dist/*Three-Games.apk | tee signature.txt
           grep -q 'Signer #1 certificate SHA-256 digest: 25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40' signature.txt
           "$tools/zipalign" -c -P 16 4 dist/*Three-Games.apk
-          "$tools/aapt2" dump badging dist/*Three-Games.apk > package.txt
+          "$tools/aapt2" dump badging dist/*Three-Games.apk | tee package.txt
           grep -q "name='com.tranquil.hp1native' versionCode='55' versionName='0.4.13'" package.txt
       - name: Upload and verify release assets
         run: |
