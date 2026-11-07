@@ -4,7 +4,7 @@
   "signingCertificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
   "apk": "HP-Trilogy-Mobile-0.4.13-Three-Games.apk",
   "bytes": 1196910771,
-  "sha256": "c02c38fefdd6a12fa75a330be4c0240370acec10ca696830d550b7f4893576c1",
+  "sha256": "ba0dc9aa83170b0907aaa523d6c79b0e0ca25728d3497d39561b271c9bbd47f9",
   "nativeLibraries": [
     "libmain.so",
     "libSDL3.so",
@@ -74,9 +74,20 @@
   "sourceArchive": "HP-Trilogy-Mobile-0.4.13-Full-Source.zip",
   "edition": "EU PC game data",
   "productName": "HP:Trilogy Mobile",
-  "finalMetadataRefreshVerified": true,
   "hostCompatibilityTests": 106,
   "androidPackagingTests": 29,
-  "launcherChecks": 22,
-  "euConfigRepairChecks": 13
+  "euPackagesInspected": 110,
+  "euPackageParseErrors": 0,
+  "nativeBuildCommit": "f008ea1d0cf441892dc15055951d9f867b99b689",
+  "nativeBuildRun": "https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/actions/runs/42410051140",
+  "coreBindings": [
+    "Acos",
+    "Asin",
+    "Greater_StrStr",
+    "GetLastStateName",
+    "QuatProduct",
+    "QuatRotateVector",
+    "QuatFromAxisAndAngle"
+  ],
+  "euKwGameSHA256": "de29aa642969ff5586559580fe05f29df6ca7fffa215dd50156d3be7e0f9b11e"
 }
