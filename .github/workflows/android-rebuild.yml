@@ -2,13 +2,13 @@ name: Rebuild Android ARM64 engine
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/android-rebuild.yml']
+    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
   group: android-rebuild
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: ubuntu-24.04

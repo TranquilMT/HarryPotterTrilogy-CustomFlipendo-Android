@@ -745,6 +745,8 @@ void PropertyDataBlock::LoadStruct(void* data, UStruct* type, ObjectStream* stre
 #endif
 		}
 
+		if (prop->DataOffset.DataOffset >= type->StructSize)
+			Exception::Throw("Tagged property offset out of bounds: " + prop->Name.ToString());
 		void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset;
 
 		if (header.arrayIndex < 0 || header.arrayIndex >= prop->ArrayDimension)
@@ -763,7 +765,10 @@ void PropertyDataBlock::SaveStruct(void* data, UStruct* type, PackageStreamWrite
 			continue;
 		for (int index = 0; index < prop->ArrayDimension; ++index)
 		{
-			void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset + index * prop->ElementPitch();
+			const size_t offset = prop->DataOffset.DataOffset + index * prop->ElementPitch();
+			if (offset >= type->StructSize)
+				Exception::Throw("Tagged property offset out of bounds: " + prop->Name.ToString());
+			void* value = static_cast<uint8_t*>(data) + offset;
 			PropertyHeader header = {};
 			header.arrayIndex = index;
 			prop->SaveHeader(value, header);
