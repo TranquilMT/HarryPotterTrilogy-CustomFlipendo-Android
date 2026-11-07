@@ -1,8 +1,8 @@
 {
-  "versionName": "0.4.9",
-  "versionCode": 50,
+  "versionName": "0.4.12-test",
+  "versionCode": 54,
   "package": "com.tranquil.hp1native",
-  "status": "APK built and host verified; phone acceptance pending",
+  "status": "Local HP3 font test build; phone acceptance pending",
   "apkBuilt": true,
   "poaPlayable": false,
   "canonicalBaseCommit": "d367c77c745a776c7178ba7218a27b115c75f025",
