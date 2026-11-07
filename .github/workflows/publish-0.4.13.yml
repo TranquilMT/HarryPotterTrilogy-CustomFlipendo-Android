@@ -20,9 +20,17 @@ jobs:
       - name: Download verified base and full source
         run: |
           mkdir -p base dist
-          gh release download v0.4.11 --pattern '*Three-Games.apk' --dir base
+          for attempt in 1 2 3; do
+            if gh release download v0.4.11 --pattern '*Three-Games.apk' --dir base --clobber; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep 5
+          done
           mv base/*Three-Games.apk base/previous.apk
-          gh release download v0.4.13 --pattern '*Full-Source.zip' --dir dist
+          for attempt in 1 2 3; do
+            if gh release download v0.4.13 --pattern '*Full-Source.zip' --dir dist --clobber; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep 5
+          done
           echo '3d57e16eb180927769040c7d0dd76f3e9ac7c3e819fd5f8f098c1630f2838f01  dist/HP-Trilogy-Mobile-0.4.13-Full-Source.zip' | sha256sum -c -
       - name: Reconstruct exact signed APK
         run: |
