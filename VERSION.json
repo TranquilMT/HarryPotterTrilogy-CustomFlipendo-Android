@@ -1,9 +1,9 @@
 {
-  "versionName": "0.4.13",
-  "versionCode": 55,
+  "versionName": "0.4.14",
+  "versionCode": 56,
   "package": "com.tranquil.hp1native",
-  "status": "HP3 launch validation pending",
-  "apkBuilt": true,
+  "status": "EU RangeVector defaults fix; device validation pending",
+  "apkBuilt": false,
   "poaPlayable": false,
   "canonicalBaseCommit": "d367c77c745a776c7178ba7218a27b115c75f025",
   "previousCheckpoint": "poa-startup-20261101",

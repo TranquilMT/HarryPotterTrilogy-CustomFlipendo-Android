@@ -650,6 +650,11 @@ void PropertyDataBlock::Init(UClass* cls)
 
 void PropertyDataBlock::Load(ObjectStream* stream)
 {
+	LoadStruct(Data, Class, stream);
+}
+
+void PropertyDataBlock::LoadStruct(void* data, UStruct* type, ObjectStream* stream)
+{
 	while (true)
 	{
 		NameString name = stream->ReadName();
@@ -707,7 +712,7 @@ void PropertyDataBlock::Load(ObjectStream* stream)
 		}
 
 		UProperty* prop = nullptr;
-		for (auto it = Class->Properties.rbegin(); it != Class->Properties.rend(); ++it)
+		for (auto it = type->Properties.rbegin(); it != type->Properties.rend(); ++it)
 		{
 			if ((*it)->Name == name)
 			{
@@ -722,7 +727,7 @@ void PropertyDataBlock::Load(ObjectStream* stream)
 			}
 		}
 
-		if (Class->Name == "ConEventComment" && name == "commentText") // Deus Ex hack. We can't read this string for some weird reason.
+		if (type->Name == "ConEventComment" && name == "commentText") // Deus Ex hack. We can't read this string for some weird reason.
 		{
 			stream->Skip(header.size);
 			continue;
@@ -740,14 +745,36 @@ void PropertyDataBlock::Load(ObjectStream* stream)
 #endif
 		}
 
-		void* data = Ptr(prop);
+		void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset;
 
 		if (header.arrayIndex < 0 || header.arrayIndex >= prop->ArrayDimension)
 			Exception::Throw("Array property is out of bounds!");
 
 		prop->Flags |= ObjectFlags::TagExp;
-		prop->LoadValue(static_cast<uint8_t*>(data) + header.arrayIndex * prop->ElementPitch(), stream, header);
+		prop->LoadValue(static_cast<uint8_t*>(value) + header.arrayIndex * prop->ElementPitch(), stream, header);
 	}
+}
+
+void PropertyDataBlock::SaveStruct(void* data, UStruct* type, PackageStreamWriter* stream)
+{
+	for (UProperty* prop : type->Properties)
+	{
+		if (AnyFlags(prop->PropFlags, PropertyFlags::Native | PropertyFlags::Transient))
+			continue;
+		for (int index = 0; index < prop->ArrayDimension; ++index)
+		{
+			void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset + index * prop->ElementPitch();
+			PropertyHeader header = {};
+			header.arrayIndex = index;
+			prop->SaveHeader(value, header);
+			if (header.type == UPT_Invalid)
+				Exception::Throw("Invalid tagged struct property " + prop->Name.ToString());
+			stream->BeginProperty(prop->Name);
+			prop->SaveValue(value, stream);
+			stream->EndProperty(header);
+		}
+	}
+	stream->WriteName(NameString());
 }
 
 void PropertyDataBlock::Save(PackageStreamWriter* stream, PropertyDataBlock* defaultBlock)

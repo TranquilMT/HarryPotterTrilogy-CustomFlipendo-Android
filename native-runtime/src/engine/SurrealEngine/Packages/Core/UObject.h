@@ -14,6 +14,7 @@
 
 class UObject;
 class UClass;
+class UStruct;
 class UProperty;
 class Package;
 class Frame;
@@ -242,6 +243,8 @@ public:
 
 	void Init(UClass* cls);
 	void Load(ObjectStream* stream);
+	static void LoadStruct(void* data, UStruct* type, ObjectStream* stream);
+	static void SaveStruct(void* data, UStruct* type, PackageStreamWriter* stream);
 	void Save(PackageStreamWriter* stream, PropertyDataBlock* defaultBlock);
 
 	inline void* Ptr(const UProperty* prop);

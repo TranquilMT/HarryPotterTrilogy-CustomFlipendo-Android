@@ -2,6 +2,7 @@
 #include "Precomp.h"
 #include "UStructProperty.h"
 #include "Packages/Core/UStruct.h"
+#include "Engine.h"
 
 UStructProperty::UStructProperty(NameString name, UClass* base, ObjectFlags flags) : UProperty(std::move(name), base, flags)
 {
@@ -39,11 +40,23 @@ void UStructProperty::LoadValue(void* data, ObjectStream* stream, const Property
 	if (Struct->Name != header.structName)
 		Exception::Throw("Encountered struct '" + header.structName.ToString() + "' does not match expected struct property '" + Struct->Name.ToString() + "'");
 
+	const uint32_t start = stream->Tell();
 	LoadStructMemberValue(data, stream);
+	if (engine->LaunchInfo.IsHarryPotter3() &&
+		(Struct->Name == "Range" || Struct->Name == "RangeVector") &&
+		stream->Tell() - start != header.size)
+		Exception::Throw("PoA tagged struct size mismatch: " + Struct->Name.ToString());
 }
 
 void UStructProperty::LoadStructMemberValue(void* data, ObjectStream* stream)
 {
+	// EU PoA Range/RangeVector defaults serialize member property tags, not
+	// the flat binary float layout used by native vectors and UE1 structs.
+	if (engine->LaunchInfo.IsHarryPotter3() && (Struct->Name == "Range" || Struct->Name == "RangeVector"))
+	{
+		PropertyDataBlock::LoadStruct(data, Struct, stream);
+		return;
+	}
 	if (Struct->Properties.empty())
 		throw std::runtime_error("Struct has no properties");
 
@@ -71,6 +84,11 @@ void UStructProperty::SaveValue(void* data, PackageStreamWriter* stream)
 
 void UStructProperty::SaveStructMemberValue(void* data, PackageStreamWriter* stream)
 {
+	if (engine->LaunchInfo.IsHarryPotter3() && (Struct->Name == "Range" || Struct->Name == "RangeVector"))
+	{
+		PropertyDataBlock::SaveStruct(data, Struct, stream);
+		return;
+	}
 	if (Struct->Properties.empty())
 		throw std::runtime_error("Struct has no properties");
 

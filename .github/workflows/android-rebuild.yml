@@ -20,14 +20,12 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p recovery output
-          gh release download v0.4.12-test --pattern '*Full-Source.zip' --dir recovery
-          gh release download v0.4.12-test --pattern '*Three-Games.apk' --dir output
-          echo '56b8fba5b872f581b9220f8920806e2dd82a7cd1e48d08ede1bc3a00c410131e  recovery/HP-Trilogy-Mobile-0.4.12-test-Full-Source.zip' | sha256sum -c -
-          echo '3b355bf5387063ab295c645249305d121a8fc2a21ccaee18b36b2e486e218ef3  output/HP-Trilogy-Mobile-0.4.12-test-Three-Games.apk' | sha256sum -c -
+          gh release download v0.4.13 --pattern '*Full-Source.zip' --dir recovery
+          echo '3d57e16eb180927769040c7d0dd76f3e9ac7c3e819fd5f8f098c1630f2838f01  recovery/HP-Trilogy-Mobile-0.4.13-Full-Source.zip' | sha256sum -c -
           python3 - <<'PY'
           import zipfile, pathlib
           prefix = 'native-runtime/android/deps/SDL/'
-          with zipfile.ZipFile('recovery/HP-Trilogy-Mobile-0.4.12-test-Full-Source.zip') as z:
+          with zipfile.ZipFile('recovery/HP-Trilogy-Mobile-0.4.13-Full-Source.zip') as z:
               for item in z.infolist():
                   if item.filename.startswith(prefix):
                       if '..' in pathlib.PurePosixPath(item.filename).parts:
@@ -58,8 +56,8 @@ jobs:
           sha256sum output/native/*.so > output/native/SHA256.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: android-0.4.13-rebuild-inputs
+          name: android-0.4.14-native-libraries
           path: output/
-          compression-level: 0
+          compression-level: 6
           retention-days: 7
           if-no-files-found: error

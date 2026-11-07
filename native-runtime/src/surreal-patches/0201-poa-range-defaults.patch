@@ -1,0 +1,137 @@
+--- a/SurrealEngine/Packages/Core/UObject.h
++++ b/SurrealEngine/Packages/Core/UObject.h
+@@ -14,6 +14,7 @@
+ 
+ class UObject;
+ class UClass;
++class UStruct;
+ class UProperty;
+ class Package;
+ class Frame;
+@@ -242,6 +243,8 @@
+ 
+ 	void Init(UClass* cls);
+ 	void Load(ObjectStream* stream);
++	static void LoadStruct(void* data, UStruct* type, ObjectStream* stream);
++	static void SaveStruct(void* data, UStruct* type, PackageStreamWriter* stream);
+ 	void Save(PackageStreamWriter* stream, PropertyDataBlock* defaultBlock);
+ 
+ 	inline void* Ptr(const UProperty* prop);
+--- a/SurrealEngine/Packages/Core/UObject.cpp
++++ b/SurrealEngine/Packages/Core/UObject.cpp
+@@ -650,6 +650,11 @@
+ 
+ void PropertyDataBlock::Load(ObjectStream* stream)
+ {
++	LoadStruct(Data, Class, stream);
++}
++
++void PropertyDataBlock::LoadStruct(void* data, UStruct* type, ObjectStream* stream)
++{
+ 	while (true)
+ 	{
+ 		NameString name = stream->ReadName();
+@@ -707,7 +712,7 @@
+ 		}
+ 
+ 		UProperty* prop = nullptr;
+-		for (auto it = Class->Properties.rbegin(); it != Class->Properties.rend(); ++it)
++		for (auto it = type->Properties.rbegin(); it != type->Properties.rend(); ++it)
+ 		{
+ 			if ((*it)->Name == name)
+ 			{
+@@ -722,7 +727,7 @@
+ 			}
+ 		}
+ 
+-		if (Class->Name == "ConEventComment" && name == "commentText") // Deus Ex hack. We can't read this string for some weird reason.
++		if (type->Name == "ConEventComment" && name == "commentText") // Deus Ex hack. We can't read this string for some weird reason.
+ 		{
+ 			stream->Skip(header.size);
+ 			continue;
+@@ -740,14 +745,36 @@
+ #endif
+ 		}
+ 
+-		void* data = Ptr(prop);
++		void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset;
+ 
+ 		if (header.arrayIndex < 0 || header.arrayIndex >= prop->ArrayDimension)
+ 			Exception::Throw("Array property is out of bounds!");
+ 
+ 		prop->Flags |= ObjectFlags::TagExp;
+-		prop->LoadValue(static_cast<uint8_t*>(data) + header.arrayIndex * prop->ElementPitch(), stream, header);
+-	}
++		prop->LoadValue(static_cast<uint8_t*>(value) + header.arrayIndex * prop->ElementPitch(), stream, header);
++	}
++}
++
++void PropertyDataBlock::SaveStruct(void* data, UStruct* type, PackageStreamWriter* stream)
++{
++	for (UProperty* prop : type->Properties)
++	{
++		if (AnyFlags(prop->PropFlags, PropertyFlags::Native | PropertyFlags::Transient))
++			continue;
++		for (int index = 0; index < prop->ArrayDimension; ++index)
++		{
++			void* value = static_cast<uint8_t*>(data) + prop->DataOffset.DataOffset + index * prop->ElementPitch();
++			PropertyHeader header = {};
++			header.arrayIndex = index;
++			prop->SaveHeader(value, header);
++			if (header.type == UPT_Invalid)
++				Exception::Throw("Invalid tagged struct property " + prop->Name.ToString());
++			stream->BeginProperty(prop->Name);
++			prop->SaveValue(value, stream);
++			stream->EndProperty(header);
++		}
++	}
++	stream->WriteName(NameString());
+ }
+ 
+ void PropertyDataBlock::Save(PackageStreamWriter* stream, PropertyDataBlock* defaultBlock)
+--- a/SurrealEngine/Packages/Core/Properties/UStructProperty.cpp
++++ b/SurrealEngine/Packages/Core/Properties/UStructProperty.cpp
+@@ -2,6 +2,7 @@
+ #include "Precomp.h"
+ #include "UStructProperty.h"
+ #include "Packages/Core/UStruct.h"
++#include "Engine.h"
+ 
+ UStructProperty::UStructProperty(NameString name, UClass* base, ObjectFlags flags) : UProperty(std::move(name), base, flags)
+ {
+@@ -39,11 +40,23 @@
+ 	if (Struct->Name != header.structName)
+ 		Exception::Throw("Encountered struct '" + header.structName.ToString() + "' does not match expected struct property '" + Struct->Name.ToString() + "'");
+ 
++	const uint32_t start = stream->Tell();
+ 	LoadStructMemberValue(data, stream);
++	if (engine->LaunchInfo.IsHarryPotter3() &&
++		(Struct->Name == "Range" || Struct->Name == "RangeVector") &&
++		stream->Tell() - start != header.size)
++		Exception::Throw("PoA tagged struct size mismatch: " + Struct->Name.ToString());
+ }
+ 
+ void UStructProperty::LoadStructMemberValue(void* data, ObjectStream* stream)
+ {
++	// EU PoA Range/RangeVector defaults serialize member property tags, not
++	// the flat binary float layout used by native vectors and UE1 structs.
++	if (engine->LaunchInfo.IsHarryPotter3() && (Struct->Name == "Range" || Struct->Name == "RangeVector"))
++	{
++		PropertyDataBlock::LoadStruct(data, Struct, stream);
++		return;
++	}
+ 	if (Struct->Properties.empty())
+ 		throw std::runtime_error("Struct has no properties");
+ 
+@@ -71,6 +84,11 @@
+ 
+ void UStructProperty::SaveStructMemberValue(void* data, PackageStreamWriter* stream)
+ {
++	if (engine->LaunchInfo.IsHarryPotter3() && (Struct->Name == "Range" || Struct->Name == "RangeVector"))
++	{
++		PropertyDataBlock::SaveStruct(data, Struct, stream);
++		return;
++	}
+ 	if (Struct->Properties.empty())
+ 		throw std::runtime_error("Struct has no properties");
+ 
