@@ -1,0 +1,65 @@
+name: Rebuild Android ARM64 engine
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/android-rebuild.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-rebuild
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Restore pinned build dependencies and original payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p recovery output
+          gh release download v0.4.12-test --pattern '*Full-Source.zip' --dir recovery
+          gh release download v0.4.12-test --pattern '*Three-Games.apk' --dir output
+          echo '56b8fba5b872f581b9220f8920806e2dd82a7cd1e48d08ede1bc3a00c410131e  recovery/HP-Trilogy-Mobile-0.4.12-test-Full-Source.zip' | sha256sum -c -
+          echo '3b355bf5387063ab295c645249305d121a8fc2a21ccaee18b36b2e486e218ef3  output/HP-Trilogy-Mobile-0.4.12-test-Three-Games.apk' | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile, pathlib
+          prefix = 'native-runtime/android/deps/SDL/'
+          with zipfile.ZipFile('recovery/HP-Trilogy-Mobile-0.4.12-test-Full-Source.zip') as z:
+              for item in z.infolist():
+                  if item.filename.startswith(prefix):
+                      if '..' in pathlib.PurePosixPath(item.filename).parts:
+                          raise ValueError('Unsafe dependency path')
+                      z.extract(item, '.')
+          assert pathlib.Path(prefix + 'CMakeLists.txt').is_file()
+          core = pathlib.Path('native-runtime/src/hp3/PoaCore.cpp').read_text()
+          for name in ['Acos', 'Asin', 'Greater_StrStr', 'GetLastStateName', 'QuatProduct', 'QuatRotateVector', 'QuatFromAxisAndAngle']:
+              assert '"' + name + '"' in core, name
+          PY
+      - name: Install native toolchain
+        run: |
+          echo y | "${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager" 'ndk;27.2.12479018'
+          python3 -m pip install cmake==3.31.6 ninja==1.11.1.4
+      - name: Compile current patched engine
+        run: |
+          cmake -S native-runtime/android -B build-android -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="${ANDROID_HOME}/ndk/27.2.12479018/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-29 \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+            -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-z,max-page-size=16384"
+          cmake --build build-android --target main --parallel 4
+          mkdir -p output/native
+          cp build-android/libmain.so build-android/SDL3/libSDL3.so \
+             build-android/engine/Thirdparty/openal-soft/libopenal.so \
+             build-android/engine/libSurrealVideo.so output/native/
+          git rev-parse HEAD > output/native/source-commit.txt
+          sha256sum output/native/*.so > output/native/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-0.4.13-rebuild-inputs
+          path: output/
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
