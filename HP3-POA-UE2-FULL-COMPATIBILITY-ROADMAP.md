@@ -586,3 +586,5 @@ This fixes the reported configuration-selection cause; further UE2 compatibility
 - [ ] Complete the native functions, rendering, animation, physics and gameplay acceptance gates.
 
 See [EU edition audit](docs/POA-EU-EDITION-AUDIT.md).
+
+- [x] Publish [0.4.11 as Latest](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.11) with the signed three-game APK, complete source, verification report and SHA-256 checksums. GitHub asset digests match the local files.

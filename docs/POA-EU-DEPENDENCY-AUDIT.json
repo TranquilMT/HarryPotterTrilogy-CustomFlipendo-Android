@@ -1,0 +1,1830 @@
+{
+  "edition": "EU supplied installation",
+  "status": "package table inspection; no Android execution",
+  "packages": [
+    {
+      "package": "Animations/HPCharacters.ukx",
+      "rootDependencies": [
+        "Engine",
+        "HP3_InteriorAccents",
+        "HPCharTextures"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Animations/HPCharacters_16.ukx",
+      "rootDependencies": [
+        "Engine",
+        "HPCharTextures"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Animations/HPCharacters_32.ukx",
+      "rootDependencies": [
+        "Engine",
+        "HPCharTextures"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Animations/HProps.ukx",
+      "rootDependencies": [
+        "Engine",
+        "HP3_ArchiExterior",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_InterArch",
+        "HP3_InteriorAccents",
+        "HP3_Natural",
+        "HP3_Walls",
+        "HPCharTextures",
+        "HP_FX",
+        "Ice2",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Animations/Joint.ukx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "JointTextures"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/Entry.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Adv1Express.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_CutScenes_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_HogwartsExpress_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPCharacters",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Adv2ExpPatronum.unr",
+      "rootDependencies": [
+        "AmbientCreatures",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HPCharacters",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Adv3Library.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPCharTextures",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Adv5Shack.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_CutScenes_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents_SM",
+        "HP3_MaterialSwitch_HW",
+        "HP3_MaterialSwitch_Tx",
+        "HP3_Movers_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Particles_SM",
+        "HP3_Placeholder",
+        "HP3_Placeholder_SM",
+        "HP3_Skybox",
+        "HP3_SystemIcons",
+        "HP3_Walls",
+        "HPCharTextures",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Adv6Paddock.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers",
+        "HP3_Movers_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPSkybox",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_BeanBonus.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_BuckyExecuted.unr",
+      "rootDependencies": [
+        "AmbientCreatures",
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HPCharacters",
+        "HPSkybox",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_COMC.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPCharacters_32",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch1CarpeRetractum.unr",
+      "rootDependencies": [
+        "AllDialog",
+        "AmbientCreatures",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Particles_SM",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HPCharTextures",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch1CarpeRetractumB.unr",
+      "rootDependencies": [
+        "AllDialog",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Particles_SM",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch2Draconifors.unr",
+      "rootDependencies": [
+        "AllDialog",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers",
+        "HP3_Movers_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch2DraconiforsB.unr",
+      "rootDependencies": [
+        "AllDialog",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers",
+        "HP3_Movers_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch3Glacius.unr",
+      "rootDependencies": [
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_Glacius_Placeholder",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents_SM",
+        "HP3_MaterialSwitch_HW",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Placeholder_SM",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Ch3GlaciusB.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_Glacius_Placeholder",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_MaterialSwitch_HW",
+        "HP3_MaterialSwitch_Tx",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Placeholder_SM",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_DarkTower.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_Floors",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_DementorBattle.unr",
+      "rootDependencies": [
+        "AllDialog",
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_DungeonHUB.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Placeholder_SM",
+        "HP3_Tester",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_FA1Ron.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPSkybox",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_FA2Hermione.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_FA3Harry.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_MaterialSwitch_HW",
+        "HP3_Placeholder",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Final.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_CutScenes_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_HogwartsExpress",
+        "HP3_HogwartsExpress_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HPCharacters",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_GroundsDada.unr",
+      "rootDependencies": [
+        "AmbientCreatures",
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_GroundsHub.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Infirmary.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "ExecDemo",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "HP3_Walls",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_InsideHub.unr",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "ExecDemo",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers_SM",
+        "HP3_Walls",
+        "HPCharTextures",
+        "HPCharacters",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_PortraitPassword_B.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_Placeholder_SM",
+        "HP3_Walls",
+        "HP_FX",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_PortraitPassword_C.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_PortraitPassword_D.unr",
+      "rootDependencies": [
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers_SM",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HPCharTextures",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_PortraitPassword_E.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Movers_SM",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HPCharTextures",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_PortraitPassword_F.unr",
+      "rootDependencies": [
+        "EmitterTextures",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_Furniture_SM",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InterArch_SM",
+        "HP3_InteriorAccents",
+        "HP3_InteriorAccents_SM",
+        "HP3_Walls",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_Quidditch.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_InteriorAccents",
+        "HP3_Natural",
+        "HP3_Skybox",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP3_WhompingWillow.unr",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "HP3_ArchiExterior",
+        "HP3_ExteriorArch_SM",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Natural",
+        "HP3_Natural_SM",
+        "HP3_SkyBoxes",
+        "HP3_Skybox",
+        "KWGame",
+        "SoundEffects"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Maps/HP_Preamble.unr",
+      "rootDependencies": [
+        "Engine",
+        "Gameplay",
+        "HGame",
+        "KWGame"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Sounds/alldialog.uax",
+      "rootDependencies": [
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Sounds/execdemo.uax",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Sounds/soundeffects.uax",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_CutScenes_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_FX",
+        "HP3_Furniture",
+        "HP3_HogwartsExpress",
+        "HP3_InteriorAccents"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_ExteriorArch_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_ArchiExterior",
+        "HP3_InteriorAccents"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Furniture_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Furniture"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Gameplay_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InteriorAccents",
+        "HP3_MaterialSwitch_HW",
+        "HP3_Menu",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "HPCharTextures",
+        "Ice2"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Glacius_Placeholder.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_MaterialSwitch_Tx",
+        "HP3_Placeholder",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_HogwartsExpress_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_HogwartsExpress"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_InterArch_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Walls",
+        "Ice2",
+        "LegoTextures"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_InteriorAccents_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_ArchiExterior",
+        "HP3_Furniture",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_InteriorAccents",
+        "HP3_Natural",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Movers_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_Movers",
+        "HP3_Placeholder",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Natural_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Natural"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Particles_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_FX",
+        "HP3_Gameplay",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Placeholder_SM.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_MaterialSwitch_HW",
+        "HP3_MaterialSwitch_Tx",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_SkyBoxes.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_FX",
+        "HP3_Skybox"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "StaticMeshes/HP3_Tester.usx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Ceilings",
+        "HP3_Floors",
+        "HP3_HogwartsExpress",
+        "HP3_InteriorAccents",
+        "HP3_Placeholder",
+        "HP3_Walls"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/AmbientCreatures.u",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/Core.u",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/Decorations.u",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/Editor.u",
+      "rootDependencies": [
+        "Core",
+        "Editor",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/Engine.u",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/Fire.u",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/GUI.u",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "GUIContent"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/GamePlay.u",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP_FX",
+        "UWindow"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/HGame.u",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Fire",
+        "GUI",
+        "GUIContent",
+        "Gameplay",
+        "HP3_CutScenes_SM",
+        "HP3_FX",
+        "HP3_Furniture_SM",
+        "HP3_GamePlay_sm",
+        "HP3_Gameplay",
+        "HP3_InteriorAccents_SM",
+        "HP3_LoadLevel",
+        "HP3_Menu",
+        "HP3_Particles_SM",
+        "HP3_SystemIcons",
+        "HPCharTextures",
+        "HPCharacters",
+        "HPCharacters_32",
+        "HP_FX",
+        "HProps",
+        "KWGame",
+        "KWMenu",
+        "SoundEffects",
+        "SpellShapes"
+      ],
+      "externalNativeModules": [
+        "KWGame"
+      ],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/UDebugMenu.u",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "UWindow"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "System/UWindow.u",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/CubeMaps.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/EM_CubeMaps_T.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/EmitterTextures.utx",
+      "rootDependencies": [
+        "Core",
+        "CubeMaps",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/EmitterTextures2.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/EpicParticles.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/GUIContent.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/GUIFONTS.utx",
+      "rootDependencies": [
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_ArchiExterior.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Ceilings.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Deleted2.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Gameplay"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_FX.utx",
+      "rootDependencies": [
+        "Core",
+        "EmitterTextures",
+        "Engine",
+        "Fire",
+        "HP_FX"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Floors.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Furniture.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Gameplay.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire",
+        "HP3_Deleted2",
+        "HP3_Natural",
+        "HP3_Placeholder",
+        "HPCharTextures",
+        "HP_FX"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_HogwartsExpress.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_InterArch.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_InteriorAccents.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_HogwartsExpress"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_LoadLevel.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_MaterialSwitch_HW.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_MaterialSwitch_Tx",
+        "HP3_Natural"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_MaterialSwitch_SW.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_MaterialSwitch_HW",
+        "HP3_Natural"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_MaterialSwitch_Tx.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Floors",
+        "HP3_Gameplay",
+        "HP3_InterArch",
+        "HP3_MaterialSwitch_HW",
+        "HP3_Natural"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Menu.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Movers.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Natural.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Placeholder.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire",
+        "HP3_FX",
+        "HP3_Floors",
+        "HP3_Gameplay"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Skybox.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_SystemIcons.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP3_Walls.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HPCharTextures.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HPSkybox.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/HP_FX.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/Ice2.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "HP3_Natural"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/JointTextures.utx",
+      "rootDependencies": [
+        "AmbientCreatures",
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/KWMenu.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/LegoTextures.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/Palettes.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/QuidditchTerrain.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "UnrealEd"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": [
+        "UnrealEd"
+      ]
+    },
+    {
+      "package": "Textures/SpellShapes.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine",
+        "Fire"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/UDNLevelLoadingTex.utx",
+      "rootDependencies": [
+        "Engine",
+        "HP3_Gameplay"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/UT2003Fonts.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/UWindowFonts.utx",
+      "rootDependencies": [
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    },
+    {
+      "package": "Textures/WarfareFonts.utx",
+      "rootDependencies": [
+        "Core",
+        "Engine"
+      ],
+      "externalNativeModules": [],
+      "missingRootPackages": []
+    }
+  ]
+}

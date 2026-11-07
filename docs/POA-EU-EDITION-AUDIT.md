@@ -25,6 +25,7 @@ APK SHA-256 `b2767fed01aedcd1c6ce3064d52cfdf910dfaebc81dabd984dd05f707a257c8d`.
 ## Open compatibility work
 
 - The EU configuration requests `KWGame.KWConsole` from `KWGame.dll`. The offline audit records this as an external native dependency. Its Android implementation remains pending.
+- The texture package `Textures/QuidditchTerrain.utx` imports the `UnrealEd` package. Its availability and relevance to the Android runtime remain unresolved.
 - A successful metadata audit does not verify native calls, rendering, animation, physics, save/load or gameplay.
 - The next phone test must confirm startup passes `UnrealEd.ini` and capture the next engine result.
 
