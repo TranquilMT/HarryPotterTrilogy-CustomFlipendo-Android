@@ -1,0 +1,5 @@
+f6215bc7d08c95a61b7a374926e2e8faf48cedb12a6335f4eee0767abb805f5b  HP-Trilogy-Mobile-0.4.13-Changes.md
+3d57e16eb180927769040c7d0dd76f3e9ac7c3e819fd5f8f098c1630f2838f01  HP-Trilogy-Mobile-0.4.13-Full-Source.zip
+c02c38fefdd6a12fa75a330be4c0240370acec10ca696830d550b7f4893576c1  HP-Trilogy-Mobile-0.4.13-Three-Games.apk
+68f05bf5043537ac33dc919fe1be60862909e0a362551f7c6d51a3d422057e8d  HP-Trilogy-Mobile-0.4.13-Verification.json
+806e736275b027564e3176b50ed8b865a8da47fdf252c147e7c3aff947d903da  HP3-Compatibility-Roadmap.md

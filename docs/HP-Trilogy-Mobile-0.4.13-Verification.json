@@ -1,0 +1,82 @@
+{
+  "versionName": "0.4.13",
+  "versionCode": 55,
+  "signingCertificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40",
+  "apk": "HP-Trilogy-Mobile-0.4.13-Three-Games.apk",
+  "bytes": 1196910771,
+  "sha256": "c02c38fefdd6a12fa75a330be4c0240370acec10ca696830d550b7f4893576c1",
+  "nativeLibraries": [
+    "libmain.so",
+    "libSDL3.so",
+    "libopenal.so",
+    "libSurrealVideo.so"
+  ],
+  "elfVerification": [
+    {
+      "path": "lib/arm64-v8a/libSDL3.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libSurrealVideo.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libmain.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    },
+    {
+      "path": "lib/arm64-v8a/libopenal.so",
+      "architecture": "AArch64",
+      "loadAlignments": [
+        16384,
+        16384,
+        16384
+      ]
+    }
+  ],
+  "deviceExecutionTested": false,
+  "isoImporterHostTested": false,
+  "bundledGameData": true,
+  "gamePayloads": [
+    {
+      "game": "HP1",
+      "files": 339,
+      "bytes": 531064131
+    },
+    {
+      "game": "HP2",
+      "files": 901,
+      "bytes": 513221794
+    },
+    {
+      "game": "HP3",
+      "files": 767,
+      "bytes": 830930107
+    }
+  ],
+  "allGamePayloadHashesVerified": true,
+  "sourceIdentity": "checkpoint:local-0.4.13-hp3-startup;lock-sha256:cd7599d819a6a22c4254e54eb5e6e800516345350ce425126e8dc359afb2310c",
+  "sourceArchive": "HP-Trilogy-Mobile-0.4.13-Full-Source.zip",
+  "edition": "EU PC game data",
+  "productName": "HP:Trilogy Mobile",
+  "finalMetadataRefreshVerified": true,
+  "hostCompatibilityTests": 106,
+  "androidPackagingTests": 29,
+  "launcherChecks": 22,
+  "euConfigRepairChecks": 13
+}

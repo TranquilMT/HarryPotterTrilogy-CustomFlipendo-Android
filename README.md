@@ -1,16 +1,21 @@
 # HP:Trilogy Mobile
 
-An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Potter trilogy into one launcher.
+An Android ARM64 source port based on Custom Flipendo, bringing the EU PC versions of the Harry Potter trilogy into one launcher.
 
-[Download 0.4.11 — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.11)
+[Published releases — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases)
 
-## 0.4.11 — EU PoA configuration hotfix
+**0.4.13 source and local artifacts are complete. GitHub release asset publication is pending; the latest-release designation has not been changed.**
 
-- Fix the reported launch failure opening `System/UnrealEd.ini`.
-- Prepare the missing configuration from the EU game's own `DefUnrealEd.ini`, preserving existing configuration.
-- Verify the EU script and startup configuration layout and make the EU hash profile the default for inspection tools.
-- Record the outstanding `KWGame.KWConsole` native dependency separately.
-- Use Android version code 53 and the permanent release signing certificate.
+## 0.4.13 — HP3 startup compatibility
+
+HP:Trilogy Mobile is the Android source port of the PC trilogy, using EU game versions.
+
+- Recover the missing `System/kwGame.u` directly from the uploaded EU disc. It is a standalone disc file outside `compressed.zip`, and supplies `KWGame.KWConsole`.
+- Require the script package during installation and pre-launch validation; a Windows DLL cannot replace it.
+- Avoid loading absent optional `IpDrv` classes during property initialization. Actual required package imports still fail normally.
+- Add seven verified HP3 core native bindings and track the previous UnrealScript state.
+- Retain the 0.4.12 font serialization fix, all three bundled games, application identity and permanent signing certificate.
+- HP3 startup beyond language selection, saves and gameplay still require phone validation. This is not a claim of complete UE2 compatibility.
 
 ## 0.4.10 — PoA engine update
 
@@ -72,13 +77,13 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 - Install the EU common and English game files, including animations, static meshes and movies.
 - Verify bundled files by size and SHA-256 during installation; preserve existing nonempty configuration and saves.
 - Accept original PoA folder/ZIP imports and validate UE2 version 129 packages.
-- Remove the incorrect requirement for `KWGame.u`: this EU edition contains the native `KWGame.dll` instead.
+- The earlier extraction omitted the EU disc’s standalone `System/kwGame.u`. Version 0.4.13 restores the script and requires it before launch; `KWGame.dll` cannot replace it.
 - Retain bounded package loading, object-call checks and supported UE2 primitive-cast decoding.
 - **PoA has not yet been verified to reach a rendered, interactive game on Android.** Character swapping, native game functions, menus, saves, rendering and performance require runtime acceptance. A successful APK build does not establish playability.
 
 ## Installation and testing
 
-- Download the three-game APK and checksum file from the [latest 0.4.11 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.11).
+- Download the three-game APK and checksum file from the [latest 0.4.10 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.10).
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.
@@ -88,7 +93,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the PC Harry Pot
 ## Source and roadmap
 
 - [Release details](docs/RELEASE-0.4.7.md)
-- [Complete PoA compatibility roadmap](docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md)
+- [Complete PoA compatibility roadmap](docs/HP3-COMPATIBILITY-ROADMAP.md)
 - Android launcher and build tooling: `native-runtime/android/`.
 - Game data, SDK/NDK and private signing material are external build inputs, not source dependencies.
 - Engine and third-party licenses remain in the source tree. Credit to Flipendo, SurrealEngine and their contributors; Harry Potter names and original game content belong to their respective owners.

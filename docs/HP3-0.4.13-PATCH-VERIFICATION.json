@@ -1,0 +1,26 @@
+[
+  {
+    "path": "SurrealEngine/PropertyOffsets.cpp",
+    "patch": "0010-engine-fixes.patch",
+    "exactForwardApply": true,
+    "sourceRevision": "c41d349e7e23584dac863367ba661bf90ef1c4f3"
+  },
+  {
+    "path": "SurrealEngine/Package/PackageManager.h",
+    "patch": "0100-knowwonder-core.patch",
+    "exactForwardApply": true,
+    "sourceRevision": "c41d349e7e23584dac863367ba661bf90ef1c4f3"
+  },
+  {
+    "path": "SurrealEngine/Package/PackageManager.cpp",
+    "patch": "0100-knowwonder-core.patch",
+    "exactForwardApply": true,
+    "sourceRevision": "c41d349e7e23584dac863367ba661bf90ef1c4f3"
+  },
+  {
+    "path": "SurrealEngine/Packages/Core/UObject.cpp",
+    "patch": "0010-engine-fixes.patch",
+    "exactForwardApply": true,
+    "sourceRevision": "c41d349e7e23584dac863367ba661bf90ef1c4f3"
+  }
+]

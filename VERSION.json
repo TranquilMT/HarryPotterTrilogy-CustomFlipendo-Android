@@ -1,8 +1,8 @@
 {
-  "versionName": "0.4.9",
-  "versionCode": 50,
+  "versionName": "0.4.13",
+  "versionCode": 55,
   "package": "com.tranquil.hp1native",
-  "status": "APK built and host verified; phone acceptance pending",
+  "status": "HP3 launch validation pending",
   "apkBuilt": true,
   "poaPlayable": false,
   "canonicalBaseCommit": "d367c77c745a776c7178ba7218a27b115c75f025",

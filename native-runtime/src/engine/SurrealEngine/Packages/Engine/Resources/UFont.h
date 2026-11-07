@@ -62,7 +62,12 @@ private:
 	uint32_t RemapChar(uint32_t c) const;
 
 	Array<FontPage> pages;
-	int charactersPerPage;
+	int charactersPerPage = 0;
+	int ue2Kerning = 0;
+	// UE2 stores one glyph table, each glyph selecting an atlas texture.
+	Array<FontCharacter> poaCharacters;
+	Array<uint8_t> poaTextureIndices;
+	bool poaLayout = false;
 
 	// Fonts from package version 69 on can map characters to other glyph slots (CharRemap, used when IsRemapped);
 	// a character missing from the map draws as a space. HP1's own fonts leave it empty.

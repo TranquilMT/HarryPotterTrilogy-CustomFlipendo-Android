@@ -1,0 +1,18 @@
+{
+  "edition": "EU",
+  "alternateRegionalProfilesIncluded": false,
+  "alternateRegionalRecoveryPayloadIncluded": false,
+  "euSourceVaultFileId": "73354819-066b-4b12-9e4d-baaeeabf4764",
+  "missingEUDataMustNotBeSubstituted": true,
+  "removedHistoricalReferences": [
+    "docs/POA-STARTUP-ROUTE.md",
+    "docs/POA-SOURCE-LOCK.json",
+    "docs/POA-RETAIL-METADATA-VERIFICATION.json",
+    "docs/POA-HGAME-VERIFICATION.json",
+    "docs/POA-RETAIL-METADATA-CHECKPOINT.md",
+    "docs/POA-STARTUP-IDENTITY-VERIFICATION.json",
+    "docs/POA-PACKAGE-INTEGRITY-VERIFICATION.json",
+    "docs/POA-FULL-DISC-INVENTORY.json",
+    "docs/HP3-POA-UE2-FULL-COMPATIBILITY-ROADMAP.md"
+  ]
+}

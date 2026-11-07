@@ -95,7 +95,7 @@ def hp3_inventory(root):
             if name.lower() in files:
                 raise ValueError('Case-colliding PoA path: ' + name)
             files[name.lower()] = (name, p)
-    for name in ('hppoa.exe','core.u','engine.u','hgame.u','gui.u','uwindow.u','gameplay.u','default.ini','defuser.ini'):
+    for name in ('hppoa.exe','core.u','engine.u','hgame.u','kwgame.u','gui.u','uwindow.u','gameplay.u','default.ini','defuser.ini'):
         item = files.get('system/' + name)
         if not item or not item[1].stat().st_size:
             raise ValueError('Missing PoA System/' + name)

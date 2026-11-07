@@ -1095,10 +1095,9 @@ index 2f91f141..e3a86d3f 100644
  			}
  		}
 diff --git a/SurrealEngine/Packages/Core/UObject.cpp b/SurrealEngine/Packages/Core/UObject.cpp
-index 14b87d6f..fcb0e7d1 100644
 --- a/SurrealEngine/Packages/Core/UObject.cpp
 +++ b/SurrealEngine/Packages/Core/UObject.cpp
-@@ -30,7 +30,16 @@ void UObject::LoadNow()
+@@ -30,7 +30,16 @@
  		auto stream = info->package->OpenObjectStream(info->Index, info->ObjName, info->Class);
  		if (!stream->IsEmptyStream())
  		{
@@ -1116,7 +1115,7 @@ index 14b87d6f..fcb0e7d1 100644
  			SetObject("Outer", info->Outer);
  		}
  		else if (auto s = UObject::TryCast<UStruct>(this))
-@@ -76,10 +85,11 @@ void UObject::Load(ObjectStream* stream)
+@@ -76,10 +85,11 @@
  			if (offset != -1)
  			{
  				func->LoadNow();
@@ -1129,24 +1128,25 @@ index 14b87d6f..fcb0e7d1 100644
  					if (latentAction >= 0 && (size_t)latentAction < NativeFunctions::LatentActionByIndex.size())
  					{
  						StateFrame->SetLatentState(NativeFunctions::LatentActionByIndex[latentAction]);
-@@ -107,9 +117,14 @@ void UObject::Load(ObjectStream* stream)
+@@ -107,9 +117,14 @@
  			LogMessage("UObject::Load encountered object with a state object but no function");
  		}
  
 -		for (int i = 0; i < 64; i++)
+-		{
+-			if ((probeMask >> i) & 1)
 +		// A set bit in the saved probe mask is an enabled probe (HP1's UObject::IsProbing tests the bit, Disable clears
 +		// it); a map actor saves them all set. Read as disabled, an actor ignored script calls of its probe functions
 +		// until its first GotoState: Lev2_RemChase's referee triggers its intro cutscene from SetInitialState.
 +		// Saves from older builds of this engine wrote the disabled probes instead, nearly always none: a mask of 0,
 +		// which the original never saves (it starts with every bit set), so 0 disables nothing.
 +		for (int i = 0; i < 64 && probeMask != 0; i++)
- 		{
--			if ((probeMask >> i) & 1)
++		{
 +			if (((probeMask >> i) & 1) == 0)
  			{
  				DisableEvent(ToNameString((EventName)i));
  			}
-@@ -133,18 +148,17 @@ void UObject::Save(PackageStreamWriter* stream)
+@@ -133,18 +148,17 @@
  {
  	if (AllFlags(Flags, ObjectFlags::HasStack))
  	{
@@ -1169,7 +1169,7 @@ index 14b87d6f..fcb0e7d1 100644
  			{
  				probeMask |= 1ULL << (uint64_t)i;
  			}
-@@ -387,7 +401,7 @@ bool UObject::IsEventEnabled(EventName name) const
+@@ -387,7 +401,7 @@
  		bool foundProbe = false;
  		if (StateFrame && StateFrame->GetFunc())
  		{
@@ -1178,21 +1178,21 @@ index 14b87d6f..fcb0e7d1 100644
  
  			// Probe is in the ignore list ('ignores' keyword in unrealscript)
  			if ((state->IgnoreMask & (1ULL << nameIndex)) == 0)
-@@ -408,6 +422,13 @@ bool UObject::IsEventEnabled(EventName name) const
+@@ -407,6 +421,13 @@
+ 		{
  			foundProbe = true;
  		}
- 
++
 +		// HP2 compiles some states' probe masks without EndState (ChallengeStar.PickupProp defines it, its mask has only the
 +		// inherited bits), yet the original calls it: the star's EndState adds the time and ends the lesson. A state that has
 +		// the function and does not ignore the event gets it.
 +		if (!foundProbe && name == EventName::EndState && engine->LaunchInfo.IsHarryPotter2() && StateFrame && StateFrame->GetFunc()
 +			&& FindEventFunction(const_cast<UObject*>(this), ToNameString(name)))
 +			foundProbe = true;
-+
+ 
  		if (!foundProbe)
  			return false;
- 	}
-@@ -480,7 +501,7 @@ Array<UProperty*> UObject::GetAllTravelProperties()
+@@ -480,7 +501,7 @@
  
  NameString UObject::GetStateName() const
  {
@@ -1201,14 +1201,15 @@ index 14b87d6f..fcb0e7d1 100644
  }
  
  void UObject::GotoState(NameString stateName, const NameString& labelName)
-@@ -521,10 +542,18 @@ void UObject::GotoState(NameString stateName, const NameString& labelName)
+@@ -521,13 +542,25 @@
  	if (!StateFrame)
  		StateFrame = std::make_shared<Frame>(this, nullptr, 0, true);
  
 -	UState* oldState = (UState*)StateFrame->GetFunc();
-+	UState* oldState = (UState*)StateFrame->GetState();
- 
+-
 -	if (oldState && oldState != newState)
++	UState* oldState = (UState*)StateFrame->GetState();
++
 +	// UE1 calls EndState with InEndState set, so a GotoState made from inside EndState doesn't call it again (that
 +	// recursed until the stack overflowed), and the state that inner GotoState entered wins: this call stops there.
 +	if (oldState && oldState != newState && !AllFlags(Flags, ObjectFlags::InEndState))
@@ -1221,8 +1222,15 @@ index 14b87d6f..fcb0e7d1 100644
 +	}
  
  	if (oldState != newState)
++	{
++		if (engine->LaunchInfo.IsHarryPotter3())
++			SetName("LastStateName", oldState ? oldState->Name : NameString());
  		StateFrame->SetState(newState);
-@@ -537,7 +566,7 @@ void UObject::GotoState(NameString stateName, const NameString& labelName)
++	}
+ 
+ 	DisabledEvents.clear();
+ 
+@@ -537,7 +570,7 @@
  		// load time. An actor that starts a level with no baked-in stack but enters a real state
  		// during play would otherwise never have that state written by Save() at all, silently
  		// losing it on the next save regardless of what state it's actually in.
@@ -1344,21 +1352,66 @@ index c6fb1957..6b7b1c73 100644
  		ReadToken(stream, depth);
  	}
 diff --git a/SurrealEngine/Packages/Engine/Resources/UFont.cpp b/SurrealEngine/Packages/Engine/Resources/UFont.cpp
-index 47d655d1..474cfd09 100644
 --- a/SurrealEngine/Packages/Engine/Resources/UFont.cpp
 +++ b/SurrealEngine/Packages/Engine/Resources/UFont.cpp
-@@ -2,6 +2,7 @@
+@@ -2,6 +2,8 @@
  #include "Precomp.h"
  #include "UFont.h"
  #include "Textures/UTexture.h"
 +#include "Utils/UTF8Reader.h"
++#include "Engine.h"
  
  void UFont::Load(ObjectStream* stream)
  {
-@@ -44,6 +45,18 @@ void UFont::Load(ObjectStream* stream)
+@@ -29,6 +31,39 @@
+ 	{
+ 		UObject::Load(stream);
+ 
++		poaLayout = engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 122;
++		if (poaLayout)
++		{
++			// EU packages 122/129: global glyph array (four ints plus atlas byte).
++			// Bundled 99/120/121 font packages retain the legacy page-first layout.
++			// then the texture array. UE1 instead stores glyph arrays inside each page.
++			int count = stream->ReadIndex();
++			if (count < 0 || count > 65536)
++				Exception::Throw("Invalid PoA font glyph count");
++			poaCharacters.resize(count);
++			poaTextureIndices.resize(count);
++			for (int i = 0; i < count; ++i)
++			{
++				auto& c = poaCharacters[i];
++				c.StartU = stream->ReadInt32();
++				c.StartV = stream->ReadInt32();
++				c.USize = stream->ReadInt32();
++				c.VSize = stream->ReadInt32();
++				poaTextureIndices[i] = stream->ReadUInt8();
++			}
++			count = stream->ReadIndex();
++			if (count < 0 || count > 256)
++				Exception::Throw("Invalid PoA font atlas count");
++			pages.resize(count);
++			for (auto& page : pages)
++				page.Texture = stream->ReadObject<UTexture>();
++			for (size_t i = 0; i < poaCharacters.size(); ++i)
++				if (poaTextureIndices[i] >= pages.size() &&
++					(poaCharacters[i].USize != 0 || poaCharacters[i].VSize != 0))
++					Exception::Throw("Invalid PoA font atlas index");
++		}
++		else
++		{
+ 		pages.resize(stream->ReadIndex());
+ 		for (FontPage& page : pages)
+ 		{
+@@ -43,7 +78,23 @@
+ 			}
  		}
  
++		}
++
  		charactersPerPage = stream->ReadUInt32();
++		if (engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 120 && stream->GetVersion() < 122)
++			ue2Kerning = stream->ReadInt32();
 +
 +		if (stream->GetVersion() >= 69)
 +		{
@@ -1374,10 +1427,42 @@ index 47d655d1..474cfd09 100644
  	}
  }
  
-@@ -82,11 +95,31 @@ void UFont::Save(PackageStreamWriter* stream)
+@@ -67,6 +118,21 @@
+ 	{
+ 		UObject::Save(stream);
+ 
++		if (poaLayout)
++		{
++			stream->WriteIndex((int)poaCharacters.size());
++			for (size_t i = 0; i < poaCharacters.size(); ++i)
++			{
++				const auto& c = poaCharacters[i];
++				stream->WriteInt32(c.StartU); stream->WriteInt32(c.StartV);
++				stream->WriteInt32(c.USize); stream->WriteInt32(c.VSize);
++				stream->WriteUInt8(poaTextureIndices[i]);
++			}
++			stream->WriteIndex((int)pages.size());
++			for (const auto& page : pages) stream->WriteObject(page.Texture);
++		}
++		else
++		{
+ 		stream->WriteIndex((int)pages.size());
+ 		for (FontPage& page : pages)
+ 		{
+@@ -81,12 +147,36 @@
+ 			}
  		}
  
++		}
++
  		stream->WriteUInt32(charactersPerPage);
+-	}
+-}
+-
+-FontGlyph UFont::GetGlyph(char c) const
+-{
++		if (engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 120 && stream->GetVersion() < 122)
++			stream->WriteInt32(ue2Kerning);
 +
 +		if (stream->GetVersion() >= 69)
 +		{
@@ -1389,15 +1474,14 @@ index 47d655d1..474cfd09 100644
 +			}
 +			stream->WriteUInt32(isRemapped ? 1 : 0);
 +		}
- 	}
- }
- 
--FontGlyph UFont::GetGlyph(char c) const
++	}
++}
++
 +FontGlyph (*UFont::ExtraGlyph)(const UFont* font, unsigned char c) = nullptr;
 +bool UFont::ByteText = false;
 +
 +FontGlyph UFont::GetGlyph(uint32_t c) const
- {
++{
 +	if (ExtraGlyph && c < 256)
 +	{
 +		FontGlyph extra = ExtraGlyph(this, (unsigned char)c);
@@ -1407,19 +1491,27 @@ index 47d655d1..474cfd09 100644
  	FontGlyph glyph = FindGlyph(c);
  	if (glyph.USize == 0)
  	{
-@@ -102,9 +135,9 @@ FontGlyph UFont::GetGlyph(char c) const
+@@ -102,9 +192,16 @@
  	return glyph;
  }
  
 -FontGlyph UFont::FindGlyph(char c) const
-+FontGlyph UFont::FindGlyph(uint32_t c) const
- {
+-{
 -	size_t index = c;
++FontGlyph UFont::FindGlyph(uint32_t c) const
++{
 +	size_t index = RemapChar(c);
++	if (poaLayout)
++	{
++		if (index >= poaCharacters.size()) return {};
++		const size_t atlas = poaTextureIndices[index];
++		if (atlas >= pages.size()) return {};
++		return { pages[atlas].Texture, poaCharacters[index] };
++	}
  	for (auto& page : pages)
  	{
  		if (index < page.Characters.size())
-@@ -115,3 +148,41 @@ FontGlyph UFont::FindGlyph(char c) const
+@@ -115,3 +212,44 @@
  	}
  	return {};
  }
@@ -1453,6 +1545,9 @@ index 47d655d1..474cfd09 100644
 +
 +void UFont::SetNativeGlyphs(UTexture* texture, Array<FontCharacter> characters, std::unordered_map<uint16_t, uint16_t> remap)
 +{
++	poaLayout = false;
++	poaCharacters.clear();
++	poaTextureIndices.clear();
 +	pages.resize(1);
 +	pages.front().Texture = texture;
 +	pages.front().Characters = std::move(characters);
@@ -1462,10 +1557,9 @@ index 47d655d1..474cfd09 100644
 +	native = true;
 +}
 diff --git a/SurrealEngine/Packages/Engine/Resources/UFont.h b/SurrealEngine/Packages/Engine/Resources/UFont.h
-index 998435b4..add5ee5d 100644
 --- a/SurrealEngine/Packages/Engine/Resources/UFont.h
 +++ b/SurrealEngine/Packages/Engine/Resources/UFont.h
-@@ -41,11 +41,32 @@ public:
+@@ -41,11 +41,37 @@
  	void Load(ObjectStream* stream) override;
  	void Save(PackageStreamWriter* stream) override;
  
@@ -1492,7 +1586,13 @@ index 998435b4..add5ee5d 100644
 +	uint32_t RemapChar(uint32_t c) const;
  
  	Array<FontPage> pages;
- 	int charactersPerPage;
+-	int charactersPerPage;
++	int charactersPerPage = 0;
++	int ue2Kerning = 0;
++	// UE2 stores one glyph table, each glyph selecting an atlas texture.
++	Array<FontCharacter> poaCharacters;
++	Array<uint8_t> poaTextureIndices;
++	bool poaLayout = false;
 +
 +	// Fonts from package version 69 on can map characters to other glyph slots (CharRemap, used when IsRemapped);
 +	// a character missing from the map draws as a space. HP1's own fonts leave it empty.
@@ -1501,24 +1601,46 @@ index 998435b4..add5ee5d 100644
 +	bool native = false;
  };
 diff --git a/SurrealEngine/PropertyOffsets.cpp b/SurrealEngine/PropertyOffsets.cpp
-index 5308fe1c..4414bc97 100644
 --- a/SurrealEngine/PropertyOffsets.cpp
 +++ b/SurrealEngine/PropertyOffsets.cpp
-@@ -5603,9 +5603,12 @@ void InitPropertyOffsets(PackageManager* packages)
- 	InitPropertyOffsets_WarpZoneMarker(packages);
- 	InitPropertyOffsets_LiftCenter(packages);
- 	InitPropertyOffsets_RenderIterator(packages);
--	InitPropertyOffsets_InternetLink(packages);
--	InitPropertyOffsets_UdpLink(packages);
--	InitPropertyOffsets_TcpLink(packages);
-+	if (!packages->IsHarryPotter2()) // HP2 ships without IpDrv
+@@ -2571,6 +2571,12 @@
+ 
+ static void InitPropertyOffsets_InternetLink(PackageManager* packages)
+ {
++	// Offset probing is optional; actual imports remain strict in GetPackage.
++	if (!packages->HasPackage("IpDrv"))
 +	{
-+		InitPropertyOffsets_InternetLink(packages);
-+		InitPropertyOffsets_UdpLink(packages);
-+		InitPropertyOffsets_TcpLink(packages);
++		memset(&PropOffsets_InternetLink, 0xff, sizeof(PropOffsets_InternetLink));
++		return;
 +	}
- 	InitPropertyOffsets_RMusic_Player(packages);
- 	if (packages->IsUnreal1())
+ 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "InternetLink"));
+ 	if (!cls)
+ 	{
+@@ -2590,6 +2596,12 @@
+ 
+ static void InitPropertyOffsets_UdpLink(PackageManager* packages)
+ {
++	// Offset probing is optional; actual imports remain strict in GetPackage.
++	if (!packages->HasPackage("IpDrv"))
++	{
++		memset(&PropOffsets_UdpLink, 0xff, sizeof(PropOffsets_UdpLink));
++		return;
++	}
+ 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "UdpLink"));
+ 	if (!cls)
+ 	{
+@@ -2603,6 +2615,12 @@
+ 
+ static void InitPropertyOffsets_TcpLink(PackageManager* packages)
+ {
++	// Offset probing is optional; actual imports remain strict in GetPackage.
++	if (!packages->HasPackage("IpDrv"))
++	{
++		memset(&PropOffsets_TcpLink, 0xff, sizeof(PropOffsets_TcpLink));
++		return;
++	}
+ 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "TcpLink"));
+ 	if (!cls)
  	{
 diff --git a/SurrealEngine/UI/ErrorWindow/ErrorWindow.cpp b/SurrealEngine/UI/ErrorWindow/ErrorWindow.cpp
 index 218f7552..68fcd29f 100644

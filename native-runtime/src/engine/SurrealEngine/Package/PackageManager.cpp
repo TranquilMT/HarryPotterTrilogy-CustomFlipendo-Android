@@ -11,6 +11,7 @@
 #include "Utils/Logger.h" // missing data messages
 #include "Utils/StrTools.h"
 #include "VM/NativeFunc.h"
+#include "../../../hp3/PoaCore.h"
 #include "Packages/ConSys/UConAudioList.h"
 #include "Packages/ConSys/UConCamera.h"
 #include "Packages/ConSys/UConChoice.h"
@@ -341,6 +342,12 @@ PackageManager::PackageManager(const GameLaunchInfo& launchInfo) : launchInfo(la
 void PackageManager::CreateTransientPackage()
 {
 	packages["Transient"].set(GC::Alloc<Package>(this, "Transient", ""));
+}
+
+bool PackageManager::HasPackage(const NameString& name) const
+{
+	auto loaded = packages.find(name);
+	return (loaded != packages.end() && loaded->second) || packageFilenames.find(name) != packageFilenames.end();
 }
 
 Package* PackageManager::GetPackage(const NameString& name, const NameString& neededBy)
@@ -1349,6 +1356,9 @@ void PackageManager::RegisterFunctions()
 	{
 		NRMusicPlayer::RegisterFunctions();
 	}
+
+	if (launchInfo.IsHarryPotter3())
+		PoaCore::RegisterNatives();
 
 	if (launchInfo.IsKnowWonder()) // HP1 natives (src/hp1/), overriding upstream stubs
 		KW::RegisterNatives();

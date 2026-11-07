@@ -2571,6 +2571,12 @@ PropertyOffsets_InternetLink PropOffsets_InternetLink;
 
 static void InitPropertyOffsets_InternetLink(PackageManager* packages)
 {
+	// Offset probing is optional; actual imports remain strict in GetPackage.
+	if (!packages->HasPackage("IpDrv"))
+	{
+		memset(&PropOffsets_InternetLink, 0xff, sizeof(PropOffsets_InternetLink));
+		return;
+	}
 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "InternetLink"));
 	if (!cls)
 	{
@@ -2590,6 +2596,12 @@ PropertyOffsets_UdpLink PropOffsets_UdpLink;
 
 static void InitPropertyOffsets_UdpLink(PackageManager* packages)
 {
+	// Offset probing is optional; actual imports remain strict in GetPackage.
+	if (!packages->HasPackage("IpDrv"))
+	{
+		memset(&PropOffsets_UdpLink, 0xff, sizeof(PropOffsets_UdpLink));
+		return;
+	}
 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "UdpLink"));
 	if (!cls)
 	{
@@ -2603,6 +2615,12 @@ PropertyOffsets_TcpLink PropOffsets_TcpLink;
 
 static void InitPropertyOffsets_TcpLink(PackageManager* packages)
 {
+	// Offset probing is optional; actual imports remain strict in GetPackage.
+	if (!packages->HasPackage("IpDrv"))
+	{
+		memset(&PropOffsets_TcpLink, 0xff, sizeof(PropOffsets_TcpLink));
+		return;
+	}
 	UClass* cls = UObject::TryCast<UClass>(packages->GetPackage("IpDrv")->GetUObject("Class", "TcpLink"));
 	if (!cls)
 	{
@@ -5603,12 +5621,9 @@ void InitPropertyOffsets(PackageManager* packages)
 	InitPropertyOffsets_WarpZoneMarker(packages);
 	InitPropertyOffsets_LiftCenter(packages);
 	InitPropertyOffsets_RenderIterator(packages);
-	if (!packages->IsHarryPotter2()) // HP2 ships without IpDrv
-	{
-		InitPropertyOffsets_InternetLink(packages);
-		InitPropertyOffsets_UdpLink(packages);
-		InitPropertyOffsets_TcpLink(packages);
-	}
+	InitPropertyOffsets_InternetLink(packages);
+	InitPropertyOffsets_UdpLink(packages);
+	InitPropertyOffsets_TcpLink(packages);
 	InitPropertyOffsets_RMusic_Player(packages);
 	if (packages->IsUnreal1())
 	{

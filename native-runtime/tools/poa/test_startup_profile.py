@@ -75,14 +75,11 @@ class StartupProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Startup class unavailable'):
             audit_startup(self.root)
 
-    def test_eu_console_dependency_is_recorded_as_unimplemented_native_code(self):
+    def test_windows_dll_cannot_replace_console_script(self):
         (self.root / 'System' / 'kwGame.u').unlink()
         (self.root / 'System' / 'KWGame.dll').write_bytes(b'native module fixture')
-        report = audit_startup(self.root)
-        self.assertNotIn('consoleClass', report['classesVerifiedInPackageTables'])
-        self.assertEqual(report['classesRequiringNativeModule'][0]['class'], 'KWGame.KWConsole')
-        self.assertFalse(report['classesRequiringNativeModule'][0]['runtimeImplemented'])
-        self.assertFalse(report['liveStartupVerified'])
+        with self.assertRaisesRegex(ValueError, 'Startup class unavailable'):
+            audit_startup(self.root)
 
     def test_missing_eu_native_module_is_rejected(self):
         (self.root / 'System' / 'kwGame.u').unlink()
@@ -114,9 +111,9 @@ class StartupProfileTests(unittest.TestCase):
             file_index(self.root)
 
     def test_same_executable_with_changed_or_missing_scripts_is_separate(self):
-        reference = {'id': 'hp3-pc-na', 'exeSHA256': 'exe', 'startupEvidence': {
+        reference = {'id': 'hp3-pc-eu', 'exeSHA256': 'exe', 'startupEvidence': {
             'scriptPackages': [{'file': 'Core.u', 'sha256': 'original'}]}}
-        self.assertEqual(profile_identity('exe', [{'file': 'CORE.u', 'sha256': 'original'}], reference), 'hp3-pc-na')
+        self.assertEqual(profile_identity('exe', [{'file': 'CORE.u', 'sha256': 'original'}], reference), 'hp3-pc-eu')
         changed = profile_identity('exe', [{'file': 'Core.u', 'sha256': 'changed'}], reference)
         missing = profile_identity('exe', [], reference)
         self.assertTrue(changed.startswith('hp3-pc-unrecognized-'))
@@ -132,7 +129,7 @@ class StartupProfileTests(unittest.TestCase):
         profile = json.loads(profiles[0].read_text())
         self.assertFalse(profile['runtimeSupported'])
         self.assertEqual(profile['firstStoryMap'], 'First.unr')
-        self.assertFalse((output / 'hp3-pc-na.json').exists())
+        self.assertEqual(len(list(output.glob('hp3-pc-*.json'))), 1)
 
     def test_profile_cli_rejects_stale_package_inspection(self):
         tools = Path(__file__).resolve().parent

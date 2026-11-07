@@ -91,13 +91,6 @@ def validate_classes(route, models, files=None):
         found = [] if model is None else [e for e in model['exports']
                  if e['class'].casefold() == 'class' and not e['outer'] and e['name'].casefold() == name]
         if len(found) != 1:
-            module = None if files is None else files.get('system/kwgame.dll')
-            if model is None and value.casefold() == 'kwgame.kwconsole' and module is not None:
-                external.append({'field': field, 'class': value,
-                                 'module': module.name,
-                                 'sha256': hashlib.sha256(module.read_bytes()).hexdigest(),
-                                 'runtimeImplemented': False})
-                continue
             raise ValueError('Startup class unavailable or ambiguous: ' + value)
     return external
 

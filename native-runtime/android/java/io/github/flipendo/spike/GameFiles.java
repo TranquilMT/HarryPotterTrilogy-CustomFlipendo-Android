@@ -83,7 +83,7 @@ public final class GameFiles {
  public static List<String> missingHp3(File root){
   List<String> result=new ArrayList<>();
   // Verified PoA script names; HP2's HProps/HPModels/HPSounds.u are not PoA requirements.
-  String[] system={"hppoa.exe","Core.u","Engine.u","HGame.u","GUI.u","UWindow.u","GamePlay.u","Default.ini","DefUser.ini"};
+  String[] system={"hppoa.exe","Core.u","Engine.u","HGame.u","KWGame.u","GUI.u","UWindow.u","GamePlay.u","Default.ini","DefUser.ini"};
   for(String n:system)if(!present(path(root,"System/"+n)))result.add("System/"+n);
   for(String n:new String[]{"Maps","Textures"}){File[] files=child(root,n).listFiles();boolean found=false;if(files!=null)for(File f:files)if(present(f)&&f.getName().toLowerCase(Locale.ROOT).endsWith(n.equals("Maps")?".unr":".utx"))found=true;if(!found)result.add(n+"/ (original game packages)");}
   return result;
@@ -93,7 +93,7 @@ public final class GameFiles {
  }
  public static void validatePackages(String id,File root) throws IOException {
   if(!supported(id))throw new IOException("Unknown game: "+id);
-  for(String name:("hp3".equals(id)?new String[]{"Core.u","Engine.u","HGame.u","GUI.u"}:new String[]{"Core.u","Engine.u","hp2".equals(id)?"HGame.u":"HarryPotter.u"})){
+  for(String name:("hp3".equals(id)?new String[]{"Core.u","Engine.u","HGame.u","KWGame.u","GUI.u"}:new String[]{"Core.u","Engine.u","hp2".equals(id)?"HGame.u":"HarryPotter.u"})){
    File p=path(root,"System/"+name);byte[] h=new byte[8];
    try(DataInputStream in=new DataInputStream(new FileInputStream(p))){in.readFully(h);}
    if((h[0]&255)!=0xc1||(h[1]&255)!=0x83||(h[2]&255)!=0x2a||(h[3]&255)!=0x9e)throw new IOException("Invalid original game package: "+p);

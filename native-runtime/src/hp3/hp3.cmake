@@ -14,3 +14,6 @@ if(HP3_ENABLED)
 else()
     add_compile_definitions(HP3_ENABLED=0)
 endif()
+# Verified production helpers are guarded by IsHarryPotter3 at registration.
+# They do not depend on the historical experimental HP3_ENABLED switch.
+list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaCore.cpp)

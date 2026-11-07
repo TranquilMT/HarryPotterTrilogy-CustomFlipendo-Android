@@ -3,6 +3,7 @@
 #include "UFont.h"
 #include "Textures/UTexture.h"
 #include "Utils/UTF8Reader.h"
+#include "Engine.h"
 
 void UFont::Load(ObjectStream* stream)
 {
@@ -30,6 +31,39 @@ void UFont::Load(ObjectStream* stream)
 	{
 		UObject::Load(stream);
 
+		poaLayout = engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 122;
+		if (poaLayout)
+		{
+			// EU packages 122/129: global glyph array (four ints plus atlas byte).
+			// Bundled 99/120/121 font packages retain the legacy page-first layout.
+			// then the texture array. UE1 instead stores glyph arrays inside each page.
+			int count = stream->ReadIndex();
+			if (count < 0 || count > 65536)
+				Exception::Throw("Invalid PoA font glyph count");
+			poaCharacters.resize(count);
+			poaTextureIndices.resize(count);
+			for (int i = 0; i < count; ++i)
+			{
+				auto& c = poaCharacters[i];
+				c.StartU = stream->ReadInt32();
+				c.StartV = stream->ReadInt32();
+				c.USize = stream->ReadInt32();
+				c.VSize = stream->ReadInt32();
+				poaTextureIndices[i] = stream->ReadUInt8();
+			}
+			count = stream->ReadIndex();
+			if (count < 0 || count > 256)
+				Exception::Throw("Invalid PoA font atlas count");
+			pages.resize(count);
+			for (auto& page : pages)
+				page.Texture = stream->ReadObject<UTexture>();
+			for (size_t i = 0; i < poaCharacters.size(); ++i)
+				if (poaTextureIndices[i] >= pages.size() &&
+					(poaCharacters[i].USize != 0 || poaCharacters[i].VSize != 0))
+					Exception::Throw("Invalid PoA font atlas index");
+		}
+		else
+		{
 		pages.resize(stream->ReadIndex());
 		for (FontPage& page : pages)
 		{
@@ -44,7 +78,11 @@ void UFont::Load(ObjectStream* stream)
 			}
 		}
 
+		}
+
 		charactersPerPage = stream->ReadUInt32();
+		if (engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 120 && stream->GetVersion() < 122)
+			ue2Kerning = stream->ReadInt32();
 
 		if (stream->GetVersion() >= 69)
 		{
@@ -80,6 +118,21 @@ void UFont::Save(PackageStreamWriter* stream)
 	{
 		UObject::Save(stream);
 
+		if (poaLayout)
+		{
+			stream->WriteIndex((int)poaCharacters.size());
+			for (size_t i = 0; i < poaCharacters.size(); ++i)
+			{
+				const auto& c = poaCharacters[i];
+				stream->WriteInt32(c.StartU); stream->WriteInt32(c.StartV);
+				stream->WriteInt32(c.USize); stream->WriteInt32(c.VSize);
+				stream->WriteUInt8(poaTextureIndices[i]);
+			}
+			stream->WriteIndex((int)pages.size());
+			for (const auto& page : pages) stream->WriteObject(page.Texture);
+		}
+		else
+		{
 		stream->WriteIndex((int)pages.size());
 		for (FontPage& page : pages)
 		{
@@ -94,7 +147,11 @@ void UFont::Save(PackageStreamWriter* stream)
 			}
 		}
 
+		}
+
 		stream->WriteUInt32(charactersPerPage);
+		if (engine->LaunchInfo.IsHarryPotter3() && stream->GetVersion() >= 120 && stream->GetVersion() < 122)
+			stream->WriteInt32(ue2Kerning);
 
 		if (stream->GetVersion() >= 69)
 		{
@@ -138,6 +195,13 @@ FontGlyph UFont::GetGlyph(uint32_t c) const
 FontGlyph UFont::FindGlyph(uint32_t c) const
 {
 	size_t index = RemapChar(c);
+	if (poaLayout)
+	{
+		if (index >= poaCharacters.size()) return {};
+		const size_t atlas = poaTextureIndices[index];
+		if (atlas >= pages.size()) return {};
+		return { pages[atlas].Texture, poaCharacters[index] };
+	}
 	for (auto& page : pages)
 	{
 		if (index < page.Characters.size())
@@ -178,6 +242,9 @@ std::u32string UFont::Codepoints(const std::string& text)
 
 void UFont::SetNativeGlyphs(UTexture* texture, Array<FontCharacter> characters, std::unordered_map<uint16_t, uint16_t> remap)
 {
+	poaLayout = false;
+	poaCharacters.clear();
+	poaTextureIndices.clear();
 	pages.resize(1);
 	pages.front().Texture = texture;
 	pages.front().Characters = std::move(characters);

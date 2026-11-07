@@ -556,7 +556,11 @@ void UObject::GotoState(NameString stateName, const NameString& labelName)
 	}
 
 	if (oldState != newState)
+	{
+		if (engine->LaunchInfo.IsHarryPotter3())
+			SetName("LastStateName", oldState ? oldState->Name : NameString());
 		StateFrame->SetState(newState);
+	}
 
 	DisabledEvents.clear();
 

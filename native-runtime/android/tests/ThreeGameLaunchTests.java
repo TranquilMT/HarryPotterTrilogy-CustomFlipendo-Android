@@ -20,7 +20,7 @@ public class ThreeGameLaunchTests {
    ok(GameFiles.find("hp1",hp3,2)==null);ok(GameFiles.find("hp3",hp1,2)==null);ok(GameFiles.find("hp3",hp2,2)==null);
    ok(new HashSet<>(Arrays.asList(GameFiles.folderKey("hp1"),GameFiles.folderKey("hp2"),GameFiles.folderKey("hp3"))).size()==3);
    rejects(()->GameFiles.folderKey("unknown"));rejects(()->GameFiles.find("unknown",hp1,0));
-   for(String name:new String[]{"Core.u","Engine.u","HGame.u","GUI.u","UWindow.u","GamePlay.u"})put(hp3,"sYsTeM/"+name,header(129));
+   for(String name:new String[]{"Core.u","Engine.u","HGame.u","KWGame.u","GUI.u","UWindow.u","GamePlay.u"})put(hp3,"sYsTeM/"+name,header(129));
    put(hp3,"sYsTeM/Default.ini",new byte[]{1});put(hp3,"sYsTeM/DefUser.ini",new byte[]{1});
    put(hp3,"maps/preamble.unr",header(129));put(hp3,"textures/test.utx",header(120));
    ok(GameFiles.missingHp3(hp3).isEmpty());GameFiles.validatePackages("hp3",hp3);++checks;

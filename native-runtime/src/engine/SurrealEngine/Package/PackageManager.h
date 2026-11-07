@@ -52,6 +52,8 @@ public:
 	void SetSaveFolderPath(const fs::path& path) { gameSaveFolderPath = path; }
 	fs::path GetCacheFolderPath() const { return gameCacheFolderPath; }
 
+	bool HasPackage(const NameString& name) const;
+
 	// neededBy names the package that imports it, for the "could not find package" message
 	Package* GetPackage(const NameString& name, const NameString& neededBy = {});
 	Array<NameString> GetPackageNames() const;

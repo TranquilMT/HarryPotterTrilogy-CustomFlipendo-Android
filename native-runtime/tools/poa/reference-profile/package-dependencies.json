@@ -6,6 +6,7 @@
       "HP3_InteriorAccents",
       "HPCharTextures"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
@@ -14,6 +15,7 @@
       "Engine",
       "HPCharTextures"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
@@ -22,6 +24,7 @@
       "Engine",
       "HPCharTextures"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
@@ -41,6 +44,7 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
@@ -50,198 +54,20 @@
       "Engine",
       "JointTextures"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "StaticMeshes/HP3_CutScenes_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_FX",
-      "HP3_Furniture",
-      "HP3_HogwartsExpress",
-      "HP3_InteriorAccents"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_ExteriorArch_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_ArchiExterior",
-      "HP3_InteriorAccents"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Furniture_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Furniture"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Gameplay_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_FX",
-      "HP3_Floors",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_InteriorAccents",
-      "HP3_MaterialSwitch_HW",
-      "HP3_Menu",
-      "HP3_Natural",
-      "HP3_Placeholder",
-      "HP3_Walls",
-      "HPCharTextures",
-      "Ice2"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Glacius_Placeholder.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Ceilings",
-      "HP3_Floors",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_MaterialSwitch_Tx",
-      "HP3_Placeholder",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_HogwartsExpress_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_HogwartsExpress"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_InterArch_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Floors",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_Natural",
-      "HP3_Placeholder",
-      "HP3_Walls",
-      "Ice2",
-      "LegoTextures"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_InteriorAccents_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_ArchiExterior",
-      "HP3_Furniture",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_InteriorAccents",
-      "HP3_Natural",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Movers_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Floors",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_Movers",
-      "HP3_Placeholder",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Natural_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Natural"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Particles_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_FX",
-      "HP3_Gameplay",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Placeholder_SM.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Floors",
-      "HP3_Gameplay",
-      "HP3_InterArch",
-      "HP3_MaterialSwitch_HW",
-      "HP3_MaterialSwitch_Tx",
-      "HP3_Natural",
-      "HP3_Placeholder",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_SkyBoxes.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_FX",
-      "HP3_Skybox"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "StaticMeshes/HP3_Tester.usx",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "HP3_Ceilings",
-      "HP3_Floors",
-      "HP3_HogwartsExpress",
-      "HP3_InteriorAccents",
-      "HP3_Placeholder",
-      "HP3_Walls"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "maps/Entry.unr",
+    "package": "Maps/Entry.unr",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Adv1Express.unr",
+    "package": "Maps/HP3_Adv1Express.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -269,10 +95,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Adv2ExpPatronum.unr",
+    "package": "Maps/HP3_Adv2ExpPatronum.unr",
     "rootDependencies": [
       "AmbientCreatures",
       "Core",
@@ -298,10 +125,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Adv3Library.unr",
+    "package": "Maps/HP3_Adv3Library.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -330,10 +158,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Adv5Shack.unr",
+    "package": "Maps/HP3_Adv5Shack.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -368,10 +197,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Adv6Paddock.unr",
+    "package": "Maps/HP3_Adv6Paddock.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -402,10 +232,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_BeanBonus.unr",
+    "package": "Maps/HP3_BeanBonus.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -424,10 +255,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_BuckyExecuted.unr",
+    "package": "Maps/HP3_BuckyExecuted.unr",
     "rootDependencies": [
       "AmbientCreatures",
       "Core",
@@ -448,10 +280,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_COMC.unr",
+    "package": "Maps/HP3_COMC.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -474,10 +307,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch1CarpeRetractum.unr",
+    "package": "Maps/HP3_Ch1CarpeRetractum.unr",
     "rootDependencies": [
       "AllDialog",
       "AmbientCreatures",
@@ -506,10 +340,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch1CarpeRetractumB.unr",
+    "package": "Maps/HP3_Ch1CarpeRetractumB.unr",
     "rootDependencies": [
       "AllDialog",
       "Core",
@@ -536,10 +371,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch2Draconifors.unr",
+    "package": "Maps/HP3_Ch2Draconifors.unr",
     "rootDependencies": [
       "AllDialog",
       "Core",
@@ -570,10 +406,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch2DraconiforsB.unr",
+    "package": "Maps/HP3_Ch2DraconiforsB.unr",
     "rootDependencies": [
       "AllDialog",
       "Core",
@@ -604,10 +441,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch3Glacius.unr",
+    "package": "Maps/HP3_Ch3Glacius.unr",
     "rootDependencies": [
       "EmitterTextures",
       "Engine",
@@ -630,10 +468,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Ch3GlaciusB.unr",
+    "package": "Maps/HP3_Ch3GlaciusB.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -661,10 +500,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_DarkTower.unr",
+    "package": "Maps/HP3_DarkTower.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -684,10 +524,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_DementorBattle.unr",
+    "package": "Maps/HP3_DementorBattle.unr",
     "rootDependencies": [
       "AllDialog",
       "Core",
@@ -705,10 +546,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_DungeonHUB.unr",
+    "package": "Maps/HP3_DungeonHUB.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -732,10 +574,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_FA1Ron.unr",
+    "package": "Maps/HP3_FA1Ron.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -762,10 +605,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_FA2Hermione.unr",
+    "package": "Maps/HP3_FA2Hermione.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -793,10 +637,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_FA3Harry.unr",
+    "package": "Maps/HP3_FA3Harry.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -820,10 +665,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Final.unr",
+    "package": "Maps/HP3_Final.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -851,10 +697,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_GroundsDada.unr",
+    "package": "Maps/HP3_GroundsDada.unr",
     "rootDependencies": [
       "AmbientCreatures",
       "Core",
@@ -880,10 +727,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_GroundsHub.unr",
+    "package": "Maps/HP3_GroundsHub.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -910,10 +758,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Infirmary.unr",
+    "package": "Maps/HP3_Infirmary.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -938,10 +787,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_InsideHub.unr",
+    "package": "Maps/HP3_InsideHub.unr",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -969,10 +819,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_PortraitPassword_B.unr",
+    "package": "Maps/HP3_PortraitPassword_B.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -988,10 +839,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_PortraitPassword_C.unr",
+    "package": "Maps/HP3_PortraitPassword_C.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1012,10 +864,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_PortraitPassword_D.unr",
+    "package": "Maps/HP3_PortraitPassword_D.unr",
     "rootDependencies": [
       "EmitterTextures",
       "Engine",
@@ -1035,10 +888,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_PortraitPassword_E.unr",
+    "package": "Maps/HP3_PortraitPassword_E.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1057,10 +911,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_PortraitPassword_F.unr",
+    "package": "Maps/HP3_PortraitPassword_F.unr",
     "rootDependencies": [
       "EmitterTextures",
       "Engine",
@@ -1078,10 +933,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_Quidditch.unr",
+    "package": "Maps/HP3_Quidditch.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1096,10 +952,11 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP3_WhompingWillow.unr",
+    "package": "Maps/HP3_WhompingWillow.unr",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1116,113 +973,320 @@
       "KWGame",
       "SoundEffects"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "maps/HP_Preamble.unr",
+    "package": "Maps/HP_Preamble.unr",
     "rootDependencies": [
       "Engine",
       "Gameplay",
       "HGame",
       "KWGame"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "sounds/alldialog.uax",
+    "package": "Sounds/alldialog.uax",
     "rootDependencies": [
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "sounds/execdemo.uax",
-    "rootDependencies": [
-      "Core",
-      "Engine"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "sounds/soundeffects.uax",
+    "package": "Sounds/execdemo.uax",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/AmbientCreatures.u",
+    "package": "Sounds/soundeffects.uax",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/Core.u",
+    "package": "StaticMeshes/HP3_CutScenes_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_FX",
+      "HP3_Furniture",
+      "HP3_HogwartsExpress",
+      "HP3_InteriorAccents"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_ExteriorArch_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_ArchiExterior",
+      "HP3_InteriorAccents"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Furniture_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Furniture"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Gameplay_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_FX",
+      "HP3_Floors",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_InteriorAccents",
+      "HP3_MaterialSwitch_HW",
+      "HP3_Menu",
+      "HP3_Natural",
+      "HP3_Placeholder",
+      "HP3_Walls",
+      "HPCharTextures",
+      "Ice2"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Glacius_Placeholder.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Ceilings",
+      "HP3_Floors",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_MaterialSwitch_Tx",
+      "HP3_Placeholder",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_HogwartsExpress_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_HogwartsExpress"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_InterArch_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Floors",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_Natural",
+      "HP3_Placeholder",
+      "HP3_Walls",
+      "Ice2",
+      "LegoTextures"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_InteriorAccents_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_ArchiExterior",
+      "HP3_Furniture",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_InteriorAccents",
+      "HP3_Natural",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Movers_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Floors",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_Movers",
+      "HP3_Placeholder",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Natural_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Natural"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Particles_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_FX",
+      "HP3_Gameplay",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Placeholder_SM.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Floors",
+      "HP3_Gameplay",
+      "HP3_InterArch",
+      "HP3_MaterialSwitch_HW",
+      "HP3_MaterialSwitch_Tx",
+      "HP3_Natural",
+      "HP3_Placeholder",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_SkyBoxes.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_FX",
+      "HP3_Skybox"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "StaticMeshes/HP3_Tester.usx",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "HP3_Ceilings",
+      "HP3_Floors",
+      "HP3_HogwartsExpress",
+      "HP3_InteriorAccents",
+      "HP3_Placeholder",
+      "HP3_Walls"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "System/AmbientCreatures.u",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/Decorations.u",
+    "package": "System/Core.u",
+    "rootDependencies": [
+      "Core",
+      "Engine"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "System/Decorations.u",
     "rootDependencies": [
       "Core",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/Editor.u",
+    "package": "System/Editor.u",
     "rootDependencies": [
       "Core",
       "Editor",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/Engine.u",
+    "package": "System/Engine.u",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/Fire.u",
+    "package": "System/Fire.u",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/GUI.u",
+    "package": "System/GUI.u",
     "rootDependencies": [
       "Core",
       "Engine",
       "GUIContent"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/GamePlay.u",
+    "package": "System/GamePlay.u",
     "rootDependencies": [
       "Core",
       "Engine",
       "HP_FX",
       "UWindow"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/HGame.u",
+    "package": "System/HGame.u",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -1251,10 +1315,30 @@
       "SoundEffects",
       "SpellShapes"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/KWGame.u",
+    "package": "System/UDebugMenu.u",
+    "rootDependencies": [
+      "Core",
+      "Engine",
+      "UWindow"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "System/UWindow.u",
+    "rootDependencies": [
+      "Core",
+      "Engine"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "System/kwGame.u",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1266,108 +1350,102 @@
       "UDebugMenu",
       "UWindow"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "system/UDebugMenu.u",
-    "rootDependencies": [
-      "Core",
-      "Engine",
-      "UWindow"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "system/UWindow.u",
+    "package": "Textures/CubeMaps.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/CubeMaps.utx",
+    "package": "Textures/EM_CubeMaps_T.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/EM_CubeMaps_T.utx",
-    "rootDependencies": [
-      "Core",
-      "Engine"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "textures/EmitterTextures.utx",
+    "package": "Textures/EmitterTextures.utx",
     "rootDependencies": [
       "Core",
       "CubeMaps",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/EmitterTextures2.utx",
+    "package": "Textures/EmitterTextures2.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/EpicParticles.utx",
+    "package": "Textures/EpicParticles.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/GUIContent.utx",
+    "package": "Textures/GUIContent.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/GUIFONTS.utx",
+    "package": "Textures/GUIFONTS.utx",
     "rootDependencies": [
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_ArchiExterior.utx",
-    "rootDependencies": [
-      "Core",
-      "Engine"
-    ],
-    "missingRootPackages": []
-  },
-  {
-    "package": "textures/HP3_Ceilings.utx",
+    "package": "Textures/HP3_ArchiExterior.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Deleted2.utx",
+    "package": "Textures/HP3_Ceilings.utx",
+    "rootDependencies": [
+      "Core",
+      "Engine"
+    ],
+    "externalNativeModules": [],
+    "missingRootPackages": []
+  },
+  {
+    "package": "Textures/HP3_Deleted2.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "HP3_Gameplay"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_FX.utx",
+    "package": "Textures/HP3_FX.utx",
     "rootDependencies": [
       "Core",
       "EmitterTextures",
@@ -1375,26 +1453,29 @@
       "Fire",
       "HP_FX"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Floors.utx",
+    "package": "Textures/HP3_Floors.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Furniture.utx",
+    "package": "Textures/HP3_Furniture.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Gameplay.utx",
+    "package": "Textures/HP3_Gameplay.utx",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1405,44 +1486,49 @@
       "HPCharTextures",
       "HP_FX"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_HogwartsExpress.utx",
+    "package": "Textures/HP3_HogwartsExpress.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_InterArch.utx",
+    "package": "Textures/HP3_InterArch.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_InteriorAccents.utx",
+    "package": "Textures/HP3_InteriorAccents.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "HP3_HogwartsExpress"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_LoadLevel.utx",
+    "package": "Textures/HP3_LoadLevel.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_MaterialSwitch_HW.utx",
+    "package": "Textures/HP3_MaterialSwitch_HW.utx",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1452,10 +1538,11 @@
       "HP3_MaterialSwitch_Tx",
       "HP3_Natural"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_MaterialSwitch_SW.utx",
+    "package": "Textures/HP3_MaterialSwitch_SW.utx",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1465,10 +1552,11 @@
       "HP3_MaterialSwitch_HW",
       "HP3_Natural"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_MaterialSwitch_Tx.utx",
+    "package": "Textures/HP3_MaterialSwitch_Tx.utx",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1478,35 +1566,39 @@
       "HP3_MaterialSwitch_HW",
       "HP3_Natural"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Menu.utx",
+    "package": "Textures/HP3_Menu.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Movers.utx",
+    "package": "Textures/HP3_Movers.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Natural.utx",
+    "package": "Textures/HP3_Natural.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Placeholder.utx",
+    "package": "Textures/HP3_Placeholder.utx",
     "rootDependencies": [
       "Core",
       "Engine",
@@ -1515,148 +1607,166 @@
       "HP3_Floors",
       "HP3_Gameplay"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Skybox.utx",
+    "package": "Textures/HP3_Skybox.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_SystemIcons.utx",
+    "package": "Textures/HP3_SystemIcons.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP3_Walls.utx",
+    "package": "Textures/HP3_Walls.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HPCharTextures.utx",
+    "package": "Textures/HPCharTextures.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HPSkybox.utx",
+    "package": "Textures/HPSkybox.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/HP_FX.utx",
+    "package": "Textures/HP_FX.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/Ice2.utx",
+    "package": "Textures/Ice2.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "HP3_Natural"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/JointTextures.utx",
+    "package": "Textures/JointTextures.utx",
     "rootDependencies": [
       "AmbientCreatures",
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/KWMenu.utx",
+    "package": "Textures/KWMenu.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/LegoTextures.utx",
+    "package": "Textures/LegoTextures.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/Palettes.utx",
+    "package": "Textures/Palettes.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/QuidditchTerrain.utx",
+    "package": "Textures/QuidditchTerrain.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "UnrealEd"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": [
       "UnrealEd"
     ]
   },
   {
-    "package": "textures/SpellShapes.utx",
+    "package": "Textures/SpellShapes.utx",
     "rootDependencies": [
       "Core",
       "Engine",
       "Fire"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/UDNLevelLoadingTex.utx",
+    "package": "Textures/UDNLevelLoadingTex.utx",
     "rootDependencies": [
       "Engine",
       "HP3_Gameplay"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/UT2003Fonts.utx",
+    "package": "Textures/UT2003Fonts.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/UWindowFonts.utx",
+    "package": "Textures/UWindowFonts.utx",
     "rootDependencies": [
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   },
   {
-    "package": "textures/WarfareFonts.utx",
+    "package": "Textures/WarfareFonts.utx",
     "rootDependencies": [
       "Core",
       "Engine"
     ],
+    "externalNativeModules": [],
     "missingRootPackages": []
   }
 ]
