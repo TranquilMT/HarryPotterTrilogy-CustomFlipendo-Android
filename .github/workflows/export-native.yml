@@ -1,0 +1,26 @@
+name: Export verified ARM64 libraries
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/export-native.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-0.4.13-rebuild-inputs
+          run-id: 42410051140
+          github-token: ${{ github.token }}
+          path: recovery
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-0.4.13-native-libraries
+          path: recovery/native/
+          compression-level: 6
+          retention-days: 7
+          if-no-files-found: error
