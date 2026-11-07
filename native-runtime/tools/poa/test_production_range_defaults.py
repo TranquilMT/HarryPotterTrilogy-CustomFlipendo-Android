@@ -34,7 +34,8 @@ class RangeDefaults(unittest.TestCase):
         root=pathlib.Path(__file__).resolve().parents[2]
         obj=(root/'src/engine/SurrealEngine/Packages/Core/UObject.cpp').read_text()
         prop=(root/'src/engine/SurrealEngine/Packages/Core/Properties/UStructProperty.cpp').read_text()
-        bodies='\n'.join([method(obj,'void PropertyDataBlock::LoadStruct('),method(prop,'void UStructProperty::LoadValue('),method(prop,'void UStructProperty::LoadStructMemberValue('),method(obj,'void PropertyDataBlock::SaveStruct('),method(prop,'void UStructProperty::SaveHeader('),method(prop,'void UStructProperty::SaveValue('),method(prop,'void UStructProperty::SaveStructMemberValue(')])
+        writer=(root/'src/engine/SurrealEngine/Package/PackageStream.cpp').read_text()
+        bodies='\n'.join([method(obj,'void PropertyDataBlock::LoadStruct('),method(prop,'void UStructProperty::LoadValue('),method(prop,'void UStructProperty::LoadStructMemberValue('),method(obj,'void PropertyDataBlock::SaveStruct('),method(prop,'void UStructProperty::SaveHeader('),method(prop,'void UStructProperty::SaveValue('),method(prop,'void UStructProperty::SaveStructMemberValue('),method(writer,'void PackageStreamWriter::WriteBytes('),method(writer,'void PackageStreamWriter::BeginProperty('),method(writer,'void PackageStreamWriter::EndProperty(')])
         harness=r'''
 #include <cassert>
 #include <cstring>
@@ -57,11 +58,12 @@ struct ObjectStream{std::vector<uint8_t>d;size_t pos=0;std::vector<NameString>na
  int ReadIndex(){return PackageIndices::Read([&]{return ReadUInt8();});}NameString ReadName(){int i=ReadIndex();if(i<0||size_t(i)>=names.size())throw std::runtime_error("bad name");return names[i];}
  void Skip(uint32_t n){if(n>d.size()-pos)throw std::runtime_error("skip");pos+=n;}uint32_t Tell(){return pos;}
  float ReadFloat(){uint32_t x=ReadUInt32();float v;std::memcpy(&v,&x,4);return v;}};
-struct PackageStreamWriter{std::vector<uint8_t>d;std::vector<NameString>names;struct Frame{std::vector<uint8_t>data;NameString name;};std::vector<Frame>frames;
- void WriteUInt8(uint8_t b){d.push_back(b);}void WriteFloat(float v){uint8_t b[4];std::memcpy(b,&v,4);d.insert(d.end(),b,b+4);}
- void WriteName(const NameString& n){auto i=std::find(names.begin(),names.end(),n);if(i==names.end())throw std::runtime_error("missing output name");unsigned v=i-names.begin();uint8_t first=v&63;v>>=6;WriteUInt8(first|(v?64:0));while(v){uint8_t b=v&127;v>>=7;WriteUInt8(b|(v?128:0));}}
- void BeginProperty(const NameString&name){frames.push_back({std::move(d),name});d.clear();}
- void EndProperty(const PropertyHeader&h){auto payload=std::move(d);auto frame=std::move(frames.back());frames.pop_back();d=std::move(frame.data);WriteName(frame.name);uint8_t code=payload.size()==1?0:payload.size()==2?1:payload.size()==4?2:payload.size()==12?3:payload.size()==16?4:5;if(h.type==UPT_Bool)code=0;WriteUInt8(h.type|(code<<4)|((h.type==UPT_Bool&&h.boolValue)?128:0));if(h.type==UPT_Struct)WriteName(h.structName);if(code==5){assert(payload.size()<256);WriteUInt8(payload.size());}d.insert(d.end(),payload.begin(),payload.end());}
+template<class T>using Array=std::vector<T>;
+struct MemoryFile{std::vector<uint8_t>d;void write(const void*p,uint32_t n){auto b=static_cast<const uint8_t*>(p);d.insert(d.end(),b,b+n);}};
+struct PackageStreamWriter{MemoryFile output;MemoryFile*file=&output;std::vector<NameString>names;int propertyPos=-1;Array<uint8_t>propertyBuffer;struct PropertyWriteFrame{int position;Array<uint8_t>buffer;};std::vector<PropertyWriteFrame>propertyFrames;
+ void WriteBytes(const void*,uint32_t);void BeginProperty(NameString);void EndProperty(PropertyHeader);
+ void WriteUInt8(uint8_t v){WriteBytes(&v,1);}void WriteInt8(uint8_t v){WriteUInt8(v);}void WriteUInt16(uint16_t v){WriteBytes(&v,2);}void WriteUInt32(uint32_t v){WriteBytes(&v,4);}void WriteFloat(float v){WriteBytes(&v,4);}
+ void WriteName(const NameString&n){auto i=std::find(names.begin(),names.end(),n);if(i==names.end())throw std::runtime_error("missing output name");unsigned v=i-names.begin();uint8_t first=v&63;v>>=6;WriteUInt8(first|(v?64:0));while(v){uint8_t b=v&127;v>>=7;WriteUInt8(b|(v?128:0));}}
 };
 namespace PropertyFlags{constexpr int Native=1,Transient=2;}bool AnyFlags(int a,int b){return (a&b)!=0;}
 struct UStruct;struct UProperty{virtual~UProperty()=default;NameString Name;struct{size_t DataOffset=0;}DataOffset;int ArrayDimension=1,Flags=0,PropFlags=0;virtual size_t ElementPitch(){return 4;}virtual void SaveHeader(void*,PropertyHeader&)=0;virtual void SaveValue(void*,PackageStreamWriter*)=0;virtual void SaveStructMemberValue(void*d,PackageStreamWriter*s){SaveValue(d,s);}virtual void LoadValue(void*,ObjectStream*,const PropertyHeader&)=0;virtual void LoadStructMemberValue(void*,ObjectStream*)=0;};
@@ -85,7 +87,7 @@ int main(int argc,char**argv){
  UStruct companion;companion.Name="CompanionCombatManager";companion.StructSize=36;companion.Properties={&ranges,&leave,&stance,&distance};
  alignas(float) uint8_t data[36]={};PropertyDataBlock::LoadStruct(data,&companion,&stream);assert(stream.pos==stream.d.size());assert(*reinterpret_cast<bool*>(data+28));
  assert(*reinterpret_cast<float*>(data+24)>0);assert(*reinterpret_cast<float*>(data+32)>0);
- PackageStreamWriter writer;writer.names=stream.names;PropertyDataBlock::SaveStruct(data,&companion,&writer);ObjectStream roundtrip;roundtrip.d=writer.d;roundtrip.names=stream.names;alignas(float) uint8_t restored[36]={};PropertyDataBlock::LoadStruct(restored,&companion,&roundtrip);assert(roundtrip.pos==roundtrip.d.size());assert(std::memcmp(data,restored,36)==0);
+ PackageStreamWriter writer;writer.names=stream.names;PropertyDataBlock::SaveStruct(data,&companion,&writer);ObjectStream roundtrip;roundtrip.d=writer.output.d;roundtrip.names=stream.names;alignas(float) uint8_t restored[36]={};PropertyDataBlock::LoadStruct(restored,&companion,&roundtrip);assert(roundtrip.pos==roundtrip.d.size());assert(std::memcmp(data,restored,36)==0);assert(writer.propertyPos==-1&&writer.propertyFrames.empty());PackageStreamWriter invalidWriter;bool endRejected=false;try{invalidWriter.EndProperty({});}catch(const std::exception&){endRejected=true;}assert(endRejected);PackageStreamWriter deep;deep.names=stream.names;bool depthRejected=false;try{for(int i=0;i<130;++i)deep.BeginProperty(NameString());}catch(const std::exception&){depthRejected=true;}assert(depthRejected);
  ObjectStream invalid=stream;invalid.pos=0;ranges.DataOffset.DataOffset=36;bool rejected=false;try{PropertyDataBlock::LoadStruct(data,&companion,&invalid);}catch(const std::exception&){rejected=true;}assert(rejected);ranges.DataOffset.DataOffset=0;
  // UE1 Range remains a flat two-float struct; native Vector is also flat in PoA.
  engine->LaunchInfo.poa=false;ObjectStream legacy;float values[2]={2.5f,7.0f};legacy.d.resize(8);std::memcpy(legacy.d.data(),values,8);float result[2]={};x.LoadStructMemberValue(result,&legacy);assert(result[0]==2.5f&&result[1]==7&&legacy.pos==8);

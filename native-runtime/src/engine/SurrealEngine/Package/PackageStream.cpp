@@ -302,10 +302,14 @@ int PackageStreamWriter::GetVersion() const
 
 void PackageStreamWriter::BeginProperty(NameString name)
 {
-	if (propertyPos != -1)
-		Exception::Throw("BeginProperty called inside BeginProperty");
-
+	if (propertyFrames.size() >= 128)
+		Exception::Throw("Excessive tagged property nesting");
 	WriteName(name);
+	if (propertyPos != -1)
+	{
+		propertyFrames.push_back({propertyPos, std::move(propertyBuffer)});
+		propertyBuffer = {};
+	}
 	propertyPos = 0;
 }
 
@@ -315,7 +319,16 @@ void PackageStreamWriter::EndProperty(PropertyHeader header)
 		Exception::Throw("EndProperty called without BeginProperty");
 
 	header.size = propertyPos;
-	propertyPos = -1;
+	auto payload = std::move(propertyBuffer);
+	propertyBuffer = {};
+	if (propertyFrames.empty())
+		propertyPos = -1;
+	else
+	{
+		propertyPos = propertyFrames.back().position;
+		propertyBuffer = std::move(propertyFrames.back().buffer);
+		propertyFrames.pop_back();
+	}
 
 	uint8_t info = (uint8_t)header.type;
 
@@ -387,6 +400,6 @@ void PackageStreamWriter::EndProperty(PropertyHeader header)
 		}
 	}
 
-	WriteBytes(propertyBuffer.data(), header.size);
+	WriteBytes(payload.data(), header.size);
 }
 

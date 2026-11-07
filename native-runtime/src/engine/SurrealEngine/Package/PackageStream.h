@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 class File;
 class Package;
@@ -82,5 +83,7 @@ private:
 
 	int propertyPos = -1;
 	Array<uint8_t> propertyBuffer;
+	struct PropertyWriteFrame { int position; Array<uint8_t> buffer; };
+	std::vector<PropertyWriteFrame> propertyFrames;
 };
 
