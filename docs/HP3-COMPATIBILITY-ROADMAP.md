@@ -1,3 +1,12 @@
+# 0.4.14 — EU KWGame range-default repair
+
+- [x] Reproduce phone report in CompanionCombatManager export 222.
+- [x] Correct tagged RangeVector and nested Range loading and saving.
+- [x] Support bounded nested property writes and verify with the production package writer.
+- [x] Verify exact EU default data, save/reload, legacy layouts and offset rejection.
+- [x] Audit 1,685 class-default blocks and 90 tagged range values.
+- [ ] Verify phone startup past this object; rendering, controls, saves and gameplay remain pending.
+
 # HP:Trilogy Mobile — HP3 compatibility roadmap
 
 Updated 7 November 2026 for 0.4.13. Android source port of the PC trilogy, using EU game versions.

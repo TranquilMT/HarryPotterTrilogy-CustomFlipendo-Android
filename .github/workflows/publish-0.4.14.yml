@@ -1,0 +1,67 @@
+name: Reconstruct and publish signed v0.4.14
+on:
+  push:
+    branches: [main]
+    paths: ['release-recovery/0.4.14/**', '.github/workflows/publish-0.4.14.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: publish-0.4.14
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Download verified base and full source
+        run: |
+          mkdir -p base dist
+          for attempt in 1 2 3; do
+            if gh release download v0.4.13 --pattern '*Three-Games.apk' --dir base --clobber; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep 5
+          done
+          mv base/*Three-Games.apk base/previous.apk
+          for attempt in 1 2 3; do
+            if gh release download v0.4.14 --pattern '*Full-Source-Final.zip' --dir dist --clobber; then break; fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep 5
+          done
+          mv dist/*Full-Source-Final.zip dist/HP-Trilogy-Mobile-0.4.14-Full-Source.zip
+          echo '3aa00dadc950aca72e2b79aeb35c4bb74187138fe51bb326c168e7d22d8c832d  dist/HP-Trilogy-Mobile-0.4.14-Full-Source.zip' | sha256sum -c -
+      - name: Reconstruct exact signed APK
+        run: |
+          python3 scripts/reconstruct_apk.py base/previous.apk release-recovery/0.4.14 dist/HP-Trilogy-Mobile-0.4.14-Three-Games.apk
+          cp docs/HP-Trilogy-Mobile-0.4.14-Verification.json dist/
+          cp docs/RELEASE-0.4.14.md dist/HP-Trilogy-Mobile-0.4.14-Changes.md
+          cp docs/HP3-COMPATIBILITY-ROADMAP.md dist/HP3-Compatibility-Roadmap.md
+          cp docs/HP3-KWGame-Range-Defaults-Fix.md dist/
+          cp docs/HP-Trilogy-Mobile-0.4.14-SHA256.txt dist/
+          cd dist
+          sha256sum -c HP-Trilogy-Mobile-0.4.14-SHA256.txt
+      - name: Verify Android package and signing continuity
+        run: |
+          tools="$ANDROID_HOME/build-tools/36.0.0"
+          if [ ! -x "$tools/apksigner" ]; then "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'build-tools;36.0.0'; fi
+          "$tools/apksigner" verify --verbose --print-certs dist/*Three-Games.apk | tee signature.txt
+          grep -q 'Signer #1 certificate SHA-256 digest: 25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40' signature.txt
+          "$tools/zipalign" -c -P 16 4 dist/*Three-Games.apk
+          "$tools/aapt2" dump badging dist/*Three-Games.apk | tee package.txt
+          grep -q "name='com.tranquil.hp1native' versionCode='56' versionName='0.4.14'" package.txt
+      - name: Upload and verify release assets
+        run: |
+          gh release upload v0.4.14 dist/* --clobber
+          gh api repos/$GITHUB_REPOSITORY/releases/437840631/assets > assets.json
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          actual={r['name']:r['digest'] for r in json.load(open('assets.json'))}
+          for p in pathlib.Path('dist').iterdir():
+              with p.open('rb') as f: expected='sha256:'+hashlib.file_digest(f,'sha256').hexdigest()
+              assert actual[p.name]==expected, p.name
+          print('All uploaded release asset digests match')
+          PY
+          gh release edit v0.4.14 --target "$GITHUB_SHA" --title 'HP:Trilogy Mobile 0.4.14 — HP3 EU range defaults fix' --notes-file docs/RELEASE-0.4.14.md --draft=false --prerelease=false --latest

@@ -1,5 +1,5 @@
 """Exercise production tagged-struct reading on EU CompanionCombatManager defaults."""
-import json, os, pathlib, subprocess, tempfile, unittest
+import json, os, pathlib, struct, subprocess, tempfile, unittest
 
 def method(text, signature):
     start=text.index(signature);brace=text.index('{',start);depth=1;end=brace+1
@@ -25,6 +25,13 @@ class RangeDefaults(unittest.TestCase):
             except ValueError:pass
         self.assertEqual(len(candidates),1);start,rows=candidates[0]
         self.assertEqual(rows[0]['size'],55)
+        outer=tags(Reader(raw,rows[0]['offset']),model['names'])
+        values={}
+        for axis in outer:
+            members=tags(Reader(raw,axis['offset']),model['names'])
+            values[axis['name']]={v['name']:raw[v['offset']:v['offset']+4] for v in members}
+        expected=b''.join(values[a].get(n,bytes(4)) for a in ('X','Y','Z') for n in ('Min','Max'))
+        expected+=raw[rows[1]['offset']:rows[1]['offset']+4]+raw[rows[3]['offset']:rows[3]['offset']+4]
         # Reproduce the old flat RangeVector reader, including the exact misleading
         # unknown-property log followed by the out-of-range name index.
         r=Reader(raw,rows[0]['offset']+24)
@@ -86,7 +93,7 @@ int main(int argc,char**argv){
  BoolProperty stance;stance.Name="bUseFightStanceAnimsForCombat";stance.DataOffset.DataOffset=28;
  UStruct companion;companion.Name="CompanionCombatManager";companion.StructSize=36;companion.Properties={&ranges,&leave,&stance,&distance};
  alignas(float) uint8_t data[36]={};PropertyDataBlock::LoadStruct(data,&companion,&stream);assert(stream.pos==stream.d.size());assert(*reinterpret_cast<bool*>(data+28));
- assert(*reinterpret_cast<float*>(data+24)>0);assert(*reinterpret_cast<float*>(data+32)>0);
+ std::ifstream ef(argv[2],std::ios::binary);std::vector<uint8_t> expected={std::istreambuf_iterator<char>(ef),{}};assert(expected.size()==32);assert(std::memcmp(data,expected.data(),28)==0);assert(std::memcmp(data+32,expected.data()+28,4)==0);
  PackageStreamWriter writer;writer.names=stream.names;PropertyDataBlock::SaveStruct(data,&companion,&writer);ObjectStream roundtrip;roundtrip.d=writer.output.d;roundtrip.names=stream.names;alignas(float) uint8_t restored[36]={};PropertyDataBlock::LoadStruct(restored,&companion,&roundtrip);assert(roundtrip.pos==roundtrip.d.size());assert(std::memcmp(data,restored,36)==0);assert(writer.propertyPos==-1&&writer.propertyFrames.empty());PackageStreamWriter invalidWriter;bool endRejected=false;try{invalidWriter.EndProperty({});}catch(const std::exception&){endRejected=true;}assert(endRejected);PackageStreamWriter deep;deep.names=stream.names;bool depthRejected=false;try{for(int i=0;i<130;++i)deep.BeginProperty(NameString());}catch(const std::exception&){depthRejected=true;}assert(depthRejected);
  ObjectStream invalid=stream;invalid.pos=0;ranges.DataOffset.DataOffset=36;bool rejected=false;try{PropertyDataBlock::LoadStruct(data,&companion,&invalid);}catch(const std::exception&){rejected=true;}assert(rejected);ranges.DataOffset.DataOffset=0;
  // UE1 Range remains a flat two-float struct; native Vector is also flat in PoA.
@@ -96,8 +103,8 @@ int main(int argc,char**argv){
 }
 '''
         with tempfile.TemporaryDirectory() as td:
-            p=pathlib.Path(td);(p/'test.cpp').write_text(harness);(p/'defaults.bin').write_bytes(raw[start:])
+            p=pathlib.Path(td);(p/'test.cpp').write_text(harness);(p/'defaults.bin').write_bytes(raw[start:]);(p/'expected.bin').write_bytes(expected)
             subprocess.run(['g++','-std=c++20','-I'+str(root/'src/engine/SurrealEngine'),str(p/'test.cpp'),'-o',str(p/'test')],check=True)
-            subprocess.run([str(p/'test'),str(p/'defaults.bin')],check=True)
+            subprocess.run([str(p/'test'),str(p/'defaults.bin'),str(p/'expected.bin')],check=True)
 
 if __name__=='__main__':unittest.main()

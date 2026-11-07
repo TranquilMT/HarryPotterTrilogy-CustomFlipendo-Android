@@ -1,0 +1,6 @@
+bd9f0a477e32a497f4ee2a41ffbb4ef73bb9ec7417d7b064fff64f172850f0d4  HP-Trilogy-Mobile-0.4.14-Changes.md
+3aa00dadc950aca72e2b79aeb35c4bb74187138fe51bb326c168e7d22d8c832d  HP-Trilogy-Mobile-0.4.14-Full-Source.zip
+df8ccef39b01f32e517b295e0177824bccad42c360c68e54997d017fb3cefa6f  HP-Trilogy-Mobile-0.4.14-Three-Games.apk
+febd6e5ba8d89d90bc6bd0549d7863841382c81c8bf06827587c6a17812f60b9  HP-Trilogy-Mobile-0.4.14-Verification.json
+6cab13a86c7f223397ce9fa4242ee49e0a07c25e72adbfbf15b5d569856dee66  HP3-Compatibility-Roadmap.md
+bdfefd265b27575d3367aacbfb83dd839d5ee704a35aef84cd8eba27da2f0736  HP3-KWGame-Range-Defaults-Fix.md
