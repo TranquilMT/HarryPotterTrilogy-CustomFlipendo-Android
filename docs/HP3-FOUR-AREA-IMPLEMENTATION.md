@@ -1,3 +1,9 @@
+## EU animation follow-up
+
+The PoA-only MeshAnimation resource now has a bounded native reader and bone sampler, verified against all 140 original EU resources (3,464 sequences; 10,627,611 stored keys). The corpus samples all 312,585 bone/sequence combinations. The reader retains sequence groups, timing, root tracks and notify metadata. The sampler supports shortest-arc quaternion interpolation, key times, looping and clamping. Zero quaternion keys map to identity. Two all-NaN constant translation keys in low-memory Hermione resources remain unavailable, requiring bind-pose fallback; this policy is not verified retail parity.
+
+This does not implement skeletal geometry decoding, skinning, actor animation state, blending or notification execution. Native resource package rewriting and non-empty flex-track compression remain explicitly unsupported. See HP3-ANIMATION-EVIDENCE.json. The complete eleven-Core batch passed ARM64 Actions 42485673319; animation build status is recorded separately in the roadmap.
+
 # HP3 four-area implementation status
 
 8 November 2026. Source follow-up; published v0.4.14 is unchanged. None of the four broad areas is declared complete.

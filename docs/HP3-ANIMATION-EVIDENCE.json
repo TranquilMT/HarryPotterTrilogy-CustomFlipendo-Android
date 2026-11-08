@@ -1,0 +1,95 @@
+{
+  "columns": [
+    "resources",
+    "referenceBones",
+    "moves",
+    "tracks",
+    "keys",
+    "boneSamples",
+    "zeroQuaternionKeys",
+    "unavailablePositionKeys"
+  ],
+  "totals": [
+    140,
+    7957,
+    3464,
+    312585,
+    10627611,
+    312585,
+    298,
+    2
+  ],
+  "packages": [
+    {
+      "package": "HPCharacters.ukx",
+      "sha256": "fdd618f39f7b2be7bf87073766dcc29e2d6ae00490c7e2940e355a192a95aae6",
+      "totals": [
+        35,
+        1793,
+        403,
+        26898,
+        957439,
+        26898,
+        0,
+        0
+      ]
+    },
+    {
+      "package": "HPCharacters_16.ukx",
+      "sha256": "fe68b9c0dea0d8f79af5cb16fa3177f1dac6ea2e364c647d6f05178e68408a7b",
+      "totals": [
+        24,
+        2611,
+        1439,
+        141115,
+        4662407,
+        141115,
+        149,
+        1
+      ]
+    },
+    {
+      "package": "HPCharacters_32.ukx",
+      "sha256": "0afff64756fdf381607ef88afd812eae543b195c5205cfd520fc9ac5f1eb3120",
+      "totals": [
+        24,
+        2611,
+        1439,
+        141115,
+        4662407,
+        141115,
+        149,
+        1
+      ]
+    },
+    {
+      "package": "HProps.ukx",
+      "sha256": "a89eaee35112e0d263fe284a8ea5e4c32d4caaf2217952d2f14249c9a567451f",
+      "totals": [
+        57,
+        942,
+        183,
+        3457,
+        345358,
+        3457,
+        0,
+        0
+      ]
+    },
+    {
+      "package": "Joint.ukx",
+      "sha256": "b28d6977b8cf789047506c1e1d85279e71d9c159eade1342f77b3d4c4a50c3fb",
+      "totals": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "scope": "Production native animation reader/sampler with stream/object adapters; not skeletal GPU integration or device gameplay"
+}

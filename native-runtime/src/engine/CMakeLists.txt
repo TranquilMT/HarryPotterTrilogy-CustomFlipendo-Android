@@ -648,6 +648,8 @@ set(SURREALCOMMON_SOURCES
 	SurrealEngine/Packages/Engine/Resources/Mesh/UMesh.h
 	SurrealEngine/Packages/Engine/Resources/Mesh/USkeletalMesh.cpp
 	SurrealEngine/Packages/Engine/Resources/Mesh/USkeletalMesh.h
+	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaMeshAnimation.cpp
+	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h
 	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.cpp
 	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.h
 	SurrealEngine/Packages/Engine/Resources/Mesh/UStaticMesh.cpp

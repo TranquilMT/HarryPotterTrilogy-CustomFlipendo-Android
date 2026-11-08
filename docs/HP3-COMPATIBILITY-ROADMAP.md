@@ -1,3 +1,15 @@
+# 8 November — EU animation reader and sampler
+
+- [x] Register a PoA-only MeshAnimation native resource and add it to the engine build.
+- [x] Decode all 140 EU MeshAnimation resources and 3,464 sequences to the exact payload end.
+- [x] Sample 312,585 bone/sequence combinations with quaternion interpolation, explicit key times, looping and clamping.
+- [x] Handle 298 zero quaternion keys as identity; retain two all-NaN position keys as unavailable translation channels.
+- [x] Reject unsupported compressed flex tracks, malformed counts, invalid timings and truncated resources without replacing prior data.
+- [ ] Pass the new animation ARM64 build.
+- [ ] Connect skeletal geometry, skinning, playback state, blending and notify dispatch.
+
+Evidence: HP3-ANIMATION-EVIDENCE.json. Corpus coverage uses production reader/sampler and native Load body with bounded stream/object adapters. No device gameplay claim. All-NaN translation fallback is a defensive policy, not verified retail playback equivalence. Published v0.4.14 remains unchanged.
+
 # 8 November — remaining Core declarations
 
 - [x] Implement both quaternion/rotator handlers using original EU reference behavior and a documented unit-quaternion correction.
@@ -7,7 +19,7 @@
 - [x] Validate 1,331 isolated original math inputs and production-body/adapter/identity/file regressions.
 - [x] Run 124 compatibility tests with original inputs and 29 Android packaging tests.
 - [x] Correct the production header include path; the corrective ARM64 checkpoint passed.
-- [ ] Pass ARM64 compilation for the complete Core follow-up.
+- [x] Pass ARM64 compilation for the complete Core follow-up (Actions 42485673319).
 - [ ] Complete remaining Engine/game APIs, native-resource copy variants, skeletal/terrain/rendering support and phone acceptance.
 
 See HP3-CORE-DECLARATIONS-COMPLETION.json. All eleven entries from the initial list now have concrete scoped behavior; this is not a claim that the full UE2 port is complete.
@@ -18,7 +30,7 @@ See HP3-CORE-DECLARATIONS-COMPLETION.json. All eleven entries from the initial l
 - [x] Implement exact ClockwiseFrom_IntInt half-turn/equality behavior and NeedSAPFont language selection.
 - [x] Implement SetUTracing/IsUTracing with a working call-log hook and native-call filtering.
 - [x] Test handler bodies and production trace callback preservation; 119 compatibility tests now pass with original EU inputs.
-- [ ] Complete the six remaining Core declarations and other native/game APIs.
+- [x] Complete the six remaining Core declarations (see newer completion section); other Engine/game APIs remain open.
 - [ ] Complete skeletal animation, terrain, richer rendering and device acceptance.
 
 See HP3-EU-NATIVE-TRACE.json and HP3-FOUR-AREA-IMPLEMENTATION.md. No claim that all four broad areas are complete.

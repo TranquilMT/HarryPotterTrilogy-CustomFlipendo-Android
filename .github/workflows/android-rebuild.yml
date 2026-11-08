@@ -29,7 +29,7 @@ jobs:
               for item in z.infolist():
                   if not item.filename.startswith(prefix): continue
                   name=item.filename[len(prefix):]
-                  if pathlib.PurePosixPath(name).suffix.lower() not in ('.u','.usx'): continue
+                  if pathlib.PurePosixPath(name).suffix.lower() not in ('.u','.usx','.ukx'): continue
                   assert '..' not in pathlib.PurePosixPath(name).parts
                   target=pathlib.Path('fixtures/hp3')/name
                   target.parent.mkdir(parents=True,exist_ok=True)
