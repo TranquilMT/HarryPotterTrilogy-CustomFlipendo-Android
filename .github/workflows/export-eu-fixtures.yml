@@ -1,0 +1,42 @@
+name: Export EU compatibility fixtures
+on:
+  push:
+    paths: ['.github/workflows/export-eu-fixtures.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Recover published EU payload
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovery output
+          gh release download v0.4.14 --repo TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android --pattern '*.apk' --dir recovery
+          python3 - <<'PY'
+          import pathlib,zipfile,json,hashlib
+          apk=next(pathlib.Path('recovery').glob('*.apk'))
+          with zipfile.ZipFile(apk) as z:
+              prefix='assets/hp3data/'
+              entries=[i for i in z.infolist() if i.filename.startswith(prefix) and not i.is_dir()]
+              assert entries, 'Missing EU game payload'
+              inventory=[]
+              for item in entries:
+                  name=item.filename[len(prefix):]
+                  assert '..' not in pathlib.PurePosixPath(name).parts
+                  inventory.append({'path':name,'bytes':item.file_size,'crc32':item.CRC})
+                  if pathlib.Path(name).suffix.lower() in ('.u','.usx','.ukx','.ini') or (pathlib.Path(name).suffix.lower()=='.unr' and item.file_size<3000000):
+                      data=z.read(item)
+                      out=pathlib.Path('output/hp3')/name
+                      out.parent.mkdir(parents=True,exist_ok=True)
+                      out.write_bytes(data)
+              pathlib.Path('output/inventory.json').write_text(json.dumps(inventory,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eu-compatibility-fixtures
+          path: output/
+          compression-level: 1
+          retention-days: 7
