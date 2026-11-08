@@ -7,6 +7,12 @@
 #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
 #include "Engine.h"
 #include "KW.h"
+#include "hp3/PoaActorAnimation.h"
+
+GCAllocation* UActor::Mark(GCAllocation* marklist)
+{
+    return GC::MarkObject(UObject::Mark(marklist),PoaAnimationObject);
+}
 
 bool UActor::HasAnim(const NameString& sequence)
 {
@@ -330,6 +336,7 @@ void UActor::LoopAnim_HP(const NameString& Sequence, std::optional<float> Rate, 
 
 void UActor::TickAnimation(float elapsed)
 {
+    if(engine->LaunchInfo.IsHarryPotter3()){PoaActorAnimation::Tick(this,elapsed);return;}
 	if (engine->LaunchInfo.IsKnowWonder()) // HP1 anim channels/tweening (src/knowwonder/Anim)
 	{
 		KW::TickAnimation(this, elapsed);

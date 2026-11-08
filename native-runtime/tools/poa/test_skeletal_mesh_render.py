@@ -5,7 +5,7 @@ ROOT=pathlib.Path(__file__).resolve().parents[2];ENGINE=ROOT/'src/engine/Surreal
 class SkeletalRender(unittest.TestCase):
  def test_animated_geometry_material_passes_and_transforms(self):
   draw=(ENGINE/'Render/VisiblePoaSkeletalMesh.h').read_text();material=(ENGINE/'Render/VisiblePoaStaticMesh.h').read_text();actor=(ENGINE/'Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h').read_text()
-  code=r'''#include "Package/PoaSkeletalMeshData.h"
+  code=r'''#include "Package/PoaAnimationChannels.h"
 #include "Math/coords.h"
 #include <cassert>
 #include <map>
@@ -27,6 +27,7 @@ int main(){UPoaSkeletalMesh mesh;auto&g=mesh.Geometry;g.Materials={1};g.Material
  assert(!DrawPoaSkeletalMesh(&frame,&actor,&mesh,false)&&device.Calls==1);assert(device.Flags&PF_TwoSided);assert(length(device.Captured[0].Point-vec3(14,8,30))<.001);assert(length(device.Captured[2].Point-vec3(10,8,30))<.001);assert(device.Captured[2].UV.x==64&&device.Captured[2].UV.y==64);
  UPoaMeshAnimation animation;animation.Animation.Bones={{"root",0,0}};animation.Animation.Moves.resize(1);animation.Animation.Moves[0].Duration=2;PoaAssets::AnimationTrack track;track.Time={0,1};track.Position={{0,0,0},{2,0,0}};animation.Animation.Moves[0].Tracks={track};animation.Animation.Sequences.push_back({0,"Walk",{},0,2,{},2});mesh.AnimationResource=&animation;actor.Names["AnimSequence"]="Walk";actor.Values["AnimFrame"]=.25;device.Calls=0;
  assert(!DrawPoaSkeletalMesh(&frame,&actor,&mesh,false,&animation.Animation,0,.5,false)&&device.Calls==1);assert(length(device.Captured[0].Point-vec3(10,8,30))<.001);
+ PoaChannels::State state;PoaChannels::Play(state,animation.Animation,"Walk",0,0,0,false);state.At(0).Phase=.25;auto channelPose=PoaChannels::Pose(g,animation.Animation,state);device.Calls=0;DrawPoaSkeletalMesh(&frame,&actor,&mesh,false,nullptr,0,0,false,&channelPose);assert(device.Calls==1&&length(device.Captured[0].Point-vec3(10,8,30))<.001);
  actor.Names["AnimSequence"]="Missing";device.Calls=0;DrawPoaSkeletalMesh(&frame,&actor,&mesh,false);assert(length(device.Captured[0].Point-vec3(14,8,30))<.001);
  shader.Values["OutputBlending"]=3;device.Calls=0;assert(DrawPoaSkeletalMesh(&frame,&actor,&mesh,false)&&device.Calls==0);assert(!DrawPoaSkeletalMesh(&frame,&actor,&mesh,true)&&device.Calls==1&&(device.Flags&PF_Translucent));
  shader.Values["OutputBlending"]=1;device.Calls=0;assert(!DrawPoaSkeletalMesh(&frame,&actor,&mesh,true)&&device.Calls==0);assert(!DrawPoaSkeletalMesh(&frame,&actor,&mesh,false)&&device.Calls==1&&(device.Flags&PF_Masked));

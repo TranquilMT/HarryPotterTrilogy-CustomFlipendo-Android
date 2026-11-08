@@ -3,6 +3,7 @@
 #include "PoaMath.h"
 #include "PoaTracing.h"
 #include "PoaServices.h"
+#include "PoaActorAnimation.h"
 #include "PoaRotation.h"
 #include "VM/NativeFunc.h"
 #include "Packages/Core/UObject.h"
@@ -96,6 +97,7 @@ static void GetIniEntry(const std::string& section, const std::string& key,
 void RegisterNatives()
 {
     PoaServices::RegisterNatives();
+    PoaActorAnimation::RegisterNatives();
     RegisterVMNativeFunc_2("Object", "QuatFromRotator", &QuatFromRotator, 0);
     RegisterVMNativeFunc_2("Object", "QuatToRotator", &QuatToRotator, 0);
     PoaTracing::Set(false, false);

@@ -1,0 +1,89 @@
+{
+  "scope": "Production actor handlers and channel pose model with host adapters and original asset sampling; no live VM/world/GPU or original gameplay parity claim",
+  "bindings": [
+    {
+      "name": "PlayAnim",
+      "adapterSlots": 4,
+      "nativeIndex": 259
+    },
+    {
+      "name": "LoopAnim",
+      "adapterSlots": 4,
+      "nativeIndex": 260
+    },
+    {
+      "name": "TweenAnim",
+      "adapterSlots": 3,
+      "nativeIndex": 294
+    },
+    {
+      "name": "IsAnimating",
+      "adapterSlots": 2,
+      "nativeIndex": 282
+    },
+    {
+      "name": "FinishAnim",
+      "adapterSlots": 1,
+      "nativeIndex": 261
+    },
+    {
+      "name": "StopAnimating",
+      "adapterSlots": 1,
+      "nativeIndex": 0
+    },
+    {
+      "name": "HasAnim",
+      "adapterSlots": 2,
+      "nativeIndex": 263
+    },
+    {
+      "name": "GetAnimParams",
+      "adapterSlots": 4,
+      "nativeIndex": 0
+    },
+    {
+      "name": "GetAnimSequence",
+      "adapterSlots": 2,
+      "nativeIndex": 603
+    },
+    {
+      "name": "GetAnimNumFrames",
+      "adapterSlots": 2,
+      "nativeIndex": 604
+    },
+    {
+      "name": "AnimIsInGroup",
+      "adapterSlots": 3,
+      "nativeIndex": 0
+    },
+    {
+      "name": "LinkSkelAnim",
+      "adapterSlots": 2,
+      "nativeIndex": 0
+    },
+    {
+      "name": "AnimBlendParams",
+      "adapterSlots": 6,
+      "nativeIndex": 0
+    },
+    {
+      "name": "AnimBlendToAlpha",
+      "adapterSlots": 3,
+      "nativeIndex": 0
+    }
+  ],
+  "channelLimit": 16,
+  "compatibilityTests": 132,
+  "packagingTests": 29,
+  "nativeSyntax": "passed",
+  "originalAnimatedMeshSamples": 146,
+  "originalAnimatedPointSamples": 104781,
+  "originalSampleAcceptance": "finite output from first sequence for local default resource pairs; not an independently expected original pose",
+  "previousSkeletalARM64": {
+    "run": 42522582035,
+    "conclusion": "success"
+  },
+  "currentChannelARM64": "requires independent build",
+  "deviceAcceptance": "not run",
+  "publishedAPK": "unchanged v0.4.14"
+}

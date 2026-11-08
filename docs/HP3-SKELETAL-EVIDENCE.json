@@ -6,7 +6,9 @@
     "triangles",
     "influences",
     "LODs",
-    "sockets"
+    "sockets",
+    "animatedMeshes",
+    "animatedPoints"
   ],
   "totals": [
     167,
@@ -15,7 +17,9 @@
     163721,
     173285,
     668,
-    0
+    0,
+    146,
+    104781
   ],
   "packages": [
     {
@@ -28,7 +32,9 @@
         36122,
         30966,
         176,
-        0
+        0,
+        36,
+        19104
       ]
     },
     {
@@ -41,7 +47,9 @@
         51929,
         68771,
         108,
-        0
+        0,
+        27,
+        38408
       ]
     },
     {
@@ -54,7 +62,9 @@
         53927,
         57592,
         108,
-        0
+        0,
+        27,
+        32639
       ]
     },
     {
@@ -67,7 +77,9 @@
         21742,
         15953,
         272,
-        0
+        0,
+        56,
+        14630
       ]
     },
     {
@@ -80,9 +92,11 @@
         1,
         3,
         4,
+        0,
+        0,
         0
       ]
     }
   ],
-  "scope": "Production decoder and CPU skinning; bounded stream adapters. Bind-pose identity across original corpus; animation interpolation covered separately. Not original playback parity or Android GPU acceptance."
+  "scope": "Production decoder and CPU skinning; bounded stream adapters. Bind-pose identity across original corpus; channel-driven first-sequence samples for all 146 meshes with a local default animation reference (104781 points), checking finite output. This is not an independent expected animated pose. Not original playback parity or Android GPU acceptance."
 }

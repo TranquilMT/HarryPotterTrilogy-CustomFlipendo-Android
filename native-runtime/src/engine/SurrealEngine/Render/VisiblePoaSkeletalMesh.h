@@ -2,15 +2,15 @@
 #include "VisiblePoaStaticMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
-// Full-resolution CPU skinning. The live Actor path uses the bind pose until
-// UE2 animation-channel state is implemented. Explicit pose inputs allow the
-// same draw body to be verified with animated geometry independently.
+// Full-resolution CPU skinning. The live Actor path supplies a layered UE2
+// channel pose. Explicit inputs also exercise this draw body independently;
+// no supplied pose means the reference pose.
 inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass,
-    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false)
+    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false,const std::vector<PoaAssets::BoneTransform>* suppliedPose=nullptr)
 {
     mesh->LoadNow();
     const auto& geometry=mesh->Geometry;
-    auto pose=PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
+    auto pose=suppliedPose?*suppliedPose:PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
     auto points=PoaAssets::SkinSkeletalPoints(geometry,pose);
     const auto transform=PoaStaticMeshToWorld(actor)*mesh->meshToObject;
     const auto x=(transform*vec4(1,0,0,0)).xyz(),y=(transform*vec4(0,1,0,0)).xyz(),z=(transform*vec4(0,0,1,0)).xyz();

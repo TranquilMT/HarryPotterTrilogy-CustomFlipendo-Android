@@ -106,9 +106,9 @@ inline BoneTransform ComposeBones(const BoneTransform& parent,const BoneTransfor
 {
     BoneTransform result;result.Rotation=MultiplyBoneQuats(parent.Rotation,child.Rotation);result.Position=RotateBoneVector(parent.Rotation,child.Position);for(size_t i=0;i<3;++i)result.Position[i]+=parent.Position[i];return result;
 }
-inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
+inline std::vector<BoneTransform> SkeletalLocalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
 {
-    std::vector<BoneTransform> local,global(mesh.Bones.size());std::vector<uint8_t> state(mesh.Bones.size(),0);local.reserve(mesh.Bones.size());
+    std::vector<BoneTransform> local;local.reserve(mesh.Bones.size());
     for(const auto& bone:mesh.Bones)
     {
         BoneTransform transform;transform.Rotation=UnitAnimationQuat(bone.Orientation);transform.Position=bone.Position;
@@ -127,6 +127,12 @@ inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,cons
         if(!local.empty())for(size_t c=0;c<3;++c)transform.Rotation[c]=-transform.Rotation[c];
         local.push_back(transform);
     }
+    return local;
+}
+inline std::vector<BoneTransform> ComposeSkeletalPose(const SkeletalMeshData& mesh,const std::vector<BoneTransform>& local)
+{
+    if(local.size()!=mesh.Bones.size())throw std::runtime_error("PoA local pose size mismatch");
+    std::vector<BoneTransform> global(local.size());std::vector<uint8_t> state(local.size(),0);
     for(size_t i=0;i<local.size();++i)
     {
         std::vector<size_t> path;size_t index=i;
@@ -149,6 +155,10 @@ inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,cons
         }
     }
     return global;
+}
+inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
+{
+    return ComposeSkeletalPose(mesh,SkeletalLocalPose(mesh,animation,sequence,frame,loop));
 }
 inline std::vector<Vector> SkinSkeletalPoints(const SkeletalMeshData& mesh,const std::vector<BoneTransform>& pose)
 {

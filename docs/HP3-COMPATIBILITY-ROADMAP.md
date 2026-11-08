@@ -1,3 +1,18 @@
+# 8 November — actor animation channels and live pose integration
+
+- [x] Add per-actor channel state and bypass absent UE1 animation properties during PoA ticks.
+- [x] Correct fourteen Actor native signatures/indices against EU Engine.u and implement scoped handlers.
+- [x] Add loop/one-shot/tween timing, local-space layering, alpha ramps and descendant bone masks.
+- [x] Route channel poses into production skeletal rendering/CPU skinning.
+- [x] Add per-actor animation linking, optional mesh replacement and native reference GC marking.
+- [x] Dispatch channel-aware AnimEnd, function notifies and script-backed object notifies; resume latent FinishAnim.
+- [x] Sample 146 original mesh/default-animation pairs through channel skinning; pass 132 compatibility and 29 packaging tests.
+- [ ] Pass ARM64 compilation for this channel checkpoint.
+- [ ] Verify actual device playback, original timing/pose parity and all gameplay animation calls.
+- [ ] Finish other animation APIs, global-pose/fade-out/backwards/root-motion behavior, native-only notifies and state save/load.
+
+See HP3-ANIMATION-CHANNELS.md for exact scope and limits. Earlier bind-pose-only notes describe the preceding checkpoint; the new source supplies live channel poses, with no phone playability claim. Published v0.4.14 remains unchanged.
+
 # 8 November — skeletal geometry and initial CPU rendering
 
 - [x] Add a PoA-only SkeletalMesh native class with version-129/version-4 decoding and absolute lazy-array endpoint checks.
@@ -6,7 +21,7 @@
 - [x] Connect skinned triangle submission, material routing and actor/mesh transforms; the live Actor path currently draws the bind pose.
 - [x] Resolve the default animation resource for later UE2 channel integration; do not write absent UE1 actor animation fields.
 - [x] Test all original bind poses plus interpolation, hierarchy/cycle handling, malformed streams, captured animated vertices and render passes.
-- [ ] Pass ARM64 compilation for this new skeletal source.
+- [x] Pass skeletal ARM64 compilation (Actions 42522582035).
 - [ ] Verify original-game animation parity and Android GPU output.
 - [ ] Implement per-actor animation linking, channel blending/tween poses, root motion, object notifies and bone attachments.
 - [ ] Implement optimized LOD selection, character lighting and measured mobile performance.
@@ -319,7 +334,7 @@ This retains all 21 workstreams and their stable task IDs. Unchecked acceptance 
 
 ## ANIM — Characters, meshes and animation
 
-- [ ] **ANIM-01** Deserialize skeletal mesh, bone hierarchy, skin weights, materials and animation packages.
+- [x] **ANIM-01** Deserialize skeletal mesh, bone hierarchy, skin weights, materials and animation packages for the verified EU .ukx corpus (167 meshes / 140 animations); optimized LOD streams are bounded/skipped.
 - [ ] **ANIM-02** Implement skinning and animation playback with correct coordinates, timing and interpolation.
 - [ ] **ANIM-03** Implement channels/blending, transitions, loops and animation completion notifications used by gameplay.
 - [ ] **ANIM-04** Implement animation notifies for sounds, effects, footsteps, interactions and other required events.

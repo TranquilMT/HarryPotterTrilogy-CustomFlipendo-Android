@@ -1,0 +1,284 @@
+diff --git a/SurrealEngine/Package/PoaAnimationChannels.h b/SurrealEngine/Package/PoaAnimationChannels.h
+new file mode 100644
+index 0000000..5da6bea
+--- /dev/null
++++ b/SurrealEngine/Package/PoaAnimationChannels.h
+@@ -0,0 +1,114 @@
++#pragma once
++#include "PoaSkeletalMeshData.h"
++#include <cctype>
++namespace PoaChannels
++{
++constexpr size_t ChannelCount=16; // bounded port limit; not a universal UE2 limit
++inline bool SameName(const std::string&a,const std::string&b)
++{
++    if(a.size()!=b.size())return false;
++    for(size_t i=0;i<a.size();++i)if(std::tolower(static_cast<unsigned char>(a[i]))!=std::tolower(static_cast<unsigned char>(b[i])))return false;
++    return true;
++}
++inline size_t Sequence(const PoaAssets::AnimationData& data,const std::string& name)
++{
++    for(size_t i=0;i<data.Sequences.size();++i)if(SameName(data.Sequences[i].Name,name))return i;
++    throw std::runtime_error("PoA animation sequence not found: "+name);
++}
++struct Channel
++{
++    std::string Name,FromName,Bone;
++    double Phase=0,FromPhase=0;
++    float Rate=1,Alpha=0,TargetAlpha=0,AlphaTime=0,Tween=0,TweenTotal=0;
++    bool Playing=false,Loop=false;
++    uint64_t Generation=0;
++};
++struct State
++{
++    std::array<Channel,ChannelCount> Channels;
++    int Waiting=-1;
++    State(){Channels[0].Alpha=Channels[0].TargetAlpha=1;}
++    Channel& At(int channel){if(channel<0||size_t(channel)>=Channels.size())throw std::runtime_error("PoA animation channel out of range");return Channels[channel];}
++};
++struct Event { int Channel;uint64_t Generation;bool End;std::string Function;int ObjectReference; };
++inline void Play(State& state,const PoaAssets::AnimationData& data,const std::string& name,float rate,float tween,int channel,bool loop)
++{
++    const auto sequence=Sequence(data,name);
++    if(sequence>=data.Moves.size()||data.Sequences[sequence].Frames<=0)throw std::runtime_error("Invalid PoA animation sequence");
++    if(!std::isfinite(rate)||rate<0||!std::isfinite(tween)||tween<0)throw std::runtime_error("Invalid PoA animation playback parameters");
++    auto& c=state.At(channel);c.FromName=c.Name;c.FromPhase=c.Phase;c.Name=data.Sequences[sequence].Name;c.Phase=0;c.Rate=rate;c.Loop=loop;c.Playing=true;c.Tween=c.TweenTotal=tween;++c.Generation;
++}
++inline void Blend(State& state,int channel,float alpha,float seconds,const std::string& bone)
++{
++    if(!std::isfinite(alpha)||alpha<0||alpha>1||!std::isfinite(seconds)||seconds<0)throw std::runtime_error("Invalid PoA animation blend");
++    auto& c=state.At(channel);c.TargetAlpha=alpha;c.AlphaTime=seconds;c.Bone=bone;if(seconds==0)c.Alpha=alpha;
++}
++inline std::vector<Event> Tick(State& state,const PoaAssets::AnimationData& data,float elapsed)
++{
++    if(!std::isfinite(elapsed)||elapsed<0)throw std::runtime_error("Invalid PoA animation elapsed time");
++    std::vector<Event> events;
++    for(size_t index=0;index<state.Channels.size();++index)
++    {
++        auto& c=state.Channels[index];
++        if(c.AlphaTime>0){const float step=std::min(elapsed,c.AlphaTime);c.Alpha+=(c.TargetAlpha-c.Alpha)*step/c.AlphaTime;c.AlphaTime-=step;}
++        float remaining=elapsed;
++        if(c.Tween>0)
++        {
++            const float step=std::min(remaining,c.Tween);c.Tween-=step;remaining-=step;
++            if(c.Tween==0&&c.Rate==0&&c.Playing){c.Playing=false;events.push_back({int(index),c.Generation,true,{},0});}
++        }
++        if(!c.Playing||c.Name.empty()||remaining<=0)continue;
++        const auto sequence=Sequence(data,c.Name);const auto& seq=data.Sequences.at(sequence);
++        const double speed=double(c.Rate)*seq.Rate/seq.Frames;
++        if(speed<=0)continue;
++        double delta=double(remaining)*speed;const double last=double(seq.Frames-1)/seq.Frames;
++        size_t cycles=0;
++        while(delta>0&&c.Playing)
++        {
++            if(++cycles>4096)throw std::runtime_error("PoA animation tick exceeds event-cycle budget");
++            const double end=c.Loop?1.0:std::max(last,c.Phase);const double next=std::min(end,c.Phase+delta);
++            for(const auto& notify:seq.Notifies)if(notify.Time>c.Phase&&notify.Time<=next)
++                events.push_back({int(index),c.Generation,false,notify.Function,notify.ObjectReference});
++            if((c.Phase<last&&next>=last)||(last==0&&c.Phase==0))events.push_back({int(index),c.Generation,true,{},0});
++            delta-=std::max(0.0,next-c.Phase);c.Phase=next;
++            if(next>=end){if(c.Loop)c.Phase=0;else c.Playing=false;}else break;
++        }
++    }
++    return events;
++}
++inline void Stop(State& state,bool clearOthers)
++{
++    for(size_t i=0;i<state.Channels.size();++i){auto&c=state.Channels[i];c.Playing=false;c.Tween=0;++c.Generation;if(clearOthers&&i){const auto generation=c.Generation;c=Channel();c.Generation=generation;}}
++    state.Waiting=-1;
++}
++inline std::vector<PoaAssets::BoneTransform> Pose(const PoaAssets::SkeletalMeshData& mesh,const PoaAssets::AnimationData& data,const State& state)
++{
++    using namespace PoaAssets;auto local=SkeletalLocalPose(mesh);
++    for(const auto& c:state.Channels)
++    {
++        if(c.Name.empty()||c.Alpha<=0)continue;
++        const auto sequence=Sequence(data,c.Name);auto target=SkeletalLocalPose(mesh,&data,sequence,float(c.Phase*data.Moves.at(sequence).Duration),c.Loop);
++        if(c.Tween>0&&c.TweenTotal>0)
++        {
++            auto from=SkeletalLocalPose(mesh);
++            if(!c.FromName.empty()){auto previous=Sequence(data,c.FromName);from=SkeletalLocalPose(mesh,&data,previous,float(c.FromPhase*data.Moves.at(previous).Duration),false);}
++            float fraction=1-c.Tween/c.TweenTotal;
++            for(size_t i=0;i<target.size();++i){target[i].Rotation=InterpolateAnimationQuat(from[i].Rotation,target[i].Rotation,fraction);for(size_t axis=0;axis<3;++axis)target[i].Position[axis]=from[i].Position[axis]*(1-fraction)+target[i].Position[axis]*fraction;}
++        }
++        int root=-1;if(!c.Bone.empty()&&!SameName(c.Bone,"None"))
++        {
++            for(size_t i=0;i<mesh.Bones.size();++i)if(SameName(mesh.Bones[i].Name,c.Bone)){root=int(i);break;}
++            if(root<0)throw std::runtime_error("PoA animation blend bone not found");
++        }
++        for(size_t i=0;i<local.size();++i)
++        {
++            bool affected=root<0;int bone=int(i);
++            for(size_t steps=0;!affected&&bone>=0&&steps<mesh.Bones.size();++steps){if(size_t(bone)>=mesh.Bones.size())throw std::runtime_error("Invalid PoA blend skeleton");if(bone==root){affected=true;break;}auto parent=mesh.Bones[bone].Parent;if(parent==bone)break;bone=parent;}
++            if(!affected)continue;
++            local[i].Rotation=InterpolateAnimationQuat(local[i].Rotation,target[i].Rotation,c.Alpha);
++            for(size_t axis=0;axis<3;++axis)local[i].Position[axis]=local[i].Position[axis]*(1-c.Alpha)+target[i].Position[axis]*c.Alpha;
++        }
++    }
++    return ComposeSkeletalPose(mesh,local);
++}
++}
+diff --git a/SurrealEngine/Package/PoaSkeletalMeshData.h b/SurrealEngine/Package/PoaSkeletalMeshData.h
+index b19fd0f..edd578d 100644
+--- a/SurrealEngine/Package/PoaSkeletalMeshData.h
++++ b/SurrealEngine/Package/PoaSkeletalMeshData.h
+@@ -106,9 +106,9 @@ inline BoneTransform ComposeBones(const BoneTransform& parent,const BoneTransfor
+ {
+     BoneTransform result;result.Rotation=MultiplyBoneQuats(parent.Rotation,child.Rotation);result.Position=RotateBoneVector(parent.Rotation,child.Position);for(size_t i=0;i<3;++i)result.Position[i]+=parent.Position[i];return result;
+ }
+-inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
++inline std::vector<BoneTransform> SkeletalLocalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
+ {
+-    std::vector<BoneTransform> local,global(mesh.Bones.size());std::vector<uint8_t> state(mesh.Bones.size(),0);local.reserve(mesh.Bones.size());
++    std::vector<BoneTransform> local;local.reserve(mesh.Bones.size());
+     for(const auto& bone:mesh.Bones)
+     {
+         BoneTransform transform;transform.Rotation=UnitAnimationQuat(bone.Orientation);transform.Position=bone.Position;
+@@ -127,6 +127,12 @@ inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,cons
+         if(!local.empty())for(size_t c=0;c<3;++c)transform.Rotation[c]=-transform.Rotation[c];
+         local.push_back(transform);
+     }
++    return local;
++}
++inline std::vector<BoneTransform> ComposeSkeletalPose(const SkeletalMeshData& mesh,const std::vector<BoneTransform>& local)
++{
++    if(local.size()!=mesh.Bones.size())throw std::runtime_error("PoA local pose size mismatch");
++    std::vector<BoneTransform> global(local.size());std::vector<uint8_t> state(local.size(),0);
+     for(size_t i=0;i<local.size();++i)
+     {
+         std::vector<size_t> path;size_t index=i;
+@@ -150,6 +156,10 @@ inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,cons
+     }
+     return global;
+ }
++inline std::vector<BoneTransform> SkeletalPose(const SkeletalMeshData& mesh,const AnimationData* animation=nullptr,size_t sequence=0,float frame=0,bool loop=true)
++{
++    return ComposeSkeletalPose(mesh,SkeletalLocalPose(mesh,animation,sequence,frame,loop));
++}
+ inline std::vector<Vector> SkinSkeletalPoints(const SkeletalMeshData& mesh,const std::vector<BoneTransform>& pose)
+ {
+     if(pose.size()!=mesh.Bones.size())throw std::runtime_error("PoA skin pose count mismatch");
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor.h b/SurrealEngine/Packages/Engine/Actors/UActor.h
+index 5fb11f0..72ed8f7 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.h
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.h
+@@ -2,6 +2,8 @@
+ 
+ #include "Packages/Core/UObject.h"
+ #include "Math/bbox.h"
++#include <memory>
++namespace PoaChannels { struct State; }
+ 
+ class UZoneInfo;
+ class UTexture;
+@@ -366,6 +368,9 @@ enum class EAnimType : uint8_t
+ class UActor : public UObject
+ {
+ public:
++    std::shared_ptr<PoaChannels::State> PoaAnimation;
++    UObject* PoaAnimationObject=nullptr;
++    GCAllocation* Mark(GCAllocation* marklist) override;
+ 	using UObject::UObject;
+ 
+ 	UActor* Spawn(UClass* SpawnClass, std::optional<UActor*> SpawnOwner, std::optional<NameString> SpawnTag, std::optional<vec3> SpawnLocation, std::optional<Rotator> SpawnRotation);
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
+index 3e079eb..5435ee9 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Animation.cpp
+@@ -7,6 +7,12 @@
+ #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
+ #include "Engine.h"
+ #include "KW.h"
++#include "hp3/PoaActorAnimation.h"
++
++GCAllocation* UActor::Mark(GCAllocation* marklist)
++{
++    return GC::MarkObject(UObject::Mark(marklist),PoaAnimationObject);
++}
+ 
+ bool UActor::HasAnim(const NameString& sequence)
+ {
+@@ -330,6 +336,7 @@ void UActor::LoopAnim_HP(const NameString& Sequence, std::optional<float> Rate,
+ 
+ void UActor::TickAnimation(float elapsed)
+ {
++    if(engine->LaunchInfo.IsHarryPotter3()){PoaActorAnimation::Tick(this,elapsed);return;}
+ 	if (engine->LaunchInfo.IsKnowWonder()) // HP1 anim channels/tweening (src/knowwonder/Anim)
+ 	{
+ 		KW::TickAnimation(this, elapsed);
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp
+index e8fe3f4..3af9e0d 100644
+--- a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp
+@@ -3,6 +3,10 @@
+ #include "UPoaMeshAnimation.h"
+ #include "Package/Package.h"
+ #include "Math/coords.h"
++GCAllocation* UPoaSkeletalMesh::Mark(GCAllocation* marklist)
++{
++    return GC::MarkObject(USkeletalMesh::Mark(marklist),AnimationResource);
++}
+ void UPoaSkeletalMesh::Load(ObjectStream* stream)
+ {
+     UPrimitive::Load(stream);
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h
+index 774dd3f..4dd9c2d 100644
+--- a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h
+@@ -6,6 +6,7 @@ class UPoaSkeletalMesh : public USkeletalMesh
+ {
+ public:
+     using USkeletalMesh::USkeletalMesh;
++    GCAllocation* Mark(GCAllocation* marklist) override;
+     void Load(ObjectStream* stream) override;
+     void Save(PackageStreamWriter* stream) override;
+     PoaAssets::SkeletalMeshData Geometry;
+diff --git a/SurrealEngine/Render/VisibleMesh.cpp b/SurrealEngine/Render/VisibleMesh.cpp
+index 73e4885..7200f65 100644
+--- a/SurrealEngine/Render/VisibleMesh.cpp
++++ b/SurrealEngine/Render/VisibleMesh.cpp
+@@ -14,6 +14,7 @@
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "KW.h"
+ #include "VisiblePoaSkeletalMesh.h"
++#include "hp3/PoaActorAnimation.h"
+ 
+ bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, bool translucentPass)
+ {
+@@ -23,7 +24,10 @@ bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, b
+ 
+ 	if (engine->LaunchInfo.IsHarryPotter3())
+         if (auto skeletal=UObject::TryCast<UPoaSkeletalMesh>(mesh))
+-            return DrawPoaSkeletalMesh(frame,actor,skeletal,translucentPass);
++            {
++                auto pose=PoaActorAnimation::Pose(actor,skeletal);
++                return DrawPoaSkeletalMesh(frame,actor,skeletal,translucentPass,nullptr,0,0,false,&pose);
++            }
+ 
+     engine->render->Stats.Actors++;
+ 	engine->Level->Light.UpdateLightList(actor);
+diff --git a/SurrealEngine/Render/VisiblePoaSkeletalMesh.h b/SurrealEngine/Render/VisiblePoaSkeletalMesh.h
+index aae9128..c7f39a1 100644
+--- a/SurrealEngine/Render/VisiblePoaSkeletalMesh.h
++++ b/SurrealEngine/Render/VisiblePoaSkeletalMesh.h
+@@ -2,15 +2,15 @@
+ #include "VisiblePoaStaticMesh.h"
+ #include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
+ #include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
+-// Full-resolution CPU skinning. The live Actor path uses the bind pose until
+-// UE2 animation-channel state is implemented. Explicit pose inputs allow the
+-// same draw body to be verified with animated geometry independently.
++// Full-resolution CPU skinning. The live Actor path supplies a layered UE2
++// channel pose. Explicit inputs also exercise this draw body independently;
++// no supplied pose means the reference pose.
+ inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass,
+-    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false)
++    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false,const std::vector<PoaAssets::BoneTransform>* suppliedPose=nullptr)
+ {
+     mesh->LoadNow();
+     const auto& geometry=mesh->Geometry;
+-    auto pose=PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
++    auto pose=suppliedPose?*suppliedPose:PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
+     auto points=PoaAssets::SkinSkeletalPoints(geometry,pose);
+     const auto transform=PoaStaticMeshToWorld(actor)*mesh->meshToObject;
+     const auto x=(transform*vec4(1,0,0,0)).xyz(),y=(transform*vec4(0,1,0,0)).xyz(),z=(transform*vec4(0,0,1,0)).xyz();

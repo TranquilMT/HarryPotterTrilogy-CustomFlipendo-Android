@@ -1,3 +1,5 @@
+> Subsequent source update: HP3-ANIMATION-CHANNELS.md supersedes this checkpoint's bind-pose-only integration and unimplemented linking/channel/native descriptions. Separate per-actor channel state and a production tick/render bridge now exist. Remaining limits and validation are recorded there; this document retains the earlier mesh-reader evidence.
+
 # EU skeletal mesh source checkpoint
 
 ## Implemented

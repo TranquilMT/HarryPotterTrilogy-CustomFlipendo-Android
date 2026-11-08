@@ -23,3 +23,5 @@ list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaCompat.cpp)
 # Production VM helpers include hp3 headers even when HP3_ENABLED is OFF.
 include_directories(${CMAKE_CURRENT_LIST_DIR}/..)
 list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaServices.cpp)
+
+list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaActorAnimation.cpp)

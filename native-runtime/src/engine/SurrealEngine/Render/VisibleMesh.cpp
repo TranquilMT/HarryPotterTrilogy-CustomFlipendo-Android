@@ -14,6 +14,7 @@
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
 #include "VisiblePoaSkeletalMesh.h"
+#include "hp3/PoaActorAnimation.h"
 
 bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, bool translucentPass)
 {
@@ -23,7 +24,10 @@ bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, b
 
 	if (engine->LaunchInfo.IsHarryPotter3())
         if (auto skeletal=UObject::TryCast<UPoaSkeletalMesh>(mesh))
-            return DrawPoaSkeletalMesh(frame,actor,skeletal,translucentPass);
+            {
+                auto pose=PoaActorAnimation::Pose(actor,skeletal);
+                return DrawPoaSkeletalMesh(frame,actor,skeletal,translucentPass,nullptr,0,0,false,&pose);
+            }
 
     engine->render->Stats.Actors++;
 	engine->Level->Light.UpdateLightList(actor);

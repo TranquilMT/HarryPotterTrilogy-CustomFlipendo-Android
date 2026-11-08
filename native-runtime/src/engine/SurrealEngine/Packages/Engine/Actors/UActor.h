@@ -2,6 +2,8 @@
 
 #include "Packages/Core/UObject.h"
 #include "Math/bbox.h"
+#include <memory>
+namespace PoaChannels { struct State; }
 
 class UZoneInfo;
 class UTexture;
@@ -366,6 +368,9 @@ enum class EAnimType : uint8_t
 class UActor : public UObject
 {
 public:
+    std::shared_ptr<PoaChannels::State> PoaAnimation;
+    UObject* PoaAnimationObject=nullptr;
+    GCAllocation* Mark(GCAllocation* marklist) override;
 	using UObject::UObject;
 
 	UActor* Spawn(UClass* SpawnClass, std::optional<UActor*> SpawnOwner, std::optional<NameString> SpawnTag, std::optional<vec3> SpawnLocation, std::optional<Rotator> SpawnRotation);

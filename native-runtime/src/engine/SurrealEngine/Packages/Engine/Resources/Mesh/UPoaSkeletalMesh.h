@@ -6,6 +6,7 @@ class UPoaSkeletalMesh : public USkeletalMesh
 {
 public:
     using USkeletalMesh::USkeletalMesh;
+    GCAllocation* Mark(GCAllocation* marklist) override;
     void Load(ObjectStream* stream) override;
     void Save(PackageStreamWriter* stream) override;
     PoaAssets::SkeletalMeshData Geometry;

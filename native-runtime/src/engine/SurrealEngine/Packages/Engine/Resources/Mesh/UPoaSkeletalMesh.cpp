@@ -3,6 +3,10 @@
 #include "UPoaMeshAnimation.h"
 #include "Package/Package.h"
 #include "Math/coords.h"
+GCAllocation* UPoaSkeletalMesh::Mark(GCAllocation* marklist)
+{
+    return GC::MarkObject(USkeletalMesh::Mark(marklist),AnimationResource);
+}
 void UPoaSkeletalMesh::Load(ObjectStream* stream)
 {
     UPrimitive::Load(stream);
