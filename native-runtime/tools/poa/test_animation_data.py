@@ -14,6 +14,7 @@ class AnimationDataTests(unittest.TestCase):
 #include <cstring>
 #include <iostream>
 #include <iterator>
+#include <limits>
 struct NameString{std::string Text;std::string ToString(){return Text;}};
 struct ObjectStream{std::vector<uint8_t>Data;std::vector<std::string>Names;size_t Pos=0;int GetVersion(){return 129;}size_t Remaining(){return Data.size()-Pos;}template<class T>T Read(){if(sizeof(T)>Remaining())throw std::runtime_error("truncated");T v;std::memcpy(&v,Data.data()+Pos,sizeof(T));Pos+=sizeof(T);return v;}uint8_t ReadUInt8(){return Read<uint8_t>();}uint16_t ReadUInt16(){return Read<uint16_t>();}uint32_t ReadUInt32(){return Read<uint32_t>();}int32_t ReadInt32(){return Read<int32_t>();}float ReadFloat(){return Read<float>();}int ReadIndex(){return PackageIndices::Read([&](){return ReadUInt8();});}NameString ReadName(){int i=ReadIndex();if(i<0||size_t(i)>=Names.size())throw std::runtime_error("name");return {Names[i]};}};
 struct UObject{void Load(ObjectStream*){}};struct UPoaMeshAnimation:UObject{PoaAssets::AnimationData Animation;void Load(ObjectStream*);};
@@ -25,6 +26,7 @@ int main(int argc,char**argv){using namespace PoaAssets;
   auto halfway=SampleAnimationTrack(track,.5,2,false);assert(halfway.HasPosition&&halfway.HasRotation&&std::abs(halfway.Position[0]-5)<1e-5&&std::abs(halfway.Rotation[2]-.70710678)<1e-5);
   auto loop=SampleAnimationTrack(track,1.5,2,true);assert(std::abs(loop.Position[0]-5)<1e-5);auto clamp=SampleAnimationTrack(track,10,2,false);assert(clamp.Position[0]==10);auto negative=SampleAnimationTrack(track,-.5,2,true);assert(std::abs(negative.Position[0]-5)<1e-5);
   track.Rotation={Quat{0,0,0,1},Quat{0,0,0,-1}};auto aligned=SampleAnimationTrack(track,.5,2,false);assert(std::abs(aligned.Rotation[3]-1)<1e-5);
+  auto tiny=UnitAnimationQuat({std::numeric_limits<float>::denorm_min(),0,0,0});assert(tiny==Quat({1,0,0,0}));
   auto identity=UnitAnimationQuat({0,0,0,0});assert(identity==Quat({0,0,0,1}));
   AnimationTrack absent;absent.Position={Vector{NAN,NAN,NAN}};assert(!SampleAnimationTrack(absent,0,1,false).HasPosition);
   AnimationTrack empty;assert(!SampleAnimationTrack(empty,0,0,false).HasRotation);bool rejected=false;try{SampleAnimationTrack(track,NAN,2,false);}catch(...){rejected=true;}assert(rejected);

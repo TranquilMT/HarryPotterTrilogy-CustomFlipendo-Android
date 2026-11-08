@@ -5,6 +5,7 @@
 - [x] Sample 312,585 bone/sequence combinations with quaternion interpolation, explicit key times, looping and clamping.
 - [x] Handle 298 zero quaternion keys as identity; retain two all-NaN position keys as unavailable translation channels.
 - [x] Reject unsupported compressed flex tracks, malformed counts, invalid timings and truncated resources without replacing prior data.
+- [x] Pass 126 compatibility tests and 29 Android packaging tests locally.
 - [ ] Pass the new animation ARM64 build.
 - [ ] Connect skeletal geometry, skinning, playback state, blending and notify dispatch.
 

@@ -95,7 +95,7 @@ inline Quat UnitAnimationQuat(Quat q)
     // EU low-memory character packages contain constant zero quaternion keys.
     // The retail FQuat-to-coordinate formula maps zero to the identity basis.
     if(norm==0) return {0,0,0,1};
-    const auto scale=float(1/std::sqrt(norm));for(auto&x:q)x*=scale;return q;
+    const double scale=1/std::sqrt(norm);for(auto&x:q)x=float(double(x)*scale);return q;
 }
 inline Quat InterpolateAnimationQuat(Quat a,Quat b,float fraction)
 {

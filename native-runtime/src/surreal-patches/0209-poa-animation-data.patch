@@ -33,7 +33,7 @@ index 2ddad84..7d0cdfd 100644
  	RegisterNativeClass<USkeletalMesh>(enginePackage, "SkeletalMesh", "LodMesh");
 diff --git a/SurrealEngine/Package/PoaAnimationData.h b/SurrealEngine/Package/PoaAnimationData.h
 new file mode 100644
-index 0000000..a12dd5d
+index 0000000..c3df065
 --- /dev/null
 +++ b/SurrealEngine/Package/PoaAnimationData.h
 @@ -0,0 +1,149 @@
@@ -134,7 +134,7 @@ index 0000000..a12dd5d
 +    // EU low-memory character packages contain constant zero quaternion keys.
 +    // The retail FQuat-to-coordinate formula maps zero to the identity basis.
 +    if(norm==0) return {0,0,0,1};
-+    const auto scale=float(1/std::sqrt(norm));for(auto&x:q)x*=scale;return q;
++    const double scale=1/std::sqrt(norm);for(auto&x:q)x=float(double(x)*scale);return q;
 +}
 +inline Quat InterpolateAnimationQuat(Quat a,Quat b,float fraction)
 +{
