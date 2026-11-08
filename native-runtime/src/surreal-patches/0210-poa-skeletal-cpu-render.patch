@@ -209,10 +209,10 @@ index 0000000..b19fd0f
 +}
 diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp
 new file mode 100644
-index 0000000..26f3860
+index 0000000..e8fe3f4
 --- /dev/null
 +++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.cpp
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,25 @@
 +#include "Precomp.h"
 +#include "UPoaSkeletalMesh.h"
 +#include "UPoaMeshAnimation.h"
@@ -229,18 +229,7 @@ index 0000000..26f3860
 +    {
 +        object->LoadNow();animationResource=UObject::TryCast<UPoaMeshAnimation>(object);
 +    }
-+    Array<MeshAnimSeq> sequences;
-+    if(animationResource) for(const auto& sequence:animationResource->Animation.Sequences)
-+    {
-+        if(sequence.Frames<=0) continue; // inherited actor playback divides by frame count
-+        MeshAnimSeq entry;entry.Name=NameString(sequence.Name);entry.Group=sequence.Groups.empty()?NameString("None"):NameString(sequence.Groups[0]);
-+        entry.StartFrame=sequence.StartFrame;entry.NumFrames=sequence.Frames;entry.Rate=sequence.Rate;
-+        // Function notifies can use the existing actor event route. Object
-+        // notifies require UE2 Notify(actor, sequence) dispatch separately.
-+        for(const auto& notify:sequence.Notifies) if(notify.ObjectReference==0&&notify.Function!="None")entry.Notifys.push_back({notify.Time,NameString(notify.Function)});
-+        sequences.push_back(std::move(entry));
-+    }
-+    Geometry=std::move(geometry);SourcePackage=sourcePackage;AnimationResource=animationResource;AnimSeqs=std::move(sequences);
++    Geometry=std::move(geometry);SourcePackage=sourcePackage;AnimationResource=animationResource;
 +    Scale={Geometry.Scale[0],Geometry.Scale[1],Geometry.Scale[2]};Origin={Geometry.Origin[0],Geometry.Origin[1],Geometry.Origin[2]};
 +    RotOrigin.Pitch=Geometry.Rotation[0];RotOrigin.Yaw=Geometry.Rotation[1];RotOrigin.Roll=Geometry.Rotation[2];
 +    meshToObject=Coords::Rotation(RotOrigin).ToMatrix()*mat4::scale(Scale)*mat4::translate(-Origin);
@@ -296,30 +285,22 @@ index 5aec3a3..73e4885 100644
  	// DrawDebugInfo(frame, actor);
 diff --git a/SurrealEngine/Render/VisiblePoaSkeletalMesh.h b/SurrealEngine/Render/VisiblePoaSkeletalMesh.h
 new file mode 100644
-index 0000000..1e8b9da
+index 0000000..aae9128
 --- /dev/null
 +++ b/SurrealEngine/Render/VisiblePoaSkeletalMesh.h
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,45 @@
 +#pragma once
 +#include "VisiblePoaStaticMesh.h"
 +#include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
 +#include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
-+// Initial full-resolution CPU skinning path. Actor's base animation fields are
-+// sampled; multi-channel blending, root motion and object notifies remain open.
-+inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass)
++// Full-resolution CPU skinning. The live Actor path uses the bind pose until
++// UE2 animation-channel state is implemented. Explicit pose inputs allow the
++// same draw body to be verified with animated geometry independently.
++inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass,
++    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false)
 +{
 +    mesh->LoadNow();
 +    const auto& geometry=mesh->Geometry;
-+    const PoaAssets::AnimationData* animation=nullptr;size_t sequence=0;float time=0;bool loop=false;
-+    if(mesh->AnimationResource&&actor->HasProperty("AnimSequence")&&actor->HasProperty("AnimFrame"))
-+    {
-+        const auto& resource=mesh->AnimationResource->Animation;
-+        for(size_t i=0;i<resource.Sequences.size();++i)if(NameString(resource.Sequences[i].Name)==actor->GetName("AnimSequence"))
-+        {
-+            animation=&resource;sequence=i;time=std::max(actor->GetFloat("AnimFrame"),0.0f)*resource.Moves[i].Duration;
-+            loop=actor->HasProperty("bAnimLoop")&&actor->GetBool("bAnimLoop");break;
-+        }
-+    }
 +    auto pose=PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
 +    auto points=PoaAssets::SkinSkeletalPoints(geometry,pose);
 +    const auto transform=PoaStaticMeshToWorld(actor)*mesh->meshToObject;

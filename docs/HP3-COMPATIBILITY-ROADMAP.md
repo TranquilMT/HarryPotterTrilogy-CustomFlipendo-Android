@@ -3,8 +3,8 @@
 - [x] Add a PoA-only SkeletalMesh native class with version-129/version-4 decoding and absolute lazy-array endpoint checks.
 - [x] Read full-resolution points, wedges, triangles, material slots, skeletons and weights from all 167 original EU meshes; bound/skip optimized LOD streams and collision metadata.
 - [x] Implement hierarchy composition, bind-pose inverse transforms and normalized CPU weighted skinning.
-- [x] Connect actor base sequence/frame sampling to skinned triangle submission, material routing and actor/mesh transforms.
-- [x] Expose default sequence timing and function-notify metadata to existing actor animation code.
+- [x] Connect skinned triangle submission, material routing and actor/mesh transforms; the live Actor path currently draws the bind pose.
+- [x] Resolve the default animation resource for later UE2 channel integration; do not write absent UE1 actor animation fields.
 - [x] Test all original bind poses plus interpolation, hierarchy/cycle handling, malformed streams, captured animated vertices and render passes.
 - [ ] Pass ARM64 compilation for this new skeletal source.
 - [ ] Verify original-game animation parity and Android GPU output.

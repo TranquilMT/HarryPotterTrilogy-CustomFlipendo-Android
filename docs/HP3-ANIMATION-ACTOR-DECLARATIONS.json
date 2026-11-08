@@ -399,5 +399,20 @@
       "locals": [],
       "nativeArgumentOrderVerified": true
     }
+  ],
+  "enginePackageSHA256": "3b5c2b2002dbc8522e8a932e2733228f7f60711d55a9ccb1a033621b3a12f1ef",
+  "actorAnimationPropertiesPresent": [
+    {
+      "name": "Mesh",
+      "type": "ObjectProperty"
+    }
+  ],
+  "legacyFieldsAbsent": [
+    "AnimFrame",
+    "AnimSequence",
+    "AnimRate",
+    "bAnimLoop",
+    "AnimLast",
+    "TweenRate"
   ]
 }

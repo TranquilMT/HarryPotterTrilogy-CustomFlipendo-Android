@@ -2,22 +2,14 @@
 #include "VisiblePoaStaticMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
-// Initial full-resolution CPU skinning path. Actor's base animation fields are
-// sampled; multi-channel blending, root motion and object notifies remain open.
-inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass)
+// Full-resolution CPU skinning. The live Actor path uses the bind pose until
+// UE2 animation-channel state is implemented. Explicit pose inputs allow the
+// same draw body to be verified with animated geometry independently.
+inline bool DrawPoaSkeletalMesh(VisibleFrame* frame,UActor* actor,UPoaSkeletalMesh* mesh,bool translucentPass,
+    const PoaAssets::AnimationData* animation=nullptr,size_t sequence=0,float time=0,bool loop=false)
 {
     mesh->LoadNow();
     const auto& geometry=mesh->Geometry;
-    const PoaAssets::AnimationData* animation=nullptr;size_t sequence=0;float time=0;bool loop=false;
-    if(mesh->AnimationResource&&actor->HasProperty("AnimSequence")&&actor->HasProperty("AnimFrame"))
-    {
-        const auto& resource=mesh->AnimationResource->Animation;
-        for(size_t i=0;i<resource.Sequences.size();++i)if(NameString(resource.Sequences[i].Name)==actor->GetName("AnimSequence"))
-        {
-            animation=&resource;sequence=i;time=std::max(actor->GetFloat("AnimFrame"),0.0f)*resource.Moves[i].Duration;
-            loop=actor->HasProperty("bAnimLoop")&&actor->GetBool("bAnimLoop");break;
-        }
-    }
     auto pose=PoaAssets::SkeletalPose(geometry,animation,sequence,time,loop);
     auto points=PoaAssets::SkinSkeletalPoints(geometry,pose);
     const auto transform=PoaStaticMeshToWorld(actor)*mesh->meshToObject;
