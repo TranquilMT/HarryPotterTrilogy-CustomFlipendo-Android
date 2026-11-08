@@ -1,3 +1,15 @@
+# 8 November — structured property text and config follow-up
+
+- [x] Parse nested struct values and quoted comma/parenthesis literals without truncation.
+- [x] Round-trip escaped strings and fixed-array struct members.
+- [x] Preserve omitted struct defaults during partial PoA config overrides.
+- [x] Save supported PoA struct config values; preserve INI entries for unsupported member types.
+- [x] Parse 44 original EU INI struct-text records and execute production round-trip/rejection harnesses.
+- [ ] Validate this source in a rebuilt ARM64 runtime and on the phone.
+- [ ] Implement dynamic-array/map config text and complete UE2 native asset/rendering support.
+
+See HP3-STRUCT-TEXT-COMPATIBILITY.md for scope and validation limits. This source follow-up is not in published 0.4.14 yet.
+
 # 8 November — wider UE2 Core API extension (source follow-up)
 
 - [x] Verify EU signatures for QuatInvert, QuatFindBetween, GetIniEntry and two interpolation-curve range functions.

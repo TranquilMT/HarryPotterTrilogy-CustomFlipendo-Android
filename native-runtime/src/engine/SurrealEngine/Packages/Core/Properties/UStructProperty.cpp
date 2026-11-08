@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "UStructProperty.h"
+#include "PropertyText.h"
 #include "Packages/Core/UStruct.h"
 #include "Engine.h"
 
@@ -252,51 +253,34 @@ void UStructProperty::GetExportText(std::string& buf, const std::string& whitesp
 
 std::string UStructProperty::PrintValue(const void* data)
 {
-	if (Struct)
-	{
-		std::string print;
-		uint8_t* d = (uint8_t*)data;
-		for (UField* field = Struct->Children; field != nullptr; field = field->Next)
-		{
-			UProperty* fieldprop = UObject::TryCast<UProperty>(field);
-			if (fieldprop)
-			{
-				if (!print.empty())
-					print += ", ";
-				print += fieldprop->Name.ToString();
-				print += "=";
-				print += fieldprop->PrintValue(d + fieldprop->DataOffset.DataOffset);
-			}
-		}
-		return "(" + print + ")";
-	}
-	else
-	{
-		return "null struct";
-	}
+    if (!Struct) return "null struct";
+    std::string result = "(";
+    for (UProperty* field : Struct->Properties)
+        for (int i = 0; i < field->ArrayDimension; ++i)
+        {
+            const size_t offset = PropertyText::FieldOffset(field->DataOffset.DataOffset, field->ElementPitch(), size_t(i), Struct->StructSize, field->ElementSize());
+            if (result.size() > 1) result += ',';
+            result += field->Name.ToString();
+            if (field->ArrayDimension > 1) result += "[" + std::to_string(i) + "]";
+            result += '=';
+            result += field->PrintValue(static_cast<const uint8_t*>(data) + offset);
+        }
+    return result + ')';
 }
 
 void UStructProperty::SetValueFromString(void* data, const std::string& valueString)
 {
-	if (valueString.empty())
-		return;
-
-	auto properties = ParsePropertiesFromString(valueString);
-
-	if (Struct)
-	{
-		for (UField* field = Struct->Children; field != nullptr; field = field->Next)
-		{
-			UProperty* fieldprop = UObject::TryCast<UProperty>(field);
-			if (fieldprop)
-			{
-				auto it = properties.find(fieldprop->Name);
-
-				if (it != properties.end())
-				{
-					fieldprop->SetValueFromString((uint8_t*)data + fieldprop->DataOffset.DataOffset, it->second);
-				}
-			}
-		}
-	}
+    if (valueString.empty() || !Struct) return;
+    const auto properties = ParsePropertiesFromString(valueString);
+    for (UProperty* field : Struct->Properties)
+        for (int i = 0; i < field->ArrayDimension; ++i)
+        {
+            const std::string base = field->Name.ToString();
+            auto value = properties.find(NameString(base + "[" + std::to_string(i) + "]"));
+            if (value == properties.end()) value = properties.find(NameString(base + "(" + std::to_string(i) + ")"));
+            if (value == properties.end() && i == 0) value = properties.find(field->Name);
+            if (value == properties.end()) continue; // Preserve omitted serialized defaults.
+            const size_t offset = PropertyText::FieldOffset(field->DataOffset.DataOffset, field->ElementPitch(), size_t(i), Struct->StructSize, field->ElementSize());
+            field->SetValueFromString(static_cast<uint8_t*>(data) + offset, value->second);
+        }
 }

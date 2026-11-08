@@ -329,6 +329,12 @@ void UClass::LoadProperties(PropertyDataBlock* propertyBlock)
 					}
 					else if (auto structprop = UObject::TryCast<UStructProperty>(prop))
 					{
+                        if (engine->LaunchInfo.IsHarryPotter3())
+                        {
+                            structprop->SetValueFromString(ptr, value);
+                            ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
+                            continue;
+                        }
 						// Yes, this is total spaghetti code at this point. No, I don't care anymore. ;)
 						auto values = ParseStructValue(value);
 						for (UProperty* member : structprop->Struct->Properties)
@@ -407,6 +413,24 @@ void UClass::LoadProperties(PropertyDataBlock* propertyBlock)
 	}
 }
 
+// Config text must be round-trippable; dynamic arrays/maps still need separate support.
+static bool CanSavePoaStructConfig(UStructProperty* property, int depth = 0)
+{
+    if (!property->Struct || depth >= 64) return false;
+    for (auto member : property->Struct->Properties)
+    {
+        if (auto nested = UObject::TryCast<UStructProperty>(member))
+        {
+            if (!CanSavePoaStructConfig(nested, depth + 1)) return false;
+        }
+        else if (!UObject::IsType<UByteProperty>(member) && !UObject::IsType<UIntProperty>(member) &&
+                 !UObject::IsType<UFloatProperty>(member) && !UObject::IsType<UNameProperty>(member) &&
+                 !UObject::IsType<UStrProperty>(member) && !UObject::IsType<UStringProperty>(member) &&
+                 !UObject::IsType<UBoolProperty>(member)) return false;
+    }
+    return true;
+}
+
 void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
 {
 	if (!(ClsFlags & ClassFlags::Config))
@@ -436,6 +460,12 @@ void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
 				else if (UObject::IsType<UStrProperty>(prop)) value = *static_cast<std::string*>(ptr);
 				else if (UObject::IsType<UStringProperty>(prop)) value = *static_cast<std::string*>(ptr);
 				else if (auto boolprop = UObject::TryCast<UBoolProperty>(prop)) value = boolprop->GetBool(ptr) ? "True" : "False";
+                else if (engine->LaunchInfo.IsHarryPotter3() && UObject::IsType<UStructProperty>(prop))
+                {
+                    auto structure = UObject::TryCast<UStructProperty>(prop);
+                    if (CanSavePoaStructConfig(structure)) value = structure->PrintValue(ptr);
+                    else unsupported = true;
+                }
 				else unsupported = true;
 
 				if (!unsupported)

@@ -1,0 +1,298 @@
+--- a/SurrealEngine/Packages/Core/Properties/UProperty.cpp
++++ b/SurrealEngine/Packages/Core/Properties/UProperty.cpp
+@@ -1,6 +1,7 @@
+ 
+ #include "Precomp.h"
+ #include "UProperty.h"
++#include "PropertyText.h"
+ #include "Packages/Core/UFunction.h"
+ #include "Package/PackageManager.h"
+ #include "Utils/AlignedAlloc.h"
+@@ -256,31 +257,8 @@
+ // Parses all properties given in the string
+ std::map<NameString, std::string> UProperty::ParsePropertiesFromString(std::string propertiesString)
+ {
+-	std::map<NameString, std::string> properties;
+-
+-	if (propertiesString.empty())
+-		return {};
+-
+-	// Also check for the string being "null", "null struct" or "None"
+-	if (propertiesString == "null" || propertiesString == "null struct" || propertiesString == "None")
+-		return {};
+-
+-	if (propertiesString[0] != '(')
+-		Exception::Throw("( not found in the property string: " + propertiesString);
+-
+-	if (propertiesString[propertiesString.size() - 1] != ')')
+-		Exception::Throw(") not found in the property string: " + propertiesString);
+-
+-	std::string propsString = propertiesString.substr(1, propertiesString.find(')') - 1);
+-
+-	std::stringstream propsStream(propsString);
+-	std::string prop;
+-
+-	while (getline(propsStream, prop, ','))
+-	{
+-		auto currProp = ParseSingleProperty(prop);
+-		properties[currProp.first] = currProp.second;
+-	}
+-
+-	return properties;
+-}
++    std::map<NameString, std::string> properties;
++    for (const auto& value : PropertyText::Parse(propertiesString))
++        properties[NameString(value.first)] = value.second;
++    return properties;
++}
+--- a/SurrealEngine/Packages/Core/Properties/UStrProperty.cpp
++++ b/SurrealEngine/Packages/Core/Properties/UStrProperty.cpp
+@@ -1,6 +1,7 @@
+ 
+ #include "Precomp.h"
+ #include "UStrProperty.h"
++#include "PropertyText.h"
+ 
+ UStrProperty::UStrProperty(NameString name, UClass* base, ObjectFlags flags) : UPropertyT(std::move(name), base, flags)
+ {
+@@ -45,17 +46,12 @@
+ 
+ void UStrProperty::SetValueFromString(void* data, const std::string& valueString)
+ {
+-	// PrintValue quotes the text (as UE1's ExportText does), so a quoted value is read back without its quotes, as UE1's
+-	// ImportText does. Travel goes through both: HP2's CurrentGameState came back as "GSTATE010" with the quotes.
+-	if (valueString.size() >= 2 && valueString.front() == '"' && valueString.back() == '"')
+-		*(std::string*)data = valueString.substr(1, valueString.size() - 2);
+-	else
+-		*(std::string*)data = valueString;
++    *static_cast<std::string*>(data) = PropertyText::Unquote(valueString);
+ }
+ 
+ std::string UStrProperty::PrintValue(const void* data)
+ {
+-	return '"' + *(std::string*)data + '"';
++	return PropertyText::Quote(*static_cast<const std::string*>(data));
+ }
+ 
+ bool UStrProperty::IsDefaultValue(void* val)
+--- a/SurrealEngine/Packages/Core/Properties/UStructProperty.cpp
++++ b/SurrealEngine/Packages/Core/Properties/UStructProperty.cpp
+@@ -1,6 +1,7 @@
+ 
+ #include "Precomp.h"
+ #include "UStructProperty.h"
++#include "PropertyText.h"
+ #include "Packages/Core/UStruct.h"
+ #include "Engine.h"
+ 
+@@ -252,51 +253,34 @@
+ 
+ std::string UStructProperty::PrintValue(const void* data)
+ {
+-	if (Struct)
+-	{
+-		std::string print;
+-		uint8_t* d = (uint8_t*)data;
+-		for (UField* field = Struct->Children; field != nullptr; field = field->Next)
+-		{
+-			UProperty* fieldprop = UObject::TryCast<UProperty>(field);
+-			if (fieldprop)
+-			{
+-				if (!print.empty())
+-					print += ", ";
+-				print += fieldprop->Name.ToString();
+-				print += "=";
+-				print += fieldprop->PrintValue(d + fieldprop->DataOffset.DataOffset);
+-			}
+-		}
+-		return "(" + print + ")";
+-	}
+-	else
+-	{
+-		return "null struct";
+-	}
++    if (!Struct) return "null struct";
++    std::string result = "(";
++    for (UProperty* field : Struct->Properties)
++        for (int i = 0; i < field->ArrayDimension; ++i)
++        {
++            const size_t offset = PropertyText::FieldOffset(field->DataOffset.DataOffset, field->ElementPitch(), size_t(i), Struct->StructSize, field->ElementSize());
++            if (result.size() > 1) result += ',';
++            result += field->Name.ToString();
++            if (field->ArrayDimension > 1) result += "[" + std::to_string(i) + "]";
++            result += '=';
++            result += field->PrintValue(static_cast<const uint8_t*>(data) + offset);
++        }
++    return result + ')';
+ }
+ 
+ void UStructProperty::SetValueFromString(void* data, const std::string& valueString)
+ {
+-	if (valueString.empty())
+-		return;
+-
+-	auto properties = ParsePropertiesFromString(valueString);
+-
+-	if (Struct)
+-	{
+-		for (UField* field = Struct->Children; field != nullptr; field = field->Next)
+-		{
+-			UProperty* fieldprop = UObject::TryCast<UProperty>(field);
+-			if (fieldprop)
+-			{
+-				auto it = properties.find(fieldprop->Name);
+-
+-				if (it != properties.end())
+-				{
+-					fieldprop->SetValueFromString((uint8_t*)data + fieldprop->DataOffset.DataOffset, it->second);
+-				}
+-			}
+-		}
+-	}
+-}
++    if (valueString.empty() || !Struct) return;
++    const auto properties = ParsePropertiesFromString(valueString);
++    for (UProperty* field : Struct->Properties)
++        for (int i = 0; i < field->ArrayDimension; ++i)
++        {
++            const std::string base = field->Name.ToString();
++            auto value = properties.find(NameString(base + "[" + std::to_string(i) + "]"));
++            if (value == properties.end()) value = properties.find(NameString(base + "(" + std::to_string(i) + ")"));
++            if (value == properties.end() && i == 0) value = properties.find(field->Name);
++            if (value == properties.end()) continue; // Preserve omitted serialized defaults.
++            const size_t offset = PropertyText::FieldOffset(field->DataOffset.DataOffset, field->ElementPitch(), size_t(i), Struct->StructSize, field->ElementSize());
++            field->SetValueFromString(static_cast<uint8_t*>(data) + offset, value->second);
++        }
++}
+--- a/SurrealEngine/Packages/Core/UClass.cpp
++++ b/SurrealEngine/Packages/Core/UClass.cpp
+@@ -329,6 +329,12 @@
+ 					}
+ 					else if (auto structprop = UObject::TryCast<UStructProperty>(prop))
+ 					{
++                        if (engine->LaunchInfo.IsHarryPotter3())
++                        {
++                            structprop->SetValueFromString(ptr, value);
++                            ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
++                            continue;
++                        }
+ 						// Yes, this is total spaghetti code at this point. No, I don't care anymore. ;)
+ 						auto values = ParseStructValue(value);
+ 						for (UProperty* member : structprop->Struct->Properties)
+@@ -407,6 +413,24 @@
+ 	}
+ }
+ 
++// Config text must be round-trippable; dynamic arrays/maps still need separate support.
++static bool CanSavePoaStructConfig(UStructProperty* property, int depth = 0)
++{
++    if (!property->Struct || depth >= 64) return false;
++    for (auto member : property->Struct->Properties)
++    {
++        if (auto nested = UObject::TryCast<UStructProperty>(member))
++        {
++            if (!CanSavePoaStructConfig(nested, depth + 1)) return false;
++        }
++        else if (!UObject::IsType<UByteProperty>(member) && !UObject::IsType<UIntProperty>(member) &&
++                 !UObject::IsType<UFloatProperty>(member) && !UObject::IsType<UNameProperty>(member) &&
++                 !UObject::IsType<UStrProperty>(member) && !UObject::IsType<UStringProperty>(member) &&
++                 !UObject::IsType<UBoolProperty>(member)) return false;
++    }
++    return true;
++}
++
+ void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
+ {
+ 	if (!(ClsFlags & ClassFlags::Config))
+@@ -436,6 +460,12 @@
+ 				else if (UObject::IsType<UStrProperty>(prop)) value = *static_cast<std::string*>(ptr);
+ 				else if (UObject::IsType<UStringProperty>(prop)) value = *static_cast<std::string*>(ptr);
+ 				else if (auto boolprop = UObject::TryCast<UBoolProperty>(prop)) value = boolprop->GetBool(ptr) ? "True" : "False";
++                else if (engine->LaunchInfo.IsHarryPotter3() && UObject::IsType<UStructProperty>(prop))
++                {
++                    auto structure = UObject::TryCast<UStructProperty>(prop);
++                    if (CanSavePoaStructConfig(structure)) value = structure->PrintValue(ptr);
++                    else unsupported = true;
++                }
+ 				else unsupported = true;
+ 
+ 				if (!unsupported)
+--- /dev/null
++++ b/SurrealEngine/Packages/Core/Properties/PropertyText.h
+@@ -0,0 +1,76 @@
++#pragma once
++#include <vector>
++#include <utility>
++#include <string>
++#include <stdexcept>
++
++namespace PropertyText
++{
++inline std::string Trim(const std::string& s)
++{
++    const auto first = s.find_first_not_of(" \t\r\n");
++    return first == std::string::npos ? std::string() : s.substr(first, s.find_last_not_of(" \t\r\n") - first + 1);
++}
++inline std::vector<std::pair<std::string, std::string>> Parse(const std::string& text)
++{
++    const std::string s = Trim(text);
++    if (s.empty() || s == "None" || s == "null" || s == "null struct") return {};
++    if (s.size() < 2 || s.front() != '(' || s.back() != ')') throw std::runtime_error("Invalid struct property text");
++    std::vector<std::pair<std::string, std::string>> result;
++    size_t start = 1;
++    int depth = 0;
++    char quote = 0;
++    bool escaped = false;
++    auto add = [&](size_t end)
++    {
++        const std::string item = Trim(s.substr(start, end - start));
++        if (item.empty()) throw std::runtime_error("Empty struct property assignment");
++        const size_t equal = item.find('=');
++        if (equal == std::string::npos) throw std::runtime_error("Missing struct property assignment");
++        const std::string name = Trim(item.substr(0, equal));
++        if (name.empty()) throw std::runtime_error("Empty struct property name");
++        result.emplace_back(name, Trim(item.substr(equal + 1)));
++    };
++    for (size_t i = 1; i + 1 < s.size(); ++i)
++    {
++        const char c = s[i];
++        if (quote)
++        {
++            if (escaped) escaped = false;
++            else if (c == '\\') escaped = true;
++            else if (c == quote) quote = 0;
++        }
++        else if (c == '"' || c == '\'') quote = c;
++        else if (c == '(') { if (++depth > 64) throw std::runtime_error("Struct property nesting too deep"); }
++        else if (c == ')') { if (--depth < 0) throw std::runtime_error("Unmatched struct property parenthesis"); }
++        else if (c == ',' && depth == 0) { add(i); start = i + 1; }
++    }
++    if (quote || depth != 0) throw std::runtime_error("Unterminated struct property value");
++    if (!Trim(s.substr(start, s.size() - 1 - start)).empty()) add(s.size() - 1);
++    return result;
++}
++inline size_t FieldOffset(size_t base, size_t pitch, size_t index, size_t blockSize, size_t fieldSize)
++{
++    if (fieldSize > blockSize || base > blockSize - fieldSize ||
++        (index && (!pitch || index > (blockSize - fieldSize - base) / pitch)))
++        throw std::runtime_error("Struct text field is outside its data block");
++    return base + index * pitch;
++}
++inline std::string Quote(const std::string& value)
++{
++    std::string result = "\"";
++    for (char c : value) { if (c == '\\' || c == '"') result += '\\'; result += c; }
++    return result + '"';
++}
++inline std::string Unquote(const std::string& value)
++{
++    if (value.size() < 2 || value.front() != '"' || value.back() != '"') return value;
++    std::string result;
++    for (size_t i = 1; i + 1 < value.size(); ++i)
++    {
++        if (value[i] == '\\' && i + 2 < value.size() && (value[i+1] == '\\' || value[i+1] == '"')) ++i;
++        result += value[i];
++    }
++    return result;
++}
++}

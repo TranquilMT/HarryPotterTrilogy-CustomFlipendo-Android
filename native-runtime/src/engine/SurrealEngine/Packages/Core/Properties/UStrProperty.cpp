@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "UStrProperty.h"
+#include "PropertyText.h"
 
 UStrProperty::UStrProperty(NameString name, UClass* base, ObjectFlags flags) : UPropertyT(std::move(name), base, flags)
 {
@@ -45,17 +46,12 @@ void UStrProperty::SaveValue(void* data, PackageStreamWriter* stream)
 
 void UStrProperty::SetValueFromString(void* data, const std::string& valueString)
 {
-	// PrintValue quotes the text (as UE1's ExportText does), so a quoted value is read back without its quotes, as UE1's
-	// ImportText does. Travel goes through both: HP2's CurrentGameState came back as "GSTATE010" with the quotes.
-	if (valueString.size() >= 2 && valueString.front() == '"' && valueString.back() == '"')
-		*(std::string*)data = valueString.substr(1, valueString.size() - 2);
-	else
-		*(std::string*)data = valueString;
+    *static_cast<std::string*>(data) = PropertyText::Unquote(valueString);
 }
 
 std::string UStrProperty::PrintValue(const void* data)
 {
-	return '"' + *(std::string*)data + '"';
+	return PropertyText::Quote(*static_cast<const std::string*>(data));
 }
 
 bool UStrProperty::IsDefaultValue(void* val)

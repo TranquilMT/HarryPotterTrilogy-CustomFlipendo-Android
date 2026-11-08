@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "UProperty.h"
+#include "PropertyText.h"
 #include "Packages/Core/UFunction.h"
 #include "Package/PackageManager.h"
 #include "Utils/AlignedAlloc.h"
@@ -256,31 +257,8 @@ std::pair<NameString, std::string> UProperty::ParseSingleProperty(std::string& p
 // Parses all properties given in the string
 std::map<NameString, std::string> UProperty::ParsePropertiesFromString(std::string propertiesString)
 {
-	std::map<NameString, std::string> properties;
-
-	if (propertiesString.empty())
-		return {};
-
-	// Also check for the string being "null", "null struct" or "None"
-	if (propertiesString == "null" || propertiesString == "null struct" || propertiesString == "None")
-		return {};
-
-	if (propertiesString[0] != '(')
-		Exception::Throw("( not found in the property string: " + propertiesString);
-
-	if (propertiesString[propertiesString.size() - 1] != ')')
-		Exception::Throw(") not found in the property string: " + propertiesString);
-
-	std::string propsString = propertiesString.substr(1, propertiesString.find(')') - 1);
-
-	std::stringstream propsStream(propsString);
-	std::string prop;
-
-	while (getline(propsStream, prop, ','))
-	{
-		auto currProp = ParseSingleProperty(prop);
-		properties[currProp.first] = currProp.second;
-	}
-
-	return properties;
+    std::map<NameString, std::string> properties;
+    for (const auto& value : PropertyText::Parse(propertiesString))
+        properties[NameString(value.first)] = value.second;
+    return properties;
 }
