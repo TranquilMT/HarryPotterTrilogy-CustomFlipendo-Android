@@ -1,23 +1,25 @@
 """Production actor handlers with object/event/latent adapters; EU ABI audit."""
-import pathlib,tempfile,subprocess,unittest,os,re
+import pathlib,tempfile,subprocess,unittest,os,re,json
 from inspect_packages import inspect
 from object_payloads import function_header,native_stub
+from test_core_seven_runtime import definition
 ROOT=pathlib.Path(__file__).resolve().parents[2];ENGINE=ROOT/'src/engine/SurrealEngine';SOURCE=ROOT/'src/hp3/PoaActorAnimation.cpp'
 class ActorAnimationHandlers(unittest.TestCase):
  @unittest.skipUnless(os.environ.get('POA_EU_GAME'),'Set POA_EU_GAME for original declarations')
  def test_native_arity_and_indices_match_original_eu(self):
   source=SOURCE.read_text();registrations={name:(int(arity),int(index))for arity,name,index in re.findall(r'RegisterVMNativeFunc_(\d+)\("Actor","([^"]+)",&\w+,(\d+)\)',source)}
-  self.assertEqual(len(registrations),14)
+  self.assertEqual(len(registrations),22)
   p=pathlib.Path(os.environ['POA_EU_GAME'])/'System/Engine.u';m=inspect(p);raw=p.read_bytes();seen=set()
   # Parameter count comes from native bytecode parameter references; bool return
   # uses an additional output slot in this engine's native adapter convention.
-  returns={'IsAnimating','HasAnim','GetAnimSequence','GetAnimNumFrames','AnimIsInGroup'}
+  returns={'IsAnimating','HasAnim','GetAnimSequence','GetAnimNumFrames','AnimIsInGroup','GetAnimTime','GetAnimFrame','GetAnimRate','GetRootRotationDelta'}
   for e in m['exports']:
    if e['class']!='Function' or e['name'] not in registrations or e['outer']<=0 or m['exports'][e['outer']-1]['name']!='Actor':continue
    r,h=function_header(raw[e['offset']:e['offset']+e['size']],m['names']);stub=native_stub(r,h);self.assertEqual(registrations[e['name']],(len(stub['parameters'])+(e['name'] in returns),stub['nativeIndex']));seen.add(e['name'])
   self.assertEqual(seen,set(registrations))
  def test_playback_queries_linking_events_and_latent_completion(self):
   body='\n'.join(line for line in SOURCE.read_text().splitlines()if not line.startswith('#include'))
+  for signature in ('void Load(UActor* actor,ObjectStream* stream)','void Save(UActor* actor,PackageStreamWriter* stream)'):body=body.replace(definition(body,signature),'')
   code=r'''#include "Package/PoaAnimationChannels.h"
 #include <memory>
 #include <optional>
@@ -25,11 +27,11 @@ class ActorAnimationHandlers(unittest.TestCase):
 #include <map>
 #include <functional>
 using NameString=struct Name{std::string Text;Name(const char*s):Text(s){}Name(const std::string&s):Text(s){}std::string ToString()const{return Text;}};
-struct Package;struct UObject{virtual~UObject()=default;Package*package=nullptr;void LoadNow(){}template<class T>static T*Cast(UObject*p){auto v=dynamic_cast<T*>(p);if(p&&!v)throw std::runtime_error("cast");return v;}template<class T>static T*TryCast(UObject*p){return dynamic_cast<T*>(p);}};
+struct Rotator{int Pitch=0,Yaw=0,Roll=0;};struct Package;struct UObject{virtual~UObject()=default;Package*package=nullptr;void LoadNow(){}template<class T>static T*Cast(UObject*p){auto v=dynamic_cast<T*>(p);if(p&&!v)throw std::runtime_error("cast");return v;}template<class T>static T*TryCast(UObject*p){return dynamic_cast<T*>(p);}};
 struct Package{std::map<int,UObject*>Objects;UObject*GetUObject(int i){return Objects[i];}};struct UMesh:UObject{};
 struct UPoaMeshAnimation:UObject{PoaAssets::AnimationData Animation;};struct UPoaSkeletalMesh:UMesh{PoaAssets::SkeletalMeshData Geometry;UPoaMeshAnimation*AnimationResource=nullptr;};
 enum class LatentRunState{Continue,FinishAnim};struct StateFrameData{LatentRunState State=LatentRunState::Continue;void SetLatentState(LatentRunState s){State=s;}LatentRunState GetLatentState(){return State;}};
-struct UActor:UObject{std::shared_ptr<PoaChannels::State>PoaAnimation;UObject*PoaAnimationObject=nullptr;UMesh*MeshObject=nullptr;UMesh*&Mesh(){return MeshObject;}StateFrameData*StateFrame=nullptr;bool Deleted=false;bool bDeleteMe(){return Deleted;}};
+struct UActor:UObject{std::shared_ptr<PoaChannels::State>PoaAnimation;UObject*PoaAnimationObject=nullptr;UMesh*MeshObject=nullptr;UMesh*&Mesh(){return MeshObject;}StateFrameData*StateFrame=nullptr;int Default=0;bool HasProperty(const char*){return true;}int GetInt(const char*){return Default;}bool Deleted=false;bool bDeleteMe(){return Deleted;}};
 struct BitfieldBool{bool&Value;BitfieldBool&operator=(bool b){Value=b;return*this;}};
 struct Exception{[[noreturn]]static void Throw(const std::string&s){throw std::runtime_error(s);}};
 struct ExpressionValue{int Number=0;UObject*Object=nullptr;static ExpressionValue IntValue(int n){return {n,nullptr};}static ExpressionValue ObjectValue(UObject*p){return {0,p};}};
@@ -52,10 +54,24 @@ int main(){using namespace PoaActorAnimation;UPoaMeshAnimation resource,other;Pa
  LoopAnim(&actor,"Walk",{}, {},{});FinishAnim(&actor,{});assert(latent.State==LatentRunState::FinishAnim);LinkSkelAnim(&actor,&other,{});assert(latent.State==LatentRunState::Continue);assert(actor.PoaAnimationObject==&other&&actor.MeshObject==&mesh&&mesh.AnimationResource==&resource&&second.PoaAnimationObject==nullptr);assert(actor.PoaAnimation->At(1).Name.empty());
  TweenAnim(&actor,"Walk",.5,{});IsAnimating(&actor,{},BitfieldBool{active});assert(active);Tick(&actor,.5);IsAnimating(&actor,{},BitfieldBool{active});assert(!active);
  PlayAnim(&actor,"Walk",{}, {},{});StopAnimating(&actor,true);assert(!actor.PoaAnimation->At(0).Playing);
- bool rejected=false;try{AnimBlendParams(&actor,0,1,0,0,{},true);}catch(...){rejected=true;}assert(rejected);rejected=false;try{AnimBlendParams(&actor,0,1,0,1,{},false);}catch(...){rejected=true;}assert(rejected);
- RegisterNatives();
+ AnimBlendParams(&actor,1,1,0,0,NameString("root"),true);assert(actor.PoaAnimation->At(1).GlobalPose);AnimBlendParams(&actor,1,1,.25,3,NameString("root"),false);assert(actor.PoaAnimation->At(1).BlendIn==1&&actor.PoaAnimation->At(1).BlendOut==3&&actor.PoaAnimation->At(1).AlphaTime==0);bool rejected=false;try{SetAnimRate(&actor,NAN,{});}catch(...){rejected=true;}assert(rejected);
+ SetAnimTime(&actor,.5,{});GetAnimTime(&actor,{},frame);assert(frame==.5);GetAnimFrame(&actor,{},frame);assert(frame==2);
+ SetAnimFrame(&actor,1,{},0);GetAnimTime(&actor,{},frame);assert(std::abs(frame-1.0f/3)<1e-6);GetAnimFrame(&actor,{},frame);assert(std::abs(frame-4.0f/3)<1e-6);
+ SetAnimFrame(&actor,.25,{},1);GetAnimTime(&actor,{},frame);assert(frame==.25);SetAnimRate(&actor,2,{});GetAnimRate(&actor,{},rate);assert(rate==2);
+ FreezeAnimAt(&actor,.6,{});GetAnimTime(&actor,{},frame);GetAnimRate(&actor,{},rate);assert(std::abs(frame-.6)<1e-6&&rate==0&&!actor.PoaAnimation->At(0).Playing);
+ second.Default=2;PlayAnim(&second,"Walk",{}, {},{});GetAnimSequence(&second,{},name);assert(name.ToString()=="Walk"&&second.PoaAnimation->At(0).Name.empty()&&second.PoaAnimation->At(2).Name=="Walk");
+ Rotator delta{1,2,3};GetRootRotationDelta(delta);assert(delta.Pitch==0&&delta.Yaw==0&&delta.Roll==0);RegisterNatives();
 }
 '''
+  golden=json.loads((ROOT/'tools/poa/reference-profile/eu-animation-helpers.json').read_text())['cases']
+  rows=[]
+  for case in golden:
+   rows.append('{'+','.join([str(case['frames']),str(case['unit'])]+[str(case[k] if case[k] is not None else 0) for k in ('input','phase','frame','setTime','rate','freeze','afterRate','afterTween')]+['true' if case['phase'] is not None else 'false'])+'}')
+  table='struct Original{int Frames,Unit;float Input,Phase,Frame,Time,Rate,Freeze,After,Tween;bool Finite;};Original originals[]={'+','.join(rows)+'};'
+  checks=r''' LinkSkelAnim(&actor,&resource,{});size_t corrections=0;
+ for(const auto& ref:originals){resource.Animation.Sequences[0].Frames=ref.Frames;resource.Animation.Sequences[0].Rate=30;PlayAnim(&actor,"Walk",1,0,0);SetAnimFrame(&actor,ref.Input,0,ref.Unit);float phase=0,outFrame=0;GetAnimTime(&actor,0,phase);GetAnimFrame(&actor,0,outFrame);if(ref.Finite){assert(std::abs(phase-ref.Phase)<1e-5&&std::abs(outFrame-ref.Frame)<1e-5);}else{assert(std::isfinite(phase)&&std::isfinite(outFrame));++corrections;}SetAnimTime(&actor,ref.Input,0);GetAnimTime(&actor,0,phase);assert(phase==ref.Time);SetAnimRate(&actor,1.25,0);GetAnimRate(&actor,0,rate);assert(std::abs(rate-ref.Rate)<1e-5);FreezeAnimAt(&actor,ref.Freeze,0);GetAnimTime(&actor,0,phase);GetAnimRate(&actor,0,rate);assert(phase==ref.Freeze&&rate==ref.After&&actor.PoaAnimation->At(0).Tween==ref.Tween);}assert(corrections==7);
+'''
+  code=code.replace(' Rotator delta{1,2,3};GetRootRotationDelta(delta);assert(delta.Pitch==0&&delta.Yaw==0&&delta.Roll==0);RegisterNatives();',table+checks+' Rotator delta{1,2,3};GetRootRotationDelta(delta);assert(delta.Pitch==0&&delta.Yaw==0&&delta.Roll==0);RegisterNatives();')
   code=code.replace('AnimationMove_unused:;','')
   # Native wrappers receive lvalue BitfieldBool outputs.
   code=code.replace('bool active=true;', 'bool active=true;BitfieldBool output{active};').replace('BitfieldBool{active}', 'output')

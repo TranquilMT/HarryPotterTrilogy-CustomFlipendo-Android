@@ -89,7 +89,7 @@ void UObject::Load(ObjectStream* stream)
 				int index = func->Code->FindStatementIndex(offset);
 				if (index != -1)
 				{
-					StateFrame = std::make_shared<Frame>(this, func, index, true, engine->LaunchInfo.IsHarryPotter2() ? state : func);
+					StateFrame = std::make_shared<Frame>(this, func, index, true, (engine->LaunchInfo.IsHarryPotter2() || engine->LaunchInfo.IsHarryPotter3()) ? state : func);
 					if (latentAction >= 0 && (size_t)latentAction < NativeFunctions::LatentActionByIndex.size())
 					{
 						StateFrame->SetLatentState(NativeFunctions::LatentActionByIndex[latentAction]);

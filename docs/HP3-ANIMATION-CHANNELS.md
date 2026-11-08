@@ -1,3 +1,5 @@
+> Current follow-up: HP3-ANIMATION-API-PERSISTENCE.md supersedes the older fourteen-handler count, zero-default channel assumption, unsupported-global/coefficient handling, interrupted-local-tween limitation and unsaved-native-state notes below. The source now has 22 scoped handlers, DefaultAnimChannel selection, global-root conversion, captured tween snapshots and a versioned actor-state trailer. Whole gameplay/save/device acceptance remains open.
+
 # PoA actor animation channels
 
 ## Production integration

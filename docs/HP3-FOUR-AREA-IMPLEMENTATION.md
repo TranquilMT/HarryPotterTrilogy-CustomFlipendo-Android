@@ -1,3 +1,7 @@
+## Extended animation follow-up
+
+The new follow-up adds seven time/frame/rate APIs and the retail zero root-rotation-delta result, bringing the audited scoped Actor set to 22. Optional channels use DefaultAnimChannel. Original Engine helpers passed 70 isolated reference cases. Global-root blending, interrupted local tween snapshots and a versioned actor channel trailer now have host coverage; saved PoA frames keep state identity separate from code ownership. See HP3-ANIMATION-API-PERSISTENCE.md for exact behavior and limits. The full suite passes 134 compatibility and 29 packaging tests. Actual map saves, VM continuations, phone playback and broader UE2 work remain unverified/open.
+
 ## Actor channel follow-up
 
 The newer channel checkpoint supersedes the bind-pose-only live route described below. PoA actors now own separate native channel state, and the production tick/render bridge uses it. Fourteen native declarations are matched to EU Engine.u; local-space layering, masked blends, tweening, loop/one-shot timing, per-actor linking, script notify routing and latent completion have host coverage. See HP3-ANIMATION-CHANNELS.md for explicit behavioral limits and remaining APIs. The original mesh/animation pairing test covers 146 local default-animation pairs (104,781 points), checking finite channel-driven skinning. The full suite passes 132 compatibility tests and 29 packaging tests. The previous skeletal build passed ARM64 Actions 42522582035; this new source needs its own build. Device gameplay remains unverified.

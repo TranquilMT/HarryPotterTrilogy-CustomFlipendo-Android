@@ -1,0 +1,29 @@
+{
+  "scope": "Scoped actor API, pose and serialization follow-up; no phone or whole-game acceptance",
+  "handlers": 22,
+  "compatibilityTests": 134,
+  "packagingTests": 29,
+  "nativeSyntax": "passed",
+  "originalHelpers": {
+    "run": 42527223513,
+    "cases": 70,
+    "engineSHA256": "73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a",
+    "artifactId": 13635613306,
+    "artifactZIP_SHA256": "57b2eb23d634c64d7754d4c18f0e3d776a9155c9549180511a8a8b394239619d",
+    "singleFrameNonFiniteCorrections": 7,
+    "scope": "Isolated original helpers with synthetic mesh-instance data and frame-count callbacks; not Actor VM/gameplay"
+  },
+  "savedStateFormat": {
+    "magic": "0x43335048",
+    "tag": "0x534d4941",
+    "version": 1,
+    "originalPCInterchange": false
+  },
+  "precedingChannelARM64": {
+    "run": 42524780799,
+    "conclusion": "success"
+  },
+  "currentARM64": "requires its own build",
+  "phoneAcceptance": "not run",
+  "publishedAPK": "unchanged v0.4.14"
+}

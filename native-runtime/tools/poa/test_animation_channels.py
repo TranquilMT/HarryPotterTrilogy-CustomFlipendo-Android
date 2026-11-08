@@ -16,9 +16,11 @@ int main(){
  Play(a,data,"Raise",1,.5,0,false);Tick(a,data,.25);assert(a.At(0).Phase==0&&std::abs(a.At(0).Tween-.25)<1e-6);Tick(a,data,.5);assert(std::abs(a.At(0).Phase-.25)<1e-6&&a.At(0).Tween==0);
  SkeletalMeshData mesh;mesh.Bones={{"root",0,{0,0,0,1},{0,0,0},0,{0,0,0},1,0},{"child",0,{0,0,0,1},{1,0,0},0,{0,0,0},0,0}};
  State layered;Play(layered,data,"Walk",0,0,0,false);layered.At(0).Phase=.5;Play(layered,data,"Raise",0,0,1,false);layered.At(1).Phase=.75;Blend(layered,1,.5,0,"child");auto pose=Pose(mesh,data,layered);assert(std::abs(pose[0].Position[0]-2)<1e-5);assert(std::abs(pose[1].Position[0]-3)<1e-5&&std::abs(pose[1].Position[1]-2.5)<1e-5);
+ layered.At(1).GlobalPose=true;auto global=Pose(mesh,data,layered);assert(std::abs(global[1].Position[0]-3.5)<1e-5&&std::abs(global[1].Position[1]-2.5)<1e-5);layered.At(1).GlobalPose=false;
  Blend(layered,1,0,1,"child");Tick(layered,data,.5);assert(std::abs(layered.At(1).Alpha-.25)<1e-6);Tick(layered,data,.5);assert(layered.At(1).Alpha==0);
  const auto generation=layered.At(1).Generation;Stop(layered,true);assert(layered.At(1).Generation>generation);assert(!layered.At(0).Playing&&layered.At(0).Name=="Walk"&&layered.At(1).Name.empty());
  bool bad=false;try{Play(a,data,"Missing",1,0,0,false);}catch(...){bad=true;}assert(bad);bad=false;try{a.At(16);}catch(...){bad=true;}assert(bad);bad=false;try{Tick(a,data,NAN);}catch(...){bad=true;}assert(bad);bad=false;try{Blend(a,0,2,0,"");}catch(...){bad=true;}assert(bad);
+ State interrupted;Play(interrupted,data,"Walk",0,1,0,false,&mesh);interrupted.At(0).Phase=.5;Tick(interrupted,data,.5);auto before=Pose(mesh,data,interrupted);Play(interrupted,data,"Raise",0,1,0,false,&mesh);auto after=Pose(mesh,data,interrupted);assert(std::abs(before[0].Position[0]-after[0].Position[0])<1e-6);Tick(interrupted,data,.5);auto midway=Pose(mesh,data,interrupted);assert(std::abs(midway[0].Position[0]-.5)<1e-5);
  // Frozen tween uses source pose without advancing it, and transitions from bind.
  State tween;Play(tween,data,"Walk",0,1,0,false);tween.At(0).Phase=.5;Tick(tween,data,.5);pose=Pose(mesh,data,tween);assert(std::abs(pose[0].Position[0]-1)<1e-5);
 }

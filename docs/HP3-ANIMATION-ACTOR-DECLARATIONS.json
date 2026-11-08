@@ -148,6 +148,29 @@
     {
       "package": "Engine.u",
       "owner": "Actor",
+      "name": "GetRootRotationDelta",
+      "exportIndex": 7497,
+      "arguments": [],
+      "returnProperty": {
+        "exportIndex": 7496,
+        "name": "ReturnValue",
+        "type": "StructProperty",
+        "dimension": 1,
+        "flags": 1408,
+        "category": "None",
+        "next": 0,
+        "typeSpecificBytes": "8c",
+        "parameter": true,
+        "out": true,
+        "return": true,
+        "optional": false
+      },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
       "name": "AnimBlendToAlpha",
       "exportIndex": 7516,
       "arguments": [
@@ -405,6 +428,290 @@
         "return": true,
         "optional": false
       },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "GetAnimTime",
+      "exportIndex": 7666,
+      "arguments": [
+        {
+          "exportIndex": 3801,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 7665,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": {
+        "exportIndex": 7665,
+        "name": "ReturnValue",
+        "type": "FloatProperty",
+        "dimension": 1,
+        "flags": 1408,
+        "category": "None",
+        "next": 0,
+        "typeSpecificBytes": "",
+        "parameter": true,
+        "out": true,
+        "return": true,
+        "optional": false
+      },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "GetAnimFrame",
+      "exportIndex": 7669,
+      "arguments": [
+        {
+          "exportIndex": 3802,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 7667,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": {
+        "exportIndex": 7667,
+        "name": "ReturnValue",
+        "type": "FloatProperty",
+        "dimension": 1,
+        "flags": 1408,
+        "category": "None",
+        "next": 0,
+        "typeSpecificBytes": "",
+        "parameter": true,
+        "out": true,
+        "return": true,
+        "optional": false
+      },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "GetAnimRate",
+      "exportIndex": 7671,
+      "arguments": [
+        {
+          "exportIndex": 3805,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 7670,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": {
+        "exportIndex": 7670,
+        "name": "ReturnValue",
+        "type": "FloatProperty",
+        "dimension": 1,
+        "flags": 1408,
+        "category": "None",
+        "next": 0,
+        "typeSpecificBytes": "",
+        "parameter": true,
+        "out": true,
+        "return": true,
+        "optional": false
+      },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "SetAnimRate",
+      "exportIndex": 7672,
+      "arguments": [
+        {
+          "exportIndex": 3808,
+          "name": "rate",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3806,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3806,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "SetAnimTime",
+      "exportIndex": 7673,
+      "arguments": [
+        {
+          "exportIndex": 3813,
+          "name": "Time",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3811,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3811,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "SetAnimFrame",
+      "exportIndex": 7674,
+      "arguments": [
+        {
+          "exportIndex": 3818,
+          "name": "frame",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3816,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3816,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3814,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3814,
+          "name": "UnitFlag",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "FreezeAnimAt",
+      "exportIndex": 7675,
+      "arguments": [
+        {
+          "exportIndex": 3821,
+          "name": "Time",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3820,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3820,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
       "locals": [],
       "nativeArgumentOrderVerified": true
     },
@@ -712,5 +1019,5 @@
     "AnimLast",
     "TweenRate"
   ],
-  "status": "These 14 declarations now have PoA-specific handlers; legacy absent properties are bypassed by native actor channel state. Runtime/original parity remains unverified."
+  "status": "22 PoA-specific handlers, optional channels use DefaultAnimChannel. Original helper reference execution, local host integration and scoped persistence are documented in HP3-ANIMATION-API-PERSISTENCE.md. Full runtime/gameplay parity remains open."
 }

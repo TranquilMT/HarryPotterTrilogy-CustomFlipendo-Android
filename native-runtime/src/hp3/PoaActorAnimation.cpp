@@ -1,6 +1,9 @@
 #include "Precomp.h"
 #include "PoaActorAnimation.h"
 #include "Package/PoaAnimationChannels.h"
+#include "Package/PoaAnimationStateIO.h"
+#include "Package/ObjectStream.h"
+#include "Package/PackageStream.h"
 #include "Packages/Engine/Actors/UActor.h"
 #include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
@@ -14,6 +17,10 @@ static PoaChannels::State& State(UActor* actor)
 {
     if(!actor->PoaAnimation)actor->PoaAnimation=std::make_shared<PoaChannels::State>();
     return *actor->PoaAnimation;
+}
+static int32_t ChannelIndex(UActor* actor,std::optional<int32_t> channel)
+{
+    return channel?*channel:(actor->HasProperty("DefaultAnimChannel")?actor->GetInt("DefaultAnimChannel"):0);
 }
 static UPoaSkeletalMesh* Mesh(UActor* actor)
 {
@@ -31,25 +38,25 @@ static UPoaMeshAnimation* RequireResource(UActor* actor)
 static void PlayAnim(UObject* self,const NameString& sequence,std::optional<float> rate,std::optional<float> tween,std::optional<int32_t> channel)
 {
     auto actor=UObject::Cast<UActor>(self);auto resource=RequireResource(actor);
-    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),rate.value_or(1),tween.value_or(0),channel.value_or(0),false);
+    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),rate.value_or(1),tween.value_or(0),ChannelIndex(actor,channel),false,Mesh(actor)?&Mesh(actor)->Geometry:nullptr);
 }
 static void LoopAnim(UObject* self,const NameString& sequence,std::optional<float> rate,std::optional<float> tween,std::optional<int32_t> channel)
 {
     auto actor=UObject::Cast<UActor>(self);auto resource=RequireResource(actor);
-    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),rate.value_or(1),tween.value_or(0),channel.value_or(0),true);
+    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),rate.value_or(1),tween.value_or(0),ChannelIndex(actor,channel),true,Mesh(actor)?&Mesh(actor)->Geometry:nullptr);
 }
 static void TweenAnim(UObject* self,const NameString& sequence,float time,std::optional<int32_t> channel)
 {
     auto actor=UObject::Cast<UActor>(self);auto resource=RequireResource(actor);
-    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),0,time,channel.value_or(0),false);
+    PoaChannels::Play(State(actor),resource->Animation,sequence.ToString(),0,time,ChannelIndex(actor,channel),false,Mesh(actor)?&Mesh(actor)->Geometry:nullptr);
 }
 static void IsAnimating(UObject* self,std::optional<int32_t> channel,BitfieldBool& result)
 {
-    auto actor=UObject::Cast<UActor>(self);const auto& c=State(actor).At(channel.value_or(0));result=c.Tween>0||(c.Playing&&c.Rate!=0);
+    auto actor=UObject::Cast<UActor>(self);const auto& c=State(actor).At(ChannelIndex(actor,channel));result=c.Tween>0||(c.Playing&&c.Rate!=0);
 }
 static void FinishAnim(UObject* self,std::optional<int32_t> channel)
 {
-    auto actor=UObject::Cast<UActor>(self);auto& state=State(actor);const int index=channel.value_or(0);auto& c=state.At(index);
+    auto actor=UObject::Cast<UActor>(self);auto& state=State(actor);const int index=ChannelIndex(actor,channel);auto& c=state.At(index);
     if((!c.Playing||c.Rate==0)&&c.Tween==0)
     {
         state.Waiting=-1;if(actor->StateFrame&&actor->StateFrame->GetLatentState()==LatentRunState::FinishAnim)actor->StateFrame->SetLatentState(LatentRunState::Continue);
@@ -71,15 +78,68 @@ static void HasAnim(UObject* self,const NameString& sequence,BitfieldBool& resul
 static void GetAnimParams(UObject* self,int32_t channel,NameString& name,float& frame,float& rate)
 {
     auto actor=UObject::Cast<UActor>(self);auto& c=State(actor).At(channel);name=NameString(c.Name.empty()?"None":c.Name);frame=float(c.Phase);rate=0;
-    if(!c.Name.empty()&&c.Playing&&c.Tween==0){auto resource=RequireResource(actor);const auto& seq=resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,c.Name));rate=c.Rate*seq.Rate/seq.Frames;}
+    if(!c.Name.empty()&&c.Playing){auto resource=RequireResource(actor);const auto& seq=resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,c.Name));rate=c.Rate*seq.Rate/seq.Frames;}
+}
+static void GetRootRotationDelta(Rotator& result)
+{
+    // EU USkeletalMeshInstance::GetRootRotationDelta constructs (0,0,0)
+    // unconditionally after its optional pose refresh (0x104e16c7).
+    // This does not implement translational root-motion extraction/physics.
+    result={0,0,0};
+}
+static float ChannelRate(UActor* actor,const PoaChannels::Channel& channel)
+{
+    if(channel.Name.empty()||!channel.Playing)return 0;
+    auto resource=RequireResource(actor);const auto& sequence=resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,channel.Name));
+    return channel.Rate*sequence.Rate/sequence.Frames;
+}
+static void GetAnimTime(UObject* self,std::optional<int32_t> channel,float& result)
+{
+    auto actor=UObject::Cast<UActor>(self);result=float(State(actor).At(ChannelIndex(actor,channel)).Phase);
+}
+static void GetAnimFrame(UObject* self,std::optional<int32_t> channel,float& result)
+{
+    auto actor=UObject::Cast<UActor>(self);const auto& c=State(actor).At(ChannelIndex(actor,channel));result=0;
+    if(!c.Name.empty()){auto resource=RequireResource(actor);result=float(c.Phase*resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,c.Name)).Frames);}
+}
+static void GetAnimRate(UObject* self,std::optional<int32_t> channel,float& result)
+{
+    auto actor=UObject::Cast<UActor>(self);result=ChannelRate(actor,State(actor).At(ChannelIndex(actor,channel)));
+}
+static void SetAnimRate(UObject* self,float rate,std::optional<int32_t> channel)
+{
+    if(!std::isfinite(rate)||rate<0)Exception::Throw("Unsupported PoA backwards/non-finite animation rate");
+    auto actor=UObject::Cast<UActor>(self);auto& c=State(actor).At(ChannelIndex(actor,channel));c.Rate=rate;c.Playing=!c.Name.empty()&&rate!=0;
+}
+static void SetAnimTime(UObject* self,float time,std::optional<int32_t> channel)
+{
+    if(!std::isfinite(time))Exception::Throw("Non-finite PoA animation time");
+    auto actor=UObject::Cast<UActor>(self);State(actor).At(ChannelIndex(actor,channel)).Phase=time;
+}
+static void SetAnimFrame(UObject* self,float frame,std::optional<int32_t> channel,std::optional<int32_t> unit)
+{
+    if(!std::isfinite(frame))Exception::Throw("Non-finite PoA animation frame");
+    auto actor=UObject::Cast<UActor>(self);auto& c=State(actor).At(ChannelIndex(actor,channel));double phase=frame;
+    if(unit.value_or(0)==0&&!c.Name.empty())
+    {
+        auto resource=RequireResource(actor);auto frames=resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,c.Name)).Frames;
+        // Retail divides by Frames-1, while GetAnimFrame multiplies by Frames.
+        // Keep that asymmetry; avoid its one-frame divide-by-zero defect.
+        if(frames>1)phase/=frames-1;
+    }
+    c.Phase=phase;
+}
+static void FreezeAnimAt(UObject* self,float time,std::optional<int32_t> channel)
+{
+    SetAnimTime(self,time,channel);auto actor=UObject::Cast<UActor>(self);auto& c=State(actor).At(ChannelIndex(actor,channel));c.Rate=0;c.Playing=false;c.Tween=0;c.TweenTotal=0;
 }
 static void GetAnimSequence(UObject* self,std::optional<int32_t> channel,NameString& result)
 {
-    const auto& c=State(UObject::Cast<UActor>(self)).At(channel.value_or(0));result=NameString(c.Name.empty()?"None":c.Name);
+    const auto actor=UObject::Cast<UActor>(self);auto& c=State(actor).At(ChannelIndex(actor,channel));result=NameString(c.Name.empty()?"None":c.Name);
 }
 static void GetAnimNumFrames(UObject* self,std::optional<int32_t> channel,float& result)
 {
-    auto actor=UObject::Cast<UActor>(self);const auto& c=State(actor).At(channel.value_or(0));result=0;
+    auto actor=UObject::Cast<UActor>(self);const auto& c=State(actor).At(ChannelIndex(actor,channel));result=0;
     if(!c.Name.empty()){auto resource=RequireResource(actor);result=float(resource->Animation.Sequences.at(PoaChannels::Sequence(resource->Animation,c.Name)).Frames);}
 }
 static void AnimIsInGroup(UObject* self,int32_t channel,const NameString& group,BitfieldBool& result)
@@ -99,15 +159,17 @@ static void LinkSkelAnim(UObject* self,UObject* animation,std::optional<UObject*
 }
 static void AnimBlendParams(UObject* self,int32_t stage,std::optional<float> alpha,std::optional<float> inTime,std::optional<float> outTime,std::optional<NameString> bone,std::optional<bool> global)
 {
-    if(global.value_or(false))Exception::Throw("PoA global-pose channel blending is not implemented");
-    if(outTime.value_or(0)!=0)Exception::Throw("PoA automatic channel fade-out is not implemented");
     auto actor=UObject::Cast<UActor>(self);const std::string mask=bone?bone->ToString():"None";
     if(!PoaChannels::SameName(mask,"None"))
     {
         auto mesh=Mesh(actor);bool found=false;if(mesh)for(const auto& b:mesh->Geometry.Bones)found|=PoaChannels::SameName(b.Name,mask);
         if(!found)Exception::Throw("PoA blend root bone not found: "+mask);
     }
-    PoaChannels::Blend(State(actor),stage,alpha.value_or(1),inTime.value_or(0),mask);
+    if(!std::isfinite(inTime.value_or(0))||!std::isfinite(outTime.value_or(0)))Exception::Throw("Non-finite PoA blend coefficient");
+    // Retail SetBlendParams writes alpha immediately, stores max(1, In/Out),
+    // and clears the BlendToAlpha timer. InTime is not that timer's duration.
+    auto& state=State(actor);PoaChannels::Blend(state,stage,alpha.value_or(1),0,mask);
+    state.At(stage).BlendIn=std::max(1.0f,inTime.value_or(0));state.At(stage).BlendOut=std::max(1.0f,outTime.value_or(0));state.At(stage).GlobalPose=global.value_or(false);
 }
 static void AnimBlendToAlpha(UObject* self,int32_t stage,float target,float seconds)
 {
@@ -150,6 +212,25 @@ void Tick(UActor* actor,float elapsed)
     }
 
 }
+void Load(UActor* actor,ObjectStream* stream)
+{
+    if(stream->Remaining()<4){actor->PoaAnimation.reset();actor->PoaAnimationObject=nullptr;return;}
+    const auto start=stream->Tell();
+    if(stream->ReadUInt32()!=PoaChannels::StateMagic){stream->Seek(start);actor->PoaAnimation.reset();actor->PoaAnimationObject=nullptr;return;}
+    if(stream->ReadUInt32()!=PoaChannels::StateTag)Exception::Throw("Corrupt PoA actor animation save tag");
+    if(stream->ReadUInt32()!=PoaChannels::StateVersion)Exception::Throw("Unsupported PoA actor animation save version");
+    auto resource=stream->ReadObject<UPoaMeshAnimation>();
+    auto replacement=std::make_shared<PoaChannels::State>(PoaChannels::ReadState(*stream));
+    if(stream->Remaining()!=0)Exception::Throw("Unexpected bytes after PoA actor animation save state");
+    actor->PoaAnimationObject=resource;actor->PoaAnimation=std::move(replacement);
+}
+void Save(UActor* actor,PackageStreamWriter* stream)
+{
+    if(!actor->PoaAnimation&&!actor->PoaAnimationObject)return;
+    const auto state=actor->PoaAnimation?*actor->PoaAnimation:PoaChannels::State();PoaChannels::Validate(state);
+    stream->WriteUInt32(PoaChannels::StateMagic);stream->WriteUInt32(PoaChannels::StateTag);stream->WriteUInt32(PoaChannels::StateVersion);
+    stream->WriteObject(actor->PoaAnimationObject);PoaChannels::WriteState(*stream,state);
+}
 void RegisterNatives()
 {
     RegisterVMNativeFunc_4("Actor","PlayAnim",&PlayAnim,259);
@@ -160,6 +241,14 @@ void RegisterNatives()
     RegisterVMNativeFunc_1("Actor","StopAnimating",&StopAnimating,0);
     RegisterVMNativeFunc_2("Actor","HasAnim",&HasAnim,263);
     RegisterVMNativeFunc_4("Actor","GetAnimParams",&GetAnimParams,0);
+    RegisterVMNativeFunc_1("Actor","GetRootRotationDelta",&GetRootRotationDelta,0);
+    RegisterVMNativeFunc_2("Actor","GetAnimTime",&GetAnimTime,602);
+    RegisterVMNativeFunc_2("Actor","GetAnimFrame",&GetAnimFrame,601);
+    RegisterVMNativeFunc_2("Actor","GetAnimRate",&GetAnimRate,600);
+    RegisterVMNativeFunc_2("Actor","SetAnimRate",&SetAnimRate,0);
+    RegisterVMNativeFunc_2("Actor","SetAnimTime",&SetAnimTime,0);
+    RegisterVMNativeFunc_3("Actor","SetAnimFrame",&SetAnimFrame,0);
+    RegisterVMNativeFunc_2("Actor","FreezeAnimAt",&FreezeAnimAt,0);
     RegisterVMNativeFunc_2("Actor","GetAnimSequence",&GetAnimSequence,603);
     RegisterVMNativeFunc_2("Actor","GetAnimNumFrames",&GetAnimNumFrames,604);
     RegisterVMNativeFunc_3("Actor","AnimIsInGroup",&AnimIsInGroup,0);

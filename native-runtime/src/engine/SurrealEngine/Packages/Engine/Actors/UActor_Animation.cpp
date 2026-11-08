@@ -14,6 +14,17 @@ GCAllocation* UActor::Mark(GCAllocation* marklist)
     return GC::MarkObject(UObject::Mark(marklist),PoaAnimationObject);
 }
 
+void UActor::Load(ObjectStream* stream)
+{
+    UObject::Load(stream);
+    if(engine->LaunchInfo.IsHarryPotter3())PoaActorAnimation::Load(this,stream);
+}
+void UActor::Save(PackageStreamWriter* stream)
+{
+    UObject::Save(stream);
+    if(engine->LaunchInfo.IsHarryPotter3())PoaActorAnimation::Save(this,stream);
+}
+
 bool UActor::HasAnim(const NameString& sequence)
 {
 	return Mesh() && Mesh()->GetSequence(sequence);

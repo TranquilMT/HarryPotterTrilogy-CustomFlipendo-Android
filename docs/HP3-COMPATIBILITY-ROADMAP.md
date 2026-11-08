@@ -1,3 +1,18 @@
+# 8 November — extended APIs, global-root poses and channel save data
+
+- [x] Match 22 Actor handler arities/indices to EU declarations; use DefaultAnimChannel for omitted channel parameters.
+- [x] Execute 70 original Engine.dll getter/setter reference cases and compare production handlers; retain the documented finite one-frame correction.
+- [x] Add time/frame/rate controls and the traced zero root-rotation-delta result.
+- [x] Correct AnimBlendParams immediate alpha/coefficient storage; add blend-root global/local conversion.
+- [x] Capture interrupted local tween poses and preserve them in the native state codec.
+- [x] Add versioned PoA actor channel trailers and retain actual saved state identity apart from bytecode ownership.
+- [x] Pass 134 compatibility tests, 29 packaging tests and production syntax checks.
+- [ ] Pass ARM64 compilation for this extended follow-up.
+- [ ] Prove actual map saves, VM continuations, cold phone reload, original pose/timing behavior and gameplay.
+- [ ] Finish root-motion tracking/physics, attachments, remaining APIs/native-only notifies, event ordering and mobile performance.
+
+See HP3-ANIMATION-API-PERSISTENCE.md. Channel serialization is implemented; a working complete game save is not yet demonstrated. Published v0.4.14 remains unchanged.
+
 # 8 November — actor animation channels and live pose integration
 
 - [x] Add per-actor channel state and bypass absent UE1 animation properties during PoA ticks.
@@ -7,7 +22,7 @@
 - [x] Add per-actor animation linking, optional mesh replacement and native reference GC marking.
 - [x] Dispatch channel-aware AnimEnd, function notifies and script-backed object notifies; resume latent FinishAnim.
 - [x] Sample 146 original mesh/default-animation pairs through channel skinning; pass 132 compatibility and 29 packaging tests.
-- [ ] Pass ARM64 compilation for this channel checkpoint.
+- [x] Pass channel ARM64 compilation (Actions 42524780799).
 - [ ] Verify actual device playback, original timing/pose parity and all gameplay animation calls.
 - [ ] Finish other animation APIs, global-pose/fade-out/backwards/root-motion behavior, native-only notifies and state save/load.
 
