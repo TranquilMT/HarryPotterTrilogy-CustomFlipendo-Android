@@ -29,6 +29,7 @@ void _start(void){
  /* Patch only the isolated math helper's compiler conversion thunk. */
  u8*thunk=(u8*)0x10159950;thunk[0]=0xe9;*(u32*)(thunk+1)=(u32)ftol-(u32)thunk-5;
  const struct Coords identity={{0,0,0},{1,0,0},{0,1,0},{0,0,1}};
+ *(struct Coords*)0x101a7af0=identity; /* GMath.UnitCoords is runtime-initialized BSS. */
  const int angles[]={0,1,3,4,8192,16384,24576,32768,49152,65535,-12345};
  const int count=sizeof(angles)/sizeof(angles[0]);
  for(int i=0;i<count;++i)for(int j=0;j<count;++j)for(int k=0;k<count;++k){
