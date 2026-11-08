@@ -45,7 +45,7 @@ int main(){
   code=r'''#include <vector>
 #include <cassert>
 struct UProperty{virtual~UProperty()=default;};
-struct UByteProperty:UProperty{};struct UIntProperty:UProperty{};struct UFloatProperty:UProperty{};struct UNameProperty:UProperty{};struct UStrProperty:UProperty{};struct UStringProperty:UProperty{};struct UBoolProperty:UProperty{};struct UArrayProperty:UProperty{};
+struct UByteProperty:UProperty{};struct UIntProperty:UProperty{};struct UFloatProperty:UProperty{};struct UNameProperty:UProperty{};struct UStrProperty:UProperty{};struct UStringProperty:UProperty{};struct UBoolProperty:UProperty{};struct UArrayProperty:UProperty{bool SupportsText()const{return false;}};
 struct UStruct{std::vector<UProperty*>Properties;};struct UStructProperty:UProperty{UStruct*Struct=nullptr;};
 struct UObject{template<class T>static T*TryCast(UProperty*p){return dynamic_cast<T*>(p);}template<class T>static bool IsType(UProperty*p){return dynamic_cast<T*>(p)!=nullptr;}};
 '''+body+r'''

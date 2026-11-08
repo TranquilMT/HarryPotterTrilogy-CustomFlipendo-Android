@@ -11,6 +11,7 @@
 #include "Properties/UStrProperty.h"
 #include "Properties/UBoolProperty.h"
 #include "Properties/UByteProperty.h"
+#include "Properties/UArrayProperty.h"
 #include "Properties/UFloatProperty.h"
 #include "VM/Bytecode.h"
 #include "VM/NativeFunc.h"
@@ -413,7 +414,7 @@ void UClass::LoadProperties(PropertyDataBlock* propertyBlock)
 	}
 }
 
-// Config text must be round-trippable; dynamic arrays/maps still need separate support.
+// Config text must be round-trippable; unsupported map/object/delegate members remain excluded.
 static bool CanSavePoaStructConfig(UStructProperty* property, int depth = 0)
 {
     if (!property->Struct || depth >= 64) return false;
@@ -422,6 +423,10 @@ static bool CanSavePoaStructConfig(UStructProperty* property, int depth = 0)
         if (auto nested = UObject::TryCast<UStructProperty>(member))
         {
             if (!CanSavePoaStructConfig(nested, depth + 1)) return false;
+        }
+        else if (auto array = UObject::TryCast<UArrayProperty>(member))
+        {
+            if (!array->SupportsText()) return false;
         }
         else if (!UObject::IsType<UByteProperty>(member) && !UObject::IsType<UIntProperty>(member) &&
                  !UObject::IsType<UFloatProperty>(member) && !UObject::IsType<UNameProperty>(member) &&

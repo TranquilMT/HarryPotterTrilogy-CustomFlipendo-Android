@@ -1,3 +1,16 @@
+# 8 November — reflected dynamic-array follow-up
+
+- [x] Import/export supported dynamic-array text, including nested arrays and quoted strings.
+- [x] Permit supported array members in PoA struct config export.
+- [x] Preserve existing arrays on failed text or binary replacement.
+- [x] Validate serialized counts, fixed indexes and exact tagged payload sizes.
+- [x] Execute compiled sanitizer regression harness and host suite (112 pass, one skip).
+- [ ] Validate this batch in ARM64 and on the phone.
+- [ ] Implement repeated-key top-level dynamic-array INI handling and map/object/delegate text support.
+- [ ] Complete UE2 native assets/rendering and demonstrate HP3 startup/gameplay.
+
+See HP3-ARRAY-TEXT-COMPATIBILITY.md. Source additions are not in published v0.4.14.
+
 # 8 November — structured property text and config follow-up
 
 - [x] Parse nested struct values and quoted comma/parenthesis literals without truncation.

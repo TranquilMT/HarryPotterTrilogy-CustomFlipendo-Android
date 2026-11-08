@@ -27,6 +27,8 @@ public:
 
 	void GetExportText(std::string& buf, const std::string& whitespace, UObject* obj, UObject* defobj, int i) override;
 	std::string PrintValue(const void* data) override;
+	void SetValueFromString(void* data, const std::string& valueString) override;
+	bool SupportsText() const;
 
 	GCAllocation* MarkPropertyElement(GCAllocation* marklist, void* data) override;
 

@@ -11,12 +11,12 @@ inline std::string Trim(const std::string& s)
     const auto first = s.find_first_not_of(" \t\r\n");
     return first == std::string::npos ? std::string() : s.substr(first, s.find_last_not_of(" \t\r\n") - first + 1);
 }
-inline std::vector<std::pair<std::string, std::string>> Parse(const std::string& text)
+inline std::vector<std::string> List(const std::string& text)
 {
     const std::string s = Trim(text);
     if (s.empty() || s == "None" || s == "null" || s == "null struct") return {};
     if (s.size() < 2 || s.front() != '(' || s.back() != ')') throw std::runtime_error("Invalid struct property text");
-    std::vector<std::pair<std::string, std::string>> result;
+    std::vector<std::string> result;
     size_t start = 1;
     int depth = 0;
     char quote = 0;
@@ -25,11 +25,7 @@ inline std::vector<std::pair<std::string, std::string>> Parse(const std::string&
     {
         const std::string item = Trim(s.substr(start, end - start));
         if (item.empty()) throw std::runtime_error("Empty struct property assignment");
-        const size_t equal = item.find('=');
-        if (equal == std::string::npos) throw std::runtime_error("Missing struct property assignment");
-        const std::string name = Trim(item.substr(0, equal));
-        if (name.empty()) throw std::runtime_error("Empty struct property name");
-        result.emplace_back(name, Trim(item.substr(equal + 1)));
+        result.push_back(item);
     };
     for (size_t i = 1; i + 1 < s.size(); ++i)
     {
@@ -47,6 +43,19 @@ inline std::vector<std::pair<std::string, std::string>> Parse(const std::string&
     }
     if (quote || depth != 0) throw std::runtime_error("Unterminated struct property value");
     if (!Trim(s.substr(start, s.size() - 1 - start)).empty()) add(s.size() - 1);
+    return result;
+}
+inline std::vector<std::pair<std::string, std::string>> Parse(const std::string& text)
+{
+    std::vector<std::pair<std::string, std::string>> result;
+    for (const auto& item : List(text))
+    {
+        const size_t equal = item.find('=');
+        if (equal == std::string::npos) throw std::runtime_error("Missing struct property assignment");
+        const std::string name = Trim(item.substr(0, equal));
+        if (name.empty()) throw std::runtime_error("Empty struct property name");
+        result.emplace_back(name, Trim(item.substr(equal + 1)));
+    }
     return result;
 }
 inline size_t FieldOffset(size_t base, size_t pitch, size_t index, size_t blockSize, size_t fieldSize)
