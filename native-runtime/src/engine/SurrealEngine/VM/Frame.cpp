@@ -1,5 +1,6 @@
 
 #include "Precomp.h"
+#include "hp3/PoaTracing.h"
 #include "Utils/StrTools.h"
 #include "Frame.h"
 #include "Bytecode.h"
@@ -505,6 +506,11 @@ ExpressionValue Frame::CallNative(UFunction* func, UObject* instance, const Arra
 
 void Frame::TraceCall(UFunction* func, UObject* instance, const ArrayView<ExpressionValue>& args)
 {
+    if (engine->LaunchInfo.IsHarryPotter3() && PoaTracing::ShouldTrace(AllFlags(func->FuncFlags, FunctionFlags::Native)))
+    {
+        LogMessage("UTrace " + instance->Name.ToString() + "." + func->Name.ToString());
+    }
+
 	for (const auto& trace : Traces)
 	{
 		if (trace.Enabled && trace.Function == func->Name)

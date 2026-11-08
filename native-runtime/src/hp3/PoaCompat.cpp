@@ -1,6 +1,7 @@
 #include "Precomp.h"
 #include "PoaCompat.h"
 #include "PoaMath.h"
+#include "PoaTracing.h"
 #include "VM/NativeFunc.h"
 #include "Packages/Core/UObject.h"
 #include "Packages/Core/UStruct.h"
@@ -18,6 +19,24 @@ namespace PoaCompat
 // resolved from runtime reflection below rather than assuming float offsets.
 struct InterpCurve { ScriptArray Points; };
 
+static void ClockwiseFrom_IntInt(int32_t a, int32_t b, bool& result)
+{
+    const int32_t x = uint32_t(a) & 65535u, y = uint32_t(b) & 65535u;
+    const int32_t distance = x > y ? x - y : y - x;
+    // EU Core.dll uses strict ordering, with an explicit <=32768 tie branch.
+    result = distance > 32768 ? x < y : x > y;
+}
+static void NeedSAPFont(bool& result)
+{
+    std::string language = engine->packages->GetLanguage();
+    for (char& c : language) c = char(std::tolower(static_cast<unsigned char>(c)));
+    result = language != "int";
+}
+static void SetUTracing(bool enabled, std::optional<bool> native)
+{
+    PoaTracing::Set(enabled, native.value_or(false));
+}
+static void IsUTracing(bool& result) { result = PoaTracing::Enabled; }
 static void QuatInvert(const quaternion& q, quaternion& result)
 {
     result = inverse(q); // UE rotation-quaternion inverse (conjugate).
@@ -72,6 +91,11 @@ static void GetIniEntry(const std::string& section, const std::string& key,
 }
 void RegisterNatives()
 {
+    PoaTracing::Set(false, false);
+    RegisterVMNativeFunc_3("Object", "ClockwiseFrom_IntInt", &ClockwiseFrom_IntInt, 0);
+    RegisterVMNativeFunc_1("Object", "NeedSAPFont", &NeedSAPFont, 0);
+    RegisterVMNativeFunc_2("Object", "SetUTracing", &SetUTracing, 0);
+    RegisterVMNativeFunc_1("Object", "IsUTracing", &IsUTracing, 0);
     RegisterVMNativeFunc_2("Object", "QuatInvert", &QuatInvert, 0);
     RegisterVMNativeFunc_3("Object", "QuatFindBetween", &QuatFindBetween, 0);
     RegisterVMNativeFunc_3("Object", "InterpCurveGetOutputRange", &InterpCurveGetOutputRange, 0);

@@ -1,0 +1,192 @@
+{
+  "binary": "Original EU System/Core.dll recovered from private published v0.4.14 APK",
+  "sha256": "b22cc27f6454eff97909ec0aa1b54a0c7aecdef2c5202e762a245ef431f92bbc",
+  "bytes": 720896,
+  "imageBase": "0x10100000",
+  "analysis": "Static PE export resolution and x86 disassembly; Windows binaries were not executed. Native bodies are independently implemented, with compiled host tests.",
+  "functions": [
+    {
+      "name": "ClockwiseFrom_IntInt",
+      "exportSymbol": "?execClockwiseFrom_IntInt@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "virtualAddress": "0x10127120",
+      "rva": "0x27120",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "ClockwiseFrom_IntInt",
+        "exportIndex": 561,
+        "arguments": [
+          {
+            "exportIndex": 186,
+            "name": "A",
+            "type": "IntProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 183,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 183,
+            "name": "B",
+            "type": "IntProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 564,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 564,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Mask both operands to 16 bits; if absolute difference >32768 compare A<B, otherwise compare A>B. Equality is false and exact half turns follow strict ordering.",
+      "codeRanges": [
+        "0x10127188-0x101271cb"
+      ]
+    },
+    {
+      "name": "NeedSAPFont",
+      "exportSymbol": "?execNeedSAPFont@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "virtualAddress": "0x10120720",
+      "rva": "0x20720",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "NeedSAPFont",
+        "exportIndex": 760,
+        "arguments": [],
+        "returnProperty": {
+          "exportIndex": 761,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Case-insensitive language != INT. exec calls UObject.NeedSAPFont; helper calls appStricmp against INT and converts nonzero to true.",
+      "codeRanges": [
+        "0x10120767-0x10120772",
+        "0x1013e3c0-0x1013e3d8"
+      ]
+    },
+    {
+      "name": "SetUTracing",
+      "exportSymbol": "?execSetUTracing@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "virtualAddress": "0x101207c0",
+      "rva": "0x207c0",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "SetUTracing",
+        "exportIndex": 710,
+        "arguments": [
+          {
+            "exportIndex": 73,
+            "name": "bNewUTracing",
+            "type": "BoolProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 72,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 72,
+            "name": "bTraceNative",
+            "type": "BoolProperty",
+            "dimension": 1,
+            "flags": 144,
+            "category": "None",
+            "next": 0,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": true
+          }
+        ],
+        "returnProperty": null,
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Set enabled and include-native globals; omitted native argument defaults false. Port routes enabled events to VM call logging, with native calls filtered by the second flag.",
+      "codeRanges": [
+        "0x101207c0-0x10120847"
+      ]
+    },
+    {
+      "name": "IsUTracing",
+      "exportSymbol": "?execIsUTracing@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "virtualAddress": "0x10120850",
+      "rva": "0x20850",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "IsUTracing",
+        "exportIndex": 713,
+        "arguments": [],
+        "returnProperty": {
+          "exportIndex": 714,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Return enabled global.",
+      "codeRanges": [
+        "0x10120850-0x1012088a"
+      ]
+    }
+  ],
+  "limits": [
+    "Tracing emits VM call events, not instruction-by-instruction trace parity.",
+    "No Android gameplay execution.",
+    "Quaternion conversions, string-array file format, save deletion and object-copy lifetime semantics remain unimplemented."
+  ]
+}

@@ -1,3 +1,14 @@
+# 8 November — original EU native tracing follow-up
+
+- [x] Resolve the original EU Core.dll export entries and inspect four native implementations.
+- [x] Implement exact ClockwiseFrom_IntInt half-turn/equality behavior and NeedSAPFont language selection.
+- [x] Implement SetUTracing/IsUTracing with a working call-log hook and native-call filtering.
+- [x] Test handler bodies and production trace callback preservation; 119 compatibility tests now pass with original EU inputs.
+- [ ] Complete the six remaining Core declarations and other native/game APIs.
+- [ ] Complete skeletal animation, terrain, richer rendering and device acceptance.
+
+See HP3-EU-NATIVE-TRACE.json and HP3-FOUR-AREA-IMPLEMENTATION.md. No claim that all four broad areas are complete.
+
 # 8 November — four-area implementation pass
 
 - [x] Add a functional PoA-only StaticMesh reader; test all 797 EU static mesh exports.

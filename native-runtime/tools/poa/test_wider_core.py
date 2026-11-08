@@ -6,6 +6,8 @@ class WiderCore(unittest.TestCase):
  def test_quaternions_curves_and_ini(self):
   body=(ROOT/'src/hp3/PoaCompat.cpp').read_text();body=body[body.index('namespace PoaCompat'):];reg=definition(body,'void RegisterNatives()');body=body.replace(reg,'')
   code=r'''#include "hp3/PoaMath.h"
+#include "hp3/PoaTracing.h"
+#include <optional>
 #include <cstring>
 #include <algorithm>
 #include <cctype>
@@ -21,11 +23,15 @@ struct UStruct{std::vector<UProperty*>Properties;size_t StructSize=16;};
 struct UStructProperty:UProperty{UStruct*Struct=nullptr;};
 struct UObject{template<class T>static T*TryCast(UProperty*p){return dynamic_cast<T*>(p);}template<class T>static bool IsType(UProperty*p){return dynamic_cast<T*>(p)!=nullptr;}};
 struct ScriptArray{UProperty*type=nullptr;std::vector<uint8_t>bytes;size_t count=0;size_t GetSize()const{return count;}UProperty*GetType()const{return type;}const void*GetData()const{return bytes.empty()?nullptr:bytes.data();}};
-struct Packages{std::string ini,section,key;std::string GetIniValue(const std::string&i,const std::string&s,const std::string&k,const std::string&){ini=i;section=s;key=k;return "value";}};
+struct Packages{std::string ini,section,key,language="int";const std::string&GetLanguage(){return language;}std::string GetIniValue(const std::string&i,const std::string&s,const std::string&k,const std::string&){ini=i;section=s;key=k;return "value";}};
 struct Engine{Packages*packages;};Packages packages;Engine eng{&packages};Engine*engine=&eng;
 '''+body+r'''
 bool near(float a,float b){return std::abs(a-b)<.0001f;}
-int main(){using namespace PoaCompat;
+int main(){
+ bool clockwise=false;PoaCompat::ClockwiseFrom_IntInt(0,0,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(32768,0,clockwise);assert(clockwise);PoaCompat::ClockwiseFrom_IntInt(0,32768,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(-1,0,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(0,-1,clockwise);assert(clockwise);PoaCompat::ClockwiseFrom_IntInt(INT32_MIN,INT32_MAX,clockwise);assert(clockwise);
+ bool sap=false;packages.language="INT";PoaCompat::NeedSAPFont(sap);assert(!sap);packages.language="rus";PoaCompat::NeedSAPFont(sap);assert(sap);packages.language="int";
+ bool tracing=false;PoaCompat::SetUTracing(true,std::nullopt);PoaCompat::IsUTracing(tracing);assert(tracing&&PoaTracing::ShouldTrace(false)&&!PoaTracing::ShouldTrace(true));PoaCompat::SetUTracing(true,true);assert(PoaTracing::ShouldTrace(true));PoaCompat::SetUTracing(false,true);PoaCompat::IsUTracing(tracing);assert(!tracing&&!PoaTracing::ShouldTrace(false));
+using namespace PoaCompat;
  quaternion q{0,0,std::sqrt(.5f),std::sqrt(.5f)},r;QuatInvert(q,r);auto identity=PoaCore::Product(q,r);assert(near(identity.w,1)&&near(identity.z,0));
  for(auto target:{vec3{0,1,0},vec3{-1,0,0},vec3{1,0,0}}){QuatFindBetween({2,0,0},target,r);auto v=PoaCore::Rotate(r,{1,0,0});assert(near(v.x,target.x)&&near(v.y,target.y)&&near(v.z,target.z));}
  QuatFindBetween({0,0,0},{1,0,0},r);assert(r.w==1&&r.x==0&&r.y==0&&r.z==0);
