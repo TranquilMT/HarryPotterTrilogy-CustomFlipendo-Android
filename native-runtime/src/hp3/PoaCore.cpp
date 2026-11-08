@@ -17,6 +17,12 @@ static void QuatRotateVector(const quaternion& q, const vec3& v, vec3& result)
 {
     result = Rotate(q, v);
 }
+static void QuatFromAxisAndAngle(const vec3& axis, float angle, quaternion& result)
+{
+    // A zero axis otherwise divides by zero in the shared U227 constructor.
+    // Preserve its normalized-axis/radian convention for nonzero inputs.
+    result = length(axis) == 0.0f ? quaternion() : quaternion(angle, axis);
+}
 static void GetLastStateName(UObject* self, NameString& result)
 {
     result = self->GetName("LastStateName");
@@ -31,6 +37,6 @@ void RegisterNatives()
     RegisterVMNativeFunc_1("Object", "GetLastStateName", &GetLastStateName, 285);
     RegisterVMNativeFunc_3("Object", "QuatProduct", &QuatProduct, 0);
     RegisterVMNativeFunc_3("Object", "QuatRotateVector", &QuatRotateVector, 0);
-    RegisterVMNativeFunc_3("Object", "QuatFromAxisAndAngle", &NObject::QuatFromAxisAndAngle_U227, 0);
+    RegisterVMNativeFunc_3("Object", "QuatFromAxisAndAngle", &QuatFromAxisAndAngle, 0);
 }
 }

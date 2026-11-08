@@ -1,3 +1,17 @@
+# 8 November — Core binding and auxiliary config audit (source follow-up)
+
+- [x] Verify all seven EU Core declaration shapes and native indices against bundled scripts.
+- [x] Trace static call sites across twelve script packages / 8,090 function records.
+- [x] Fix const-quaternion conversion required by QuatProduct and QuatRotateVector.
+- [x] Guard PoA axis-angle construction against a zero-length axis.
+- [x] Handle missing auxiliary class INIs without replacing serialized defaults; retain strict primary config reads.
+- [x] Execute all seven native bodies through production adapter/conversion code in isolated host harnesses.
+- [x] Test production previous-state transitions and preserve UE1 behavior.
+- [ ] Verify rebuilt ARM64 runtime on the phone past Hardware2Options.ini and subsequent startup stages.
+- [ ] Complete mesh/terrain, rendering, save/load and gameplay acceptance separately.
+
+See HP3-SEVEN-CORE-AUDIT.md and HP3-SEVEN-CORE-TRACE.json for evidence and limits. Published 0.4.14 does not contain this follow-up yet.
+
 # 0.4.14 — EU KWGame range-default repair
 
 - [x] Reproduce phone report in CompanionCombatManager export 222.

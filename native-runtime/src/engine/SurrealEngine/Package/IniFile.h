@@ -60,7 +60,7 @@ class IniFile
 {
 public:
 	IniFile() = default;
-	IniFile(const std::string& filename);
+	IniFile(const std::string& filename, bool allowMissing = false);
 	IniFile(const IniFile& other);
 
 	bool IsModified() const { return isModified; }

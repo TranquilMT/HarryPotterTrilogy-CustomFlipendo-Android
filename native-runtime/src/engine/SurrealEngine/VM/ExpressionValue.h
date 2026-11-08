@@ -342,6 +342,7 @@ template<> inline bool ExpressionValue::ToType() { return ToBool(); }
 template<> inline float ExpressionValue::ToType() { return ToFloat(); }
 template<> inline UObject* ExpressionValue::ToType() { return ToObject(); }
 template<> inline const vec3& ExpressionValue::ToType() { return ToVector(); }
+template<> inline const quaternion& ExpressionValue::ToType() { return ToQuat(); }
 template<> inline const Rotator& ExpressionValue::ToType() { return ToRotator(); }
 template<> inline const std::string& ExpressionValue::ToType() { return ToString(); }
 template<> inline const NameString& ExpressionValue::ToType() { return ToName(); }

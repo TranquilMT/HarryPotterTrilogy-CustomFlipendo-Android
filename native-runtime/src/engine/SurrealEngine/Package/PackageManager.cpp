@@ -812,8 +812,10 @@ std::unique_ptr<IniFile>& PackageManager::LoadIniFile(NameString iniName)
 	auto& ini = iniFiles[iniName];
 	if (!ini)
 	{
-		const auto iniFilePath = gameSystemFolderPath / (iniName.ToString() + ".ini");
-		ini = std::make_unique<IniFile>(iniFilePath.string());
+		const auto iniFilePath = File::find_ignoring_case(gameSystemFolderPath / (iniName.ToString() + ".ini"));
+		// Only PoA's auxiliary class configs are optional. User/System still take
+		// their strict paths above; errors reading an existing file still propagate.
+		ini = std::make_unique<IniFile>(iniFilePath.string(), launchInfo.IsHarryPotter3());
 	}
 
 	return ini;
@@ -924,6 +926,8 @@ void PackageManager::SaveAllIniFiles()
 		}
 		else if (iniFile.first == "User")
 			iniFile.second->UpdateIfExists((gameSystemFolderPath / "SE-User.ini").string());
+		else if (launchInfo.IsHarryPotter3())
+			iniFile.second->UpdateIfExists(File::find_ignoring_case(gameSystemFolderPath / (iniFile.first.ToString() + ".ini")).string());
 		else
 			iniFile.second->UpdateFile();
 	}
