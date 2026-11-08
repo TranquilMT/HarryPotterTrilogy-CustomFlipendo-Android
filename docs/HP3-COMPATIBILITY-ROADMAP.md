@@ -1,3 +1,17 @@
+# 8 November — remaining Core declarations
+
+- [x] Implement both quaternion/rotator handlers using original EU reference behavior and a documented unit-quaternion correction.
+- [x] Implement string-array load/save and exact save-slot file deletion.
+- [x] Implement reflected script-object Copy for the shipped scripted-action call.
+- [x] Replace PoA Commandlet.Main's success-zero placeholder with script dispatch and explicit unsupported-base rejection.
+- [x] Validate 1,331 isolated original math inputs and production-body/adapter/identity/file regressions.
+- [x] Run 124 compatibility tests with original inputs and 29 Android packaging tests.
+- [x] Correct the production header include path; the corrective ARM64 checkpoint passed.
+- [ ] Pass ARM64 compilation for the complete Core follow-up.
+- [ ] Complete remaining Engine/game APIs, native-resource copy variants, skeletal/terrain/rendering support and phone acceptance.
+
+See HP3-CORE-DECLARATIONS-COMPLETION.json. All eleven entries from the initial list now have concrete scoped behavior; this is not a claim that the full UE2 port is complete.
+
 # 8 November — original EU native tracing follow-up
 
 - [x] Resolve the original EU Core.dll export entries and inspect four native implementations.

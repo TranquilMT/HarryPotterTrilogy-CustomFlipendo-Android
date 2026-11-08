@@ -1,0 +1,582 @@
+{
+  "coreDLLSHA256": "b22cc27f6454eff97909ec0aa1b54a0c7aecdef2c5202e762a245ef431f92bbc",
+  "oracleCommit": "a8543d5385da192d247ff586f1b8609a1b20eb02",
+  "oracleRun": 42484233378,
+  "originalReferenceCases": 1331,
+  "originalUnitOutputs": 1081,
+  "originalNonUnitOutputsCorrected": 250,
+  "regularExtractionCases": 1111,
+  "singularExtractionCases": 220,
+  "extractionToleranceUnits": 8,
+  "scope": "Production bodies, adapters and numerical reference tests; not full VM or Android gameplay acceptance. Original helper execution initializes GMath globals and uses an equivalent truncating compiler-conversion adapter; no Windows entry point or game startup.",
+  "implementations": [
+    {
+      "owner": "Object",
+      "function": "QuatFromRotator",
+      "exportSymbol": "?execQuatFromRotator@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x27680",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "QuatFromRotator",
+        "exportIndex": 677,
+        "arguments": [
+          {
+            "exportIndex": 91,
+            "name": "A",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 679,
+            "typeSpecificBytes": "02",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 679,
+          "name": "ReturnValue",
+          "type": "StructProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "04",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Four-unit rotator quantization and retail axis/order conventions, with a stable unit-quaternion correction for the original non-unit half-turn branch.",
+      "staticCallSites": [
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 320,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 427,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    {
+      "owner": "Object",
+      "function": "QuatToRotator",
+      "exportSymbol": "?execQuatToRotator@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x27720",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "QuatToRotator",
+        "exportIndex": 680,
+        "arguments": [
+          {
+            "exportIndex": 90,
+            "name": "A",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 682,
+            "typeSpecificBytes": "04",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 682,
+          "name": "ReturnValue",
+          "type": "StructProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "02",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Retail FQuat/FCoords basis and orthogonal extraction; equivalent rotations are used at gimbal singularities.",
+      "staticCallSites": [
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 466,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    {
+      "owner": "Object",
+      "function": "LoadStringArray",
+      "exportSymbol": "?execLoadStringArray@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x2c890",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "LoadStringArray",
+        "exportIndex": 693,
+        "arguments": [
+          {
+            "exportIndex": 81,
+            "name": "StringArray",
+            "type": "ArrayProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 80,
+            "typeSpecificBytes": "770a",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 80,
+            "name": "Filename",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 697,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 697,
+          "name": "ReturnValue",
+          "type": "StrProperty",
+          "dimension": 1,
+          "flags": 4195712,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Reference-array input, CRLF-terminated records, ANSI/UTF-16 file decoding and empty declared string result. Missing files clear the array; malformed data fails before replacement.",
+      "staticCallSites": [
+        {
+          "caller": "hgame.hppagecredits.initcomponent",
+          "offset": 68,
+          "kind": "native-index"
+        },
+        {
+          "caller": "hgame.overlaypagecredits.show",
+          "offset": 29,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.printfile",
+          "offset": 23,
+          "kind": "native-index"
+        }
+      ]
+    },
+    {
+      "owner": "Object",
+      "function": "SaveStringArray",
+      "exportSymbol": "?execSaveStringArray@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x2c9f0",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "SaveStringArray",
+        "exportIndex": 698,
+        "arguments": [
+          {
+            "exportIndex": 79,
+            "name": "StringArray",
+            "type": "ArrayProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 78,
+            "typeSpecificBytes": "7c0a",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 78,
+            "name": "Filename",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 702,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 702,
+          "name": "ReturnValue",
+          "type": "StrProperty",
+          "dimension": 1,
+          "flags": 4195712,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Reference-array input, CRLF after each record, original-style ANSI when representable or UTF-16LE BOM, empty declared string result.",
+      "staticCallSites": [
+        {
+          "caller": "kwgame.kwherocontroller.writefile",
+          "offset": 82,
+          "kind": "native-index"
+        }
+      ]
+    },
+    {
+      "owner": "Object",
+      "function": "KWDeleteSaveGame",
+      "exportSymbol": "?execKWDeleteSaveGame@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x27ac0",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "KWDeleteSaveGame",
+        "exportIndex": 708,
+        "arguments": [
+          {
+            "exportIndex": 74,
+            "name": "iSlot",
+            "type": "IntProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 0,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": null,
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Delete only Save<signed-slot>.usa in the configured save folder. Missing files are harmless.",
+      "staticCallSites": [
+        {
+          "caller": "hgame.hppagenewgame.startnewgame",
+          "offset": 43,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwpawn.deleterunninggames",
+          "offset": 37,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwpawn.startsavedrunninggame",
+          "offset": 230,
+          "kind": "native-index"
+        }
+      ]
+    },
+    {
+      "owner": "Object",
+      "function": "Copy",
+      "exportSymbol": "?execCopy@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x206a0",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "Copy",
+        "exportIndex": 755,
+        "arguments": [
+          {
+            "exportIndex": 50,
+            "name": "Outer",
+            "type": "ObjectProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 757,
+            "typeSpecificBytes": "03",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 757,
+          "name": "ReturnValue",
+          "type": "ObjectProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "03",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Clone reflected script-only objects, as used by ContextScriptedSequence.SetActions: new identity/outer, deep value/container copies and shared object references. Native C++ resource/actor state copying explicitly rejects until a class copier exists.",
+      "staticCallSites": [
+        {
+          "caller": "kwgame.contextscriptedsequence.setactions",
+          "offset": 81,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    {
+      "owner": "Commandlet",
+      "function": "Main",
+      "exportSymbol": "?execMain@UCommandlet@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x43640",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Commandlet",
+        "name": "Main",
+        "exportIndex": 42,
+        "arguments": [
+          {
+            "exportIndex": 85,
+            "name": "Parms",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 850,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 850,
+          "name": "ReturnValue",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Commandlet script override dispatch, including inherited overrides. Abstract/native-only implementations explicitly reject instead of the old success-zero placeholder.",
+      "staticCallSites": []
+    },
+    {
+      "owner": "Object",
+      "function": "ClockwiseFrom_IntInt",
+      "exportSymbol": "?execClockwiseFrom_IntInt@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x27120",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "ClockwiseFrom_IntInt",
+        "exportIndex": 561,
+        "arguments": [
+          {
+            "exportIndex": 186,
+            "name": "A",
+            "type": "IntProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 183,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 183,
+            "name": "B",
+            "type": "IntProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 564,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 564,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Mask both operands to 16 bits; if absolute difference >32768 compare A<B, otherwise compare A>B. Equality is false and exact half turns follow strict ordering.",
+      "evidence": "HP3-EU-NATIVE-TRACE.json and production-body/trace-hook tests"
+    },
+    {
+      "owner": "Object",
+      "function": "NeedSAPFont",
+      "exportSymbol": "?execNeedSAPFont@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x20720",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "NeedSAPFont",
+        "exportIndex": 760,
+        "arguments": [],
+        "returnProperty": {
+          "exportIndex": 761,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Case-insensitive language != INT. exec calls UObject.NeedSAPFont; helper calls appStricmp against INT and converts nonzero to true.",
+      "evidence": "HP3-EU-NATIVE-TRACE.json and production-body/trace-hook tests"
+    },
+    {
+      "owner": "Object",
+      "function": "SetUTracing",
+      "exportSymbol": "?execSetUTracing@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x207c0",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "SetUTracing",
+        "exportIndex": 710,
+        "arguments": [
+          {
+            "exportIndex": 73,
+            "name": "bNewUTracing",
+            "type": "BoolProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 72,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 72,
+            "name": "bTraceNative",
+            "type": "BoolProperty",
+            "dimension": 1,
+            "flags": 144,
+            "category": "None",
+            "next": 0,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": true
+          }
+        ],
+        "returnProperty": null,
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Set enabled and include-native globals; omitted native argument defaults false. Port routes enabled events to VM call logging, with native calls filtered by the second flag.",
+      "evidence": "HP3-EU-NATIVE-TRACE.json and production-body/trace-hook tests"
+    },
+    {
+      "owner": "Object",
+      "function": "IsUTracing",
+      "exportSymbol": "?execIsUTracing@UObject@@QAEXAAUFFrame@@QAX@Z",
+      "rva": "0x20850",
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "IsUTracing",
+        "exportIndex": 713,
+        "arguments": [],
+        "returnProperty": {
+          "exportIndex": 714,
+          "name": "ReturnValue",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "implementation": "Return enabled global.",
+      "evidence": "HP3-EU-NATIVE-TRACE.json and production-body/trace-hook tests"
+    }
+  ],
+  "declarationsAddressed": 11
+}

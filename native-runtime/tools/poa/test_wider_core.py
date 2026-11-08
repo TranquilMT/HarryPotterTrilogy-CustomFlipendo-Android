@@ -6,6 +6,7 @@ class WiderCore(unittest.TestCase):
  def test_quaternions_curves_and_ini(self):
   body=(ROOT/'src/hp3/PoaCompat.cpp').read_text();body=body[body.index('namespace PoaCompat'):];reg=definition(body,'void RegisterNatives()');body=body.replace(reg,'')
   code=r'''#include "hp3/PoaMath.h"
+#include "hp3/PoaRotation.h"
 #include "hp3/PoaTracing.h"
 #include <optional>
 #include <cstring>
@@ -28,6 +29,8 @@ struct Engine{Packages*packages;};Packages packages;Engine eng{&packages};Engine
 '''+body+r'''
 bool near(float a,float b){return std::abs(a-b)<.0001f;}
 int main(){
+ quaternion converted;PoaCompat::QuatFromRotator({0,0,0},converted);Rotator convertedBack;PoaCompat::QuatToRotator(converted,convertedBack);assert(convertedBack.Pitch==0&&convertedBack.Yaw==0&&convertedBack.Roll==0);
+
  bool clockwise=false;PoaCompat::ClockwiseFrom_IntInt(0,0,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(32768,0,clockwise);assert(clockwise);PoaCompat::ClockwiseFrom_IntInt(0,32768,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(-1,0,clockwise);assert(!clockwise);PoaCompat::ClockwiseFrom_IntInt(0,-1,clockwise);assert(clockwise);PoaCompat::ClockwiseFrom_IntInt(INT32_MIN,INT32_MAX,clockwise);assert(clockwise);
  bool sap=false;packages.language="INT";PoaCompat::NeedSAPFont(sap);assert(!sap);packages.language="rus";PoaCompat::NeedSAPFont(sap);assert(sap);packages.language="int";
  bool tracing=false;PoaCompat::SetUTracing(true,std::nullopt);PoaCompat::IsUTracing(tracing);assert(tracing&&PoaTracing::ShouldTrace(false)&&!PoaTracing::ShouldTrace(true));PoaCompat::SetUTracing(true,true);assert(PoaTracing::ShouldTrace(true));PoaCompat::SetUTracing(false,true);PoaCompat::IsUTracing(tracing);assert(!tracing&&!PoaTracing::ShouldTrace(false));

@@ -38,6 +38,8 @@ jobs:
               assert all(math.isfinite(v) for v in row)
               rows.append({'input':row[:3],'quat':row[3:7],'output':row[7:10],'basis':row[10:]})
           pathlib.Path('output/quaternion-reference.json').write_text(json.dumps({'scope':'Isolated EU Core.dll math helpers only; no Windows entry point or gameplay','coreSHA256':'b22cc27f6454eff97909ec0aa1b54a0c7aecdef2c5202e762a245ef431f92bbc','cases':rows},indent=2))
+          anchor=next(r for r in rows if list(r['input'])==[0,0,16384])
+          assert abs(anchor['output'][2]-16384)<8, anchor
           print('Validated',len(rows),'original EU math cases')
           PY
       - uses: actions/upload-artifact@v4

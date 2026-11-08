@@ -2,6 +2,8 @@
 #include "PoaCompat.h"
 #include "PoaMath.h"
 #include "PoaTracing.h"
+#include "PoaServices.h"
+#include "PoaRotation.h"
 #include "VM/NativeFunc.h"
 #include "Packages/Core/UObject.h"
 #include "Packages/Core/UStruct.h"
@@ -37,6 +39,8 @@ static void SetUTracing(bool enabled, std::optional<bool> native)
     PoaTracing::Set(enabled, native.value_or(false));
 }
 static void IsUTracing(bool& result) { result = PoaTracing::Enabled; }
+static void QuatFromRotator(const Rotator& value, quaternion& result) { result = PoaRotation::FromRotator(value); }
+static void QuatToRotator(const quaternion& value, Rotator& result) { result = PoaRotation::ToRotator(value); }
 static void QuatInvert(const quaternion& q, quaternion& result)
 {
     result = inverse(q); // UE rotation-quaternion inverse (conjugate).
@@ -91,6 +95,9 @@ static void GetIniEntry(const std::string& section, const std::string& key,
 }
 void RegisterNatives()
 {
+    PoaServices::RegisterNatives();
+    RegisterVMNativeFunc_2("Object", "QuatFromRotator", &QuatFromRotator, 0);
+    RegisterVMNativeFunc_2("Object", "QuatToRotator", &QuatToRotator, 0);
     PoaTracing::Set(false, false);
     RegisterVMNativeFunc_3("Object", "ClockwiseFrom_IntInt", &ClockwiseFrom_IntInt, 0);
     RegisterVMNativeFunc_1("Object", "NeedSAPFont", &NeedSAPFont, 0);
