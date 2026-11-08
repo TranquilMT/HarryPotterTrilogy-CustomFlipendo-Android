@@ -4,7 +4,7 @@ on:
     paths: ['.github/workflows/prepare-0.4.14.yml']
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   prepare:
     runs-on: ubuntu-24.04
