@@ -1,0 +1,368 @@
+{
+  "coreSHA256": "cb6a84a03279b9f6c597c296b43a89b5d865e406e4654866c55216b3b0982b39",
+  "implementedNames": [
+    "GetIniEntry",
+    "InterpCurveGetInputDomain",
+    "InterpCurveGetOutputRange",
+    "QuatFindBetween",
+    "QuatInvert"
+  ],
+  "declarations": [
+    {
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "InterpCurveGetOutputRange",
+        "exportIndex": 650,
+        "arguments": [
+          {
+            "exportIndex": 108,
+            "name": "curve",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 178,
+            "typeSpecificBytes": "1d",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 178,
+            "name": "Min",
+            "type": "FloatProperty",
+            "dimension": 1,
+            "flags": 384,
+            "category": "None",
+            "next": 106,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": true,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 106,
+            "name": "Max",
+            "type": "FloatProperty",
+            "dimension": 1,
+            "flags": 384,
+            "category": "None",
+            "next": 0,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": true,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": null,
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "native": {
+        "nativeIndex": 0,
+        "precedence": 0,
+        "flags": 140289,
+        "replicationOffset": null,
+        "native": true,
+        "parameters": [
+          108,
+          178,
+          106
+        ]
+      }
+    },
+    {
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "InterpCurveGetInputDomain",
+        "exportIndex": 654,
+        "arguments": [
+          {
+            "exportIndex": 105,
+            "name": "curve",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 104,
+            "typeSpecificBytes": "1d",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 104,
+            "name": "Min",
+            "type": "FloatProperty",
+            "dimension": 1,
+            "flags": 384,
+            "category": "None",
+            "next": 103,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": true,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 103,
+            "name": "Max",
+            "type": "FloatProperty",
+            "dimension": 1,
+            "flags": 384,
+            "category": "None",
+            "next": 0,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": true,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": null,
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "native": {
+        "nativeIndex": 0,
+        "precedence": 0,
+        "flags": 140289,
+        "replicationOffset": null,
+        "native": true,
+        "parameters": [
+          105,
+          104,
+          103
+        ]
+      }
+    },
+    {
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "QuatInvert",
+        "exportIndex": 662,
+        "arguments": [
+          {
+            "exportIndex": 100,
+            "name": "A",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 664,
+            "typeSpecificBytes": "04",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 664,
+          "name": "ReturnValue",
+          "type": "StructProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "04",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "native": {
+        "nativeIndex": 0,
+        "precedence": 0,
+        "flags": 140289,
+        "replicationOffset": null,
+        "native": true,
+        "parameters": [
+          100
+        ]
+      }
+    },
+    {
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "QuatFindBetween",
+        "exportIndex": 669,
+        "arguments": [
+          {
+            "exportIndex": 97,
+            "name": "A",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 96,
+            "typeSpecificBytes": "01",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 96,
+            "name": "B",
+            "type": "StructProperty",
+            "dimension": 1,
+            "flags": 128,
+            "category": "None",
+            "next": 672,
+            "typeSpecificBytes": "01",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 672,
+          "name": "ReturnValue",
+          "type": "StructProperty",
+          "dimension": 1,
+          "flags": 1408,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "04",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "native": {
+        "nativeIndex": 0,
+        "precedence": 0,
+        "flags": 140289,
+        "replicationOffset": null,
+        "native": true,
+        "parameters": [
+          97,
+          96
+        ]
+      }
+    },
+    {
+      "schema": {
+        "package": "Core.u",
+        "owner": "Object",
+        "name": "GetIniEntry",
+        "exportIndex": 703,
+        "arguments": [
+          {
+            "exportIndex": 77,
+            "name": "SectionName",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 76,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 76,
+            "name": "KeyName",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 75,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          },
+          {
+            "exportIndex": 75,
+            "name": "PackageName",
+            "type": "StrProperty",
+            "dimension": 1,
+            "flags": 4194432,
+            "category": "None",
+            "next": 707,
+            "typeSpecificBytes": "",
+            "parameter": true,
+            "out": false,
+            "return": false,
+            "optional": false
+          }
+        ],
+        "returnProperty": {
+          "exportIndex": 707,
+          "name": "ReturnValue",
+          "type": "StrProperty",
+          "dimension": 1,
+          "flags": 4195712,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": true,
+          "optional": false
+        },
+        "locals": [],
+        "nativeArgumentOrderVerified": true
+      },
+      "native": {
+        "nativeIndex": 0,
+        "precedence": 0,
+        "flags": 140288,
+        "replicationOffset": null,
+        "native": true,
+        "parameters": [
+          77,
+          76,
+          75
+        ]
+      }
+    }
+  ],
+  "curveStructFields": {
+    "InterpCurve": [
+      {
+        "name": "Points",
+        "type": "ArrayProperty"
+      }
+    ],
+    "InterpCurvePoint": [
+      {
+        "name": "OutVal",
+        "type": "FloatProperty"
+      },
+      {
+        "name": "InVal",
+        "type": "FloatProperty"
+      }
+    ]
+  },
+  "resolvedScriptCallSites": {
+    "InterpCurveGetInputDomain": [],
+    "InterpCurveGetOutputRange": [],
+    "QuatInvert": [],
+    "QuatFindBetween": [],
+    "GetIniEntry": []
+  },
+  "nativeMeshRenderingImplemented": false,
+  "phoneExecutionTested": false
+}

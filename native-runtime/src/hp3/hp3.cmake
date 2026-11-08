@@ -17,3 +17,5 @@ endif()
 # Verified production helpers are guarded by IsHarryPotter3 at registration.
 # They do not depend on the historical experimental HP3_ENABLED switch.
 list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaCore.cpp)
+
+list(APPEND SURREALCOMMON_SOURCES ${CMAKE_CURRENT_LIST_DIR}/PoaCompat.cpp)

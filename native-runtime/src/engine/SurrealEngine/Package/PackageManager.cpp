@@ -12,6 +12,7 @@
 #include "Utils/StrTools.h"
 #include "VM/NativeFunc.h"
 #include "../../../hp3/PoaCore.h"
+#include "../../../hp3/PoaCompat.h"
 #include "Packages/ConSys/UConAudioList.h"
 #include "Packages/ConSys/UConCamera.h"
 #include "Packages/ConSys/UConChoice.h"
@@ -1362,7 +1363,10 @@ void PackageManager::RegisterFunctions()
 	}
 
 	if (launchInfo.IsHarryPotter3())
+	{
 		PoaCore::RegisterNatives();
+		PoaCompat::RegisterNatives();
+	}
 
 	if (launchInfo.IsKnowWonder()) // HP1 natives (src/hp1/), overriding upstream stubs
 		KW::RegisterNatives();

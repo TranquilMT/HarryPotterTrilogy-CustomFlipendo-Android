@@ -1,3 +1,17 @@
+# 8 November — wider UE2 Core API extension (source follow-up)
+
+- [x] Verify EU signatures for QuatInvert, QuatFindBetween, GetIniEntry and two interpolation-curve range functions.
+- [x] Implement those five handlers and register them only for PoA.
+- [x] Verify InterpCurve/InterpCurvePoint layouts against the bundled EU Core.u.
+- [x] Read curve float fields through runtime reflection, including offset/type/bounds checks.
+- [x] Test quaternion alignment edge cases, curve ranges and invalid metadata, and INI lookup with compiled production bodies.
+- [ ] Implement and validate UE2 static/skeletal mesh and animation asset readers; existing StaticMesh loading is unfinished.
+- [ ] Implement terrain primitives/sectors and related rendering/collision paths.
+- [ ] Trace the remaining Core functions without registrations and verify conditional native bindings.
+- [ ] Confirm ARM64 execution, phone startup, save/load and gameplay with the new source.
+
+See HP3-WIDER-UE2-COMPATIBILITY.md and HP3-WIDER-UE2-CORE-EVIDENCE.json. Published 0.4.14 does not contain this source follow-up yet.
+
 # 8 November — Core binding and auxiliary config audit (source follow-up)
 
 - [x] Verify all seven EU Core declaration shapes and native indices against bundled scripts.
