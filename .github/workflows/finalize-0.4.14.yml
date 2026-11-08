@@ -1,0 +1,101 @@
+name: Publish corrected signed 0.4.14
+on:
+  push:
+    paths: ['.github/workflows/finalize-0.4.14.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Restore verified APK and source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p base output work
+          gh release download v0.4.13 --pattern '*Three-Games.apk' --dir base
+          mv base/*Three-Games.apk base/previous.apk
+          python3 scripts/reconstruct_apk.py base/previous.apk release-recovery/0.4.14 work/engine.apk
+          gh release download v0.4.14 --pattern '*Full-Source-Final.zip' --dir output
+      - name: Rebuild versioned Android manifest and align unsigned APK
+        run: |
+          bt="$ANDROID_HOME/build-tools/36.0.0"
+          "$bt/aapt2" compile --dir native-runtime/android/res -o work/res.zip
+          "$bt/aapt2" link -o work/manifest.apk --manifest native-runtime/android/AndroidManifest.xml -I "$ANDROID_HOME/platforms/android-36/android.jar" -R work/res.zip --min-sdk-version 29 --target-sdk-version 35 --version-name 0.4.14 --version-code 56
+          python3 - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('work/manifest.apk') as m:
+              manifest=m.read('AndroidManifest.xml')
+          with zipfile.ZipFile('work/engine.apk') as src, zipfile.ZipFile('work/unsigned.apk','w') as dst:
+              for info in src.infolist():
+                  if info.filename.startswith('META-INF/'): continue
+                  if info.filename=='AndroidManifest.xml':
+                      dst.writestr(info,manifest)
+                  else:
+                      with src.open(info) as r, dst.open(info,'w') as w:
+                          import shutil
+                          shutil.copyfileobj(r,w,1024*1024)
+          PY
+          "$bt/zipalign" -f -P 16 4 work/unsigned.apk output/HP-Trilogy-Mobile-0.4.14-aligned-unsigned.apk
+          "$bt/zipalign" -c -P 16 4 output/*unsigned.apk
+          "$bt/aapt2" dump badging output/*unsigned.apk | tee output/package.txt
+          grep -q "name='com.tranquil.hp1native' versionCode='56' versionName='0.4.14'" output/package.txt
+          cp "$bt/lib/apksigner.jar" output/
+          cd output
+          sha256sum * > INPUT-SHA256.txt
+      - name: Restore exact permanent-certificate signature and verify release
+        run: |
+          python3 scripts/reconstruct_apk.py output/HP-Trilogy-Mobile-0.4.14-aligned-unsigned.apk release-signing/0.4.14 output/HP-Trilogy-Mobile-0.4.14-Three-Games.apk
+          rm output/HP-Trilogy-Mobile-0.4.14-aligned-unsigned.apk
+          bt="$ANDROID_HOME/build-tools/36.0.0"
+          "$bt/apksigner" verify --verbose --print-certs output/*Three-Games.apk | tee output/signature-verification.txt
+          grep -q 'Signer #1 certificate SHA-256 digest: 25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40' output/signature-verification.txt
+          "$bt/zipalign" -c -P 16 4 output/*Three-Games.apk
+          "$bt/aapt2" dump badging output/*Three-Games.apk | tee output/package.txt
+          grep -q "name='com.tranquil.hp1native' versionCode='56' versionName='0.4.14'" output/package.txt
+      - name: Prepare matching corrected source and checksums
+        run: |
+          mkdir -p source
+          python3 - <<'PY'
+          import zipfile,pathlib
+          with zipfile.ZipFile('output/HP-Trilogy-Mobile-0.4.14-Full-Source-Final.zip') as z:
+              for n in z.namelist():
+                  assert '..' not in pathlib.PurePosixPath(n).parts and not n.startswith('/')
+              z.extractall('source')
+          PY
+          python3 scripts/package_source_0_4_14.py source . output/HP-Trilogy-Mobile-0.4.14-Full-Source.zip
+          python3 source/native-runtime/tools/poa/verify_source_lock.py --root source
+          rm output/HP-Trilogy-Mobile-0.4.14-Full-Source-Final.zip output/apksigner.jar output/INPUT-SHA256.txt
+          cp docs/RELEASE-0.4.14.md output/HP-Trilogy-Mobile-0.4.14-Changes.md
+          cp docs/HP3-COMPATIBILITY-ROADMAP.md output/HP3-Compatibility-Roadmap.md
+          cp docs/HP-Trilogy-Mobile-0.4.14-Verification.json output/
+          python3 - <<'PY'
+          import pathlib,hashlib,json
+          p=pathlib.Path('output');report=p/'HP-Trilogy-Mobile-0.4.14-Verification.json';r=json.loads(report.read_text())
+          def digest(f):
+              with f.open('rb') as s:return hashlib.file_digest(s,'sha256').hexdigest()
+          apk=p/'HP-Trilogy-Mobile-0.4.14-Three-Games.apk';src=p/'HP-Trilogy-Mobile-0.4.14-Full-Source.zip'
+          assert digest(apk)=='05235ab2631b0e25f402f3f576566441190e9bae5af851380627d0f31d8784e9'
+          r.update(sha256=digest(apk),bytes=apk.stat().st_size,sourceArchive=src.name,sourceSHA256=digest(src),manifestVersionVerified=True,apkSignatureVerified=True,sourceLockSHA256=digest(pathlib.Path('source/docs/POA-SOURCE-LOCK.json')),sourceCheckpoint='local-0.4.14-eu-range-defaults-version-corrected')
+          report.write_text(json.dumps(r,indent=2)+'\n')
+          checksum=p/'HP-Trilogy-Mobile-0.4.14-SHA256.txt'
+          checksum.write_text(''.join(digest(f)+'  '+f.name+'\n' for f in sorted(p.iterdir()) if f.is_file() and f!=checksum))
+          PY
+      - name: Upload and publish verified release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v0.4.14 output/* --clobber
+          gh api repos/$GITHUB_REPOSITORY/releases/437840631/assets > uploaded-assets.json
+          python3 - <<'PY'
+          import pathlib,json,hashlib
+          rows={r['name']:r.get('digest') for r in json.load(open('uploaded-assets.json'))}
+          for p in pathlib.Path('output').iterdir():
+              with p.open('rb') as f:h='sha256:'+hashlib.file_digest(f,'sha256').hexdigest()
+              assert rows[p.name]==h,p.name
+          print('All uploaded digests verified')
+          PY
+          gh release edit v0.4.14 --target "$GITHUB_SHA" --title 'HP:Trilogy Mobile 0.4.14 — HP3 EU range defaults fix' --notes-file docs/RELEASE-0.4.14.md --draft=false --prerelease=false --latest
