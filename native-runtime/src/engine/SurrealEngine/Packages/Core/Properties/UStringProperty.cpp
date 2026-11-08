@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "UStringProperty.h"
+#include "PropertyText.h"
 
 UStringProperty::UStringProperty(NameString name, UClass* base, ObjectFlags flags) : UPropertyT(std::move(name), base, flags)
 {
@@ -31,12 +32,12 @@ void UStringProperty::SaveValue(void* data, PackageStreamWriter* stream)
 
 void UStringProperty::SetValueFromString(void* data, const std::string& valueString)
 {
-	*(std::string*)data = valueString;
+	*(std::string*)data = PropertyText::Unquote(valueString);
 }
 
 std::string UStringProperty::PrintValue(const void* data)
 {
-	return '"' + *(std::string*)data + '"';
+	return PropertyText::Quote(*static_cast<const std::string*>(data));
 }
 
 bool UStringProperty::IsDefaultValue(void* val)

@@ -1,3 +1,13 @@
+# 8 November — legacy String and name text round trips
+
+- [x] Make legacy String properties use the same escaping/unquoting as Str properties.
+- [x] Quote names containing list delimiters/whitespace; preserve ordinary identifier output.
+- [x] Test empty strings/names, quoted punctuation, backslashes, spaces, ordinary identifiers and raw legacy input with production method bodies under ASan/UBSan.
+- [x] Run host suite (112 pass, one skip) and native syntax checks.
+- [ ] Verify rebuilt ARM64 and device behavior.
+
+Remaining work is broader than config: repeated-key array INIs; map/object/delegate text; missing or conditional native calls; UE2 static/skeletal meshes, animation and terrain; rendering/collision; phone startup, controls, character switching and save/load acceptance. These are separate open areas, not an assurance that one further fix makes HP3 playable. Source changes are not in published v0.4.14.
+
 # 8 November — reflected dynamic-array follow-up
 
 - [x] Import/export supported dynamic-array text, including nested arrays and quoted strings.

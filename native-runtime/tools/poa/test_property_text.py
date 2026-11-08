@@ -6,7 +6,7 @@ ENGINE=ROOT/'src/engine/SurrealEngine'
 class PropertyTextTests(unittest.TestCase):
  def test_nested_partial_fixed_array_and_quoted_roundtrip(self):
   p=ENGINE/'Packages/Core/Properties'
-  bodies='\n'.join(definition((p/f).read_text(),signature) for f,signature in [('UProperty.cpp','std::map<NameString, std::string> UProperty::ParsePropertiesFromString('),('UStructProperty.cpp','std::string UStructProperty::PrintValue('),('UStructProperty.cpp','void UStructProperty::SetValueFromString('),('UStrProperty.cpp','std::string UStrProperty::PrintValue('),('UStrProperty.cpp','void UStrProperty::SetValueFromString(')])
+  bodies='\n'.join(definition((p/f).read_text(),signature) for f,signature in [('UProperty.cpp','std::map<NameString, std::string> UProperty::ParsePropertiesFromString('),('UStructProperty.cpp','std::string UStructProperty::PrintValue('),('UStructProperty.cpp','void UStructProperty::SetValueFromString('),('UStrProperty.cpp','std::string UStrProperty::PrintValue('),('UStrProperty.cpp','void UStrProperty::SetValueFromString('),('UStringProperty.cpp','std::string UStringProperty::PrintValue('),('UStringProperty.cpp','void UStringProperty::SetValueFromString('),('UNameProperty.cpp','std::string UNameProperty::PrintValue('),('UNameProperty.cpp','void UNameProperty::SetValueFromString(')])
   code=r'''#include "Packages/Core/Properties/PropertyText.h"
 #include <cassert>
 #include <cstdint>
@@ -20,9 +20,18 @@ struct UProperty{virtual~UProperty()=default;NameString Name;int ArrayDimension=
 struct UStruct{std::vector<UProperty*>Properties;size_t StructSize;};
 struct UStructProperty:UProperty{UStruct*Struct;std::string PrintValue(const void*)override;void SetValueFromString(void*,const std::string&)override;};
 struct UStrProperty:UProperty{std::string PrintValue(const void*)override;void SetValueFromString(void*,const std::string&)override;};
+struct UStringProperty:UStrProperty{std::string PrintValue(const void*)override;void SetValueFromString(void*,const std::string&)override;};
+struct UNameProperty:UProperty{std::string PrintValue(const void*)override;void SetValueFromString(void*,const std::string&)override;};
 '''+bodies+r'''
 struct Point{float X,Y;};struct Data{float Values[2];Point Origin;std::string Text;};
 int main(){
+ UStringProperty legacy;UNameProperty names;
+ for(const std::string& value:{std::string(),std::string("hello, (world)"),std::string("say \"yes\""),std::string("C:\\Games\\HP3"),std::string("None"),std::string(" leading space ")}){
+  std::string restored;legacy.SetValueFromString(&restored,legacy.PrintValue(&value));assert(restored==value);
+  NameString name(value),back;names.SetValueFromString(&back,names.PrintValue(&name));assert(back.ToString()==value);
+  auto list=PropertyText::List("("+names.PrintValue(&name)+",Other)");assert(list.size()==2);
+ }
+ NameString normal("Engine.Actor");assert(names.PrintValue(&normal)=="Engine.Actor");std::string raw;legacy.SetValueFromString(&raw,"Unquoted");assert(raw=="Unquoted");
  auto parsed=PropertyText::Parse(R"((Origin=(X=1,Y=2),Label="a,b) c",Ref=Texture'Pkg.A,B',Values(0)=3))");assert(parsed.size()==4&&parsed[0].second=="(X=1,Y=2)");
  for(auto invalid:{"(X=1", "(X=(Y=2)","(X=\"unterminated)","(=1)","(X=1,,Y=2)","(X=1))"}){bool rejected=false;try{PropertyText::Parse(invalid);}catch(const std::exception&){rejected=true;}assert(rejected);}
  assert(PropertyText::Parse("()").empty());assert(PropertyText::Parse(" None ").empty());assert(PropertyText::Parse("(X=1,)").size()==1);
