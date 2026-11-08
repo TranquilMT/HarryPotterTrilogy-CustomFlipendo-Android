@@ -46,9 +46,30 @@ jobs:
           cp "$bt/lib/apksigner.jar" output/
           cd output
           sha256sum * > INPUT-SHA256.txt
+      - name: Split APK for bounded artifact transfer
+        run: |
+          split -b 400M -d output/*unsigned.apk output/apk-part-
+          rm output/*unsigned.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: corrected-0.4.14-signing-input
-          path: output/
+          name: corrected-0.4.14-part-00
+          path: output/apk-part-00
           compression-level: 0
-          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-0.4.14-part-01
+          path: output/apk-part-01
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-0.4.14-part-02
+          path: output/apk-part-02
+          compression-level: 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-0.4.14-metadata
+          path: |
+            output/*.jar
+            output/*.zip
+            output/*.txt
+          compression-level: 0
