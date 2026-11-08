@@ -4,7 +4,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the EU PC versio
 
 [Published releases — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases)
 
-**0.4.14 source fixes the reported KWGame class-default crash; APK publication is pending. The publishing check found that the reconstructed APK still declares 0.4.13 / version code 55 instead of 0.4.14 / 56. Repackage and sign with the permanent certificate, regenerate checksums, and pass the existing version gate before publishing. [Current published release: 0.4.13](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.13).**
+**0.4.14 is published and verified. [Download the signed three-game APK](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/download/v0.4.14/HP-Trilogy-Mobile-0.4.14-Three-Games.apk), [corrected full source](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/download/v0.4.14/HP-Trilogy-Mobile-0.4.14-Full-Source.zip), and [checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/download/v0.4.14/HP-Trilogy-Mobile-0.4.14-SHA256.txt). Android version 0.4.14 / code 56 and the permanent certificate are verified.**
 
 The ARM64 rebuild and signed-APK reconstruction workflows are available in Actions. The reconstruction verifies the base APK, exact signed output, package identity, certificate, alignment and uploaded asset hashes before publication. Private signing material is not uploaded.
 
@@ -94,7 +94,7 @@ HP:Trilogy Mobile is the Android source port of the PC trilogy, using EU game ve
 
 ## Installation and testing
 
-- The published three-game APK is currently [0.4.13](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.13). The 0.4.14 draft is awaiting corrected package metadata and signing; do not treat its source-only draft as a completed APK release.
+- Download the signed three-game APK and checksum file from the [0.4.14 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.14). The package version is 0.4.14 / 56; signing continuity and all uploaded asset hashes passed verification.
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.
