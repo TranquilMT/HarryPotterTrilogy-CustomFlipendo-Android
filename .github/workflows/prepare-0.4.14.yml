@@ -1,0 +1,54 @@
+name: Prepare corrected 0.4.14 signing input
+on:
+  push:
+    paths: ['.github/workflows/prepare-0.4.14.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Restore verified APK and source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p base output work
+          gh release download v0.4.13 --pattern '*Three-Games.apk' --dir base
+          mv base/*Three-Games.apk base/previous.apk
+          python3 scripts/reconstruct_apk.py base/previous.apk release-recovery/0.4.14 work/engine.apk
+          gh release download v0.4.14 --pattern '*Full-Source-Final.zip' --dir output
+      - name: Rebuild versioned Android manifest and align unsigned APK
+        run: |
+          bt="$ANDROID_HOME/build-tools/36.0.0"
+          "$bt/aapt2" compile --dir native-runtime/android/res -o work/res.zip
+          "$bt/aapt2" link -o work/manifest.apk --manifest native-runtime/android/AndroidManifest.xml -I "$ANDROID_HOME/platforms/android-36/android.jar" -R work/res.zip --min-sdk-version 29 --target-sdk-version 35 --version-name 0.4.14 --version-code 56
+          python3 - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('work/manifest.apk') as m:
+              manifest=m.read('AndroidManifest.xml')
+          with zipfile.ZipFile('work/engine.apk') as src, zipfile.ZipFile('work/unsigned.apk','w') as dst:
+              for info in src.infolist():
+                  if info.filename.startswith('META-INF/'): continue
+                  if info.filename=='AndroidManifest.xml':
+                      dst.writestr(info,manifest)
+                  else:
+                      with src.open(info) as r, dst.open(info,'w') as w:
+                          import shutil
+                          shutil.copyfileobj(r,w,1024*1024)
+          PY
+          "$bt/zipalign" -f -P 16 4 work/unsigned.apk output/HP-Trilogy-Mobile-0.4.14-aligned-unsigned.apk
+          "$bt/zipalign" -c -P 16 4 output/*unsigned.apk
+          "$bt/aapt2" dump badging output/*unsigned.apk | tee output/package.txt
+          grep -q "name='com.tranquil.hp1native' versionCode='56' versionName='0.4.14'" output/package.txt
+          cp "$bt/lib/apksigner.jar" output/
+          cd output
+          sha256sum * > INPUT-SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corrected-0.4.14-signing-input
+          path: output/
+          compression-level: 0
+          retention-days: 7
