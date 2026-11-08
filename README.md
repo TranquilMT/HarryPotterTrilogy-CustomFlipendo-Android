@@ -4,7 +4,7 @@ An Android ARM64 source port based on Custom Flipendo, bringing the EU PC versio
 
 [Published releases — APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases)
 
-**0.4.14 fixes the reported KWGame class-default crash. [Download the three-game APK, full source and checksums](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.14).**
+**0.4.14 source fixes the reported KWGame class-default crash; APK publication is pending. The publishing check found that the reconstructed APK still declares 0.4.13 / version code 55 instead of 0.4.14 / 56. Repackage and sign with the permanent certificate, regenerate checksums, and pass the existing version gate before publishing. [Current published release: 0.4.13](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.13).**
 
 The ARM64 rebuild and signed-APK reconstruction workflows are available in Actions. The reconstruction verifies the base APK, exact signed output, package identity, certificate, alignment and uploaded asset hashes before publication. Private signing material is not uploaded.
 
@@ -94,7 +94,7 @@ HP:Trilogy Mobile is the Android source port of the PC trilogy, using EU game ve
 
 ## Installation and testing
 
-- Download the three-game APK and checksum file from the [0.4.14 release](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.14).
+- The published three-game APK is currently [0.4.13](https://github.com/TranquilMT/HarryPotterTrilogy-CustomFlipendo-Android/releases/tag/v0.4.13). The 0.4.14 draft is awaiting corrected package metadata and signing; do not treat its source-only draft as a completed APK release.
 - Back up saves before updating. The release builder requires the permanent signing certificate used by 0.4.2; a differently signed 0.4.5 test APK may reject an in-place update.
 - Install on Android 10 or later with an ARM64 processor. Allow enough free storage for the APK and extracted game files.
 - Open the launcher, select the game tile, and let installation finish before starting.
