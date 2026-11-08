@@ -1,0 +1,48 @@
+name: Trace original EU animation helpers
+on:
+  push:
+    paths: ['.github/workflows/poa-animation-oracle.yml', 'scripts/poa_animation_oracle.c']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Recover verified original EU helper code
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovery output
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          python3 - <<'PY'
+          import zipfile,pathlib,hashlib
+          with zipfile.ZipFile(next(pathlib.Path('recovery').glob('*.apk'))) as z: data=z.read('assets/hp3data/System/Engine.dll')
+          assert hashlib.sha256(data).hexdigest()=='73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a'
+          pathlib.Path('recovery/Engine.dll').write_bytes(data)
+          PY
+      - name: Execute isolated getter and setter helpers
+        run: |
+          gcc -m32 -O1 -nostdlib -static -fno-stack-protector -fno-pie -no-pie -fno-builtin -fno-strict-aliasing -fomit-frame-pointer -fno-asynchronous-unwind-tables scripts/poa_animation_oracle.c -o recovery/animation-oracle
+          timeout 30 recovery/animation-oracle > output/animation-reference.bin
+          python3 - <<'PY'
+          import pathlib,struct,json,math
+          raw=pathlib.Path('output/animation-reference.bin').read_bytes()
+          assert len(raw)==70*40,len(raw)
+          rows=[]
+          for offset in range(0,len(raw),40):
+              n,unit,value,phase,frame,time,rate,freeze,after,tween=struct.unpack_from('<2i8f',raw,offset)
+              assert time==value and freeze==-value and after==0 and tween==0
+              assert abs(rate-1.25*30/n)<1e-5
+              if n>1 or unit: assert abs(phase-(value if unit else value/(n-1)))<1e-5
+              rows.append({'frames':n,'unit':unit,'input':value,'phase':phase if math.isfinite(phase) else None,'frame':frame if math.isfinite(frame) else None,'setTime':time,'rate':rate,'freeze':freeze,'afterRate':after,'afterTween':tween})
+          pathlib.Path('output/animation-reference.json').write_text(json.dumps({'scope':'Isolated original EU Engine.dll helpers with synthetic mesh-instance storage/frame-count callbacks; no Windows entry point, Actor VM or gameplay','engineSHA256':'73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a','cases':rows},indent=2,allow_nan=False))
+          print('Validated',len(rows),'original helper cases')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eu-animation-reference
+          path: output/
+          retention-days: 7
