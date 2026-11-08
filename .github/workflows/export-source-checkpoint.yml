@@ -1,0 +1,23 @@
+name: Export tracked source checkpoint
+on:
+  push:
+    paths: ['.github/workflows/export-source-checkpoint.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: |
+          mkdir output
+          git archive --format=zip HEAD > output/source-checkpoint.zip
+          git rev-parse HEAD > output/COMMIT.txt
+          sha256sum output/source-checkpoint.zip > output/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tracked-source-checkpoint
+          path: output/
+          compression-level: 0
+          retention-days: 7
