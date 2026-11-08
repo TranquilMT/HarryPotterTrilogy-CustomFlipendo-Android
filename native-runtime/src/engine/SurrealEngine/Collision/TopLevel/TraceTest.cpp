@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "KW.h"
 #include "TraceTest.h"
+#include "PoaStaticMeshTrace.h"
 #include "Collision/BottomLevel/TraceAABBModel.h"
 #include "Collision/BottomLevel/TraceRayModel.h"
 #include "Packages/Engine/Actors/UActor.h"
@@ -141,7 +142,7 @@ bool TraceTester::TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool tra
 						if (actor->Collision.CheckCounter != checkCounter)
 						{
 							actor->Collision.CheckCounter = checkCounter;
-							if (actor != tracingActor && actor->bBlockActors())
+							if (actor != tracingActor && (actor->bBlockActors() || (engine->LaunchInfo.IsHarryPotter3() && traceWorld && GetPoaStaticMesh(actor))))
 							{
 								TraceActor(actor, origin, tmin, direction, tmax, 0.0, 0.0, traceActors, traceWorld, visibilityOnly, hits);
 								if (!hits.empty())
@@ -196,6 +197,15 @@ static vec3 CylinderHitNormal(const dvec3& hitpos, UActor* actor, double boxHeig
 
 void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits)
 {
+    if (engine->LaunchInfo.IsHarryPotter3())
+    {
+        if (auto mesh = GetPoaStaticMesh(actor))
+        {
+            if (traceWorld) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
+            return;
+        }
+    }
+
 	if (UMover* mover = UObject::TryCast<UMover>(actor))
 	{
 		if (!traceWorld)

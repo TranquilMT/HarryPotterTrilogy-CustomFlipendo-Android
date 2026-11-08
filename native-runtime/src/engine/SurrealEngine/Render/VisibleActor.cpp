@@ -4,6 +4,7 @@
 #include "VisibleFrame.h"
 #include "VisibleBrush.h"
 #include "VisibleMesh.h"
+#include "VisiblePoaStaticMesh.h"
 #include "VisibleSprite.h"
 #include "Packages/Engine/UViewport.h"
 #include "Packages/Engine/Actors/Pawn/UPawn.h"
@@ -71,7 +72,11 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
 	}
 
 	EDrawType dt = (EDrawType)actor->DrawType();
-	if (dt == DT_Mesh && actor->Mesh())
+	if (engine->LaunchInfo.IsHarryPotter3() && int(dt) == 8 && GetPoaStaticMesh(actor))
+    {
+        Type = dt; Actor = actor; frame->Actors.push_back(*this);
+    }
+    else if (dt == DT_Mesh && actor->Mesh())
 	{
 		Type = dt;
 		Actor = actor;
@@ -100,7 +105,15 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
 
 void VisibleActor::DrawOpaque(VisibleFrame* frame)
 {
-	if (Type == DT_Mesh)
+	if (engine->LaunchInfo.IsHarryPotter3() && int(Type) == 8)
+    {
+        if (DrawPoaStaticMesh(frame, Actor, false))
+        {
+            vec3 v = Actor->Location() - frame->ViewLocation.xyz();
+            frame->Translucents.emplace_back(*this, dot(v, v));
+        }
+    }
+    else if (Type == DT_Mesh)
 	{
 		VisibleMesh vismesh;
 		if (vismesh.DrawMesh(frame, Actor, false, false))
@@ -133,7 +146,9 @@ void VisibleActor::DrawOpaque(VisibleFrame* frame)
 
 void VisibleActor::DrawTranslucent(VisibleFrame* frame)
 {
-	if (Type == DT_Mesh)
+	if (engine->LaunchInfo.IsHarryPotter3() && int(Type) == 8)
+        DrawPoaStaticMesh(frame, Actor, true);
+    else if (Type == DT_Mesh)
 	{
 		VisibleMesh vismesh;
 		vismesh.DrawMesh(frame, Actor, false, true);

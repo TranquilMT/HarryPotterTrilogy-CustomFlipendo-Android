@@ -1,6 +1,6 @@
 # HP3 / UE2 native function mapping (tracking)
 
-Status: **tracking only**. No native bodies implemented. HP3 remains disabled.
+Status: **partial production coverage**. PoA Core handlers and config/loader work now exist. See repository docs/HP3-REMAINING-CORE-EVIDENCE.json and docs/HP3-FOUR-AREA-IMPLEMENTATION.md for the 8 November source audit. Runtime ABI/behavior and device acceptance remain open. The lists below are historical tracking categories, not a completion inventory.
 Each entry must be verified against retail PoA data before implementation.
 
 ## Priority 1 — startup / package / object

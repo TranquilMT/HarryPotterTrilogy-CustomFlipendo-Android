@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "KW.h"
 #include "OverlapTest.h"
+#include "PoaStaticMeshTrace.h"
 #include "Collision/BottomLevel/OverlapAABBModel.h"
 #include "Packages/Engine/Actors/UActor.h"
 #include "Packages/Engine/Actors/Info/ULevelInfo.h"
@@ -17,7 +18,7 @@ CollisionHitList OverlapTester::TestOverlap(const vec3& location, float height, 
 
 	CollisionHitList hits;
 
-	if (testActors && !visibilityOnly)
+	if ((testActors && !visibilityOnly) || (engine->LaunchInfo.IsHarryPotter3() && testWorld))
 	{
 		double dradius = radius;
 		double dheight = height;
@@ -39,6 +40,16 @@ CollisionHitList OverlapTester::TestOverlap(const vec3& location, float height, 
 							if (actor->Collision.CheckCounter != checkCounter)
 							{
 								actor->Collision.CheckCounter = checkCounter;
+                                if (engine->LaunchInfo.IsHarryPotter3())
+                                {
+                                    if (auto mesh = GetPoaStaticMesh(actor))
+                                    {
+                                        if (testWorld) TracePoaStaticMesh(actor, mesh, dlocation, 0.0, dvec3(0.0), 1.0, dheight, dradius, hits);
+                                        continue;
+                                    }
+                                }
+                                if (!testActors || visibilityOnly) continue;
+
 								if (CylinderActorOverlap(dlocation, dheight, dradius, actor))
 								{
 									vec3 normal(0.0f); // To do: do we need the normal for contact tests?
@@ -351,6 +362,16 @@ bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereR
 
 bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHeight, double cylinderRadius, UActor* actor)
 {
+    if (engine->LaunchInfo.IsHarryPotter3())
+    {
+        if (auto mesh = GetPoaStaticMesh(actor))
+        {
+            CollisionHitList hits;
+            TracePoaStaticMesh(actor, mesh, origin, 0.0, dvec3(0.0), 1.0, cylinderHeight, cylinderRadius, hits);
+            return !hits.empty();
+        }
+    }
+
 	if (actor->Brush()) // Ignore brushes for now
 		return false;
 

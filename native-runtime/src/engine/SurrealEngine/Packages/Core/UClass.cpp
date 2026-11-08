@@ -256,6 +256,38 @@ void UClass::LoadProperties(PropertyDataBlock* propertyBlock)
 				if (prop->ArrayDimension > 1)
 					name = NameString(name.ToString() + "[" + std::to_string(arrayIndex) + "]");
 
+                if (engine->LaunchInfo.IsHarryPotter3())
+                {
+                    auto array = UObject::TryCast<UArrayProperty>(prop);
+                    if (array && AnyFlags(prop->PropFlags, PropertyFlags::Config | PropertyFlags::GlobalConfig))
+                    {
+                        NameString targetConfig = configName, targetSection = sectionName;
+                        bool resolved = true;
+                        if (AnyFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
+                        {
+                            auto outer = UObject::TryCast<UClass>(prop->Outer());
+                            if (!outer) resolved = false;
+                            else
+                            {
+                                targetConfig = outer->ClassConfigName;
+                                if (targetConfig.IsNone()) targetConfig = "system";
+                                targetSection = outer->package->GetPackageName().ToString() + "." + outer->Name.ToString();
+                            }
+                        }
+                        if (resolved && array->SupportsText())
+                        {
+                            auto manager = package->GetPackageManager();
+                            // A missing key preserves serialized class defaults.
+                            bool present = false;
+                            for (const auto& key : manager->GetIniKeysFromSection(targetConfig, targetSection))
+                                if (key == name) { present = true; break; }
+                            if (present) array->SetConfigValues(ptr, manager->GetIniValues(targetConfig, targetSection, name));
+                        }
+                        ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
+                        continue;
+                    }
+                }
+
 				std::string value;
 				if (AllFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
 				{
@@ -455,6 +487,33 @@ void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
 				NameString name = prop->Name;
 				if (prop->ArrayDimension > 1)
 					name = NameString(name.ToString() + "[" + std::to_string(arrayIndex) + "]");
+
+                if (engine->LaunchInfo.IsHarryPotter3())
+                {
+                    auto array = UObject::TryCast<UArrayProperty>(prop);
+                    if (array)
+                    {
+                        if (array->SupportsText())
+                        {
+                            NameString targetConfig = configName, targetSection = sectionName;
+                            bool resolved = true;
+                            if (AnyFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
+                            {
+                                auto outer = UObject::TryCast<UClass>(prop->Outer());
+                                if (!outer) resolved = false;
+                                else
+                                {
+                                    targetConfig = outer->ClassConfigName;
+                                    if (targetConfig.IsNone()) targetConfig = "system";
+                                    targetSection = outer->package->GetPackageName().ToString() + "." + outer->Name.ToString();
+                                }
+                            }
+                            if (resolved) package->GetPackageManager()->SetIniValues(targetConfig, targetSection, name, array->GetConfigValues(ptr));
+                        }
+                        ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
+                        continue;
+                    }
+                }
 
 				bool unsupported = false;
 				std::string value;

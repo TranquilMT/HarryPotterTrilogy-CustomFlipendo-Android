@@ -187,6 +187,34 @@ void UArrayProperty::SetValueFromString(void* data, const std::string& valueStri
     static_cast<ScriptArray*>(data)->Swap(replacement);
 }
 
+// Repeated INI keys describe individual array elements. A single () is our
+// explicit empty-array marker; string elements containing () are quoted.
+void UArrayProperty::SetConfigValues(void* data, const Array<std::string>& values)
+{
+    if (values.size() == 1 && PropertyText::Trim(values[0]) == "()")
+    {
+        SetValueFromString(data, "()");
+        return;
+    }
+    std::string text = "(";
+    for (size_t i = 0; i < values.size(); ++i)
+    {
+        if (i) text += ',';
+        if (Inner && (Inner->ValueType == ExpressionValueType::ValueString || Inner->ValueType == ExpressionValueType::ValueName))
+            text += PropertyText::Quote(PropertyText::Unquote(values[i]));
+        else text += PropertyText::Trim(values[i]);
+    }
+    SetValueFromString(data, text + ')');
+}
+Array<std::string> UArrayProperty::GetConfigValues(const void* data)
+{
+    const auto elements = PropertyText::List(PrintValue(data));
+    Array<std::string> result;
+    for (const auto& element : elements) result.push_back(element);
+    if (result.empty()) result.push_back("()");
+    return result;
+}
+
 GCAllocation* UArrayProperty::MarkPropertyElement(GCAllocation* marklist, void* data)
 {
 	ScriptArray* array = static_cast<ScriptArray*>(data);

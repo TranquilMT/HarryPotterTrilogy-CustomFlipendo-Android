@@ -7,6 +7,7 @@
 #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
 #include "Packages/Engine/Resources/Textures/UTexture.h"
 #include "Engine.h"
+#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
 #include "KW.h"
 
 void UActor::UpdateBspInfo()
@@ -14,7 +15,9 @@ void UActor::UpdateBspInfo()
 	// Figure out where the actor is visually located in the world
 	BBox bbox;
 	EDrawType dt = (EDrawType)DrawType();
-	if (dt == DT_Mesh && Mesh())
+	if (engine->LaunchInfo.IsHarryPotter3() && int(dt) == 8 && GetPoaStaticMesh(this))
+        bbox = GetPoaStaticMesh(this)->BoundingBox.transform(PoaStaticMeshToWorld(this));
+    else if (dt == DT_Mesh && Mesh())
 	{
 		UMesh* mesh = Mesh();
 		Coords rotation = Coords::Rotation(Rotation());

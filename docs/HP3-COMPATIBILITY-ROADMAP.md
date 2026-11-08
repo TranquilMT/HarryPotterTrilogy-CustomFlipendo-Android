@@ -1,3 +1,19 @@
+# 8 November — four-area implementation pass
+
+- [x] Add a functional PoA-only StaticMesh reader; test all 797 EU static mesh exports.
+- [x] Connect static mesh bounds/transforms, initial diffuse rendering and triangle sweep/overlap collision.
+- [x] Implement repeated-key dynamic-array config/globalconfig loading and saving.
+- [x] Fix INI list resizing without deleting comments or unrelated lines.
+- [x] Audit unresolved Core declarations and trace their static script call sites.
+- [x] Run 118 compatibility tests with original EU inputs and 29 Android packaging tests.
+- [x] Gate ARM64 CI on host/original-data regression tests.
+- [ ] Implement UE2 skeletal animation, terrain and remaining native/game behavior.
+- [ ] Complete material/lighting/collision-hull support and validate performance.
+- [ ] Pass the ARM64 build for this source.
+- [ ] Execute phone startup, menus, controls, switching, travel and save/load acceptance.
+
+See HP3-FOUR-AREA-IMPLEMENTATION.md for evidence and limits. All four broad workstreams remain open; published v0.4.14 has not changed.
+
 # 8 November — legacy String and name text round trips
 
 - [x] Make legacy String properties use the same escaping/unquoting as Str properties.

@@ -2,7 +2,7 @@ name: Rebuild Android ARM64 engine
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**']
+    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**', 'native-runtime/tools/poa/**', 'native-runtime/android/tests/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,7 +10,41 @@ concurrency:
   group: android-rebuild
   cancel-in-progress: true
 jobs:
+  host-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Restore pinned original EU regression data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p recovery fixtures
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          echo '05235ab2631b0e25f402f3f576566441190e9bae5af851380627d0f31d8784e9  recovery/HP-Trilogy-Mobile-0.4.14-Three-Games.apk' | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile,pathlib
+          prefix='assets/hp3data/'
+          with zipfile.ZipFile('recovery/HP-Trilogy-Mobile-0.4.14-Three-Games.apk') as z:
+              for item in z.infolist():
+                  if not item.filename.startswith(prefix): continue
+                  name=item.filename[len(prefix):]
+                  if pathlib.PurePosixPath(name).suffix.lower() not in ('.u','.usx'): continue
+                  assert '..' not in pathlib.PurePosixPath(name).parts
+                  target=pathlib.Path('fixtures/hp3')/name
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(z.read(item))
+          PY
+      - name: Run compatibility and Android packaging regressions
+        env:
+          HP3_EU_GAME: ${{ github.workspace }}/fixtures/hp3
+          POA_EU_GAME: ${{ github.workspace }}/fixtures/hp3
+          ASAN_OPTIONS: detect_leaks=0
+        run: |
+          python3 -m unittest discover -s native-runtime/tools/poa -p 'test_*.py'
+          PYTHONPATH=native-runtime/android python3 -m unittest discover -s native-runtime/android/tests -p 'test_*.py'
   build:
+    needs: host-tests
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:

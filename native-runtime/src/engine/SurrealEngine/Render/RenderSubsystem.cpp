@@ -154,8 +154,9 @@ void RenderSubsystem::UpdateTextureInfo(TextureInfo& info, UTexture* texture)
 	if (!info.Texture)
 		return;
 
-	info.UScale = texture->DrawScale();
-	info.VScale = texture->DrawScale();
+	// UE2 BitmapMaterial/Texture has no UE1 DrawScale field.
+    info.UScale = engine->LaunchInfo.IsHarryPotter3() ? 1.0f : texture->DrawScale();
+    info.VScale = info.UScale;
 	info.Format = texture->UsedFormat;
 	info.Mips = texture->UsedMipmaps.data();
 	info.NumMips = (int)texture->UsedMipmaps.size();

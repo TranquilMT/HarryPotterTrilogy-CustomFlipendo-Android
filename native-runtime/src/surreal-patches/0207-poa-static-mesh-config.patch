@@ -1,0 +1,1033 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 492ba70..ac06af7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -648,6 +648,8 @@ set(SURREALCOMMON_SOURCES
+ 	SurrealEngine/Packages/Engine/Resources/Mesh/UMesh.h
+ 	SurrealEngine/Packages/Engine/Resources/Mesh/USkeletalMesh.cpp
+ 	SurrealEngine/Packages/Engine/Resources/Mesh/USkeletalMesh.h
++	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.cpp
++	SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.h
+ 	SurrealEngine/Packages/Engine/Resources/Mesh/UStaticMesh.cpp
+ 	SurrealEngine/Packages/Engine/Resources/Mesh/UStaticMesh.h
+ 	SurrealEngine/Packages/Engine/Resources/Textures/UBitmap.h
+diff --git a/SurrealEngine/Collision/BottomLevel/PoaSweepTriangle.h b/SurrealEngine/Collision/BottomLevel/PoaSweepTriangle.h
+new file mode 100644
+index 0000000..6baed37
+--- /dev/null
++++ b/SurrealEngine/Collision/BottomLevel/PoaSweepTriangle.h
+@@ -0,0 +1,36 @@
++#pragma once
++#include "Math/vec.h"
++#include <algorithm>
++#include <cmath>
++// Continuous SAT between a world-axis box and a triangle. Testing world-space
++// vertices keeps nonuniform/negative actor scale correct for both rays and boxes.
++inline double PoaSweepTriangle(const dvec3& origin,const dvec3& direction,double tmin,double tmax,const dvec3& extent,const dvec3* triangle,dvec3& normal)
++{
++    const dvec3 edges[3]={triangle[1]-triangle[0],triangle[2]-triangle[1],triangle[0]-triangle[2]};
++    const dvec3 face=cross(edges[0],edges[1]);
++    if(dot(face,face)<1e-20) return tmax;
++    double enter=tmin,leave=tmax;normal=dvec3(0.0);
++    auto axisTest=[&](const dvec3& axis)
++    {
++        double len2=dot(axis,axis);if(len2<1e-20) return true;
++        double low=dot(triangle[0],axis),high=low;
++        for(int i=1;i<3;++i){double p=dot(triangle[i],axis);low=std::min(low,p);high=std::max(high,p);}
++        const double radius=std::abs(axis.x)*extent.x+std::abs(axis.y)*extent.y+std::abs(axis.z)*extent.z;
++        const double center=dot(origin,axis),velocity=dot(direction,axis);
++        low-=radius;high+=radius;
++        if(std::abs(velocity)<1e-12) return center>=low-1e-10&&center<=high+1e-10;
++        double a=(low-center)/velocity,b=(high-center)/velocity;
++        dvec3 hitNormal=velocity>0?-axis:axis;
++        if(a>b) std::swap(a,b);
++        if(a>=enter){enter=a;normal=hitNormal/std::sqrt(len2);}
++        leave=std::min(leave,b);
++        return enter<=leave+1e-10;
++    };
++    const dvec3 box[3]={dvec3(1,0,0),dvec3(0,1,0),dvec3(0,0,1)};
++    if(!axisTest(face)) return tmax;
++    for(const auto& axis:box) if(!axisTest(axis)) return tmax;
++    for(const auto& edge:edges) for(const auto& axis:box) if(!axisTest(cross(edge,axis))) return tmax;
++    if(leave<tmin||enter>=tmax||leave<=tmin+1e-10) return tmax;
++    if(dot(normal,normal)==0.0) normal=normalize(dot(face,direction)>0?-face:face);
++    return std::max(enter,tmin);
++}
+diff --git a/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp b/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
+index 8f4283c..a364d4a 100644
+--- a/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
++++ b/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
+@@ -2,6 +2,7 @@
+ #include "Precomp.h"
+ #include "Engine.h"
+ #include "KW.h"
++#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
+ #include "CollisionSystem.h"
+ #include "Packages/Engine/Actors/UActor.h"
+ #include "Packages/Engine/Actors/Brush/UMover.h"
+@@ -156,7 +157,12 @@ void CollisionSystem::AddToCollision(UActor* actor)
+ 				extents = bbox.extents() + 0.1f; // 0.1 for numerical stability
+ 			}
+ 		}
+-		else if (engine->LaunchInfo.IsKnowWonder()) // KnowWonder hashes an actor by its primitive's world box (CT_Box, CollisionWidth offset)
++		else if (engine->LaunchInfo.IsHarryPotter3() && GetPoaStaticMesh(actor))
++        {
++            BBox bbox = GetPoaStaticMesh(actor)->BoundingBox.transform(PoaStaticMeshToWorld(actor));
++            location = bbox.center(); extents = bbox.extents() + 0.1f;
++        }
++        else if (engine->LaunchInfo.IsKnowWonder()) // KnowWonder hashes an actor by its primitive's world box (CT_Box, CollisionWidth offset)
+ 		{
+ 			BBox bbox = KW::ActorWorldCollisionBox(actor);
+ 			location = bbox.center();
+diff --git a/SurrealEngine/Collision/TopLevel/OverlapTest.cpp b/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
+index 771b6f2..72ebd21 100644
+--- a/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
+@@ -3,6 +3,7 @@
+ #include "Engine.h"
+ #include "KW.h"
+ #include "OverlapTest.h"
++#include "PoaStaticMeshTrace.h"
+ #include "Collision/BottomLevel/OverlapAABBModel.h"
+ #include "Packages/Engine/Actors/UActor.h"
+ #include "Packages/Engine/Actors/Info/ULevelInfo.h"
+@@ -17,7 +18,7 @@ CollisionHitList OverlapTester::TestOverlap(const vec3& location, float height,
+ 
+ 	CollisionHitList hits;
+ 
+-	if (testActors && !visibilityOnly)
++	if ((testActors && !visibilityOnly) || (engine->LaunchInfo.IsHarryPotter3() && testWorld))
+ 	{
+ 		double dradius = radius;
+ 		double dheight = height;
+@@ -39,6 +40,16 @@ CollisionHitList OverlapTester::TestOverlap(const vec3& location, float height,
+ 							if (actor->Collision.CheckCounter != checkCounter)
+ 							{
+ 								actor->Collision.CheckCounter = checkCounter;
++                                if (engine->LaunchInfo.IsHarryPotter3())
++                                {
++                                    if (auto mesh = GetPoaStaticMesh(actor))
++                                    {
++                                        if (testWorld) TracePoaStaticMesh(actor, mesh, dlocation, 0.0, dvec3(0.0), 1.0, dheight, dradius, hits);
++                                        continue;
++                                    }
++                                }
++                                if (!testActors || visibilityOnly) continue;
++
+ 								if (CylinderActorOverlap(dlocation, dheight, dradius, actor))
+ 								{
+ 									vec3 normal(0.0f); // To do: do we need the normal for contact tests?
+@@ -351,6 +362,16 @@ bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereR
+ 
+ bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHeight, double cylinderRadius, UActor* actor)
+ {
++    if (engine->LaunchInfo.IsHarryPotter3())
++    {
++        if (auto mesh = GetPoaStaticMesh(actor))
++        {
++            CollisionHitList hits;
++            TracePoaStaticMesh(actor, mesh, origin, 0.0, dvec3(0.0), 1.0, cylinderHeight, cylinderRadius, hits);
++            return !hits.empty();
++        }
++    }
++
+ 	if (actor->Brush()) // Ignore brushes for now
+ 		return false;
+ 
+diff --git a/SurrealEngine/Collision/TopLevel/PoaStaticMeshTrace.h b/SurrealEngine/Collision/TopLevel/PoaStaticMeshTrace.h
+new file mode 100644
+index 0000000..7e5d480
+--- /dev/null
++++ b/SurrealEngine/Collision/TopLevel/PoaStaticMeshTrace.h
+@@ -0,0 +1,30 @@
++#pragma once
++#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
++#include "Collision/BottomLevel/PoaSweepTriangle.h"
++#include "CollisionHit.h"
++inline void TracePoaStaticMesh(UActor* actor,UPoaStaticMesh* mesh,const dvec3& origin,double tmin,const dvec3& direction,double tmax,double height,double radius,CollisionHitList& hits)
++{
++    const auto flag=(height==0.0&&radius==0.0)?"bBlockZeroExtentTraces":"bBlockNonZeroExtentTraces";
++    if(actor->HasProperty(flag)&&!actor->GetBool(flag)) return;
++    auto transform=PoaStaticMeshToWorld(actor);
++    double nearest=tmax;dvec3 bestNormal(0.0);
++    for(size_t sectionIndex=0;sectionIndex<mesh->Geometry.Sections.size();++sectionIndex)
++    {
++        if(sectionIndex<mesh->MaterialCollision.size()&&!mesh->MaterialCollision[sectionIndex]) continue;
++        const auto& section=mesh->Geometry.Sections[sectionIndex];
++        for(size_t i=0;i<section.Triangles;++i)
++        {
++            dvec3 points[3];
++            for(size_t k=0;k<3;++k)
++            {
++                const auto index=mesh->Geometry.Indices[section.FirstIndex+i*3+k];
++                const auto& p=mesh->Geometry.Vertices[index].Position;
++                points[k]=dvec3((transform*vec4(p[0],p[1],p[2],1.0f)).xyz());
++            }
++            dvec3 normal;
++            double t=PoaSweepTriangle(origin,direction,tmin,nearest,dvec3(radius,radius,height),points,normal);
++            if(t<nearest){nearest=t;bestNormal=normal;}
++        }
++    }
++    if(nearest<tmax) hits.push_back({float(nearest),vec3(bestNormal),actor,nullptr,nullptr});
++}
+diff --git a/SurrealEngine/Collision/TopLevel/TraceTest.cpp b/SurrealEngine/Collision/TopLevel/TraceTest.cpp
+index 6aee833..1deeb3c 100644
+--- a/SurrealEngine/Collision/TopLevel/TraceTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/TraceTest.cpp
+@@ -3,6 +3,7 @@
+ #include "Engine.h"
+ #include "KW.h"
+ #include "TraceTest.h"
++#include "PoaStaticMeshTrace.h"
+ #include "Collision/BottomLevel/TraceAABBModel.h"
+ #include "Collision/BottomLevel/TraceRayModel.h"
+ #include "Packages/Engine/Actors/UActor.h"
+@@ -141,7 +142,7 @@ bool TraceTester::TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool tra
+ 						if (actor->Collision.CheckCounter != checkCounter)
+ 						{
+ 							actor->Collision.CheckCounter = checkCounter;
+-							if (actor != tracingActor && actor->bBlockActors())
++							if (actor != tracingActor && (actor->bBlockActors() || (engine->LaunchInfo.IsHarryPotter3() && traceWorld && GetPoaStaticMesh(actor))))
+ 							{
+ 								TraceActor(actor, origin, tmin, direction, tmax, 0.0, 0.0, traceActors, traceWorld, visibilityOnly, hits);
+ 								if (!hits.empty())
+@@ -196,6 +197,15 @@ static vec3 CylinderHitNormal(const dvec3& hitpos, UActor* actor, double boxHeig
+ 
+ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits)
+ {
++    if (engine->LaunchInfo.IsHarryPotter3())
++    {
++        if (auto mesh = GetPoaStaticMesh(actor))
++        {
++            if (traceWorld) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
++            return;
++        }
++    }
++
+ 	if (UMover* mover = UObject::TryCast<UMover>(actor))
+ 	{
+ 		if (!traceWorld)
+diff --git a/SurrealEngine/Package/IniFile.cpp b/SurrealEngine/Package/IniFile.cpp
+index fa8de8c..1afa557 100644
+--- a/SurrealEngine/Package/IniFile.cpp
++++ b/SurrealEngine/Package/IniFile.cpp
+@@ -1,6 +1,7 @@
+ 
+ #include "Precomp.h"
+ #include "IniFile.h"
++#include "IniTextUpdate.h"
+ #include "Utils/File.h"
+ #include "Utils/Convert.h"
+ #include "Utils/UTF16.h"
+@@ -281,154 +282,31 @@ void IniFile::UpdateFile()
+ 
+ void IniFile::UpdateFile(const std::string& filename)
+ {
+-	if (filename == ini_file_path && !isModified)
+-		return;
+-
+-	// The logic is simple: Read the file, check each line one-by-one, modify the differing lines, and write everything back
+-	// The implementation however, is not :V
+-	auto lines = File::read_all_lines(filename);
+-
+-	const IniSection* current_section = nullptr;
+-
+-	// A key can contain multiple values, so we gotta compare if we're getting the same key again and again
+-	struct KeyOccurance
+-	{
+-		std::string keyName = "";
+-		unsigned int currentIndex = 0;
+-	};
+-
+-	Array<KeyOccurance> keyOccurrances;
+-
+-	bool key_has_brackets = false;
+-	std::string ini_value;			// Value read from the ini file
+-
+-	for (auto line_it = lines.begin() ; line_it != lines.end() ; line_it++)
+-	{
+-		std::string line = *line_it;
+-
+-		if (line.empty() || line[0] == ';')
+-			// Do nothing on empty line
+-			continue;
+-
+-		if (line.front() == '[' && line.back() == ']')
+-		{
+-			// If we're switching from a different section, check for values not in the file, but in the memory, and add them
+-			if (current_section)
+-			{
+-				auto& section_keys = current_section->GetKeys();
+-
+-				for (auto& key : section_keys)
+-				{
+-					bool key_found = false;
+-					for (auto& keyOccurrance : keyOccurrances)
+-					{
+-						if (key.GetName() == keyOccurrance.keyName)
+-						{
+-							key_found = true;
+-							break;
+-						}
+-					}
+-
+-					if (key_found)
+-						continue;
+-
+-					auto& values = key.GetValues();
+-
+-					for (auto& value : values)
+-					{
+-						std::string newline = key.GetName() + "=" + value;
+-
+-						line_it = lines.insert(line_it - 2, newline);
+-
+-						line_it += 2;
+-					}
+-				}
+-			}
+-
+-			// Switch sections
+-			std::string new_section_name = line.substr(1, line.length() - 2);
+-
+-			current_section = FindSection(new_section_name);
+-
+-			keyOccurrances.clear();
+-
+-			continue;
+-		}
+-
+-		// Check stuff out only if we're in a relevant section
+-		if (current_section)
+-		{
+-			size_t equal_pos = line.find('=');
+-
+-			if (equal_pos != std::string::npos)
+-			{
+-				std::string key = line.substr(0, equal_pos);
+-				std::string key_without_brackets = key; // Will differ from key if the said key contains brackets
+-				std::string value_from_file = line.substr(equal_pos + 1);
+-
+-				// the loader keeps "Aliases[0]" as a literal key name (its index parsing is disabled), so compare the
+-				// key literally too. Splitting off the index threw in stoi, and once that was fixed looked up "Aliases"
+-				// (no such key) and blanked every indexed line.
+-				int bracket_index = 0;
+-
+-				// If the key don't have any brackets, check if we encountered the said key before
+-				// If we did, then get the next index from it, else add the key we found to the database
+-				int found_index = 0;
+-				bool occurance_found = false;
+-
+-				for (auto& keyOccurrance : keyOccurrances)
+-				{
+-					if (keyOccurrance.keyName == key_without_brackets)
+-					{
+-						keyOccurrance.currentIndex++;
+-						occurance_found = true;
+-						break;
+-					}
+-
+-					found_index++;
+-				}
+-
+-				if (!occurance_found)
+-				{
+-					// Must be a new occurrance
+-					keyOccurrances.push_back({ key, 0 });
+-				}
+-
+-				// Read and compare the value of the current line
+-				if (key_has_brackets)
+-					ini_value = current_section->GetValue(key_without_brackets, "", bracket_index);
+-				else
+-					ini_value = current_section->GetValue(key, "", occurance_found ? keyOccurrances[found_index].currentIndex : 0);
+-				
+-				// Update the current line if the value differs
+-				if (value_from_file != ini_value)
+-					*line_it = key + "=" + ini_value;
+-			}
+-		}
+-	}
+-
+-	// Combine lines back
+-	std::string final_text = "";
+-
+-	for (auto& line : lines)
+-	{
+-		final_text += line;
+-
+-		if (line != "\n")
+-			final_text += "\n";
+-	}
+-	
+-	File::write_all_text(filename, final_text);
+-
+-	if (filename != ini_file_path)
+-		ini_file_path = filename;
+-
+-	isModified = false;
++    if (filename == ini_file_path && !isModified) return;
++    std::vector<IniTextUpdate::Section> model;
++    for (const auto& section : sections)
++    {
++        IniTextUpdate::Section out;
++        out.Name = section.GetName();
++        for (const auto& key : section.GetKeys())
++        {
++            IniTextUpdate::Key row;
++            row.Name = key.GetName();
++            for (const auto& value : key.GetValues()) row.Values.push_back(value);
++            out.Keys.push_back(std::move(row));
++        }
++        model.push_back(std::move(out));
++    }
++    auto sourceLines = File::read_all_lines(filename);
++    std::vector<std::string> lines(sourceLines.begin(), sourceLines.end());
++    File::write_all_text(filename, IniTextUpdate::Update(lines, model));
++    ini_file_path = filename;
++    isModified = false;
+ }
+ 
+ void IniFile::UpdateIfExists(const std::string& filename)
+ {
+-	if (File::try_open_existing(filename) && !hasNewKeys)
++	if (File::try_open_existing(filename))
+ 		UpdateFile(filename);
+ 	else
+ 		SaveTo(filename);
+diff --git a/SurrealEngine/Package/IniTextUpdate.h b/SurrealEngine/Package/IniTextUpdate.h
+new file mode 100644
+index 0000000..62acdf8
+--- /dev/null
++++ b/SurrealEngine/Package/IniTextUpdate.h
+@@ -0,0 +1,73 @@
++#pragma once
++#include <string>
++#include <vector>
++#include <map>
++#include <set>
++#include <algorithm>
++#include <cctype>
++
++namespace IniTextUpdate
++{
++struct Key { std::string Name; std::vector<std::string> Values; };
++struct Section { std::string Name; std::vector<Key> Keys; };
++inline std::string Trim(std::string s)
++{
++    const auto a=s.find_first_not_of(" \t\r\n");
++    if(a==std::string::npos) return {};
++    return s.substr(a,s.find_last_not_of(" \t\r\n")-a+1);
++}
++inline std::string Fold(std::string s)
++{
++    for(char& c:s) c=char(std::tolower(static_cast<unsigned char>(c)));
++    return s;
++}
++// Rewrite each known key once with its complete value list. Old excess rows
++// disappear, new rows are inserted, and comments/unknown lines survive.
++inline std::string Update(const std::vector<std::string>& lines, const std::vector<Section>& sections)
++{
++    std::map<std::string,const Section*> models;
++    for(const auto& section:sections) models[Fold(section.Name)]=&section;
++    std::set<std::pair<std::string,std::string>> emitted;
++    std::set<std::string> seenSections;
++    std::string result,current;
++    auto write=[&](const std::string& section,const Key& key)
++    {
++        if(!emitted.emplace(section,Fold(key.Name)).second) return;
++        for(const auto& value:key.Values) result+=key.Name+"="+value+"\n";
++    };
++    auto flush=[&]()
++    {
++        auto it=models.find(current);
++        if(it!=models.end()) for(const auto& key:it->second->Keys) write(current,key);
++    };
++    seenSections.insert(current);
++    for(auto line:lines)
++    {
++        while(!line.empty()&&(line.back()=='\r'||line.back()=='\n')) line.pop_back();
++        const auto trimmed=Trim(line);
++        if(trimmed.size()>=2&&trimmed.front()=='['&&trimmed.back()==']')
++        {
++            flush(); current=Fold(trimmed.substr(1,trimmed.size()-2));seenSections.insert(current);
++            result+=line+'\n';continue;
++        }
++        const auto equal=trimmed.find('=');bool handled=false;
++        auto model=models.find(current);
++        if(!trimmed.empty()&&trimmed[0]!=';'&&trimmed.rfind("//",0)!=0&&equal!=std::string::npos&&model!=models.end())
++        {
++            auto name=Fold(Trim(trimmed.substr(0,equal)));
++            for(const auto& key:model->second->Keys) if(Fold(key.Name)==name)
++            {write(current,key);handled=true;break;}
++        }
++        if(!handled) result+=line+'\n';
++    }
++    flush();
++    for(const auto& section:sections)
++    {
++        const auto name=Fold(section.Name);
++        if(seenSections.count(name)) continue;
++        if(!section.Name.empty()) result+='\n'+std::string("[")+section.Name+"]\n";
++        for(const auto& key:section.Keys) write(name,key);
++    }
++    return result;
++}
++}
+diff --git a/SurrealEngine/Package/PackageManager.cpp b/SurrealEngine/Package/PackageManager.cpp
+index 460ee93..2ddad84 100644
+--- a/SurrealEngine/Package/PackageManager.cpp
++++ b/SurrealEngine/Package/PackageManager.cpp
+@@ -190,6 +190,7 @@
+ #include "Packages/Engine/Resources/Mesh/ULodMesh.h"
+ #include "Packages/Engine/Resources/Mesh/UMesh.h"
+ #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
++#include "Packages/Engine/Resources/Mesh/UPoaStaticMesh.h"
+ #include "Packages/Engine/Resources/Mesh/UStaticMesh.h"
+ #include "Packages/Engine/Resources/Textures/UBitmap.h"
+ #include "Packages/Engine/Resources/Textures/UFireTexture.h"
+@@ -1443,6 +1444,7 @@ void PackageManager::RegisterNativeClasses()
+ 
+ 	RegisterNativeClass<UPrimitive>(enginePackage, "Primitive", "Object");
+ 	RegisterNativeClass<UMesh>(enginePackage, "Mesh", "Primitive");
++    if (launchInfo.IsHarryPotter3()) RegisterNativeClass<UPoaStaticMesh>(enginePackage, "StaticMesh", "Primitive");
+ 	RegisterNativeClass<ULodMesh>(enginePackage, "LodMesh", "Mesh");
+ 	RegisterNativeClass<USkeletalMesh>(enginePackage, "SkeletalMesh", "LodMesh");
+ 	RegisterNativeClass<UAnimation>(enginePackage, "Animation", "Object");
+diff --git a/SurrealEngine/Package/PoaStaticMeshData.h b/SurrealEngine/Package/PoaStaticMeshData.h
+new file mode 100644
+index 0000000..b786370
+--- /dev/null
++++ b/SurrealEngine/Package/PoaStaticMeshData.h
+@@ -0,0 +1,82 @@
++#pragma once
++#include <array>
++#include <vector>
++#include <cstdint>
++#include <cmath>
++#include <stdexcept>
++
++namespace PoaAssets
++{
++using Vector = std::array<float,3>;
++struct Section { uint32_t Flags; uint16_t FirstIndex,FirstVertex,LastVertex,Unknown,Triangles; };
++struct Vertex { Vector Position,Normal; };
++struct StaticMeshData
++{
++    std::vector<Section> Sections;
++    std::vector<Vertex> Vertices;
++    std::vector<uint32_t> Colors,Alpha;
++    std::vector<std::vector<std::array<float,2>>> UV;
++    std::vector<uint16_t> Indices,WireIndices;
++    int CollisionReference=0;
++    size_t NativeBytes=0;
++};
++template<class Reader> size_t Count(Reader& r,size_t minimumBytes)
++{
++    const int n=r.ReadIndex();
++    if(n<0 || size_t(n)>r.Remaining()/minimumBytes) throw std::runtime_error("PoA asset array exceeds object bounds");
++    return size_t(n);
++}
++template<class Reader> float Float(Reader& r)
++{
++    float v=r.ReadFloat();
++    if(!std::isfinite(v)) throw std::runtime_error("Non-finite PoA asset coordinate");
++    return v;
++}
++template<class Reader> Vector ReadVector(Reader& r) { return {Float(r),Float(r),Float(r)}; }
++// Reader begins after UPrimitive's box and sphere. EU versions 128/129 were
++// checked against every StaticMesh export in the published EU payload.
++template<class Reader> StaticMeshData ReadStaticMesh(Reader& r,int version)
++{
++    if(version!=128&&version!=129) throw std::runtime_error("Unverified PoA static mesh version");
++    const auto start=r.Remaining();StaticMeshData out;
++    const auto sections=Count(r,14);out.Sections.reserve(sections);
++    for(size_t i=0;i<sections;++i)
++        out.Sections.push_back({r.ReadUInt32(),r.ReadUInt16(),r.ReadUInt16(),r.ReadUInt16(),r.ReadUInt16(),r.ReadUInt16()});
++    ReadVector(r);ReadVector(r);r.ReadUInt8(); // second serialized bounding box
++    const auto vertices=Count(r,24);out.Vertices.reserve(vertices);
++    for(size_t i=0;i<vertices;++i) out.Vertices.push_back({ReadVector(r),ReadVector(r)});
++    r.ReadUInt32(); // revision
++    for(auto colors:{&out.Colors,&out.Alpha})
++    {
++        const auto n=Count(r,4);colors->reserve(n);
++        for(size_t i=0;i<n;++i) colors->push_back(r.ReadUInt32());
++        r.ReadUInt32();
++        if(n&&n!=vertices) throw std::runtime_error("PoA color/vertex count mismatch");
++    }
++    const auto channels=Count(r,9);
++    if(channels>8) throw std::runtime_error("Excessive PoA UV channels");
++    for(size_t channel=0;channel<channels;++channel)
++    {
++        const auto n=Count(r,8);std::vector<std::array<float,2>> uv;uv.reserve(n);
++        for(size_t i=0;i<n;++i) uv.push_back({Float(r),Float(r)});
++        r.ReadUInt32();r.ReadUInt32();
++        if(n&&n!=vertices) throw std::runtime_error("PoA UV/vertex count mismatch");
++        out.UV.push_back(std::move(uv));
++    }
++    for(auto indices:{&out.Indices,&out.WireIndices})
++    {
++        const auto n=Count(r,2);indices->reserve(n);
++        for(size_t i=0;i<n;++i) indices->push_back(r.ReadUInt16());
++        r.ReadUInt32();
++    }
++    out.CollisionReference=r.ReadIndex();
++    for(auto index:out.Indices) if(index>=vertices) throw std::runtime_error("PoA mesh vertex index out of bounds");
++    for(const auto& section:out.Sections)
++    {
++        if(size_t(section.FirstIndex)+size_t(section.Triangles)*3>out.Indices.size()) throw std::runtime_error("PoA mesh section exceeds index stream");
++        if(section.Triangles&&(section.FirstVertex>section.LastVertex||section.LastVertex>=vertices)) throw std::runtime_error("PoA section vertex range invalid");
++    }
++    out.NativeBytes=start-r.Remaining();
++    return out;
++}
++}
+diff --git a/SurrealEngine/Packages/Core/Properties/UArrayProperty.cpp b/SurrealEngine/Packages/Core/Properties/UArrayProperty.cpp
+index e28e3be..6f2b21d 100644
+--- a/SurrealEngine/Packages/Core/Properties/UArrayProperty.cpp
++++ b/SurrealEngine/Packages/Core/Properties/UArrayProperty.cpp
+@@ -187,6 +187,34 @@ void UArrayProperty::SetValueFromString(void* data, const std::string& valueStri
+     static_cast<ScriptArray*>(data)->Swap(replacement);
+ }
+ 
++// Repeated INI keys describe individual array elements. A single () is our
++// explicit empty-array marker; string elements containing () are quoted.
++void UArrayProperty::SetConfigValues(void* data, const Array<std::string>& values)
++{
++    if (values.size() == 1 && PropertyText::Trim(values[0]) == "()")
++    {
++        SetValueFromString(data, "()");
++        return;
++    }
++    std::string text = "(";
++    for (size_t i = 0; i < values.size(); ++i)
++    {
++        if (i) text += ',';
++        if (Inner && (Inner->ValueType == ExpressionValueType::ValueString || Inner->ValueType == ExpressionValueType::ValueName))
++            text += PropertyText::Quote(PropertyText::Unquote(values[i]));
++        else text += PropertyText::Trim(values[i]);
++    }
++    SetValueFromString(data, text + ')');
++}
++Array<std::string> UArrayProperty::GetConfigValues(const void* data)
++{
++    const auto elements = PropertyText::List(PrintValue(data));
++    Array<std::string> result;
++    for (const auto& element : elements) result.push_back(element);
++    if (result.empty()) result.push_back("()");
++    return result;
++}
++
+ GCAllocation* UArrayProperty::MarkPropertyElement(GCAllocation* marklist, void* data)
+ {
+ 	ScriptArray* array = static_cast<ScriptArray*>(data);
+diff --git a/SurrealEngine/Packages/Core/Properties/UArrayProperty.h b/SurrealEngine/Packages/Core/Properties/UArrayProperty.h
+index 437b4f2..421ffd1 100644
+--- a/SurrealEngine/Packages/Core/Properties/UArrayProperty.h
++++ b/SurrealEngine/Packages/Core/Properties/UArrayProperty.h
+@@ -29,6 +29,8 @@ public:
+ 	std::string PrintValue(const void* data) override;
+ 	void SetValueFromString(void* data, const std::string& valueString) override;
+ 	bool SupportsText() const;
++    void SetConfigValues(void* data, const Array<std::string>& values);
++    Array<std::string> GetConfigValues(const void* data);
+ 
+ 	GCAllocation* MarkPropertyElement(GCAllocation* marklist, void* data) override;
+ 
+diff --git a/SurrealEngine/Packages/Core/UClass.cpp b/SurrealEngine/Packages/Core/UClass.cpp
+index 13d5ff7..9f353b4 100644
+--- a/SurrealEngine/Packages/Core/UClass.cpp
++++ b/SurrealEngine/Packages/Core/UClass.cpp
+@@ -256,6 +256,38 @@ void UClass::LoadProperties(PropertyDataBlock* propertyBlock)
+ 				if (prop->ArrayDimension > 1)
+ 					name = NameString(name.ToString() + "[" + std::to_string(arrayIndex) + "]");
+ 
++                if (engine->LaunchInfo.IsHarryPotter3())
++                {
++                    auto array = UObject::TryCast<UArrayProperty>(prop);
++                    if (array && AnyFlags(prop->PropFlags, PropertyFlags::Config | PropertyFlags::GlobalConfig))
++                    {
++                        NameString targetConfig = configName, targetSection = sectionName;
++                        bool resolved = true;
++                        if (AnyFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
++                        {
++                            auto outer = UObject::TryCast<UClass>(prop->Outer());
++                            if (!outer) resolved = false;
++                            else
++                            {
++                                targetConfig = outer->ClassConfigName;
++                                if (targetConfig.IsNone()) targetConfig = "system";
++                                targetSection = outer->package->GetPackageName().ToString() + "." + outer->Name.ToString();
++                            }
++                        }
++                        if (resolved && array->SupportsText())
++                        {
++                            auto manager = package->GetPackageManager();
++                            // A missing key preserves serialized class defaults.
++                            bool present = false;
++                            for (const auto& key : manager->GetIniKeysFromSection(targetConfig, targetSection))
++                                if (key == name) { present = true; break; }
++                            if (present) array->SetConfigValues(ptr, manager->GetIniValues(targetConfig, targetSection, name));
++                        }
++                        ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
++                        continue;
++                    }
++                }
++
+ 				std::string value;
+ 				if (AllFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
+ 				{
+@@ -456,6 +488,33 @@ void UClass::SaveProperties(PropertyDataBlock* propertyBlock)
+ 				if (prop->ArrayDimension > 1)
+ 					name = NameString(name.ToString() + "[" + std::to_string(arrayIndex) + "]");
+ 
++                if (engine->LaunchInfo.IsHarryPotter3())
++                {
++                    auto array = UObject::TryCast<UArrayProperty>(prop);
++                    if (array)
++                    {
++                        if (array->SupportsText())
++                        {
++                            NameString targetConfig = configName, targetSection = sectionName;
++                            bool resolved = true;
++                            if (AnyFlags(prop->PropFlags, PropertyFlags::GlobalConfig))
++                            {
++                                auto outer = UObject::TryCast<UClass>(prop->Outer());
++                                if (!outer) resolved = false;
++                                else
++                                {
++                                    targetConfig = outer->ClassConfigName;
++                                    if (targetConfig.IsNone()) targetConfig = "system";
++                                    targetSection = outer->package->GetPackageName().ToString() + "." + outer->Name.ToString();
++                                }
++                            }
++                            if (resolved) package->GetPackageManager()->SetIniValues(targetConfig, targetSection, name, array->GetConfigValues(ptr));
++                        }
++                        ptr = static_cast<uint8_t*>(ptr) + prop->ElementPitch();
++                        continue;
++                    }
++                }
++
+ 				bool unsupported = false;
+ 				std::string value;
+ 				if (UObject::IsType<UByteProperty>(prop)) value = std::to_string(*static_cast<uint8_t*>(ptr));
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Render.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Render.cpp
+index 254714c..15c856a 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Render.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Render.cpp
+@@ -7,6 +7,7 @@
+ #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
+ #include "Packages/Engine/Resources/Textures/UTexture.h"
+ #include "Engine.h"
++#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
+ #include "KW.h"
+ 
+ void UActor::UpdateBspInfo()
+@@ -14,7 +15,9 @@ void UActor::UpdateBspInfo()
+ 	// Figure out where the actor is visually located in the world
+ 	BBox bbox;
+ 	EDrawType dt = (EDrawType)DrawType();
+-	if (dt == DT_Mesh && Mesh())
++	if (engine->LaunchInfo.IsHarryPotter3() && int(dt) == 8 && GetPoaStaticMesh(this))
++        bbox = GetPoaStaticMesh(this)->BoundingBox.transform(PoaStaticMeshToWorld(this));
++    else if (dt == DT_Mesh && Mesh())
+ 	{
+ 		UMesh* mesh = Mesh();
+ 		Coords rotation = Coords::Rotation(Rotation());
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h b/SurrealEngine/Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h
+new file mode 100644
+index 0000000..1c1fcfe
+--- /dev/null
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h
+@@ -0,0 +1,16 @@
++#pragma once
++#include "UPoaStaticMesh.h"
++#include "Packages/Engine/Actors/UActor.h"
++#include "Math/coords.h"
++inline UPoaStaticMesh* GetPoaStaticMesh(UActor* actor)
++{
++    if(!actor->HasProperty("StaticMesh")) return nullptr;
++    auto object=actor->GetUObject("StaticMesh");
++    if(object) object->LoadNow();
++    return UObject::TryCast<UPoaStaticMesh>(object);
++}
++inline mat4 PoaStaticMeshToWorld(UActor* actor)
++{
++    auto scale=actor->HasProperty("DrawScale3D")?actor->GetVector("DrawScale3D"):vec3(1.0f);
++    return mat4::translate(actor->Location())*Coords::Rotation(actor->Rotation()).ToMatrix()*mat4::scale(scale*actor->DrawScale())*mat4::translate(-actor->PrePivot());
++}
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.cpp b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.cpp
+new file mode 100644
+index 0000000..159b9c7
+--- /dev/null
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.cpp
+@@ -0,0 +1,77 @@
++#include "Precomp.h"
++#include "UPoaStaticMesh.h"
++#include "Package/PackageStream.h"
++namespace
++{
++struct Tag { NameString Name; int Kind=0;uint32_t End=0;bool Bool=false; };
++Tag ReadTag(ObjectStream* stream)
++{
++    Tag tag;tag.Name=stream->ReadName();
++    if(tag.Name.IsNone()) return tag;
++    auto info=stream->ReadUInt8();tag.Kind=info&15;tag.Bool=(info&128)!=0;
++    if(tag.Kind<1||tag.Kind>15) Exception::Throw("Invalid PoA mesh property type");
++    if(tag.Kind==10) stream->ReadName();
++    uint32_t size=0;
++    switch((info>>4)&7)
++    {
++    case 0:size=1;break;case 1:size=2;break;case 2:size=4;break;
++    case 3:size=12;break;case 4:size=16;break;
++    case 5:size=stream->ReadUInt8();break;case 6:size=stream->ReadUInt16();break;case 7:size=stream->ReadUInt32();break;
++    }
++    if(tag.Kind!=3&&tag.Bool)
++    {
++        auto first=stream->ReadUInt8();
++        if((first&192)==192) stream->Skip(3);
++        else if(first&128) stream->Skip(1);
++    }
++    if(tag.Kind==3) size=0;
++    if(size>stream->Remaining()) Exception::Throw("PoA mesh tag exceeds object");
++    tag.End=stream->Tell()+size;
++    return tag;
++}
++}
++void UPoaStaticMesh::Load(ObjectStream* stream)
++{
++    if(AllFlags(Flags,ObjectFlags::HasStack)) Exception::Throw("Unexpected stateful PoA static mesh");
++    const auto start=stream->Tell();
++    Array<int> materials;Array<uint8_t> collision;bool simpleBox=false;
++    while(true)
++    {
++        auto tag=ReadTag(stream);if(tag.Name.IsNone()) break;
++        if(tag.Name=="Materials"&&tag.Kind==9)
++        {
++            const auto count=PoaAssets::Count(*stream,1);
++            for(size_t i=0;i<count;++i)
++            {
++                int material=0;uint8_t enabled=1;
++                while(true)
++                {
++                    auto member=ReadTag(stream);if(member.Name.IsNone()) break;
++                    if(member.End>tag.End) Exception::Throw("PoA material exceeds its array tag");
++                    if(member.Name=="Material"&&member.Kind==5) material=stream->ReadIndex();
++                    else if(member.Name=="EnableCollision"&&member.Kind==3) enabled=member.Bool;
++                    if(stream->Tell()>member.End) Exception::Throw("PoA material property size mismatch");
++                    stream->Seek(member.End);
++                }
++                if(stream->Tell()>tag.End) Exception::Throw("PoA material array overrun");
++                materials.push_back(material);collision.push_back(enabled);
++            }
++            if(stream->Tell()!=tag.End) Exception::Throw("PoA material array size mismatch");
++        }
++        else if(tag.Name=="UseSimpleBoxCollision"&&tag.Kind==3) simpleBox=tag.Bool;
++        stream->Seek(tag.End);
++    }
++    stream->Seek(start);
++    UPrimitive::Load(stream);
++    auto geometry=PoaAssets::ReadStaticMesh(*stream,stream->GetVersion());
++    if(geometry.Sections.size()>materials.size()) Exception::Throw("PoA mesh has missing section materials");
++    Geometry=std::move(geometry);MaterialReferences=std::move(materials);MaterialCollision=std::move(collision);
++    UseSimpleBoxCollision=simpleBox;SourcePackage=stream->GetPackage();
++    // UE2 collision/editor trailer has a separate format. Geometry traces use
++    // validated section triangles; do not reinterpret the trailer as UE1 data.
++    stream->Skip(uint32_t(stream->Remaining()));
++}
++void UPoaStaticMesh::Save(PackageStreamWriter*)
++{
++    Exception::Throw("PoA static-mesh package rewriting is not implemented");
++}
+diff --git a/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.h b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.h
+new file mode 100644
+index 0000000..ca095ad
+--- /dev/null
++++ b/SurrealEngine/Packages/Engine/Resources/Mesh/UPoaStaticMesh.h
+@@ -0,0 +1,15 @@
++#pragma once
++#include "Packages/Engine/Resources/UPrimitive.h"
++#include "Package/PoaStaticMeshData.h"
++class UPoaStaticMesh : public UPrimitive
++{
++public:
++    using UPrimitive::UPrimitive;
++    void Load(ObjectStream* stream) override;
++    void Save(PackageStreamWriter* stream) override;
++    PoaAssets::StaticMeshData Geometry;
++    Array<int> MaterialReferences;
++    Array<uint8_t> MaterialCollision;
++    Package* SourcePackage=nullptr;
++    bool UseSimpleBoxCollision=false;
++};
+diff --git a/SurrealEngine/Render/RenderSubsystem.cpp b/SurrealEngine/Render/RenderSubsystem.cpp
+index 645df33..e282a40 100644
+--- a/SurrealEngine/Render/RenderSubsystem.cpp
++++ b/SurrealEngine/Render/RenderSubsystem.cpp
+@@ -154,8 +154,9 @@ void RenderSubsystem::UpdateTextureInfo(TextureInfo& info, UTexture* texture)
+ 	if (!info.Texture)
+ 		return;
+ 
+-	info.UScale = texture->DrawScale();
+-	info.VScale = texture->DrawScale();
++	// UE2 BitmapMaterial/Texture has no UE1 DrawScale field.
++    info.UScale = engine->LaunchInfo.IsHarryPotter3() ? 1.0f : texture->DrawScale();
++    info.VScale = info.UScale;
+ 	info.Format = texture->UsedFormat;
+ 	info.Mips = texture->UsedMipmaps.data();
+ 	info.NumMips = (int)texture->UsedMipmaps.size();
+diff --git a/SurrealEngine/Render/VisibleActor.cpp b/SurrealEngine/Render/VisibleActor.cpp
+index e3ab566..c326a00 100644
+--- a/SurrealEngine/Render/VisibleActor.cpp
++++ b/SurrealEngine/Render/VisibleActor.cpp
+@@ -4,6 +4,7 @@
+ #include "VisibleFrame.h"
+ #include "VisibleBrush.h"
+ #include "VisibleMesh.h"
++#include "VisiblePoaStaticMesh.h"
+ #include "VisibleSprite.h"
+ #include "Packages/Engine/UViewport.h"
+ #include "Packages/Engine/Actors/Pawn/UPawn.h"
+@@ -71,7 +72,11 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
+ 	}
+ 
+ 	EDrawType dt = (EDrawType)actor->DrawType();
+-	if (dt == DT_Mesh && actor->Mesh())
++	if (engine->LaunchInfo.IsHarryPotter3() && int(dt) == 8 && GetPoaStaticMesh(actor))
++    {
++        Type = dt; Actor = actor; frame->Actors.push_back(*this);
++    }
++    else if (dt == DT_Mesh && actor->Mesh())
+ 	{
+ 		Type = dt;
+ 		Actor = actor;
+@@ -100,7 +105,15 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
+ 
+ void VisibleActor::DrawOpaque(VisibleFrame* frame)
+ {
+-	if (Type == DT_Mesh)
++	if (engine->LaunchInfo.IsHarryPotter3() && int(Type) == 8)
++    {
++        if (DrawPoaStaticMesh(frame, Actor, false))
++        {
++            vec3 v = Actor->Location() - frame->ViewLocation.xyz();
++            frame->Translucents.emplace_back(*this, dot(v, v));
++        }
++    }
++    else if (Type == DT_Mesh)
+ 	{
+ 		VisibleMesh vismesh;
+ 		if (vismesh.DrawMesh(frame, Actor, false, false))
+@@ -133,7 +146,9 @@ void VisibleActor::DrawOpaque(VisibleFrame* frame)
+ 
+ void VisibleActor::DrawTranslucent(VisibleFrame* frame)
+ {
+-	if (Type == DT_Mesh)
++	if (engine->LaunchInfo.IsHarryPotter3() && int(Type) == 8)
++        DrawPoaStaticMesh(frame, Actor, true);
++    else if (Type == DT_Mesh)
+ 	{
+ 		VisibleMesh vismesh;
+ 		vismesh.DrawMesh(frame, Actor, false, true);
+diff --git a/SurrealEngine/Render/VisiblePoaStaticMesh.h b/SurrealEngine/Render/VisiblePoaStaticMesh.h
+new file mode 100644
+index 0000000..5e4ab72
+--- /dev/null
++++ b/SurrealEngine/Render/VisiblePoaStaticMesh.h
+@@ -0,0 +1,96 @@
++#pragma once
++#include "VisibleFrame.h"
++#include "RenderSubsystem.h"
++#include "RenderDevice/RenderDevice.h"
++#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
++#include "Packages/Engine/Resources/Textures/UTexture.h"
++#include "Packages/Engine/Actors/Info/ULevelInfo.h"
++#include "Engine.h"
++#include "Packages/Engine/Resources/Level/UModel.h"
++#include <set>
++// Initial UE2 material path: direct textures and Shader.Diffuse/Modifier.Material.
++// Layered material operations, lightmaps and animated UVs remain separate work.
++inline UTexture* PoaDiffuseTexture(UObject* material,uint32_t& flags,std::set<UObject*>& seen)
++{
++    if(!material||seen.size()>=32||!seen.insert(material).second) return nullptr;
++    material->LoadNow();
++    for(const auto& name:{"TwoSided","bTwoSided"})
++        if(material->HasProperty(name)&&material->GetBool(name)) flags|=PF_TwoSided;
++    if(material->HasProperty("bMasked")&&material->GetBool("bMasked")) flags|=PF_Masked;
++    if(material->HasProperty("AlphaTest")&&material->GetBool("AlphaTest")) flags|=PF_Masked;
++    if(material->HasProperty("bAlphaTexture")&&material->GetBool("bAlphaTexture")) flags|=PF_Highlighted;
++    if(material->HasProperty("OutputBlending"))
++    {
++        auto blend=material->GetByte("OutputBlending");
++        if(blend==1) flags|=PF_Masked;
++        else if(blend==2) flags|=PF_Modulated;
++        else if(blend==3) flags|=PF_Translucent;
++        else if(blend>=4) return nullptr; // invisible/brighten/darken require separate material operations
++    }
++    if(material->HasProperty("FrameBufferBlending"))
++    {
++        auto blend=material->GetByte("FrameBufferBlending");
++        if(blend==1) flags|=PF_Modulated;
++        else if(blend==2) flags|=PF_Highlighted;
++        else if(blend==4) flags|=PF_Translucent;
++        else if(blend!=0) return nullptr;
++    }
++    if(auto texture=UObject::TryCast<UTexture>(material)) return texture;
++    for(const auto& name:{"Diffuse","Material","FallbackMaterial"})
++        if(material->HasProperty(name)) if(auto texture=PoaDiffuseTexture(material->GetUObject(name),flags,seen)) return texture;
++    return nullptr;
++}
++inline bool DrawPoaStaticMesh(VisibleFrame* frame,UActor* actor,bool translucentPass)
++{
++    auto mesh=GetPoaStaticMesh(actor);if(!mesh) return false;
++    const auto transform=PoaStaticMeshToWorld(actor);
++    const auto axisX=(transform*vec4(1,0,0,0)).xyz();
++    const auto axisY=(transform*vec4(0,1,0,0)).xyz();
++    const auto axisZ=(transform*vec4(0,0,1,0)).xyz();
++    const auto determinant=dot(cross(axisX,axisY),axisZ);
++    if(std::abs(determinant)<1e-12f) return false;
++    const bool reverseWinding=determinant<0;
++    bool translucentPending=false;
++    for(size_t sectionIndex=0;sectionIndex<mesh->Geometry.Sections.size();++sectionIndex)
++    {
++        const auto& section=mesh->Geometry.Sections[sectionIndex];
++        uint32_t flags=0;
++        std::set<UObject*> seen;
++        UObject* material=mesh->SourcePackage->GetUObject(mesh->MaterialReferences[sectionIndex]);
++        UTexture* texture=PoaDiffuseTexture(material,flags,seen);
++        if(!texture) continue; // unsupported material remains explicit, not a fake texture
++        if(actor->Style()==STY_Masked) flags|=PF_Masked;
++        if(actor->Style()==STY_Translucent) flags|=PF_Translucent;
++        if(actor->Style()==STY_Modulated) flags|=PF_Modulated;
++        const bool translucent=(flags&(PF_Translucent|PF_Modulated|PF_Highlighted))!=0;
++        if(translucent&&!translucentPass){translucentPending=true;continue;}
++        if(!translucent&&translucentPass) continue;
++        engine->render->UpdateTexture(texture);
++        TextureInfo info;engine->render->UpdateTextureInfo(info,texture);
++        for(size_t triangle=0;triangle<section.Triangles;++triangle)
++        {
++            GouraudVertex points[3];
++            for(size_t corner=0;corner<3;++corner)
++            {
++                const auto orderedCorner=reverseWinding&&corner?3-corner:corner;
++                const auto index=mesh->Geometry.Indices[section.FirstIndex+triangle*3+orderedCorner];
++                const auto& vertex=mesh->Geometry.Vertices[index];
++                points[corner].Point=(transform*vec4(vertex.Position[0],vertex.Position[1],vertex.Position[2],1.0f)).xyz();
++                points[corner].UV=vec2(0.0f);
++                if(!mesh->Geometry.UV.empty()&&!mesh->Geometry.UV[0].empty())
++                {
++                    const auto& uv=mesh->Geometry.UV[0][index];
++                    points[corner].UV={uv[0]*info.USize,uv[1]*info.VSize};
++                }
++                points[corner].Light=vec3(1.0f);points[corner].Fog=vec4(0.0f);
++                if(!mesh->Geometry.Colors.empty())
++                {
++                    auto color=mesh->Geometry.Colors[index];
++                    points[corner].Light=vec3(float((color>>16)&255),float((color>>8)&255),float(color&255))/255.0f;
++                }
++            }
++            frame->Device->DrawGouraudPolygon(&frame->Frame,info,points,3,flags);
++        }
++    }
++    return translucentPending;
++}

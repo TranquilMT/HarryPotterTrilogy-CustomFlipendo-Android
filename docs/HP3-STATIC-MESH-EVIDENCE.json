@@ -1,0 +1,108 @@
+{
+  "totals": {
+    "meshes": 797,
+    "vertices": 116099,
+    "triangles": 91339
+  },
+  "packages": [
+    {
+      "package": "HP3_CutScenes_SM.usx",
+      "sha256": "2d4e05f246ca9a48f11691860ecda993201e9e5cfb63057ea1a02d60750cc8db",
+      "meshes": 11,
+      "vertices": 2362,
+      "triangles": 1683
+    },
+    {
+      "package": "HP3_ExteriorArch_SM.usx",
+      "sha256": "82b3fdc400200e1ac5e7842ddec6b8970378c96bc87bdf171314e464402ffea8",
+      "meshes": 46,
+      "vertices": 11767,
+      "triangles": 8455
+    },
+    {
+      "package": "HP3_Furniture_SM.usx",
+      "sha256": "ea47cddfa2371bffa8aa2442571d0ca100204388f688cad26cc14de999912582",
+      "meshes": 35,
+      "vertices": 8121,
+      "triangles": 5890
+    },
+    {
+      "package": "HP3_Gameplay_SM.usx",
+      "sha256": "33bd4e355b0621c96f89d2d43d4332bda71964a353b49c2bb41b92a12726b06d",
+      "meshes": 66,
+      "vertices": 12557,
+      "triangles": 10864
+    },
+    {
+      "package": "HP3_Glacius_Placeholder.usx",
+      "sha256": "394f652c4bceeff11a45a45a774b54dd7275941ca7ff26c37f61b0ee6db78ccc",
+      "meshes": 50,
+      "vertices": 5698,
+      "triangles": 4758
+    },
+    {
+      "package": "HP3_HogwartsExpress_SM.usx",
+      "sha256": "77932bc2069d7a4515fe29f09647c284d1721ef3053210954fa49e64e4fd75c2",
+      "meshes": 23,
+      "vertices": 3745,
+      "triangles": 2966
+    },
+    {
+      "package": "HP3_InterArch_SM.usx",
+      "sha256": "9476d2dda1dd5322fc3a5badd553ded11910534b5d66331e77b363158114d307",
+      "meshes": 224,
+      "vertices": 25408,
+      "triangles": 21446
+    },
+    {
+      "package": "HP3_InteriorAccents_SM.usx",
+      "sha256": "68f16255ce0244292b402ecd37949538c02422f658b6def17d65c33aa282d270",
+      "meshes": 162,
+      "vertices": 29390,
+      "triangles": 20986
+    },
+    {
+      "package": "HP3_Movers_SM.usx",
+      "sha256": "8f2ce81aeb7146bf90c27118bff59db2aaed97ed03d4c2a69f75a615169c7a31",
+      "meshes": 37,
+      "vertices": 1488,
+      "triangles": 892
+    },
+    {
+      "package": "HP3_Natural_SM.usx",
+      "sha256": "b04274e85d92d17c9721c9735fb4d81184a831629e8b43b2c71c2bd6c309b240",
+      "meshes": 45,
+      "vertices": 7196,
+      "triangles": 7063
+    },
+    {
+      "package": "HP3_Particles_SM.usx",
+      "sha256": "645b5eb8531b89961b1aec653d4c27a0fb122359d7f1b64466ceb221bac66ae4",
+      "meshes": 7,
+      "vertices": 770,
+      "triangles": 890
+    },
+    {
+      "package": "HP3_Placeholder_SM.usx",
+      "sha256": "f4f5e70a547eeabd9a13cce9790bd95d113cca01f8e200a7581f20543e941a1e",
+      "meshes": 37,
+      "vertices": 3630,
+      "triangles": 2648
+    },
+    {
+      "package": "HP3_SkyBoxes.usx",
+      "sha256": "1214a650a22c0b27a370aec0aacb1bd3e122c0429ad5efb825489056aff3109e",
+      "meshes": 13,
+      "vertices": 665,
+      "triangles": 1070
+    },
+    {
+      "package": "HP3_Tester.usx",
+      "sha256": "07ce2037eb5244b5654121d3fd424f1f5e2b03ab2954280dd08474ed7ef3b383",
+      "meshes": 41,
+      "vertices": 3302,
+      "triangles": 1728
+    }
+  ],
+  "scope": "Production native loader bodies with bounded stream and UPrimitive/object service doubles; not GPU or device execution"
+}

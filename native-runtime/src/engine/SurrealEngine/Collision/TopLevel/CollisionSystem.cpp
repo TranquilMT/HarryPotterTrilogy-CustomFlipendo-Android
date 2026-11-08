@@ -2,6 +2,7 @@
 #include "Precomp.h"
 #include "Engine.h"
 #include "KW.h"
+#include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
 #include "CollisionSystem.h"
 #include "Packages/Engine/Actors/UActor.h"
 #include "Packages/Engine/Actors/Brush/UMover.h"
@@ -156,7 +157,12 @@ void CollisionSystem::AddToCollision(UActor* actor)
 				extents = bbox.extents() + 0.1f; // 0.1 for numerical stability
 			}
 		}
-		else if (engine->LaunchInfo.IsKnowWonder()) // KnowWonder hashes an actor by its primitive's world box (CT_Box, CollisionWidth offset)
+		else if (engine->LaunchInfo.IsHarryPotter3() && GetPoaStaticMesh(actor))
+        {
+            BBox bbox = GetPoaStaticMesh(actor)->BoundingBox.transform(PoaStaticMeshToWorld(actor));
+            location = bbox.center(); extents = bbox.extents() + 0.1f;
+        }
+        else if (engine->LaunchInfo.IsKnowWonder()) // KnowWonder hashes an actor by its primitive's world box (CT_Box, CollisionWidth offset)
 		{
 			BBox bbox = KW::ActorWorldCollisionBox(actor);
 			location = bbox.center();

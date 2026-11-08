@@ -1,0 +1,213 @@
+{
+  "scope": "Static Core registration-name candidate audit; conditional registrations and ABI behavior still require runtime checks",
+  "decodedFunctions": 8090,
+  "coreSHA256": "cb6a84a03279b9f6c597c296b43a89b5d865e406e4654866c55216b3b0982b39",
+  "missingCoreCandidates": {
+    "Object.ClockwiseFrom_IntInt": {
+      "owner": "Object",
+      "function": "ClockwiseFrom_IntInt",
+      "identity": "core.object.clockwisefrom_intint",
+      "export": 561,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "gameplay.scriptedcontroller.setfireyaw",
+          "offset": 103,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwscriptcontroller.setfireyaw",
+          "offset": 103,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.QuatFromRotator": {
+      "owner": "Object",
+      "function": "QuatFromRotator",
+      "identity": "core.object.quatfromrotator",
+      "export": 677,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 320,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 427,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.QuatToRotator": {
+      "owner": "Object",
+      "function": "QuatToRotator",
+      "identity": "core.object.quattorotator",
+      "export": 680,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "engine.svehicle.specialcalcview",
+          "offset": 466,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.LoadStringArray": {
+      "owner": "Object",
+      "function": "LoadStringArray",
+      "identity": "core.object.loadstringarray",
+      "export": 693,
+      "nativeIndex": 2001,
+      "callSites": [
+        {
+          "caller": "hgame.hppagecredits.initcomponent",
+          "offset": 68,
+          "kind": "native-index"
+        },
+        {
+          "caller": "hgame.overlaypagecredits.show",
+          "offset": 29,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.printfile",
+          "offset": 23,
+          "kind": "native-index"
+        }
+      ]
+    },
+    "Object.SaveStringArray": {
+      "owner": "Object",
+      "function": "SaveStringArray",
+      "identity": "core.object.savestringarray",
+      "export": 698,
+      "nativeIndex": 2002,
+      "callSites": [
+        {
+          "caller": "kwgame.kwherocontroller.writefile",
+          "offset": 82,
+          "kind": "native-index"
+        }
+      ]
+    },
+    "Object.KWDeleteSaveGame": {
+      "owner": "Object",
+      "function": "KWDeleteSaveGame",
+      "identity": "core.object.kwdeletesavegame",
+      "export": 708,
+      "nativeIndex": 2004,
+      "callSites": [
+        {
+          "caller": "hgame.hppagenewgame.startnewgame",
+          "offset": 43,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwpawn.deleterunninggames",
+          "offset": 37,
+          "kind": "native-index"
+        },
+        {
+          "caller": "kwgame.kwpawn.startsavedrunninggame",
+          "offset": 230,
+          "kind": "native-index"
+        }
+      ]
+    },
+    "Object.SetUTracing": {
+      "owner": "Object",
+      "function": "SetUTracing",
+      "identity": "core.object.setutracing",
+      "export": 710,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "kwgame.kwherocontroller.utrace",
+          "offset": 38,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.utracenat",
+          "offset": 38,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.IsUTracing": {
+      "owner": "Object",
+      "function": "IsUTracing",
+      "identity": "core.object.isutracing",
+      "export": 713,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "kwgame.kwherocontroller.utrace",
+          "offset": 44,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.utrace",
+          "offset": 80,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.utracenat",
+          "offset": 44,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwherocontroller.utracenat",
+          "offset": 81,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.Copy": {
+      "owner": "Object",
+      "function": "Copy",
+      "identity": "core.object.copy",
+      "export": 755,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "kwgame.contextscriptedsequence.setactions",
+          "offset": 81,
+          "kind": "resolved-final"
+        }
+      ]
+    },
+    "Object.NeedSAPFont": {
+      "owner": "Object",
+      "function": "NeedSAPFont",
+      "identity": "core.object.needsapfont",
+      "export": 760,
+      "nativeIndex": 0,
+      "callSites": [
+        {
+          "caller": "engine.hud.loadprogressfont",
+          "offset": 14,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "hgame.hphud.setuplanguage",
+          "offset": 3,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "hgame.overlaypagecredits.setupfonts",
+          "offset": 3,
+          "kind": "resolved-final"
+        },
+        {
+          "caller": "kwgame.kwhud.setuplanguage",
+          "offset": 3,
+          "kind": "resolved-final"
+        }
+      ]
+    }
+  },
+  "phoneExecution": false
+}

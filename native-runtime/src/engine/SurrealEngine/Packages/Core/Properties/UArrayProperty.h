@@ -29,6 +29,8 @@ public:
 	std::string PrintValue(const void* data) override;
 	void SetValueFromString(void* data, const std::string& valueString) override;
 	bool SupportsText() const;
+    void SetConfigValues(void* data, const Array<std::string>& values);
+    Array<std::string> GetConfigValues(const void* data);
 
 	GCAllocation* MarkPropertyElement(GCAllocation* marklist, void* data) override;
 
