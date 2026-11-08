@@ -1,0 +1,88 @@
+{
+  "columns": [
+    "meshes",
+    "bones",
+    "points",
+    "triangles",
+    "influences",
+    "LODs",
+    "sockets"
+  ],
+  "totals": [
+    167,
+    8790,
+    105997,
+    163721,
+    173285,
+    668,
+    0
+  ],
+  "packages": [
+    {
+      "package": "HPCharacters.ukx",
+      "sha256": "fdd618f39f7b2be7bf87073766dcc29e2d6ae00490c7e2940e355a192a95aae6",
+      "totals": [
+        44,
+        2078,
+        19736,
+        36122,
+        30966,
+        176,
+        0
+      ]
+    },
+    {
+      "package": "HPCharacters_16.ukx",
+      "sha256": "fe68b9c0dea0d8f79af5cb16fa3177f1dac6ea2e364c647d6f05178e68408a7b",
+      "totals": [
+        27,
+        2877,
+        38408,
+        51929,
+        68771,
+        108,
+        0
+      ]
+    },
+    {
+      "package": "HPCharacters_32.ukx",
+      "sha256": "0afff64756fdf381607ef88afd812eae543b195c5205cfd520fc9ac5f1eb3120",
+      "totals": [
+        27,
+        2877,
+        32639,
+        53927,
+        57592,
+        108,
+        0
+      ]
+    },
+    {
+      "package": "HProps.ukx",
+      "sha256": "a89eaee35112e0d263fe284a8ea5e4c32d4caaf2217952d2f14249c9a567451f",
+      "totals": [
+        68,
+        956,
+        15211,
+        21742,
+        15953,
+        272,
+        0
+      ]
+    },
+    {
+      "package": "Joint.ukx",
+      "sha256": "b28d6977b8cf789047506c1e1d85279e71d9c159eade1342f77b3d4c4a50c3fb",
+      "totals": [
+        1,
+        2,
+        3,
+        1,
+        3,
+        4,
+        0
+      ]
+    }
+  ],
+  "scope": "Production decoder and CPU skinning; bounded stream adapters. Bind-pose identity across original corpus; animation interpolation covered separately. Not original playback parity or Android GPU acceptance."
+}

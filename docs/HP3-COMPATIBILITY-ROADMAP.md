@@ -1,3 +1,18 @@
+# 8 November — skeletal geometry and initial CPU rendering
+
+- [x] Add a PoA-only SkeletalMesh native class with version-129/version-4 decoding and absolute lazy-array endpoint checks.
+- [x] Read full-resolution points, wedges, triangles, material slots, skeletons and weights from all 167 original EU meshes; bound/skip optimized LOD streams and collision metadata.
+- [x] Implement hierarchy composition, bind-pose inverse transforms and normalized CPU weighted skinning.
+- [x] Connect actor base sequence/frame sampling to skinned triangle submission, material routing and actor/mesh transforms.
+- [x] Expose default sequence timing and function-notify metadata to existing actor animation code.
+- [x] Test all original bind poses plus interpolation, hierarchy/cycle handling, malformed streams, captured animated vertices and render passes.
+- [ ] Pass ARM64 compilation for this new skeletal source.
+- [ ] Verify original-game animation parity and Android GPU output.
+- [ ] Implement per-actor animation linking, channel blending/tween poses, root motion, object notifies and bone attachments.
+- [ ] Implement optimized LOD selection, character lighting and measured mobile performance.
+
+See HP3-SKELETAL-EVIDENCE.json and HP3-SKELETAL-IMPLEMENTATION.md. This is a production source path with host evidence, not proof that PoA boots or is playable. The published APK is unchanged.
+
 # 8 November — EU animation reader and sampler
 
 - [x] Register a PoA-only MeshAnimation native resource and add it to the engine build.
@@ -6,7 +21,7 @@
 - [x] Handle 298 zero quaternion keys as identity; retain two all-NaN position keys as unavailable translation channels.
 - [x] Reject unsupported compressed flex tracks, malformed counts, invalid timings and truncated resources without replacing prior data.
 - [x] Pass 126 compatibility tests and 29 Android packaging tests locally.
-- [ ] Pass the new animation ARM64 build.
+- [x] Pass animation ARM64 compilation (Actions 42521133898).
 - [ ] Connect skeletal geometry, skinning, playback state, blending and notify dispatch.
 
 Evidence: HP3-ANIMATION-EVIDENCE.json. Corpus coverage uses production reader/sampler and native Load body with bounded stream/object adapters. No device gameplay claim. All-NaN translation fallback is a defensive policy, not verified retail playback equivalence. Published v0.4.14 remains unchanged.

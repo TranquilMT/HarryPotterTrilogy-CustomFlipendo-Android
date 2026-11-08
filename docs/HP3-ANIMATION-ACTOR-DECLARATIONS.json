@@ -1,0 +1,403 @@
+{
+  "source": "Original EU System/Engine.u; static reflected declarations, not runtime ABI acceptance",
+  "functions": [
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "GetAnimParams",
+      "exportIndex": 1316,
+      "arguments": [
+        {
+          "exportIndex": 3718,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3715,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3715,
+          "name": "OutSeqName",
+          "type": "NameProperty",
+          "dimension": 1,
+          "flags": 384,
+          "category": "None",
+          "next": 3714,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3714,
+          "name": "OutAnimFrame",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 384,
+          "category": "None",
+          "next": 3712,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3712,
+          "name": "OutAnimRate",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 384,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": true,
+          "return": false,
+          "optional": false
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "AnimBlendParams",
+      "exportIndex": 7520,
+      "arguments": [
+        {
+          "exportIndex": 3777,
+          "name": "Stage",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3775,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3775,
+          "name": "BlendAlpha",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3774,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3774,
+          "name": "InTime",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3773,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3773,
+          "name": "OutTime",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3772,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3772,
+          "name": "BoneName",
+          "type": "NameProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3767,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3767,
+          "name": "bGlobalPose",
+          "type": "BoolProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "LinkSkelAnim",
+      "exportIndex": 7566,
+      "arguments": [
+        {
+          "exportIndex": 3783,
+          "name": "anim",
+          "type": "ObjectProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3782,
+          "typeSpecificBytes": "c001",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3782,
+          "name": "NewMesh",
+          "type": "ObjectProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "af",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "FinishAnim",
+      "exportIndex": 7678,
+      "arguments": [
+        {
+          "exportIndex": 3825,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "IsAnimating",
+      "exportIndex": 7680,
+      "arguments": [
+        {
+          "exportIndex": 3828,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 7679,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": {
+        "exportIndex": 7679,
+        "name": "ReturnValue",
+        "type": "BoolProperty",
+        "dimension": 1,
+        "flags": 1408,
+        "category": "None",
+        "next": 0,
+        "typeSpecificBytes": "",
+        "parameter": true,
+        "out": true,
+        "return": true,
+        "optional": false
+      },
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "LoopAnim",
+      "exportIndex": 7682,
+      "arguments": [
+        {
+          "exportIndex": 3837,
+          "name": "sequence",
+          "type": "NameProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3836,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3836,
+          "name": "rate",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3835,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3835,
+          "name": "tweenTime",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3834,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3834,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Actor",
+      "name": "PlayAnim",
+      "exportIndex": 7683,
+      "arguments": [
+        {
+          "exportIndex": 3843,
+          "name": "sequence",
+          "type": "NameProperty",
+          "dimension": 1,
+          "flags": 128,
+          "category": "None",
+          "next": 3840,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "exportIndex": 3840,
+          "name": "rate",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3839,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3839,
+          "name": "tweenTime",
+          "type": "FloatProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 3838,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        },
+        {
+          "exportIndex": 3838,
+          "name": "Channel",
+          "type": "IntProperty",
+          "dimension": 1,
+          "flags": 144,
+          "category": "None",
+          "next": 0,
+          "typeSpecificBytes": "",
+          "parameter": true,
+          "out": false,
+          "return": false,
+          "optional": true
+        }
+      ],
+      "returnProperty": null,
+      "locals": [],
+      "nativeArgumentOrderVerified": true
+    }
+  ]
+}

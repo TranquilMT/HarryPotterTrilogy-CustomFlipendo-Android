@@ -8,6 +8,12 @@ An Android ARM64 source port based on Custom Flipendo, bringing the EU PC versio
 
 The ARM64 rebuild and signed-APK reconstruction workflows are available in Actions. The reconstruction verifies the base APK, exact signed output, package identity, certificate, alignment and uploaded asset hashes before publication. Private signing material is not uploaded.
 
+## Current source compatibility work
+
+The source branch includes the eleven audited Core declarations, repeated-array config handling, initial static-mesh rendering/collision, EU MeshAnimation decoding/sampling and initial skeletal geometry/CPU skinning/rendering. Original-data tests cover all 797 static meshes, 140 animation resources and 167 skeletal meshes. Core and animation checkpoints passed ARM64 compilation; the skeletal checkpoint has its own build gate.
+
+These changes are not in the published 0.4.14 APK. HP3 startup and gameplay remain unverified on Android. Channel blending/linking, object animation events, terrain, richer materials/lighting, movement/travel/save acceptance and release signing remain open. See [the current roadmap](docs/HP3-COMPATIBILITY-ROADMAP.md) and [skeletal implementation scope](docs/HP3-SKELETAL-IMPLEMENTATION.md).
+
 ## 0.4.14 — KWGame range defaults
 
 - Fix the reported `Name index out of bounds!: KWGame` while loading `CompanionCombatManager` defaults.

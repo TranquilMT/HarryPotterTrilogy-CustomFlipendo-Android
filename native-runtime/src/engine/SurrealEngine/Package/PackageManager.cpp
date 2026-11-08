@@ -192,6 +192,7 @@
 #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaStaticMesh.h"
 #include "Packages/Engine/Resources/Mesh/UPoaMeshAnimation.h"
+#include "Packages/Engine/Resources/Mesh/UPoaSkeletalMesh.h"
 #include "Packages/Engine/Resources/Mesh/UStaticMesh.h"
 #include "Packages/Engine/Resources/Textures/UBitmap.h"
 #include "Packages/Engine/Resources/Textures/UFireTexture.h"
@@ -1448,7 +1449,8 @@ void PackageManager::RegisterNativeClasses()
     if (launchInfo.IsHarryPotter3()) RegisterNativeClass<UPoaMeshAnimation>(enginePackage, "MeshAnimation", "Object");
     if (launchInfo.IsHarryPotter3()) RegisterNativeClass<UPoaStaticMesh>(enginePackage, "StaticMesh", "Primitive");
 	RegisterNativeClass<ULodMesh>(enginePackage, "LodMesh", "Mesh");
-	RegisterNativeClass<USkeletalMesh>(enginePackage, "SkeletalMesh", "LodMesh");
+	if (launchInfo.IsHarryPotter3()) RegisterNativeClass<UPoaSkeletalMesh>(enginePackage, "SkeletalMesh", "LodMesh");
+    else RegisterNativeClass<USkeletalMesh>(enginePackage, "SkeletalMesh", "LodMesh");
 	RegisterNativeClass<UAnimation>(enginePackage, "Animation", "Object");
 
 	RegisterNativeClass<UModel>(enginePackage, "Model", "Primitive");

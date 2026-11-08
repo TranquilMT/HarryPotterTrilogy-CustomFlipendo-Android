@@ -13,6 +13,7 @@
 #include "Packages/Engine/Resources/Mesh/USkeletalMesh.h"
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
+#include "VisiblePoaSkeletalMesh.h"
 
 bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, bool translucentPass)
 {
@@ -20,7 +21,11 @@ bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, b
 	if (!mesh)
 		return false;
 
-	engine->render->Stats.Actors++;
+	if (engine->LaunchInfo.IsHarryPotter3())
+        if (auto skeletal=UObject::TryCast<UPoaSkeletalMesh>(mesh))
+            return DrawPoaSkeletalMesh(frame,actor,skeletal,translucentPass);
+
+    engine->render->Stats.Actors++;
 	engine->Level->Light.UpdateLightList(actor);
 
 	// DrawDebugInfo(frame, actor);
