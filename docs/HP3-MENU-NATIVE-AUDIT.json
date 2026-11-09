@@ -105,7 +105,7 @@
       "owner": "GUIFont",
       "name": "GetFont",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
@@ -305,5 +305,5 @@
     }
   ],
   "total": 42,
-  "unmatched": 24
+  "unmatched": 23
 }

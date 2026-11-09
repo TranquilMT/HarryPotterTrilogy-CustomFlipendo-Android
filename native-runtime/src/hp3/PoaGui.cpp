@@ -16,6 +16,8 @@
 #include "Packages/Core/Properties/UStructProperty.h"
 #include "Utils/StrTools.h"
 #include "Native/NCanvas.h"
+#include "Native/NObject.h"
+#include "Packages/Engine/Resources/UFont.h"
 #include "Packages/Engine/Resources/Textures/UTexture.h"
 namespace PoaGui
 {
@@ -156,6 +158,36 @@ static void InitializeControls(UObject* self)
     controls.Resize(found.size());
     for(size_t i=0;i<found.size();++i)*static_cast<UObject**>(controls.GetItem(i))=found[i];
 }
+static ScriptArray& GuiArray(UObject* self,const char* name,ExpressionValueType type)
+{
+    auto property=UObject::TryCast<UArrayProperty>(self->GetMemberProperty(name));
+    if(!property || !property->Inner || property->Inner->ValueType!=type)
+        Exception::Throw(std::string("Invalid PoA GUI array: ")+name);
+    return *static_cast<ScriptArray*>(self->GetProperty(property));
+}
+static void GetFont(UObject* self,UObject*,int32_t resolution,UObject*& result)
+{
+    result=nullptr;if(!self)return;
+    auto& names=GuiArray(self,"FontArrayNames",ExpressionValueType::ValueString);
+    auto& sizes=GuiArray(self,"FontArrayResolutions",ExpressionValueType::ValueInt);
+    auto& fonts=GuiArray(self,"FontArrayFonts",ExpressionValueType::ValueObject);
+    if(!names.GetSize())return;
+    size_t selected=0;
+    if(!self->GetBool("bFixedSize"))
+        while(selected<sizes.GetSize() && resolution>=*static_cast<int32_t*>(sizes.GetItem(selected)))++selected;
+    selected=std::min(selected,names.GetSize()-1);
+    if(fonts.GetSize()<=selected)fonts.Resize(selected+1);
+    auto& cached=*static_cast<UObject**>(fonts.GetItem(selected));
+    if(!cached){
+        const auto& name=*static_cast<std::string*>(names.GetItem(selected));
+        if(!name.empty()){
+            auto fontClass=engine->packages->GetPackage("Engine")->GetClass("Font");
+            UObject* loaded=nullptr;NObject::DynamicLoadObject(name,fontClass,true,loaded);
+            cached=UObject::TryCast<UFont>(loaded);
+        }
+    }
+    result=cached;
+}
 static void DrawTileScaled(UObject* self,UObject* material,float xScale,float yScale)
 {
     auto canvas=UObject::Cast<UCanvas>(self);
@@ -170,6 +202,7 @@ static void DrawTileScaled(UObject* self,UObject* material,float xScale,float yS
 }
 void RegisterNatives()
 {
+    RegisterVMNativeFunc_3("GUIFont","GetFont",&GetFont,0);
     RegisterVMNativeFunc_1("GUIController","GetMainMenuClass",&GetMainMenuClass,0);
     RegisterVMNativeFunc_1("GUIController","GetCurrentRes",&GetCurrentRes,0);
     RegisterVMNativeFunc_0("GUIMultiComponent","InitializeControls",&InitializeControls,0);

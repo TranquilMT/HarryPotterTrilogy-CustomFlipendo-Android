@@ -1,3 +1,7 @@
+# Menu font-selection checkpoint
+
+The interrupted controller/control-instancing work was recovered and pushed. GUIFont.GetFont now selects and caches the shipped bitmap fonts, with original EU button/title asset checks. Style/text drawing, focus/input and original page actions remain unfinished. APK assembly stays gated.
+
 # PoA menu initialization and resource dispatch checkpoint
 
 The configured controller is created at the first render-ready PoA frame and its original initialization script is dispatched. Styles/fonts, control discovery, owned-control instancing, main-menu class/current-resolution accessors and texture-backed scaled drawing are connected. Original menu rendering, focus/input and page actions remain incomplete; APK assembly stays gated. See [menu source scope](HP3-MENU-LAYOUT.md).

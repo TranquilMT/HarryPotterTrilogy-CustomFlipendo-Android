@@ -23,3 +23,11 @@ The port's generic NewObject copies object references shallowly. To keep page st
 GUIController.GetMainMenuClass reads the original GameEngine.MainMenuClass property, following original helper 0x100186a0. GetCurrentRes uses the current viewport's width and height with the original `%ix%i` format (0x10018540). Canvas.DrawTileScaled now dispatches texture-backed scaled images without advancing the Canvas cursor or line state, following 0x103f79b0; non-texture UE2 materials and broader Canvas helpers remain open.
 
 Production-body tests cover resource lookup, GC-root lifetime, re-entrant/error initialization, control ordering and inherited fields, owned graph isolation/aliases/delegates/nested arrays and structs, failed-copy atomicity, accessors, and drawing cursor restoration. These adapters establish source behavior, not a real PoA menu. Style/text drawing, fonts, remaining Canvas functions, controller focus/input, page opening and New Game/Load/Options execution remain unaccepted.
+
+## Bitmap menu font selection
+
+GUIFont.GetFont is now registered for PoA. Following original EU GUI.dll helper 0x10019b40, fixed-size fonts select entry zero; otherwise the requested X resolution advances past each threshold it meets, then clamps to the final available font name. Selected assets are loaded once into FontArrayFonts. Empty font lists and missing assets return None. Array element kinds are checked before access.
+
+Android uses the original packaged bitmap-font branch; Windows native font creation remains outside this helper. Original HGame button fonts point to HPTinyInkFont through HPHugeInkFont, while all five title entries point to HPHugeInkFont. Corpus checks confirm all these Font exports exist. This selects resources for later style/text drawing; it does not establish a rendered menu or widget interaction.
+
+Production-body tests cover threshold boundaries, fixed-size selection, clamping, cached loads, missing assets and empty lists. GUI font selection source compiles. Full source and device acceptance remain separate.
