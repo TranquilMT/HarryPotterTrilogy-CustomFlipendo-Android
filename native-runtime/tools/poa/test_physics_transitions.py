@@ -13,12 +13,14 @@ class PhysicsTransitions(unittest.TestCase):
   profile=json.loads((ROOT/'tools/poa/reference-profile/eu-physics-setter.json').read_text());self.assertEqual(len(profile['cases']),144)
   rows=[]
   for r in profile['cases']:rows.append('{'+','.join(map(str,[r['old'],r['new']]+r['velocity']+r['acceleration']))+'}')
-  code=r'''#include <cstdint>
+  code=r'''#include "Package/PoaPhysicsModes.h"
+#include <cstdint>
 #include <cassert>
 struct vec3{float x,y,z;explicit vec3(float v=0):x(v),y(v),z(v){}};
 constexpr int PHYS_None=0,PHYS_Rotating=5;
 struct Launch{bool Poa=true;bool IsHarryPotter3(){return Poa;}};struct Engine{Launch LaunchInfo;}instance;Engine*engine=&instance;
-struct UActor{uint8_t Mode=0;bool LadderMode=true;vec3 Speed{7},Accel{9};uint8_t&Physics(){return Mode;}vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}void SetPhysics(uint8_t);};
+template<class T>struct GCRoot{T*Value;GCRoot(T*p):Value(p){}};
+struct UActor{UActor*Base=nullptr;UActor*&ActorBase(){return Base;}void SetBase(UActor*p,bool){Base=p;}bool bDeleteMe(){return false;}uint8_t Mode=0;bool LadderMode=true;vec3 Speed{7},Accel{9};uint8_t&Physics(){return Mode;}vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}void SetPhysics(uint8_t);};
 '''+body+r'''
 struct Original{int Old,New;float X,Y,Z,AX,AY,AZ;};
 Original reference[]={'''+','.join(rows)+r'''};
@@ -28,5 +30,5 @@ int main(){for(const auto&r:reference){UActor a;a.Mode=uint8_t(r.Old);a.Speed.x=
 }
 '''
   with tempfile.TemporaryDirectory()as tmp:
-   p=pathlib.Path(tmp);(p/'test.cpp').write_text(code);subprocess.run(['g++','-std=c++20','-Wall','-Wextra','-Werror','-fsanitize=address,undefined',str(p/'test.cpp'),'-o',str(p/'test')],check=True);subprocess.run([str(p/'test')],check=True,env=dict(os.environ,ASAN_OPTIONS='detect_leaks=0'))
+   p=pathlib.Path(tmp);(p/'test.cpp').write_text(code);subprocess.run(['g++','-I'+str(ENGINE),'-std=c++20','-Wall','-Wextra','-Werror','-fsanitize=address,undefined',str(p/'test.cpp'),'-o',str(p/'test')],check=True);subprocess.run([str(p/'test')],check=True,env=dict(os.environ,ASAN_OPTIONS='detect_leaks=0'))
 if __name__=='__main__':unittest.main()

@@ -23,7 +23,8 @@ struct Exception{[[noreturn]]static void Throw(const std::string&s){throw std::r
 struct Launch{bool Poa=false,KW=false;bool IsHarryPotter3(){return Poa;}bool IsKnowWonder(){return KW;}};
 struct Engine{Launch LaunchInfo;} instance;Engine*engine=&instance;
 struct vec3{float x,y,z;explicit vec3(float v=0):x(v),y(v),z(v){}};
-struct UActor{vec3 Speed,Accel;vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}uint8_t Raw=0;int Called=0,Steps=0,Rotations=0,Touches=0;float Time=0;bool Attached=false,Deleted=false,Change=false,LadderMode=true;
+template<class T>struct GCRoot{T*Value;GCRoot(T*p):Value(p){}};
+struct UActor{UActor*Base=nullptr;UActor*&ActorBase(){return Base;}void SetBase(UActor*p,bool){Base=p;}vec3 Speed,Accel;vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}uint8_t Raw=0;int Called=0,Steps=0,Rotations=0,Touches=0;float Time=0;bool Attached=false,Deleted=false,Change=false,LadderMode=true;
  uint8_t&Physics(){return Raw;}bool bDeleteMe(){return Deleted;}int PhysicsMode();void SetPhysics(uint8_t);void TickPhysics(float);
  void Step(int mode,float dt){Called=mode;++Steps;Time+=dt;if(Change)Raw=6;}
  void TickWalking(float dt){Step(1,dt);}void TickFalling(float dt){Step(2,dt);}void TickSwimming(float dt){Step(3,dt);}void TickFlying(float dt){Step(4,dt);}void TickProjectile(float dt){Step(6,dt);}void TickRolling(float dt){Step(7,dt);}void TickInterpolating(float dt){Step(8,dt);}void TickMovingBrush(float dt){Step(9,dt);}void TickSpider(float dt){Step(10,dt);}void TickTrailer(float dt){Step(11,dt);}void TickRotating(float){++Rotations;}void CheckPendingTouch(){++Touches;}

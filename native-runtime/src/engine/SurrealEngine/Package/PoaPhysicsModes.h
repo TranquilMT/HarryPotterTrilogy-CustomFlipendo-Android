@@ -3,6 +3,13 @@
 
 namespace PoaPhysics
 {
+// EU raw values: None, Walking, Rotating, Spider and RootMotion preserve an
+// existing base in setPhysics. Floor discovery/root-lock work is separate.
+inline bool KeepsExistingBase(uint8_t raw)
+{
+    return raw == 0 || raw == 1 || raw == 5 || raw == 9 || raw == 12;
+}
+
 // Interpret serialized Physics without rewriting it: scripts and saves use the
 // game's own enumeration. Return the shared UE1 handler number where one exists.
 inline int EngineMode(uint8_t raw, bool poa)

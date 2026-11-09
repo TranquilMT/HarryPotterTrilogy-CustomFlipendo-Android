@@ -1,0 +1,4400 @@
+{
+  "scope": "Original EU AActor.setPhysics with synthetic actor storage, null mesh/static-mesh instance, synthetic base, stubbed floor lookup and SetBase callback; excludes actual collision/base events and root locking",
+  "engineSHA256": "73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a",
+  "cases": [
+    {
+      "old": 0,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 0,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 1,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 2,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 3,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 4,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 5,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 6,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 7,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 8,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 9,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 10,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 11,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 12,
+      "hadBase": false,
+      "hasBase": false,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 0,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 0,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 1,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 1,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 2,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 2,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 3,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 3,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 4,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 4,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 5,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 5,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 6,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 6,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 7,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 7,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 8,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 8,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 9,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 9,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 10,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 10,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 11,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 11,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 0,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 1,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 2,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 3,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 4,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 5,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 6,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 7,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 8,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 9,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "old": 12,
+      "new": 10,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 11,
+      "hadBase": true,
+      "hasBase": false,
+      "setBaseCalls": 1,
+      "notify": 1,
+      "floor": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "old": 12,
+      "new": 12,
+      "hadBase": true,
+      "hasBase": true,
+      "setBaseCalls": 0,
+      "notify": 0,
+      "floor": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

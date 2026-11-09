@@ -70,12 +70,19 @@ void UActor::SetPhysics(uint8_t newPhysics)
     if (poa && Physics() == newPhysics) return;
 	Physics() = newPhysics;
 	LadderMode = false;
-    // Retail 0x1047f8b6 clears motion on entry to None/Rotating.
-    // Root locking, base/floor transitions and Karma hooks remain separate.
-    if (poa && (newPhysics == PHYS_None || newPhysics == PHYS_Rotating))
+    if (poa)
     {
-        Velocity() = vec3(0.0f);
-        Acceleration() = vec3(0.0f);
+        GCRoot<UActor> actorRoot(this);
+        // Retail clears the base in airborne/other non-grounded modes.
+        // SetBase raises script callbacks, which can change the mode again.
+        if (!PoaPhysics::KeepsExistingBase(Physics()) && ActorBase())
+            SetBase(nullptr, true);
+        if (bDeleteMe()) return;
+        if (Physics() == PHYS_None || Physics() == PHYS_Rotating)
+        {
+            Velocity() = vec3(0.0f);
+            Acceleration() = vec3(0.0f);
+        }
     }
 }
 

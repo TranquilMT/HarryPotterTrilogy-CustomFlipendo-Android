@@ -1,3 +1,15 @@
+# 9 November — EU base detachment on physics changes
+
+- [x] Trace and retain 338 original EU based-actor transition cases (Actions 42645356037).
+- [x] Implement the raw-mode retention policy and detach through the production SetBase path.
+- [x] Retain the actor across callbacks; respect deletion, rebasing and reentrant mode changes.
+- [x] Pass seven focused physics tests, including original-data and production-body/list/event checks.
+- [x] Pass all 144 compatibility tests, C++ syntax checks and canonical patch verification.
+- [ ] Pass this checkpoint's ARM64 build.
+- [ ] Complete floor discovery/replacement and root-motion transitions, movement, queries and persistence.
+
+See HP3-PHYSICS-BASE-TRANSITIONS.md for scope. Broader UE2 physics and phone validation remain open; published v0.4.14 is unchanged.
+
 # 9 November — EU stopping transitions
 
 - [x] Preserve unchanged SetPhysics state and clear velocity/acceleration when entering None or Rotating.

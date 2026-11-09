@@ -18,6 +18,8 @@ Physics dispatch now interprets EU PoA mode numbers separately from UE1 while re
 
 The PoA setter now preserves repeated-mode state and clears motion on entry to None/Rotating, compared with 144 original EU reference cases. See [setter scope and remaining root work](docs/HP3-PHYSICS-TRANSITIONS.md).
 
+PoA physics changes now detach existing bases according to 338 original EU reference cases, with callback/deletion/rebasing checks. See [base-transition scope](docs/HP3-PHYSICS-BASE-TRANSITIONS.md).
+
 ## 0.4.14 — KWGame range defaults
 
 - Fix the reported `Name index out of bounds!: KWGame` while loading `CompanionCombatManager` defaults.
