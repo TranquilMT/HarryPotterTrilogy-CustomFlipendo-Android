@@ -1,0 +1,633 @@
+--- a/SurrealEngine/Collision/TopLevel/TraceTest.h
++++ b/SurrealEngine/Collision/TopLevel/TraceTest.h
+@@ -8,10 +8,11 @@
+ 	using CollisionTester::CollisionTester;
+ 
+ 	CollisionHitList Trace(const vec3& from, const vec3& to, float height, float radius, bool traceActors, bool traceWorld, bool visibilityOnly);
++	CollisionHitList TraceExtent(const vec3& from,const vec3& to,const vec3& extent,bool traceActors,bool traceWorld,bool visibilityOnly);
+ 	bool TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool traceActors, bool traceWorld, bool visibilityOnly);
+ 
+ private:
+-	void TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits);
++	void TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits, const dvec3* box=nullptr);
+ 
+ 	// Ray/actor hit trace
+ 	static double RayActorTrace(const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, UActor* actor);
+--- a/SurrealEngine/Collision/TopLevel/TraceTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/TraceTest.cpp
+@@ -3,6 +3,8 @@
+ #include "Engine.h"
+ #include "Package/PoaWorldCollision.h"
+ #include "KW.h"
++#include "Collision/BottomLevel/PoaBoxCollision.h"
++#include "Packages/Engine/Resources/Level/UModel.h"
+ #include "TraceTest.h"
+ #include "PoaStaticMeshTrace.h"
+ #include "Collision/BottomLevel/TraceAABBModel.h"
+@@ -75,6 +77,105 @@
+ 			TraceAABBModel tracemodel;
+ 			dvec3 extents = { (double)radius, (double)radius, (double)height };
+ 			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, extents, visibilityOnly);
++			hits.push_back(worldHits);
++		}
++	}
++
++	// Sort by closest hit and only include the first hit for each actor
++
++	std::stable_sort(hits.begin(), hits.end(), [](const auto& a, const auto& b) { return a.Fraction < b.Fraction; });
++	std::set<UActor*> seenActors;
++	CollisionHitList uniqueHits;
++	for (auto& hit : hits)
++	{
++		if (hit.Actor)
++		{
++			if (seenActors.find(hit.Actor) == seenActors.end())
++			{
++				seenActors.insert(hit.Actor);
++				uniqueHits.push_back(hit);
++			}
++		}
++		else
++		{
++			uniqueHits.push_back(hit);
++		}
++	}
++
++	tmax -= margin;
++	for (auto& hit : uniqueHits)
++	{
++		hit.Fraction = (float)(std::max(hit.Fraction - margin, 0.0f) / tmax);
++	}
++
++	return uniqueHits;
++}
++
++CollisionHitList TraceTester::TraceExtent(const vec3& from, const vec3& to, const vec3& extents, bool traceActors, bool traceWorld, bool visibilityOnly)
++{
++	if (!std::isfinite(extents.x)||!std::isfinite(extents.y)||!std::isfinite(extents.z)||extents.x<0||extents.y<0||extents.z<0) return {};
++	if (from == to || (!traceActors && !traceWorld))
++		return {};
++
++	dvec3 origin = to_dvec3(from);
++	dvec3 direction = to_dvec3(to) - origin;
++	double tmin = 0.0f; // if this goes above 0.0, you will be able to walk through walls!
++	double tmax = length(direction);
++	if (!std::isfinite(tmax))
++		return {};
++	if (tmax < tmin)
++		return {};
++	direction *= 1.0f / tmax;
++
++	float margin = 1.0f;
++	tmax += margin;
++
++	CollisionHitList hits;
++
++	double dradius = extents.x;
++	double dheight = extents.z;
++	dvec3 box=to_dvec3(extents);
++
++
++	int checkCounter = NextCheckCounter();
++	ivec3 start = GetSweepStartExtents(from, to, extents);
++	ivec3 end = GetSweepEndExtents(from, to, extents);
++	if (end.x - start.x < 100 && end.y - start.y < 100 && end.z - start.z < 100)
++	{
++		for (int z = start.z; z < end.z; z++)
++		{
++			for (int y = start.y; y < end.y; y++)
++			{
++				for (int x = start.x; x < end.x; x++)
++				{
++					for (UActor* actor : GetActors(x, y, z))
++					{
++						if (actor->Collision.CheckCounter != checkCounter)
++						{
++							actor->Collision.CheckCounter = checkCounter;
++							TraceActor(actor, origin, tmin, direction, tmax, dheight, dradius, traceActors, traceWorld, visibilityOnly, hits, &box);
++						}
++					}
++				}
++			}
++		}
++	}
++
++	if (traceWorld && GetLevel() && GetLevel()->Model && !GetLevel()->Model->Nodes.empty())
++	{
++		if (extents == vec3(0.0f))
++		{
++			// Line/triangle intersect
++			TraceRayModel tracemodel;
++			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, visibilityOnly);
++			hits.push_back(worldHits);
++		}
++		else
++		{
++			// AABB/Triangle intersect
++			TraceAABBModel tracemodel;
++
++			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, box, visibilityOnly);
+ 			hits.push_back(worldHits);
+ 		}
+ 	}
+@@ -196,13 +297,13 @@
+ 	return vec3((float)radial.x, (float)radial.y, 0.0f);
+ }
+ 
+-void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits)
++void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits, const dvec3* box)
+ {
+     if (engine->LaunchInfo.IsHarryPotter3())
+     {
+         if (auto mesh = GetPoaStaticMesh(actor))
+         {
+-            if (PoaCollision::TraceStaticMesh(actor,traceActors,traceWorld)) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
++            if (PoaCollision::TraceStaticMesh(actor,traceActors,traceWorld)) TracePoaStaticMeshExtent(actor, mesh, origin, tmin, dirNormalized, tmax, box?*box:dvec3(radius,radius,height), hits);
+             return;
+         }
+     }
+@@ -218,6 +319,7 @@
+ 		mat4 rotateWorldToObj = mat4::transpose(rotateObjToWorld);
+ 
+ 		vec3 scale = mover->MainScale().Scale;
++        if(!mover->Brush() || scale.x==0 || scale.y==0 || scale.z==0) return;
+ 
+ 		dvec3 localOrigin = dvec3((
+ 			(rotateWorldToObj * vec4(vec3(origin) - mover->Location(), 1.0f)).xyz()
+@@ -231,9 +333,8 @@
+ 		double localTMin = tmin;
+ 		double localTMax = tmax;
+ 
+-		if (radius == 0.0 && height == 0.0)
+-		{
+-			// Line/triangle intersect
++		if ((!box && radius == 0.0 && height == 0.0) || (box && *box==dvec3(0.0)))
++		{
+ 			TraceRayModel tracemodel;
+ 			brushHits = tracemodel.Trace(mover, mover->Brush(), localOrigin, localTMin, localDirection, localTMax, visibilityOnly);
+ 		}
+@@ -242,6 +343,7 @@
+ 			// AABB/Triangle intersect
+ 			TraceAABBModel tracemodel;
+ 			dvec3 extents = { (double)radius, (double)radius, (double)height };
++            if(box){extents=dvec3(0.0);for(int k=0;k<3;++k){vec3 axis(0.0f);axis[k]=1;auto v=(rotateWorldToObj*vec4(axis,0.0f)).xyz();for(int j=0;j<3;++j)extents[j]+=std::abs(v[j])*(*box)[k];}}
+ 			extents /= dvec3(std::abs(scale.x), std::abs(scale.y), std::abs(scale.z));
+ 			brushHits = tracemodel.Trace(mover, mover->Brush(), localOrigin, localTMin, localDirection, localTMax, extents, visibilityOnly);
+ 		}
+@@ -264,6 +366,17 @@
+ 		if (!traceActors || visibilityOnly)
+ 			return;
+ 
++        if(engine->LaunchInfo.IsHarryPotter3() && (box || PoaCollision::BoxActor(actor)))
++        {
++            if(actor->Brush()) return;
++            auto target=PoaCollision::ActorExtent(actor);if(!target)return;
++            dvec3 normal(0.0),p=origin-to_dvec3(actor->Location());double t;
++            if(box && PoaCollision::BoxActor(actor)) t=PoaCollision::SweepBox(p,dirNormalized,tmin,tmax,*box+*target,normal);
++            else if(box) t=PoaCollision::SweepBoxCylinder(p,dirNormalized,tmin,tmax,*box,target->x,target->z,normal);
++            else t=PoaCollision::SweepBoxCylinder(p,dirNormalized,tmin,tmax,*target,radius,height,normal);
++            if(t<tmax)hits.push_back({float(t),vec3(normal),actor,nullptr,nullptr});
++            return;
++        }
+ 		if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor)) // CollideType CT_Box
+ 		{
+ 			vec3 normal;
+--- a/SurrealEngine/Collision/TopLevel/CollisionSystem.h
++++ b/SurrealEngine/Collision/TopLevel/CollisionSystem.h
+@@ -30,6 +30,8 @@
+ 	CollisionHitList OverlapTest(UActor* actor);
+ 	CollisionHitList OverlapTest(const vec3& location, float height, float radius, bool testActors, bool testWorld, bool visibilityOnly);
+ 
++	CollisionHitList TraceExtent(const vec3& from,const vec3& to,const vec3& extent,bool actors,bool world,bool visibility);
++	CollisionHitList OverlapExtent(const vec3& location,const vec3& extent,bool actors,bool world,bool visibility);
+ 	bool TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool traceActors, bool traceWorld, bool visibilityOnly);
+ 	CollisionHitList Trace(const vec3& from, const vec3& to, float height, float radius, bool traceActors, bool traceWorld, bool visibilityOnly);
+ 	CollisionHitList TraceDecal(const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, bool visibilityOnly);
+--- a/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
++++ b/SurrealEngine/Collision/TopLevel/CollisionSystem.cpp
+@@ -3,6 +3,7 @@
+ #include "Engine.h"
+ #include "Package/PoaWorldCollision.h"
+ #include "KW.h"
++#include "Collision/BottomLevel/PoaBoxCollision.h"
+ #include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
+ #include "CollisionSystem.h"
+ #include "Packages/Engine/Actors/UActor.h"
+@@ -23,6 +24,7 @@
+ 
+ CollisionHitList CollisionSystem::OverlapTest(UActor* actor)
+ {
++	if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor)){auto e=PoaCollision::ActorExtent(actor);return e?OverlapExtent(actor->Location(),vec3(*e),true,false,false):CollisionHitList{};}
+ 	return OverlapTest(actor->Location(), actor->CollisionHeight(), actor->CollisionRadius(), true, false, false);
+ }
+ 
+@@ -52,7 +54,7 @@
+ 
+ CollisionHit CollisionSystem::TraceFirstHit(const vec3& from, const vec3& to, UActor* tracingActor, const vec3& extents, const TraceFlags& flags)
+ {
+-	for (const CollisionHit& hit : Trace(from, to, extents.z, extents.x, flags.traceActors(), flags.traceWorld(), false))
++	for (const CollisionHit& hit : (engine->LaunchInfo.IsHarryPotter3()?TraceExtent(from,to,extents,flags.traceActors(),flags.traceWorld(),false):Trace(from, to, extents.z, extents.x, flags.traceActors(), flags.traceWorld(), false)))
+ 	{
+ 		if (hit.Actor != LevelInfo && (!tracingActor || !tracingActor->IsOwnedBy(hit.Actor)))
+ 		{
+@@ -145,12 +147,13 @@
+ 
+ void CollisionSystem::AddToCollision(UActor* actor)
+ {
+-	if (actor->bCollideActors())
++	if (actor->bCollideActors() || (engine->LaunchInfo.IsHarryPotter3() && PoaCollision::WorldGeometry(actor) && GetPoaStaticMesh(actor)))
+ 	{
+ 		vec3 location = actor->Location();
+ 		float height = actor->CollisionHeight();
+ 		float radius = actor->CollisionRadius();
+ 		vec3 extents = { radius, radius, height };
++        if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor)){auto e=PoaCollision::ActorExtent(actor);if(!e)return;extents=vec3(*e);}
+ 
+ 		if (UMover* mover = UObject::TryCast<UMover>(actor))
+ 		{
+@@ -223,3 +226,8 @@
+ 		actor->Collision.Inserted = false;
+ 	}
+ }
++
++CollisionHitList CollisionSystem::TraceExtent(const vec3& from,const vec3& to,const vec3& extent,bool actors,bool world,bool visibility)
++{ TraceTester test(this);return test.TraceExtent(from,to,extent,actors,world,visibility); }
++CollisionHitList CollisionSystem::OverlapExtent(const vec3& location,const vec3& extent,bool actors,bool world,bool visibility)
++{ OverlapTester test(this);return test.TestOverlapExtent(location,extent,actors,world,visibility); }
+--- a/SurrealEngine/Collision/TopLevel/OverlapTest.h
++++ b/SurrealEngine/Collision/TopLevel/OverlapTest.h
+@@ -9,6 +9,7 @@
+ 
+ 	CollisionHitList TestOverlap(const vec3& location, float height, float radius, bool testActors, bool testWorld, bool visibilityOnly);
+ 
++	CollisionHitList TestOverlapExtent(const vec3& location,const vec3& extent,bool testActors,bool testWorld,bool visibilityOnly);
+ 	bool IsOverlapping(UActor* actor1, UActor* actor2);
+ 
+ 	Array<UActor*> CollidingActors(const vec3& origin, float radius);
+@@ -16,6 +17,7 @@
+ 	Array<UActor*> EncroachingActors(UActor* actor);
+ 
+ private:
++	static bool BoxActorOverlap(const dvec3& origin,const dvec3& extent,UActor* actor);
+ 	// Sphere/actor overlap test
+ 	static bool SphereActorOverlap(const dvec3& origin, double sphereRadius, UActor* actor);
+ 
+--- a/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
++++ b/SurrealEngine/Collision/TopLevel/OverlapTest.cpp
+@@ -2,6 +2,10 @@
+ #include "Precomp.h"
+ #include "Engine.h"
+ #include "KW.h"
++#include "Math/coords.h"
++#include "Collision/BottomLevel/PoaBoxCollision.h"
++#include "Package/PoaWorldCollision.h"
++#include "Packages/Engine/Resources/Level/UModel.h"
+ #include "OverlapTest.h"
+ #include "PoaStaticMeshTrace.h"
+ #include "Collision/BottomLevel/OverlapAABBModel.h"
+@@ -98,6 +102,96 @@
+ 	return uniqueHits;
+ }
+ 
++CollisionHitList OverlapTester::TestOverlapExtent(const vec3& location, const vec3& extents, bool testActors, bool testWorld, bool visibilityOnly)
++{
++	if (!testActors && !testWorld)
++		return {};
++
++	if(!std::isfinite(extents.x)||!std::isfinite(extents.y)||!std::isfinite(extents.z)||extents.x<0||extents.y<0||extents.z<0)return {};
++
++	CollisionHitList hits;
++
++	if ((testActors && !visibilityOnly) || (engine->LaunchInfo.IsHarryPotter3() && testWorld))
++	{
++
++
++		dvec3 dlocation = to_dvec3(location);
++
++		int checkCounter = NextCheckCounter();
++		ivec3 start = GetStartExtents(location, extents);
++		ivec3 end = GetEndExtents(location, extents);
++		if (end.x - start.x < 100 && end.y - start.y < 100 && end.z - start.z < 100)
++		{
++			for (int z = start.z; z < end.z; z++)
++			{
++				for (int y = start.y; y < end.y; y++)
++				{
++					for (int x = start.x; x < end.x; x++)
++					{
++						for (UActor* actor : GetActors(x, y, z))
++						{
++							if (actor->Collision.CheckCounter != checkCounter)
++							{
++								actor->Collision.CheckCounter = checkCounter;
++                                if (engine->LaunchInfo.IsHarryPotter3())
++                                {
++                                    if (auto mesh = GetPoaStaticMesh(actor))
++                                    {
++                                        if (PoaCollision::TraceStaticMesh(actor,testActors&&!visibilityOnly,testWorld)) TracePoaStaticMeshExtent(actor, mesh, dlocation, 0.0, dvec3(0.0), 1.0, to_dvec3(extents), hits);
++                                        continue;
++                                    }
++                                }
++                                if(auto mover=UObject::TryCast<UMover>(actor)){if(testWorld && BoxActorOverlap(dlocation,to_dvec3(extents),mover))hits.push_back({0.0f,vec3(0.0f),mover,nullptr,nullptr});continue;}
++                                if (!testActors || visibilityOnly || !actor->bCollideActors()) continue;
++
++								if (BoxActorOverlap(dlocation, to_dvec3(extents), actor))
++								{
++									vec3 normal(0.0f); // To do: do we need the normal for contact tests?
++									hits.push_back({ 0.0f, normal, actor, nullptr, nullptr });
++								}
++							}
++						}
++					}
++				}
++			}
++		}
++	}
++
++	if (testWorld && GetLevel() && GetLevel()->Model && !GetLevel()->Model->Nodes.empty())
++	{
++		if (extents != vec3(0.0f))
++		{
++			OverlapAABBModel overlapmodel;
++			CollisionHitList worldHits = overlapmodel.TestOverlap(GetLevelInfo(), GetLevel()->Model, location, extents, visibilityOnly);
++			hits.push_back(worldHits);
++		}
++	}
++
++	// Only include each actor once
++
++	std::stable_sort(hits.begin(), hits.end(), [](const auto& a, const auto& b) { return a.Actor < b.Actor; });
++
++	UActor* prevActor = nullptr;
++	CollisionHitList uniqueHits;
++	for (auto& hit : hits)
++	{
++		if (hit.Actor)
++		{
++			if (hit.Actor != prevActor)
++			{
++				prevActor = hit.Actor;
++				uniqueHits.push_back(hit);
++			}
++		}
++		else
++		{
++			uniqueHits.push_back(hit);
++		}
++	}
++
++	return uniqueHits;
++}
++
+ Array<UActor*> OverlapTester::CollidingActors(const vec3& origin, float radius)
+ {
+ 	dvec3 dorigin = to_dvec3(origin);
+@@ -122,6 +216,7 @@
+ 						if (actor->Collision.CheckCounter != checkCounter)
+ 						{
+ 							actor->Collision.CheckCounter = checkCounter;
++                            if(engine->LaunchInfo.IsHarryPotter3()&&!actor->bCollideActors())continue;
+ 							if (SphereActorOverlap(dorigin, dradius, actor))
+ 								hits.push_back(actor);
+ 						}
+@@ -178,6 +273,7 @@
+ 						if (actor->Collision.CheckCounter != checkCounter)
+ 						{
+ 							actor->Collision.CheckCounter = checkCounter;
++                            if(engine->LaunchInfo.IsHarryPotter3()&&!actor->bCollideActors())continue;
+ 							if (CylinderActorOverlap(dorigin, dheight, dradius, actor))
+ 								hits.push_back(actor);
+ 						}
+@@ -247,9 +343,9 @@
+ 				{
+ 					for (UActor* testActor : GetActors(x, y, z))
+ 					{
+-						if (actor->Collision.CheckCounter != checkCounter)
++						if ((engine->LaunchInfo.IsHarryPotter3()?testActor:actor)->Collision.CheckCounter != checkCounter)
+ 						{
+-							actor->Collision.CheckCounter = checkCounter;
++							(engine->LaunchInfo.IsHarryPotter3()?testActor:actor)->Collision.CheckCounter = checkCounter;
+ 							if (testActor == actor || testActor->Brush())
+ 								continue;
+ 
+@@ -258,6 +354,11 @@
+ 							float testHeight = testActor->CollisionHeight();
+ 							float testRadius = testActor->CollisionRadius();
+ 							vec3 testExtents = { testRadius, testRadius, testHeight };
++                            if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(testActor)){
++                                auto e=PoaCollision::ActorExtent(testActor);if(!e)continue;
++                                if(BoxActorOverlap(to_dvec3(testActor->Location()),*e,actor))hits.push_back(testActor);
++                                continue;
++                            }
+ 							testExtents /= mainScale;
+ 
+ 							OverlapAABBModel test;
+@@ -295,6 +396,11 @@
+ 
+ bool OverlapTester::IsOverlapping(UActor* actor1, UActor* actor2)
+ {
++    if(engine->LaunchInfo.IsHarryPotter3()){
++        if(PoaCollision::BoxActor(actor1)){auto e=PoaCollision::ActorExtent(actor1);return e && BoxActorOverlap(to_dvec3(actor1->Location()),*e,actor2);}
++        if(PoaCollision::BoxActor(actor2)){auto e=PoaCollision::ActorExtent(actor2);return e && BoxActorOverlap(to_dvec3(actor2->Location()),*e,actor1);}
++    }
++
+ 	if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor1) && !KW::IsBoxCollider(actor2)) // CollideType CT_Box
+ 		return CylinderActorOverlap(to_dvec3(actor2->Location()), actor2->CollisionHeight(), actor2->CollisionRadius(), actor1);
+ 	return CylinderActorOverlap(to_dvec3(actor1->Location()), actor1->CollisionHeight(), actor1->CollisionRadius(), actor2);
+@@ -346,6 +452,13 @@
+ 
+ bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereRadius, UActor* actor)
+ {
++    if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor) && !actor->Brush()){
++        auto e=PoaCollision::ActorExtent(actor);if(!e)return false;
++        dvec3 p=sphereCenter-to_dvec3(actor->Location());double dist=0;
++        for(int k=0;k<3;++k){double v=std::max(std::abs(p[k])-(*e)[k],0.0);dist+=v*v;}
++        return dist<sphereRadius*sphereRadius;
++    }
++
+ 	if (actor->Brush()) // Ignore brushes for now
+ 		return false;
+ 
+@@ -362,6 +475,10 @@
+ 
+ bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHeight, double cylinderRadius, UActor* actor)
+ {
++    if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor) && !actor->Brush()){
++        auto e=PoaCollision::ActorExtent(actor);return e && PoaCollision::BoxCylinderOverlap(origin-to_dvec3(actor->Location()),*e,cylinderRadius,cylinderHeight);
++    }
++
+     if (engine->LaunchInfo.IsHarryPotter3())
+     {
+         if (auto mesh = GetPoaStaticMesh(actor))
+@@ -383,3 +500,19 @@
+ 	double radius = actor->CollisionRadius();
+ 	return CylinderCylinderOverlap(origin, cylinderHeight, cylinderRadius, center, height, radius);
+ }
++
++bool OverlapTester::BoxActorOverlap(const dvec3& origin,const dvec3& extent,UActor* actor)
++{
++    if(auto mesh=GetPoaStaticMesh(actor)){CollisionHitList hits;TracePoaStaticMeshExtent(actor,mesh,origin,0,dvec3(0.0),1,extent,hits);return !hits.empty();}
++    if(auto mover=UObject::TryCast<UMover>(actor)){
++        auto scale=mover->MainScale().Scale;if(!mover->Brush()||scale.x==0||scale.y==0||scale.z==0)return false;
++        auto inverse=mat4::transpose(Coords::Rotation(mover->Rotation()).ToMatrix());
++        vec3 local=(inverse*vec4(vec3(origin)-mover->Location(),1.0f)).xyz()/scale+mover->PrePivot();
++        dvec3 e(0.0);for(int k=0;k<3;++k){vec3 axis(0.0f);axis[k]=1;auto v=(inverse*vec4(axis,0.0f)).xyz();for(int j=0;j<3;++j)e[j]+=std::abs(v[j])*extent[k];}
++        e/=dvec3(std::abs(scale.x),std::abs(scale.y),std::abs(scale.z));
++        OverlapAABBModel test;return !test.TestOverlap(mover,mover->Brush(),local,vec3(e),false).empty();
++    }
++    if(actor->Brush())return false;
++    auto e=PoaCollision::ActorExtent(actor);if(!e)return false;auto p=origin-to_dvec3(actor->Location());
++    return PoaCollision::BoxActor(actor)?PoaCollision::BoxOverlap(p,extent+*e):PoaCollision::BoxCylinderOverlap(p,extent,e->x,e->z);
++}
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
+@@ -10,6 +10,7 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "KW.h"
++#include "Collision/BottomLevel/PoaBoxCollision.h"
+ #include "hp3/PoaBones.h"
+ #include "hp3/PoaFloor.h"
+ #include "Package/PoaPhysicsModes.h"
+@@ -101,7 +102,10 @@
+ 
+ bool UActor::SetLocation(const vec3& newLocation)
+ {
+-	auto result = CheckLocation(newLocation, CollisionRadius(), CollisionHeight(), bCollideWorld() || bCollideWhenPlacing());
++	auto extent=PoaCollision::ActorExtent(this);
++    const bool box=engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(this);
++    if(box&&!extent)return false;
++    auto result = box?CheckLocationBox(newLocation,vec3(*extent),bCollideWorld()||bCollideWhenPlacing()):CheckLocation(newLocation, CollisionRadius(), CollisionHeight(), bCollideWorld() || bCollideWhenPlacing());
+ 	if (!result.first)
+ 		return false;
+ 
+@@ -335,6 +339,36 @@
+ 	return { found, location };
+ }
+ 
++std::pair<bool, vec3> UActor::CheckLocationBox(vec3 location, const vec3& extent, bool check)
++{
++	// Search for a valid spot near the location
++
++	if (!check)
++		return { true, location };
++
++	// What is a reasonable size for this grid? what did UE1 do?
++	int offset[] = { 0, 1, -1 };
++	bool found = false;
++	float scale = std::max({extent.x,extent.y,extent.z});
++	for (int z = 0; z < 3 && !found; z++)
++	{
++		for (int y = 0; y < 3 && !found; y++)
++		{
++			for (int x = 0; x < 3 && !found; x++)
++			{
++				vec3 testlocation = location + vec3(offset[x] * scale, offset[y] * scale, offset[z] * scale);
++				CollisionHitList hits = XLevel()->Collision.OverlapExtent(testlocation, extent, false, true, false);
++				if (hits.empty())
++				{
++					location = testlocation;
++					found = true;
++				}
++			}
++		}
++	}
++	return { found, location };
++}
++
+ bool UActor::IsOverlapping(UActor* other)
+ {
+ 	return XLevel()->Collision.IsOverlapping(this, other);
+@@ -472,7 +506,10 @@
+ 	CollisionHitList hits;
+ 	if (!Brush())
+ 	{
+-		hits = XLevel()->Collision.Trace(Location(), Location() + delta, CollisionHeight(), CollisionRadius(), bCollideActors(), bCollideWorld(), false);
++		if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(this)){
++            auto e=PoaCollision::ActorExtent(this);if(!e){blockingHit.Fraction=0;return blockingHit;}
++            hits=XLevel()->Collision.TraceExtent(Location(),Location()+delta,vec3(*e),bCollideActors(),bCollideWorld(),false);
++        }else hits = XLevel()->Collision.Trace(Location(), Location() + delta, CollisionHeight(), CollisionRadius(), bCollideActors(), bCollideWorld(), false);
+ 		if (bCollideWorld() || bBlockActors() || bBlockPlayers())
+ 		{
+ 			for (auto& hit : hits)
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.cpp
+@@ -15,6 +15,7 @@
+ #include "Packages/Engine/Subsystems/USurrealAudioDevice.h"
+ #include "Utils/Logger.h"
+ #include "Engine.h"
++#include "Collision/BottomLevel/PoaBoxCollision.h"
+ #include "VM/ScriptCall.h"
+ #include "VM/Frame.h"
+ 
+@@ -35,7 +36,10 @@
+ 	bool bCollideWhenPlacing = SpawnClass->GetDefaultObject<UActor>()->bCollideWhenPlacing();
+ 	if (bCollideWorld || bCollideWhenPlacing)
+ 	{
+-		auto result = CheckLocation(location, radius, height, bCollideWorld || bCollideWhenPlacing);
++		auto defaults=SpawnClass->GetDefaultObject<UActor>();
++        const bool box=engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(defaults);
++        auto extent=PoaCollision::ActorExtent(defaults);if(box&&!extent)return nullptr;
++        auto result = box?CheckLocationBox(location,vec3(*extent),true):CheckLocation(location, radius, height, bCollideWorld || bCollideWhenPlacing);
+ 		if (!result.first)
+ 		{
+ 			LogMessage("Could not find usable location when trying to spawn: " + SpawnClass->Name.ToString());
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.h
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.h
+@@ -437,6 +437,7 @@
+ 	int PhysicsMode(); // Semantic dispatch; Physics() retains the serialized game value.
+ 	void SetCollision(bool newColActors, bool newBlockActors, bool newBlockPlayers);
+ 
++	std::pair<bool, vec3> CheckLocationBox(vec3 location,const vec3& extent,bool check);
+ 	std::pair<bool, vec3> CheckLocation(vec3 location, float radius, float height, bool check);
+ 
+ 	bool SetLocation(const vec3& newLocation);
+--- /dev/null
++++ b/SurrealEngine/Collision/BottomLevel/PoaBoxCollision.h
+@@ -0,0 +1,46 @@
++#pragma once
++#include "PoaCollisionExtent.h"
++#include <algorithm>
++namespace PoaCollision
++{
++template<class Actor> inline bool BoxActor(Actor* a) { return a->HasProperty("CollideType") && a->GetByte("CollideType")==1; }
++template<class Actor> inline std::optional<dvec3> ActorExtent(Actor* a)
++{
++    return Extent(a->HasProperty("CollideType")?a->GetByte("CollideType"):0,a->CollisionRadius(),a->HasProperty("CollisionWidth")?a->GetFloat("CollisionWidth"):0,a->CollisionHeight());
++}
++inline bool BoxOverlap(dvec3 p,dvec3 e) { return std::abs(p.x)<e.x && std::abs(p.y)<e.y && std::abs(p.z)<e.z; }
++inline bool BoxCylinderOverlap(dvec3 p,dvec3 box,double radius,double height)
++{
++    if(std::abs(p.z)>=box.z+height) return false;
++    double x=std::max(std::abs(p.x)-box.x,0.0),y=std::max(std::abs(p.y)-box.y,0.0);
++    return radius==0 ? std::abs(p.x)<box.x&&std::abs(p.y)<box.y : x*x+y*y<radius*radius;
++}
++struct Interval { double enter,exit; dvec3 normal{0.0}; };
++inline bool Slab(Interval& i,double p,double d,double e,int axis)
++{
++    if(d==0) return std::abs(p)<=e;
++    double a=(-e-p)/d,b=(e-p)/d;dvec3 n(0.0);n[axis]=d>0?-1:1;
++    if(a>b)std::swap(a,b);
++    if(a>i.enter){i.enter=a;i.normal=n;}i.exit=std::min(i.exit,b);return i.enter<=i.exit;
++}
++inline double SweepBox(dvec3 p,dvec3 d,double lo,double hi,dvec3 e,dvec3& normal)
++{
++    Interval i{lo,hi};for(int k=0;k<3;++k)if(!Slab(i,p[k],d[k],e[k],k))return hi;
++    if(i.enter<hi){normal=i.normal;return i.enter;}return hi;
++}
++// XY Minkowski sum of a rectangle and disk, intersected with the vertical slab.
++inline double SweepBoxCylinder(dvec3 p,dvec3 d,double lo,double hi,dvec3 box,double radius,double height,dvec3& normal)
++{
++    Interval z{lo,hi};if(!Slab(z,p.z,d.z,box.z+height,2))return hi;
++    double best=hi;dvec3 bestNormal(0.0);
++    auto accept=[&](Interval i){if(i.enter<=i.exit && i.enter<best){best=i.enter;bestNormal=i.normal;}};
++    for(int k=0;k<2;++k){Interval i=z;dvec3 e=box;e[k]+=radius;if(Slab(i,p.x,d.x,e.x,0)&&Slab(i,p.y,d.y,e.y,1))accept(i);}
++    double a=d.x*d.x+d.y*d.y;
++    for(int x:{-1,1})for(int y:{-1,1}){
++        double px=p.x-x*box.x,py=p.y-y*box.y,c=px*px+py*py-radius*radius;Interval i=z;
++        if(a==0){if(c>0)continue;}else{double b=px*d.x+py*d.y,disc=b*b-a*c;if(disc<0)continue;double root=std::sqrt(disc),entry=(-b-root)/a;i.exit=std::min(i.exit,(-b+root)/a);if(entry>i.enter){i.enter=entry;double nx=px+d.x*entry,ny=py+d.y*entry;double len=std::sqrt(nx*nx+ny*ny);i.normal=len>0?dvec3(nx/len,ny/len,0):dvec3(0.0);}}
++        accept(i);
++    }
++    normal=bestNormal;return best;
++}
++}

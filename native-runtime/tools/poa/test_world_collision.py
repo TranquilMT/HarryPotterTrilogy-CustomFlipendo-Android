@@ -22,7 +22,7 @@ struct UActor{bool World=false,Collide=true,Actors=true,Players=true,ProjectileT
 struct Launch{bool Poa=true;bool IsHarryPotter3(){return Poa;}};struct Engine{Launch LaunchInfo;}instance;Engine*engine=&instance;
 struct TraceFlags{bool pawns=false,movers=false,others=false,world=false,zoneChanges=false,onlyProjectiles=false;bool traceActors()const{return pawns||movers||others||zoneChanges||onlyProjectiles;}bool traceWorld()const{return world;}};
 struct CollisionHit{UActor*Actor=nullptr;};
-struct CollisionSystem{UActor*LevelInfo=nullptr;std::vector<CollisionHit>Hits;std::vector<CollisionHit>Trace(const vec3&,const vec3&,float,float,bool,bool,bool){return Hits;}CollisionHit TraceFirstHit(const vec3&,const vec3&,UActor*,const vec3&,const TraceFlags&);};
+struct CollisionSystem{UActor*LevelInfo=nullptr;std::vector<CollisionHit>Hits;std::vector<CollisionHit>TraceExtent(const vec3&,const vec3&,const vec3&,bool,bool,bool){return Hits;}std::vector<CollisionHit>Trace(const vec3&,const vec3&,float,float,bool,bool,bool){return Hits;}CollisionHit TraceFirstHit(const vec3&,const vec3&,UActor*,const vec3&,const TraceFlags&);};
 '''
   code=code.replace('struct vec3{};','struct vec3{float x=0,y=0,z=0;};')+body+r'''
 struct Original{int Self,Other,Blocked;};Original cases[]={'''+rows+r'''};

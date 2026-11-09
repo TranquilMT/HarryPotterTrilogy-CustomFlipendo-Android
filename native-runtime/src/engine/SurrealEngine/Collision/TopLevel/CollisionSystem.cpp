@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "Package/PoaWorldCollision.h"
 #include "KW.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
 #include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
 #include "CollisionSystem.h"
 #include "Packages/Engine/Actors/UActor.h"
@@ -23,6 +24,7 @@ bool CollisionSystem::IsOverlapping(UActor* actor1, UActor* actor2)
 
 CollisionHitList CollisionSystem::OverlapTest(UActor* actor)
 {
+	if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor)){auto e=PoaCollision::ActorExtent(actor);return e?OverlapExtent(actor->Location(),vec3(*e),true,false,false):CollisionHitList{};}
 	return OverlapTest(actor->Location(), actor->CollisionHeight(), actor->CollisionRadius(), true, false, false);
 }
 
@@ -52,7 +54,7 @@ CollisionHitList CollisionSystem::TraceDecal(const dvec3& origin, double tmin, c
 
 CollisionHit CollisionSystem::TraceFirstHit(const vec3& from, const vec3& to, UActor* tracingActor, const vec3& extents, const TraceFlags& flags)
 {
-	for (const CollisionHit& hit : Trace(from, to, extents.z, extents.x, flags.traceActors(), flags.traceWorld(), false))
+	for (const CollisionHit& hit : (engine->LaunchInfo.IsHarryPotter3()?TraceExtent(from,to,extents,flags.traceActors(),flags.traceWorld(),false):Trace(from, to, extents.z, extents.x, flags.traceActors(), flags.traceWorld(), false)))
 	{
 		if (hit.Actor != LevelInfo && (!tracingActor || !tracingActor->IsOwnedBy(hit.Actor)))
 		{
@@ -145,12 +147,13 @@ void CollisionSystem::SetLevel(ULevelInfo* levelInfo, ULevel* level)
 
 void CollisionSystem::AddToCollision(UActor* actor)
 {
-	if (actor->bCollideActors())
+	if (actor->bCollideActors() || (engine->LaunchInfo.IsHarryPotter3() && PoaCollision::WorldGeometry(actor) && GetPoaStaticMesh(actor)))
 	{
 		vec3 location = actor->Location();
 		float height = actor->CollisionHeight();
 		float radius = actor->CollisionRadius();
 		vec3 extents = { radius, radius, height };
+        if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor)){auto e=PoaCollision::ActorExtent(actor);if(!e)return;extents=vec3(*e);}
 
 		if (UMover* mover = UObject::TryCast<UMover>(actor))
 		{
@@ -223,3 +226,8 @@ void CollisionSystem::RemoveFromCollision(UActor* actor)
 		actor->Collision.Inserted = false;
 	}
 }
+
+CollisionHitList CollisionSystem::TraceExtent(const vec3& from,const vec3& to,const vec3& extent,bool actors,bool world,bool visibility)
+{ TraceTester test(this);return test.TraceExtent(from,to,extent,actors,world,visibility); }
+CollisionHitList CollisionSystem::OverlapExtent(const vec3& location,const vec3& extent,bool actors,bool world,bool visibility)
+{ OverlapTester test(this);return test.TestOverlapExtent(location,extent,actors,world,visibility); }

@@ -1,5 +1,6 @@
 #include "Precomp.h"
 #include "PoaFloor.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
 #include "Package/PoaWorldCollision.h"
 #include "Packages/Engine/Actors/UActor.h"
 #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
@@ -11,14 +12,11 @@ namespace PoaFloor
 bool FindBase(UActor* actor)
 {
     if (!actor || actor->bDeleteMe() || !actor->XLevel()) return false;
-    // Retail GetCollisionExtent has a separate width for CT_Box. The current
-    // collision sweep API accepts a cylinder; do not silently replace a box.
-    if (actor->HasProperty("CollideType") && actor->GetByte("CollideType") != 0) return false;
-    const float radius=actor->CollisionRadius(),height=actor->CollisionHeight();
-    if (!std::isfinite(radius) || !std::isfinite(height) || radius<0 || height<0) return false;
+    auto extent=PoaCollision::ActorExtent(actor);
+    if(!extent)return false;
     GCRoot<UActor> actorRoot(actor);
     const auto location=actor->Location();
-    const auto hits=actor->XLevel()->Collision.Trace(location,location+vec3(0,0,-8),height,radius,true,true,false);
+    const auto hits=PoaCollision::BoxActor(actor)?actor->XLevel()->Collision.TraceExtent(location,location+vec3(0,0,-8),vec3(*extent),true,true,false):actor->XLevel()->Collision.Trace(location,location+vec3(0,0,-8),float(extent->z),float(extent->x),true,true,false);
     UActor* floor=nullptr;
     vec3 floorNormal(0.0f);
     const bool playerLike=UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor);

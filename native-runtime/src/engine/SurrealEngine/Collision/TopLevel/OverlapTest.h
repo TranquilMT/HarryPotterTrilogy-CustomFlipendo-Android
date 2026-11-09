@@ -9,6 +9,7 @@ public:
 
 	CollisionHitList TestOverlap(const vec3& location, float height, float radius, bool testActors, bool testWorld, bool visibilityOnly);
 
+	CollisionHitList TestOverlapExtent(const vec3& location,const vec3& extent,bool testActors,bool testWorld,bool visibilityOnly);
 	bool IsOverlapping(UActor* actor1, UActor* actor2);
 
 	Array<UActor*> CollidingActors(const vec3& origin, float radius);
@@ -16,6 +17,7 @@ public:
 	Array<UActor*> EncroachingActors(UActor* actor);
 
 private:
+	static bool BoxActorOverlap(const dvec3& origin,const dvec3& extent,UActor* actor);
 	// Sphere/actor overlap test
 	static bool SphereActorOverlap(const dvec3& origin, double sphereRadius, UActor* actor);
 

@@ -3,6 +3,8 @@
 #include "Engine.h"
 #include "Package/PoaWorldCollision.h"
 #include "KW.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
+#include "Packages/Engine/Resources/Level/UModel.h"
 #include "TraceTest.h"
 #include "PoaStaticMeshTrace.h"
 #include "Collision/BottomLevel/TraceAABBModel.h"
@@ -75,6 +77,105 @@ CollisionHitList TraceTester::Trace(const vec3& from, const vec3& to, float heig
 			TraceAABBModel tracemodel;
 			dvec3 extents = { (double)radius, (double)radius, (double)height };
 			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, extents, visibilityOnly);
+			hits.push_back(worldHits);
+		}
+	}
+
+	// Sort by closest hit and only include the first hit for each actor
+
+	std::stable_sort(hits.begin(), hits.end(), [](const auto& a, const auto& b) { return a.Fraction < b.Fraction; });
+	std::set<UActor*> seenActors;
+	CollisionHitList uniqueHits;
+	for (auto& hit : hits)
+	{
+		if (hit.Actor)
+		{
+			if (seenActors.find(hit.Actor) == seenActors.end())
+			{
+				seenActors.insert(hit.Actor);
+				uniqueHits.push_back(hit);
+			}
+		}
+		else
+		{
+			uniqueHits.push_back(hit);
+		}
+	}
+
+	tmax -= margin;
+	for (auto& hit : uniqueHits)
+	{
+		hit.Fraction = (float)(std::max(hit.Fraction - margin, 0.0f) / tmax);
+	}
+
+	return uniqueHits;
+}
+
+CollisionHitList TraceTester::TraceExtent(const vec3& from, const vec3& to, const vec3& extents, bool traceActors, bool traceWorld, bool visibilityOnly)
+{
+	if (!std::isfinite(extents.x)||!std::isfinite(extents.y)||!std::isfinite(extents.z)||extents.x<0||extents.y<0||extents.z<0) return {};
+	if (from == to || (!traceActors && !traceWorld))
+		return {};
+
+	dvec3 origin = to_dvec3(from);
+	dvec3 direction = to_dvec3(to) - origin;
+	double tmin = 0.0f; // if this goes above 0.0, you will be able to walk through walls!
+	double tmax = length(direction);
+	if (!std::isfinite(tmax))
+		return {};
+	if (tmax < tmin)
+		return {};
+	direction *= 1.0f / tmax;
+
+	float margin = 1.0f;
+	tmax += margin;
+
+	CollisionHitList hits;
+
+	double dradius = extents.x;
+	double dheight = extents.z;
+	dvec3 box=to_dvec3(extents);
+
+
+	int checkCounter = NextCheckCounter();
+	ivec3 start = GetSweepStartExtents(from, to, extents);
+	ivec3 end = GetSweepEndExtents(from, to, extents);
+	if (end.x - start.x < 100 && end.y - start.y < 100 && end.z - start.z < 100)
+	{
+		for (int z = start.z; z < end.z; z++)
+		{
+			for (int y = start.y; y < end.y; y++)
+			{
+				for (int x = start.x; x < end.x; x++)
+				{
+					for (UActor* actor : GetActors(x, y, z))
+					{
+						if (actor->Collision.CheckCounter != checkCounter)
+						{
+							actor->Collision.CheckCounter = checkCounter;
+							TraceActor(actor, origin, tmin, direction, tmax, dheight, dradius, traceActors, traceWorld, visibilityOnly, hits, &box);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (traceWorld && GetLevel() && GetLevel()->Model && !GetLevel()->Model->Nodes.empty())
+	{
+		if (extents == vec3(0.0f))
+		{
+			// Line/triangle intersect
+			TraceRayModel tracemodel;
+			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, visibilityOnly);
+			hits.push_back(worldHits);
+		}
+		else
+		{
+			// AABB/Triangle intersect
+			TraceAABBModel tracemodel;
+
+			CollisionHitList worldHits = tracemodel.Trace(GetLevelInfo(), GetLevel()->Model, origin, tmin, direction, tmax, box, visibilityOnly);
 			hits.push_back(worldHits);
 		}
 	}
@@ -196,13 +297,13 @@ static vec3 CylinderHitNormal(const dvec3& hitpos, UActor* actor, double boxHeig
 	return vec3((float)radial.x, (float)radial.y, 0.0f);
 }
 
-void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits)
+void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, double height, double radius, bool traceActors, bool traceWorld, bool visibilityOnly, CollisionHitList& hits, const dvec3* box)
 {
     if (engine->LaunchInfo.IsHarryPotter3())
     {
         if (auto mesh = GetPoaStaticMesh(actor))
         {
-            if (PoaCollision::TraceStaticMesh(actor,traceActors,traceWorld)) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
+            if (PoaCollision::TraceStaticMesh(actor,traceActors,traceWorld)) TracePoaStaticMeshExtent(actor, mesh, origin, tmin, dirNormalized, tmax, box?*box:dvec3(radius,radius,height), hits);
             return;
         }
     }
@@ -218,6 +319,7 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
 		mat4 rotateWorldToObj = mat4::transpose(rotateObjToWorld);
 
 		vec3 scale = mover->MainScale().Scale;
+        if(!mover->Brush() || scale.x==0 || scale.y==0 || scale.z==0) return;
 
 		dvec3 localOrigin = dvec3((
 			(rotateWorldToObj * vec4(vec3(origin) - mover->Location(), 1.0f)).xyz()
@@ -231,9 +333,8 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
 		double localTMin = tmin;
 		double localTMax = tmax;
 
-		if (radius == 0.0 && height == 0.0)
+		if ((!box && radius == 0.0 && height == 0.0) || (box && *box==dvec3(0.0)))
 		{
-			// Line/triangle intersect
 			TraceRayModel tracemodel;
 			brushHits = tracemodel.Trace(mover, mover->Brush(), localOrigin, localTMin, localDirection, localTMax, visibilityOnly);
 		}
@@ -242,6 +343,7 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
 			// AABB/Triangle intersect
 			TraceAABBModel tracemodel;
 			dvec3 extents = { (double)radius, (double)radius, (double)height };
+            if(box){extents=dvec3(0.0);for(int k=0;k<3;++k){vec3 axis(0.0f);axis[k]=1;auto v=(rotateWorldToObj*vec4(axis,0.0f)).xyz();for(int j=0;j<3;++j)extents[j]+=std::abs(v[j])*(*box)[k];}}
 			extents /= dvec3(std::abs(scale.x), std::abs(scale.y), std::abs(scale.z));
 			brushHits = tracemodel.Trace(mover, mover->Brush(), localOrigin, localTMin, localDirection, localTMax, extents, visibilityOnly);
 		}
@@ -264,6 +366,17 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
 		if (!traceActors || visibilityOnly)
 			return;
 
+        if(engine->LaunchInfo.IsHarryPotter3() && (box || PoaCollision::BoxActor(actor)))
+        {
+            if(actor->Brush()) return;
+            auto target=PoaCollision::ActorExtent(actor);if(!target)return;
+            dvec3 normal(0.0),p=origin-to_dvec3(actor->Location());double t;
+            if(box && PoaCollision::BoxActor(actor)) t=PoaCollision::SweepBox(p,dirNormalized,tmin,tmax,*box+*target,normal);
+            else if(box) t=PoaCollision::SweepBoxCylinder(p,dirNormalized,tmin,tmax,*box,target->x,target->z,normal);
+            else t=PoaCollision::SweepBoxCylinder(p,dirNormalized,tmin,tmax,*target,radius,height,normal);
+            if(t<tmax)hits.push_back({float(t),vec3(normal),actor,nullptr,nullptr});
+            return;
+        }
 		if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor)) // CollideType CT_Box
 		{
 			vec3 normal;

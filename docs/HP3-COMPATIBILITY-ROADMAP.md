@@ -1,3 +1,7 @@
+# Box collision integrated into source queries
+
+Movement, placement/spawn, floor discovery, script trace extents, primitive overlaps and spatial indexing now preserve box width on the PoA path. Collision/floors remains the sole active area: exact rotated-brush handling, full original blocking rules and device acceptance remain open. See [the active checklist](HP3-ACTIVE-AREA-COLLISION.md).
+
 # Current priority: collision and floors only
 
 Box extent foundation added: validated EU dimensions and a full-XYZ static-mesh sweep entry point. Gameplay box routing, actor geometry, overlaps and indexing remain open.

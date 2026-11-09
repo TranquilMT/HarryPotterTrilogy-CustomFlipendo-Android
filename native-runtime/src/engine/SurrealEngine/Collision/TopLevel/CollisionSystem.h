@@ -30,6 +30,8 @@ public:
 	CollisionHitList OverlapTest(UActor* actor);
 	CollisionHitList OverlapTest(const vec3& location, float height, float radius, bool testActors, bool testWorld, bool visibilityOnly);
 
+	CollisionHitList TraceExtent(const vec3& from,const vec3& to,const vec3& extent,bool actors,bool world,bool visibility);
+	CollisionHitList OverlapExtent(const vec3& location,const vec3& extent,bool actors,bool world,bool visibility);
 	bool TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool traceActors, bool traceWorld, bool visibilityOnly);
 	CollisionHitList Trace(const vec3& from, const vec3& to, float height, float radius, bool traceActors, bool traceWorld, bool visibilityOnly);
 	CollisionHitList TraceDecal(const dvec3& origin, double tmin, const dvec3& dirNormalized, double tmax, bool visibilityOnly);

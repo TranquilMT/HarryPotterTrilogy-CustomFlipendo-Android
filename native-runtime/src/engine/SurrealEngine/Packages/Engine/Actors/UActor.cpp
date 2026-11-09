@@ -15,6 +15,7 @@
 #include "Packages/Engine/Subsystems/USurrealAudioDevice.h"
 #include "Utils/Logger.h"
 #include "Engine.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
 #include "VM/ScriptCall.h"
 #include "VM/Frame.h"
 
@@ -35,7 +36,10 @@ UActor* UActor::Spawn(UClass* SpawnClass, std::optional<UActor*> SpawnOwner, std
 	bool bCollideWhenPlacing = SpawnClass->GetDefaultObject<UActor>()->bCollideWhenPlacing();
 	if (bCollideWorld || bCollideWhenPlacing)
 	{
-		auto result = CheckLocation(location, radius, height, bCollideWorld || bCollideWhenPlacing);
+		auto defaults=SpawnClass->GetDefaultObject<UActor>();
+        const bool box=engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(defaults);
+        auto extent=PoaCollision::ActorExtent(defaults);if(box&&!extent)return nullptr;
+        auto result = box?CheckLocationBox(location,vec3(*extent),true):CheckLocation(location, radius, height, bCollideWorld || bCollideWhenPlacing);
 		if (!result.first)
 		{
 			LogMessage("Could not find usable location when trying to spawn: " + SpawnClass->Name.ToString());

@@ -2,6 +2,10 @@
 #include "Precomp.h"
 #include "Engine.h"
 #include "KW.h"
+#include "Math/coords.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
+#include "Package/PoaWorldCollision.h"
+#include "Packages/Engine/Resources/Level/UModel.h"
 #include "OverlapTest.h"
 #include "PoaStaticMeshTrace.h"
 #include "Collision/BottomLevel/OverlapAABBModel.h"
@@ -98,6 +102,96 @@ CollisionHitList OverlapTester::TestOverlap(const vec3& location, float height, 
 	return uniqueHits;
 }
 
+CollisionHitList OverlapTester::TestOverlapExtent(const vec3& location, const vec3& extents, bool testActors, bool testWorld, bool visibilityOnly)
+{
+	if (!testActors && !testWorld)
+		return {};
+
+	if(!std::isfinite(extents.x)||!std::isfinite(extents.y)||!std::isfinite(extents.z)||extents.x<0||extents.y<0||extents.z<0)return {};
+
+	CollisionHitList hits;
+
+	if ((testActors && !visibilityOnly) || (engine->LaunchInfo.IsHarryPotter3() && testWorld))
+	{
+
+
+		dvec3 dlocation = to_dvec3(location);
+
+		int checkCounter = NextCheckCounter();
+		ivec3 start = GetStartExtents(location, extents);
+		ivec3 end = GetEndExtents(location, extents);
+		if (end.x - start.x < 100 && end.y - start.y < 100 && end.z - start.z < 100)
+		{
+			for (int z = start.z; z < end.z; z++)
+			{
+				for (int y = start.y; y < end.y; y++)
+				{
+					for (int x = start.x; x < end.x; x++)
+					{
+						for (UActor* actor : GetActors(x, y, z))
+						{
+							if (actor->Collision.CheckCounter != checkCounter)
+							{
+								actor->Collision.CheckCounter = checkCounter;
+                                if (engine->LaunchInfo.IsHarryPotter3())
+                                {
+                                    if (auto mesh = GetPoaStaticMesh(actor))
+                                    {
+                                        if (PoaCollision::TraceStaticMesh(actor,testActors&&!visibilityOnly,testWorld)) TracePoaStaticMeshExtent(actor, mesh, dlocation, 0.0, dvec3(0.0), 1.0, to_dvec3(extents), hits);
+                                        continue;
+                                    }
+                                }
+                                if(auto mover=UObject::TryCast<UMover>(actor)){if(testWorld && BoxActorOverlap(dlocation,to_dvec3(extents),mover))hits.push_back({0.0f,vec3(0.0f),mover,nullptr,nullptr});continue;}
+                                if (!testActors || visibilityOnly || !actor->bCollideActors()) continue;
+
+								if (BoxActorOverlap(dlocation, to_dvec3(extents), actor))
+								{
+									vec3 normal(0.0f); // To do: do we need the normal for contact tests?
+									hits.push_back({ 0.0f, normal, actor, nullptr, nullptr });
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	if (testWorld && GetLevel() && GetLevel()->Model && !GetLevel()->Model->Nodes.empty())
+	{
+		if (extents != vec3(0.0f))
+		{
+			OverlapAABBModel overlapmodel;
+			CollisionHitList worldHits = overlapmodel.TestOverlap(GetLevelInfo(), GetLevel()->Model, location, extents, visibilityOnly);
+			hits.push_back(worldHits);
+		}
+	}
+
+	// Only include each actor once
+
+	std::stable_sort(hits.begin(), hits.end(), [](const auto& a, const auto& b) { return a.Actor < b.Actor; });
+
+	UActor* prevActor = nullptr;
+	CollisionHitList uniqueHits;
+	for (auto& hit : hits)
+	{
+		if (hit.Actor)
+		{
+			if (hit.Actor != prevActor)
+			{
+				prevActor = hit.Actor;
+				uniqueHits.push_back(hit);
+			}
+		}
+		else
+		{
+			uniqueHits.push_back(hit);
+		}
+	}
+
+	return uniqueHits;
+}
+
 Array<UActor*> OverlapTester::CollidingActors(const vec3& origin, float radius)
 {
 	dvec3 dorigin = to_dvec3(origin);
@@ -122,6 +216,7 @@ Array<UActor*> OverlapTester::CollidingActors(const vec3& origin, float radius)
 						if (actor->Collision.CheckCounter != checkCounter)
 						{
 							actor->Collision.CheckCounter = checkCounter;
+                            if(engine->LaunchInfo.IsHarryPotter3()&&!actor->bCollideActors())continue;
 							if (SphereActorOverlap(dorigin, dradius, actor))
 								hits.push_back(actor);
 						}
@@ -178,6 +273,7 @@ Array<UActor*> OverlapTester::CollidingActors(const vec3& origin, float height, 
 						if (actor->Collision.CheckCounter != checkCounter)
 						{
 							actor->Collision.CheckCounter = checkCounter;
+                            if(engine->LaunchInfo.IsHarryPotter3()&&!actor->bCollideActors())continue;
 							if (CylinderActorOverlap(dorigin, dheight, dradius, actor))
 								hits.push_back(actor);
 						}
@@ -247,9 +343,9 @@ Array<UActor*> OverlapTester::EncroachingActors(UActor* actor)
 				{
 					for (UActor* testActor : GetActors(x, y, z))
 					{
-						if (actor->Collision.CheckCounter != checkCounter)
+						if ((engine->LaunchInfo.IsHarryPotter3()?testActor:actor)->Collision.CheckCounter != checkCounter)
 						{
-							actor->Collision.CheckCounter = checkCounter;
+							(engine->LaunchInfo.IsHarryPotter3()?testActor:actor)->Collision.CheckCounter = checkCounter;
 							if (testActor == actor || testActor->Brush())
 								continue;
 
@@ -258,6 +354,11 @@ Array<UActor*> OverlapTester::EncroachingActors(UActor* actor)
 							float testHeight = testActor->CollisionHeight();
 							float testRadius = testActor->CollisionRadius();
 							vec3 testExtents = { testRadius, testRadius, testHeight };
+                            if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(testActor)){
+                                auto e=PoaCollision::ActorExtent(testActor);if(!e)continue;
+                                if(BoxActorOverlap(to_dvec3(testActor->Location()),*e,actor))hits.push_back(testActor);
+                                continue;
+                            }
 							testExtents /= mainScale;
 
 							OverlapAABBModel test;
@@ -295,6 +396,11 @@ Array<UActor*> OverlapTester::EncroachingActors(UActor* actor)
 
 bool OverlapTester::IsOverlapping(UActor* actor1, UActor* actor2)
 {
+    if(engine->LaunchInfo.IsHarryPotter3()){
+        if(PoaCollision::BoxActor(actor1)){auto e=PoaCollision::ActorExtent(actor1);return e && BoxActorOverlap(to_dvec3(actor1->Location()),*e,actor2);}
+        if(PoaCollision::BoxActor(actor2)){auto e=PoaCollision::ActorExtent(actor2);return e && BoxActorOverlap(to_dvec3(actor2->Location()),*e,actor1);}
+    }
+
 	if (engine->LaunchInfo.IsKnowWonder() && KW::IsBoxCollider(actor1) && !KW::IsBoxCollider(actor2)) // CollideType CT_Box
 		return CylinderActorOverlap(to_dvec3(actor2->Location()), actor2->CollisionHeight(), actor2->CollisionRadius(), actor1);
 	return CylinderActorOverlap(to_dvec3(actor1->Location()), actor1->CollisionHeight(), actor1->CollisionRadius(), actor2);
@@ -346,6 +452,13 @@ bool OverlapTester::SphereCapsuleOverlap(const dvec3& sphereCenter, double spher
 
 bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereRadius, UActor* actor)
 {
+    if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor) && !actor->Brush()){
+        auto e=PoaCollision::ActorExtent(actor);if(!e)return false;
+        dvec3 p=sphereCenter-to_dvec3(actor->Location());double dist=0;
+        for(int k=0;k<3;++k){double v=std::max(std::abs(p[k])-(*e)[k],0.0);dist+=v*v;}
+        return dist<sphereRadius*sphereRadius;
+    }
+
 	if (actor->Brush()) // Ignore brushes for now
 		return false;
 
@@ -362,6 +475,10 @@ bool OverlapTester::SphereActorOverlap(const dvec3& sphereCenter, double sphereR
 
 bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHeight, double cylinderRadius, UActor* actor)
 {
+    if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(actor) && !actor->Brush()){
+        auto e=PoaCollision::ActorExtent(actor);return e && PoaCollision::BoxCylinderOverlap(origin-to_dvec3(actor->Location()),*e,cylinderRadius,cylinderHeight);
+    }
+
     if (engine->LaunchInfo.IsHarryPotter3())
     {
         if (auto mesh = GetPoaStaticMesh(actor))
@@ -382,4 +499,20 @@ bool OverlapTester::CylinderActorOverlap(const dvec3& origin, double cylinderHei
 	double height = actor->CollisionHeight();
 	double radius = actor->CollisionRadius();
 	return CylinderCylinderOverlap(origin, cylinderHeight, cylinderRadius, center, height, radius);
+}
+
+bool OverlapTester::BoxActorOverlap(const dvec3& origin,const dvec3& extent,UActor* actor)
+{
+    if(auto mesh=GetPoaStaticMesh(actor)){CollisionHitList hits;TracePoaStaticMeshExtent(actor,mesh,origin,0,dvec3(0.0),1,extent,hits);return !hits.empty();}
+    if(auto mover=UObject::TryCast<UMover>(actor)){
+        auto scale=mover->MainScale().Scale;if(!mover->Brush()||scale.x==0||scale.y==0||scale.z==0)return false;
+        auto inverse=mat4::transpose(Coords::Rotation(mover->Rotation()).ToMatrix());
+        vec3 local=(inverse*vec4(vec3(origin)-mover->Location(),1.0f)).xyz()/scale+mover->PrePivot();
+        dvec3 e(0.0);for(int k=0;k<3;++k){vec3 axis(0.0f);axis[k]=1;auto v=(inverse*vec4(axis,0.0f)).xyz();for(int j=0;j<3;++j)e[j]+=std::abs(v[j])*extent[k];}
+        e/=dvec3(std::abs(scale.x),std::abs(scale.y),std::abs(scale.z));
+        OverlapAABBModel test;return !test.TestOverlap(mover,mover->Brush(),local,vec3(e),false).empty();
+    }
+    if(actor->Brush())return false;
+    auto e=PoaCollision::ActorExtent(actor);if(!e)return false;auto p=origin-to_dvec3(actor->Location());
+    return PoaCollision::BoxActor(actor)?PoaCollision::BoxOverlap(p,extent+*e):PoaCollision::BoxCylinderOverlap(p,extent,e->x,e->z);
 }

@@ -10,6 +10,7 @@
 #include "Packages/Engine/Resources/Level/ULevel.h"
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
+#include "Collision/BottomLevel/PoaBoxCollision.h"
 #include "hp3/PoaBones.h"
 #include "hp3/PoaFloor.h"
 #include "Package/PoaPhysicsModes.h"
@@ -101,7 +102,10 @@ void UActor::SetCollision(bool newColActors, bool newBlockActors, bool newBlockP
 
 bool UActor::SetLocation(const vec3& newLocation)
 {
-	auto result = CheckLocation(newLocation, CollisionRadius(), CollisionHeight(), bCollideWorld() || bCollideWhenPlacing());
+	auto extent=PoaCollision::ActorExtent(this);
+    const bool box=engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(this);
+    if(box&&!extent)return false;
+    auto result = box?CheckLocationBox(newLocation,vec3(*extent),bCollideWorld()||bCollideWhenPlacing()):CheckLocation(newLocation, CollisionRadius(), CollisionHeight(), bCollideWorld() || bCollideWhenPlacing());
 	if (!result.first)
 		return false;
 
@@ -335,6 +339,36 @@ std::pair<bool, vec3> UActor::CheckLocation(vec3 location, float radius, float h
 	return { found, location };
 }
 
+std::pair<bool, vec3> UActor::CheckLocationBox(vec3 location, const vec3& extent, bool check)
+{
+	// Search for a valid spot near the location
+
+	if (!check)
+		return { true, location };
+
+	// What is a reasonable size for this grid? what did UE1 do?
+	int offset[] = { 0, 1, -1 };
+	bool found = false;
+	float scale = std::max({extent.x,extent.y,extent.z});
+	for (int z = 0; z < 3 && !found; z++)
+	{
+		for (int y = 0; y < 3 && !found; y++)
+		{
+			for (int x = 0; x < 3 && !found; x++)
+			{
+				vec3 testlocation = location + vec3(offset[x] * scale, offset[y] * scale, offset[z] * scale);
+				CollisionHitList hits = XLevel()->Collision.OverlapExtent(testlocation, extent, false, true, false);
+				if (hits.empty())
+				{
+					location = testlocation;
+					found = true;
+				}
+			}
+		}
+	}
+	return { found, location };
+}
+
 bool UActor::IsOverlapping(UActor* other)
 {
 	return XLevel()->Collision.IsOverlapping(this, other);
@@ -472,7 +506,10 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 	CollisionHitList hits;
 	if (!Brush())
 	{
-		hits = XLevel()->Collision.Trace(Location(), Location() + delta, CollisionHeight(), CollisionRadius(), bCollideActors(), bCollideWorld(), false);
+		if(engine->LaunchInfo.IsHarryPotter3() && PoaCollision::BoxActor(this)){
+            auto e=PoaCollision::ActorExtent(this);if(!e){blockingHit.Fraction=0;return blockingHit;}
+            hits=XLevel()->Collision.TraceExtent(Location(),Location()+delta,vec3(*e),bCollideActors(),bCollideWorld(),false);
+        }else hits = XLevel()->Collision.Trace(Location(), Location() + delta, CollisionHeight(), CollisionRadius(), bCollideActors(), bCollideWorld(), false);
 		if (bCollideWorld() || bBlockActors() || bBlockPlayers())
 		{
 			for (auto& hit : hits)

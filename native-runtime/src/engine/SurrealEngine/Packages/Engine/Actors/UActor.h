@@ -437,6 +437,7 @@ public:
 	int PhysicsMode(); // Semantic dispatch; Physics() retains the serialized game value.
 	void SetCollision(bool newColActors, bool newBlockActors, bool newBlockPlayers);
 
+	std::pair<bool, vec3> CheckLocationBox(vec3 location,const vec3& extent,bool check);
 	std::pair<bool, vec3> CheckLocation(vec3 location, float radius, float height, bool check);
 
 	bool SetLocation(const vec3& newLocation);
