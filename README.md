@@ -124,3 +124,7 @@ HP:Trilogy Mobile is the Android source port of the PC trilogy, using EU game ve
 - Android launcher and build tooling: `native-runtime/android/`.
 - Game data, SDK/NDK and private signing material are external build inputs, not source dependencies.
 - Engine and third-party licenses remain in the source tree. Credit to Flipendo, SurrealEngine and their contributors; Harry Potter names and original game content belong to their respective owners.
+
+### Current test-build preparation
+
+The ARM64 workflow prepares a complete three-game **unsigned 0.4.15-test** APK alongside native libraries. It requires the original signing key before installation; the published release remains unchanged. The shared GLES renderer now clips reflected geometry against the mirror plane, verified with rendered pixels. HP2 window/mirror scenes still need phone acceptance. PoA original menus remain incomplete; see [menu, rendering and test-build status](docs/HP1-HP2-MENUS-AND-REFLECTIONS.md).

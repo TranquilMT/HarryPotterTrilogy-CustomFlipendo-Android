@@ -1,0 +1,309 @@
+{
+  "scope": "Static direct-binding audit; inheritance, numeric dispatch, registration guards and handler semantics still need review. Unmatched declarations are candidates, not proven startup blockers.",
+  "packages": {
+    "GUI.u": "11bb138c85a01872444b2ba9ddfb33872c331fa62e724a3204165ad91d5c133e",
+    "UDebugMenu.u": "f66d4b07234fe597a014808bbccf3b4a6efec9edeb0d7a3e01750591b3054205",
+    "kwGame.u": "de29aa642969ff5586559580fe05f29df6ca7fffa215dd50156d3be7e0f9b11e",
+    "UWindow.u": "02b27f429b2f4271d098bb3adf3c06d32933b468ea7c2a6fa0325f2f58ab531f",
+    "HGame.u": "d0981cc5fc704391e3f152f1e94295b2e0440b2660b2b5027dba7eb2cd889ef1",
+    "Engine.u": "3b5c2b2002dbc8522e8a932e2733228f7f60711d55a9ccb1a033621b3a12f1ef"
+  },
+  "declarations": [
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "SetTimer",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIMultiColumnList",
+      "name": "SortList",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIScrollText",
+      "name": "GetWordUnderCursor",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIMultiColumnList",
+      "name": "ChangeSortOrder",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIMultiColumnList",
+      "name": "AddedItem",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "KillTimer",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "MouseEmulation",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "GetMapList",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "GetStyle",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "GetMenuFont",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIMultiColumnList",
+      "name": "UpdatedItem",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIStyles",
+      "name": "Draw",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIStyles",
+      "name": "DrawText",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIFont",
+      "name": "GetFont",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIMultiComponent",
+      "name": "InitializeControls",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIList",
+      "name": "SortList",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUISplitter",
+      "name": "SplitterUpdatePositions",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "ActualTop",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "ActualLeft",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "ActualHeight",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIComponent",
+      "name": "ActualWidth",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "ResetKeyboard",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "GetMainMenuClass",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "GUI.u",
+      "owner": "GUIController",
+      "name": "GetCurrentRes",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "KWBeamSegment",
+      "name": "UpdateChain",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "PersistentStore",
+      "name": "FindSlot",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "PersistentStore",
+      "name": "CreateSlot",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "WrapStringToArray",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "CreateNativeFont",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "StrLen",
+      "nativeIndex": 464,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawText",
+      "nativeIndex": 465,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTile",
+      "nativeIndex": 466,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawActor",
+      "nativeIndex": 467,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTileClipped",
+      "nativeIndex": 468,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTextClipped",
+      "nativeIndex": 469,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "TextSize",
+      "nativeIndex": 470,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawPortal",
+      "nativeIndex": 480,
+      "directRegistrationCandidate": true
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawActorOnHud",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTileStretched",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTileJustified",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTileScaled",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    },
+    {
+      "package": "Engine.u",
+      "owner": "Canvas",
+      "name": "DrawTextJustified",
+      "nativeIndex": 0,
+      "directRegistrationCandidate": false
+    }
+  ],
+  "total": 42,
+  "unmatched": 34
+}

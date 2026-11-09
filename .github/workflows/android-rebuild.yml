@@ -2,7 +2,7 @@ name: Rebuild Android ARM64 engine
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**', 'native-runtime/tools/poa/**', 'native-runtime/android/tests/**']
+    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**', 'native-runtime/tools/poa/**', 'native-runtime/android/tests/**', 'native-runtime/android/prepare_test_apk.py', 'native-runtime/tools/graphics/**']
   workflow_dispatch:
 permissions:
   contents: read
@@ -35,6 +35,11 @@ jobs:
                   target.parent.mkdir(parents=True,exist_ok=True)
                   target.write_bytes(z.read(item))
           PY
+      - name: Verify GLES reflection clipping on software GPU
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libegl1 libegl-mesa0
+          python3 native-runtime/tools/graphics/check_reflection_clip.py
       - name: Run compatibility and Android packaging regressions
         env:
           HP3_EU_GAME: ${{ github.workspace }}/fixtures/hp3
@@ -88,6 +93,23 @@ jobs:
              build-android/engine/libSurrealVideo.so output/native/
           git rev-parse HEAD > output/native/source-commit.txt
           sha256sum output/native/*.so > output/native/SHA256.txt
+      - name: Prepare versioned three-game test APK for permanent-key signing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          echo '05235ab2631b0e25f402f3f576566441190e9bae5af851380627d0f31d8784e9  recovery/HP-Trilogy-Mobile-0.4.14-Three-Games.apk' | sha256sum -c -
+          bt="$ANDROID_HOME/build-tools/36.0.0"
+          mkdir -p output/apk
+          "$bt/aapt2" compile --dir native-runtime/android/res -o recovery/res.zip
+          "$bt/aapt2" link -o recovery/test-resources.apk --manifest native-runtime/android/AndroidManifest.xml -I "$ANDROID_HOME/platforms/android-36/android.jar" -R recovery/res.zip --min-sdk-version 29 --target-sdk-version 35 --version-name 0.4.15-test --version-code 57
+          python3 native-runtime/android/prepare_test_apk.py recovery/HP-Trilogy-Mobile-0.4.14-Three-Games.apk output/native recovery/test-resources.apk recovery/test-unsigned.apk "$GITHUB_SHA"
+          "$bt/zipalign" -f -P 16 4 recovery/test-unsigned.apk output/apk/HP-Trilogy-Mobile-0.4.15-test-UNSIGNED.apk
+          "$bt/zipalign" -c -P 16 4 output/apk/*UNSIGNED.apk
+          "$bt/aapt2" dump badging output/apk/*UNSIGNED.apk > output/apk/package.txt
+          grep -q "name='com.tranquil.hp1native' versionCode='57' versionName='0.4.15-test'" output/apk/package.txt
+          sha256sum output/apk/*UNSIGNED.apk > output/apk/SHA256.txt
+          echo 'Unsigned build: requires the original permanent signing key before installation. Published release is unchanged.' > output/apk/README.txt
       - uses: actions/upload-artifact@v4
         with:
           name: android-0.4.14-native-libraries

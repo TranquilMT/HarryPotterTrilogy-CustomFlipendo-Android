@@ -1,0 +1,33 @@
+--- a/SurrealEngine/RenderDevice/OpenGL/GLFileResource.cpp
++++ b/SurrealEngine/RenderDevice/OpenGL/GLFileResource.cpp
+@@ -33,11 +33,12 @@
+ 			layout(location = 4) out vec2 texCoord4;
+ 			layout(location = 5) out vec4 color;
+ 			layout(location = 6) flat out uint hitIndex;
++			layout(location = 8) out float nearClipDistance;
+ 
+ 			void main()
+ 			{
+ 				gl_Position = objectToProjection * vec4(aPosition, 1.0);
+-				//gl_ClipDistance[0] = dot(nearClip, objectToView * vec4(aPosition, 1.0));
++				nearClipDistance = dot(nearClip, objectToView * vec4(aPosition, 1.0));
+ 				flags = aFlags;
+ 				texCoord = aTexCoord;
+ 				texCoord2 = aTexCoord2;
+@@ -63,6 +64,7 @@
+ 			layout(location = 4) in vec2 texCoord4;
+ 			layout(location = 5) in vec4 color;
+ 			layout(location = 6) flat in uint hitIndex;
++			layout(location = 8) in float nearClipDistance;
+ 			layout(location = 7) flat in ivec4 textureBinds;
+ 
+ 			layout(location = 0) out vec4 outColor;
+@@ -88,6 +90,8 @@
+ 
+ 			void main()
+ 			{
++				// GLES 3.0 has no core gl_ClipDistance; clip the interpolated plane here.
++				if (nearClipDistance < 0.0) discard;
+ 				float actorXBlending = (flags & 32u) != 0u ? 1.5 : 1.0;
+ 				float oneXBlending = (flags & 64u) != 0u ? 1.0 : 2.0;
+ 
