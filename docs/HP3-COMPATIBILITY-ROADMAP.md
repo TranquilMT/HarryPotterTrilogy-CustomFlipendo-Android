@@ -1,5 +1,7 @@
 # Current priority: collision and floors only
 
+Box extent foundation added: validated EU dimensions and a full-XYZ static-mesh sweep entry point. Gameplay box routing, actor geometry, overlaps and indexing remain open.
+
 Follow [the active-area checklist](HP3-ACTIVE-AREA-COLLISION.md) before advancing to another area. Box collision remains incomplete after loss of the unpushed batch; earlier completion claims do not apply to the retained source.
 
 # 9 November — initial cylindrical floor discovery
