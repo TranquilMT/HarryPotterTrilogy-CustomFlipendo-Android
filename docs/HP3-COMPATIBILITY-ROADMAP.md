@@ -1,3 +1,15 @@
+# 9 November — UE2 physics enumeration dispatch
+
+- [x] Match the sixteen EU EPhysics values to the original Engine.u enumeration.
+- [x] Translate interpolation, moving-brush, spider and trailer modes for shared handler selection; preserve raw script/save values.
+- [x] Apply the same interpretation to pawn spider and reachability checks.
+- [x] Reject UE2-only/unknown modes explicitly rather than silently ticking rotation alone.
+- [x] Pass 140 compatibility tests, changed-file C++ syntax checks and patch verification.
+- [ ] Pass this checkpoint's ARM64 build.
+- [ ] Validate original movement semantics and implement Ladder/RootMotion/Karma/PushPulled where required.
+
+See HP3-PHYSICS-MODES.md. Correct routing is not proof of complete UE2 physics; Spider remains an inherited empty handler. Published v0.4.14 is unchanged.
+
 # 9 November — bone attachment and native notify implementation
 
 - [x] Add six EU bone/query/attachment native handlers and follow current blended poses.
@@ -6,7 +18,8 @@
 - [x] Add native named-script and sound notify dispatch with explicit unsupported-class rejection.
 - [x] Audit static bone/root calls across 8,090 functions in twelve EU script packages.
 - [x] Pass 137 compatibility tests, 29 packaging tests, production syntax checks and engine patch verification.
-- [ ] Pass this checkpoint's ARM64 build and verify Android wand/item placement and notify playback.
+- [x] Pass this checkpoint's ARM64 build (Actions 42631037984).
+- [ ] Verify Android wand/item placement and notify playback.
 - [ ] Implement root-motion cache/locking/movement and EU physics enum dispatch; validate original behavior.
 - [ ] Complete other required animation APIs, effect notifies, event parity and broader world/rendering/gameplay acceptance.
 

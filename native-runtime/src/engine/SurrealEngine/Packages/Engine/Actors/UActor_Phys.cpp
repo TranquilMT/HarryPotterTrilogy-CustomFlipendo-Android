@@ -10,6 +10,7 @@
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
 #include "hp3/PoaBones.h"
+#include "Package/PoaPhysicsModes.h"
 
 void UActor::TickPhysics(float elapsed)
 {
@@ -22,7 +23,7 @@ void UActor::TickPhysics(float elapsed)
 	}
 
 	// HP1's InterpolationManager overrides performPhysics (one call per tick, moves its Owner)
-	if (engine->LaunchInfo.IsKnowWonder() && Physics() == PHYS_Interpolating && KW::IsInterpolationManager(this))
+	if (engine->LaunchInfo.IsKnowWonder() && PhysicsMode() == PHYS_Interpolating && KW::IsInterpolationManager(this))
 	{
 		KW::InterpolationManagerPhysics(this, elapsed);
 		CheckPendingTouch();
@@ -32,7 +33,8 @@ void UActor::TickPhysics(float elapsed)
 	for (float timeLeft = elapsed; timeLeft > 0.0f && !bDeleteMe(); timeLeft -= 0.02f)
 	{
 		float physTimeElapsed = std::min(timeLeft, 0.02f);
-		int mode = Physics();
+		int mode = PhysicsMode();
+        if (mode >= 256) Exception::Throw("Unsupported PoA physics mode: " + std::to_string(Physics()));
 		if (mode != PHYS_None)
 		{
 			switch (mode)
@@ -54,6 +56,11 @@ void UActor::TickPhysics(float elapsed)
 
 		CheckPendingTouch();
 	}
+}
+
+int UActor::PhysicsMode()
+{
+    return PoaPhysics::EngineMode(Physics(), engine->LaunchInfo.IsHarryPotter3());
 }
 
 void UActor::SetPhysics(uint8_t newPhysics)

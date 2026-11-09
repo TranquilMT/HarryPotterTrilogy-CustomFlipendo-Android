@@ -18,4 +18,4 @@ All 137 compatibility tests and 29 packaging tests pass locally. Changed product
 
 ## Acceptance still required
 
-Root-motion and other animation/bone modification APIs, native effect notify classes where used, original pose/event parity, Android wand/item placement, complete game saves and broader terrain/material/world/physics work remain open. The published v0.4.14 APK is unchanged. Previous extended animation source passed ARM64 Actions 42528353602; this checkpoint requires its own ARM64 build and device acceptance.
+Root-motion and other animation/bone modification APIs, native effect notify classes where used, original pose/event parity, Android wand/item placement, complete game saves and broader terrain/material/world/physics work remain open. The published v0.4.14 APK is unchanged. Previous extended animation source passed ARM64 Actions 42528353602; this checkpoint passed ARM64 Actions 42631037984 and still requires device acceptance.

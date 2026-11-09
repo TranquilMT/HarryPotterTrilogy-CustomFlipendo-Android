@@ -216,7 +216,7 @@ void UPawn::TickRotating(float elapsed)
 		return;
 	}
 
-	if (Physics() == PHYS_Spider)
+	if (PhysicsMode() == PHYS_Spider)
 		return;
 
 	bRotateToDesired() = true;
@@ -260,7 +260,7 @@ bool UPawn::TickRotateTo(const vec3& target)
 	if (engine->LaunchInfo.IsKnowWonder()) // APawn::rotateToward
 		return KW::PawnRotateToward(this, target);
 
-	if (Physics() == PHYS_Spider)
+	if (PhysicsMode() == PHYS_Spider)
 		return true;
 
 	DesiredRotation() = Rotator::FromVector(target - Location());
@@ -423,7 +423,7 @@ void UPawn::SetMoveDuration(const vec3& deltaMove)
 
 float UPawn::GetSpeed()
 {
-	switch (Physics())
+	switch (PhysicsMode())
 	{
 	case PHYS_Walking:
 	case PHYS_Falling:

@@ -59,7 +59,7 @@ void UPlayerPawn::TickRotating(float elapsed)
 		return;
 	}
 
-	if (Physics() == PHYS_Spider)
+	if (PhysicsMode() == PHYS_Spider)
 		return;
 
 	Rotator rot = Rotation();

@@ -10,9 +10,11 @@ The ARM64 rebuild and signed-APK reconstruction workflows are available in Actio
 
 ## Current source compatibility work
 
-The source branch includes the eleven audited Core declarations, repeated-array config handling, initial static-mesh rendering/collision, EU MeshAnimation decoding/sampling and initial skeletal geometry/CPU skinning/rendering and per-actor animation channels with local/global-root blending, script notify routing, time/frame/rate controls and a versioned channel-state save trailer. Original-data tests cover all 797 static meshes, 140 animation resources and 167 skeletal meshes. Core, skeletal and extended animation checkpoints passed ARM64 compilation. New bone queries/attachments and native script/sound notifies are implemented in source, with their own build/device acceptance pending. See [bone and notify scope](docs/HP3-BONES-NOTIFIES.md).
+The source branch includes the eleven audited Core declarations, repeated-array config handling, initial static-mesh rendering/collision, EU MeshAnimation decoding/sampling and initial skeletal geometry/CPU skinning/rendering and per-actor animation channels with local/global-root blending, script notify routing, time/frame/rate controls and a versioned channel-state save trailer. Original-data tests cover all 797 static meshes, 140 animation resources and 167 skeletal meshes. Core, skeletal and extended animation checkpoints passed ARM64 compilation. New bone queries/attachments and native script/sound notifies are implemented in source, with ARM64 compilation passed and device acceptance pending. See [bone and notify scope](docs/HP3-BONES-NOTIFIES.md).
 
 These changes are not in the published 0.4.14 APK. HP3 startup and gameplay remain unverified on Android. Original animation parity, remaining animation APIs/root motion, attachment parity and other native notify classes, terrain, richer materials/lighting, movement/travel/map-save acceptance and release signing remain open. See [the current roadmap](docs/HP3-COMPATIBILITY-ROADMAP.md) and [skeletal implementation scope](docs/HP3-SKELETAL-IMPLEMENTATION.md).
+
+Physics dispatch now interprets EU PoA mode numbers separately from UE1 while retaining original script/save values; unsupported UE2 modes fail explicitly. See [physics scope](docs/HP3-PHYSICS-MODES.md).
 
 ## 0.4.14 — KWGame range defaults
 

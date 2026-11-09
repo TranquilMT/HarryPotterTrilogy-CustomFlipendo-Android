@@ -125,7 +125,7 @@ bool UPawn::ActorReachable(UActor* anActor, bool checkNavpoint)
 		return false;
 
 	// Try simulate movement to see if we can get to the actor
-	switch (Physics())
+	switch (PhysicsMode())
 	{
 	case PHYS_Walking:
 		return ReachableWalking(anActor);
