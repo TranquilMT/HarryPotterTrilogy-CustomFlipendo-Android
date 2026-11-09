@@ -65,8 +65,18 @@ int UActor::PhysicsMode()
 
 void UActor::SetPhysics(uint8_t newPhysics)
 {
+    const bool poa = engine->LaunchInfo.IsHarryPotter3();
+    // EU AActor::setPhysics returns immediately for an unchanged mode.
+    if (poa && Physics() == newPhysics) return;
 	Physics() = newPhysics;
 	LadderMode = false;
+    // Retail 0x1047f8b6 clears motion on entry to None/Rotating.
+    // Root locking, base/floor transitions and Karma hooks remain separate.
+    if (poa && (newPhysics == PHYS_None || newPhysics == PHYS_Rotating))
+    {
+        Velocity() = vec3(0.0f);
+        Acceleration() = vec3(0.0f);
+    }
 }
 
 void UActor::SetCollision(bool newColActors, bool newBlockActors, bool newBlockPlayers)

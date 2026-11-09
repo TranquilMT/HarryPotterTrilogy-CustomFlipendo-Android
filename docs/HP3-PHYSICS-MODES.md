@@ -33,6 +33,6 @@ The cached anchored frame and visual root lock must be integrated with channel s
 
 ## Verification
 
-All 140 compatibility tests pass locally, including the original EU asset corpus regressions. Changed C++ files pass syntax checks and the canonical engine patch passes reverse-application verification. This checkpoint still requires ARM64 build acceptance.
+All 140 compatibility tests pass locally, including the original EU asset corpus regressions. Changed C++ files pass syntax checks and the canonical engine patch passes reverse-application verification. This checkpoint passed ARM64 Actions 42640609435.
 
 The original enum regression reads Engine.u directly. Production TickPhysics/PhysicsMode/SetPhysics body tests check dispatch, raw-value preservation, all 256 bytes in both game modes, unsupported-mode rejection, substep mode changes, attached actors and the legacy KnowWonder path. Separate source checks guard pawn spider/reach routing. Android movement and game playability remain unverified. This source update does not change the published APK.

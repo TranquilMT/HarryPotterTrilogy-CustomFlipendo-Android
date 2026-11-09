@@ -1,3 +1,14 @@
+# 9 November — EU stopping transitions
+
+- [x] Preserve unchanged SetPhysics state and clear velocity/acceleration when entering None or Rotating.
+- [x] Verify the EU native ABI and all 65,536 old/new byte pairs for scoped stopping effects.
+- [x] Execute 144 original setter reference cases and compare production outputs (Actions 42643326159).
+- [x] Pass the 142-test compatibility suite; rerun the five focused physics tests with captured reference data.
+- [ ] Pass this setter checkpoint's ARM64 build.
+- [ ] Implement root locking/movement/query persistence and original base/floor transitions.
+
+See HP3-PHYSICS-TRANSITIONS.md. Root motion and broader UE2 physics remain open. Published v0.4.14 is unchanged.
+
 # 9 November — UE2 physics enumeration dispatch
 
 - [x] Match the sixteen EU EPhysics values to the original Engine.u enumeration.
@@ -5,7 +16,7 @@
 - [x] Apply the same interpretation to pawn spider and reachability checks.
 - [x] Reject UE2-only/unknown modes explicitly rather than silently ticking rotation alone.
 - [x] Pass 140 compatibility tests, changed-file C++ syntax checks and patch verification.
-- [ ] Pass this checkpoint's ARM64 build.
+- [x] Pass the mode-mapping checkpoint's ARM64 build (Actions 42640609435).
 - [ ] Validate original movement semantics and implement Ladder/RootMotion/Karma/PushPulled where required.
 
 See HP3-PHYSICS-MODES.md. Correct routing is not proof of complete UE2 physics; Spider remains an inherited empty handler. Published v0.4.14 is unchanged.

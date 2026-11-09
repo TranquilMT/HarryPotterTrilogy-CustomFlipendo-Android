@@ -22,7 +22,8 @@ class PhysicsModes(unittest.TestCase):
 struct Exception{[[noreturn]]static void Throw(const std::string&s){throw std::runtime_error(s);}};
 struct Launch{bool Poa=false,KW=false;bool IsHarryPotter3(){return Poa;}bool IsKnowWonder(){return KW;}};
 struct Engine{Launch LaunchInfo;} instance;Engine*engine=&instance;
-struct UActor{uint8_t Raw=0;int Called=0,Steps=0,Rotations=0,Touches=0;float Time=0;bool Attached=false,Deleted=false,Change=false,LadderMode=true;
+struct vec3{float x,y,z;explicit vec3(float v=0):x(v),y(v),z(v){}};
+struct UActor{vec3 Speed,Accel;vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}uint8_t Raw=0;int Called=0,Steps=0,Rotations=0,Touches=0;float Time=0;bool Attached=false,Deleted=false,Change=false,LadderMode=true;
  uint8_t&Physics(){return Raw;}bool bDeleteMe(){return Deleted;}int PhysicsMode();void SetPhysics(uint8_t);void TickPhysics(float);
  void Step(int mode,float dt){Called=mode;++Steps;Time+=dt;if(Change)Raw=6;}
  void TickWalking(float dt){Step(1,dt);}void TickFalling(float dt){Step(2,dt);}void TickSwimming(float dt){Step(3,dt);}void TickFlying(float dt){Step(4,dt);}void TickProjectile(float dt){Step(6,dt);}void TickRolling(float dt){Step(7,dt);}void TickInterpolating(float dt){Step(8,dt);}void TickMovingBrush(float dt){Step(9,dt);}void TickSpider(float dt){Step(10,dt);}void TickTrailer(float dt){Step(11,dt);}void TickRotating(float){++Rotations;}void CheckPendingTouch(){++Touches;}
@@ -33,7 +34,7 @@ namespace KW{bool UseKWPhysics(){return true;}void PhysicsTick(UActor*a,float dt
 int main(){
  int expected[]={PHYS_None,PHYS_Walking,PHYS_Falling,PHYS_Swimming,PHYS_Flying,PHYS_Rotating,PHYS_Projectile,PHYS_Interpolating,PHYS_MovingBrush,PHYS_Spider,PHYS_Trailer};
  instance.LaunchInfo.Poa=true;
- for(int raw=0;raw<=10;++raw){UActor a;a.SetPhysics(uint8_t(raw));assert(a.Raw==raw&&!a.LadderMode);assert(a.PhysicsMode()==expected[raw]);a.TickPhysics(.01f);assert(a.Raw==raw&&a.Touches==1);if(raw==0||raw==5)assert(a.Steps==0);else assert(a.Called==expected[raw]&&a.Steps==1);}
+ for(int raw=0;raw<=10;++raw){UActor a;a.SetPhysics(uint8_t(raw));assert(a.Raw==raw&&a.LadderMode==(raw==0));assert(a.PhysicsMode()==expected[raw]);a.TickPhysics(.01f);assert(a.Raw==raw&&a.Touches==1);if(raw==0||raw==5)assert(a.Steps==0);else assert(a.Called==expected[raw]&&a.Steps==1);}
  for(int raw=11;raw<256;++raw){UActor a;a.Raw=uint8_t(raw);assert(a.PhysicsMode()>=256);bool threw=false;try{a.TickPhysics(.01f);}catch(const std::runtime_error&){threw=true;}assert(threw&&a.Raw==raw&&a.Steps==0&&a.Rotations==0);}
  UActor changing;changing.Raw=7;changing.Change=true;changing.TickPhysics(.04f);assert(changing.Steps==2&&changing.Called==PHYS_Projectile&&changing.Raw==6);
  UActor attached;attached.Raw=12;attached.Attached=true;attached.TickPhysics(.01f);assert(attached.Called==100&&attached.Raw==12);

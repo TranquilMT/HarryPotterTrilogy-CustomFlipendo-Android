@@ -16,6 +16,8 @@ These changes are not in the published 0.4.14 APK. HP3 startup and gameplay rema
 
 Physics dispatch now interprets EU PoA mode numbers separately from UE1 while retaining original script/save values; unsupported UE2 modes fail explicitly. See [physics scope](docs/HP3-PHYSICS-MODES.md).
 
+The PoA setter now preserves repeated-mode state and clears motion on entry to None/Rotating, compared with 144 original EU reference cases. See [setter scope and remaining root work](docs/HP3-PHYSICS-TRANSITIONS.md).
+
 ## 0.4.14 — KWGame range defaults
 
 - Fix the reported `Name index out of bounds!: KWGame` while loading `CompanionCombatManager` defaults.
