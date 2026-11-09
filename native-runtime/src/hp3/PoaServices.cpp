@@ -85,6 +85,8 @@ static void Copy(UObject* self,UObject* outer,UObject*& result)
     }
     copy->SetObject("Outer",outer);result=copy;
 }
+UObject* CopyScriptObject(UObject* source,UObject* outer)
+{ UObject* result=nullptr;Copy(source,outer,result);return result; }
 static void CommandletMain(UObject* self,const std::string& parameters,int32_t& result)
 {
     if(!self||!self->Class) Exception::Throw("Commandlet.Main requires an instance");

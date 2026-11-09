@@ -1,5 +1,6 @@
 
 #include "Precomp.h"
+#include "hp3/PoaGui.h"
 #include "RenderSubsystem.h"
 #include "VisibleMesh.h"
 #include "RenderDevice/RenderDevice.h"
@@ -83,6 +84,7 @@ void RenderSubsystem::ResetCanvas()
 void RenderSubsystem::PreRender()
 {
 	Device->SetSceneNode(&Canvas.Frame);
+    if(engine->LaunchInfo.IsHarryPotter3())PoaGui::Initialize();
 	CallEvent(engine->console, EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
 	if (engine->viewport->Actor())
 		CallEvent(engine->viewport->Actor(), EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });

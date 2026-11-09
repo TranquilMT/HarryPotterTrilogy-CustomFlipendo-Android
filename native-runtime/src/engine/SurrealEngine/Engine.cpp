@@ -1,5 +1,6 @@
 
 #include "Precomp.h"
+#include "hp3/PoaGui.h"
 #include "KWProf.h"
 #ifdef __ANDROID__
 #include <atomic>
@@ -116,6 +117,7 @@ Engine::Engine(GameLaunchInfo launchinfo) : LaunchInfo(launchinfo)
 
 Engine::~Engine()
 {
+    PoaGui::Shutdown();
 	if (audiodev)
 		audiodev->ShutdownDevice();
 

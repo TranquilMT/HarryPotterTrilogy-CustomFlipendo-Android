@@ -10,7 +10,7 @@ The ARM64 workflow now assembles a version 0.4.15-test/code 57 unsigned APK from
 
 ## PoA original menus
 
-The EU static audit covers GUI, UDebugMenu, kwGame, UWindow, HGame and the Engine Canvas/Console/GUIController declarations. It finds 42 native declarations, of which 30 still have no direct class/name registration candidate after adding the four component layout bindings. These are investigation candidates: inherited or numeric dispatch must be checked before calling each one a missing runtime binding.
+The EU static audit covers GUI, UDebugMenu, kwGame, UWindow, HGame and the Engine Canvas/Console/GUIController declarations. It finds 42 native declarations, of which 24 still have no direct class/name registration candidate after adding layout, resource lookup, control initialization, accessors and scaled-image bindings. These are investigation candidates: inherited or numeric dispatch must be checked before calling each one a missing runtime binding.
 
 The candidates include GUI component dimensions and timers, GUI style/text drawing, fonts, control initialization, list operations and Canvas tile/text helpers. See HP3-MENU-NATIVE-AUDIT.json with package hashes. Original menu boot, callbacks, input and rendering remain incomplete; this update does not claim an interactive PoA menu. Existing missing-config handling already covers the historical Hardware2Options.ini crash, but needs phone execution in the changed APK.
 

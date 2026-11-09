@@ -1,2 +1,3 @@
 #pragma once
-namespace PoaServices { void RegisterNatives(); }
+class UObject;
+namespace PoaServices { void RegisterNatives(); UObject* CopyScriptObject(UObject* source,UObject* outer); }

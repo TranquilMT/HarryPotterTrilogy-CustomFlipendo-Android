@@ -1,2 +1,3 @@
 #pragma once
-namespace PoaGui { void RegisterNatives(); }
+class UObject;
+namespace PoaGui { void RegisterNatives(); void Initialize(); void Shutdown(); UObject* Controller(); }

@@ -70,14 +70,14 @@
       "owner": "GUIController",
       "name": "GetStyle",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIController",
       "name": "GetMenuFont",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
@@ -112,7 +112,7 @@
       "owner": "GUIMultiComponent",
       "name": "InitializeControls",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
@@ -168,14 +168,14 @@
       "owner": "GUIController",
       "name": "GetMainMenuClass",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIController",
       "name": "GetCurrentRes",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "kwGame.u",
@@ -294,7 +294,7 @@
       "owner": "Canvas",
       "name": "DrawTileScaled",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "Engine.u",
@@ -305,5 +305,5 @@
     }
   ],
   "total": 42,
-  "unmatched": 30
+  "unmatched": 24
 }

@@ -1,3 +1,7 @@
+# PoA menu initialization and resource dispatch checkpoint
+
+The configured controller is created at the first render-ready PoA frame and its original initialization script is dispatched. Styles/fonts, control discovery, owned-control instancing, main-menu class/current-resolution accessors and texture-backed scaled drawing are connected. Original menu rendering, focus/input and page actions remain incomplete; APK assembly stays gated. See [menu source scope](HP3-MENU-LAYOUT.md).
+
 # Current priority: original PoA menu before APK
 
 William requested menu integration before APK assembly. Assembly is gated off in POA-MENU-ACCEPTANCE.json. Four original component layout bindings are added; initialization, styles/fonts, focus/input and New Game/Load/Options flow remain open. The permanent signing key has been recovered and its certificate verified. See [layout checkpoint](HP3-MENU-LAYOUT.md).
