@@ -20,6 +20,7 @@ bool FindBase(UActor* actor)
     const auto location=actor->Location();
     const auto hits=actor->XLevel()->Collision.Trace(location,location+vec3(0,0,-8),height,radius,true,true,false);
     UActor* floor=nullptr;
+    vec3 floorNormal(0.0f);
     const bool playerLike=UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor);
     for (const auto& hit:hits)
     {
@@ -31,11 +32,13 @@ bool FindBase(UActor* actor)
         else if (playerLike || UObject::TryCast<UPlayerPawn>(other) || UObject::TryCast<UProjectile>(other))
             blocking=actor->bBlockPlayers() && other->bBlockPlayers();
         else blocking=actor->bBlockActors() && other->bBlockActors();
-        if (blocking) { floor=other;break; }
+        if (blocking) { floor=other;floorNormal=hit.Normal;break; }
     }
     if (actor->ActorBase()!=floor)
     {
         GCRoot<UActor> floorRoot(floor);
+        // Retail APawn::SetBase stores Floor before base-change callbacks.
+        if (actor->HasProperty("Floor")) actor->SetVector("Floor",floorNormal);
         actor->SetBase(floor,true);
     }
     return true;

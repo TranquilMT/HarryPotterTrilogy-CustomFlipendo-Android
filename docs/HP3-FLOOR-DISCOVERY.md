@@ -10,7 +10,7 @@ Actor and selected-floor references are retained across callbacks. The surroundi
 
 The EU enumeration is CT_Cylinder=0 and CT_Box=1. The current collision sweep interface does not preserve a box's separate width/shape. CT_Box and other unsupported shape values therefore return without querying or changing the existing base. Missing level context, deleted actors and invalid cylinder dimensions also leave the base intact. There is no silent conversion from a box to a cylinder.
 
-The helper uses existing port collision sweeps, including their skin margin and inherited actor filtering. It does not claim exact implementation of original flags 223, box collision, all brush/encroacher rules or collision normals. The port SetBase interface still lacks the original floor-normal argument.
+The helper uses existing port collision sweeps, including their skin margin and inherited actor filtering. It does not claim exact implementation of original flags 223, box collision, all brush/encroacher rules or all floor-contact behavior. The floor-discovery helper now stores the selected normal in a reflected Floor property before changed-base callbacks; no-hit clearing uses zero, and unchanged bases leave Floor unchanged.
 
 ## Original reference
 
@@ -22,8 +22,10 @@ Artifact ZIP SHA256: dd2498220bb46c6299e436e54959fa4a5ac0bfb954959d5e20c1389b9f3
 
 Production-body tests compare the eighteen cylinder controller cases, explicitly check deferred box behavior, and exercise filtering, context validation and reentrant/deleting callbacks through SetPhysics. Existing base-list, world-blocking and geometry corpus regressions remain separate coverage.
 
-All 150 compatibility tests pass locally, including the original EU mesh/animation corpus. Changed production C++ passes syntax checks, and canonical patch 0218 passes reverse-application verification. This checkpoint still requires its own ARM64 build.
+All 150 compatibility tests pass locally, including the original EU mesh/animation corpus. Changed production C++ passes syntax checks, and canonical patch 0218 passes reverse-application verification. The cylindrical baseline passed ARM64 build 42666512883; the subsequent normal-propagation change requires its own build.
 
 ## Acceptance still required
 
-Box/width support, original trace-flag and normal handling, actor/brush/encroacher parity, platform/floor behavior on Android and root-motion locking/queries/translation/persistence remain open. No new APK is published by this source checkpoint.
+Box/width support, original trace-flag and wider normal handling, actor/brush/encroacher parity, platform/floor behavior on Android and root-motion locking/queries/translation/persistence remain open. No new APK is published by this source checkpoint.
+
+See [the active collision checklist](HP3-ACTIVE-AREA-COLLISION.md) for the authoritative remaining work.

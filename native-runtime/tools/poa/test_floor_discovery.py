@@ -20,13 +20,13 @@ class FloorDiscovery(unittest.TestCase):
 #include <string>
 #include <cstdint>
 struct vec3{float x,y,z;explicit vec3(float v=0):x(v),y(v),z(v){}vec3(float a,float b,float c):x(a),y(b),z(c){}vec3 operator+(const vec3&v)const{return{x+v.x,y+v.y,z+v.z};}};
-struct UActor;struct Hit{UActor*Actor;};struct Level{std::vector<Hit>Hits;int Calls=0;vec3 Start,End;float Height=0,Radius=0;std::vector<Hit>Trace(const vec3&s,const vec3&e,float h,float r,bool actors,bool world,bool visibility){assert(actors&&world&&!visibility);++Calls;Start=s;End=e;Height=h;Radius=r;return Hits;}};struct Scene{struct Level Collision;};
+struct UActor;struct Hit{UActor*Actor;vec3 Normal{0,0,1};};struct Level{std::vector<Hit>Hits;int Calls=0;vec3 Start,End;float Height=0,Radius=0;std::vector<Hit>Trace(const vec3&s,const vec3&e,float h,float r,bool actors,bool world,bool visibility){assert(actors&&world&&!visibility);++Calls;Start=s;End=e;Height=h;Radius=r;return Hits;}};struct Scene{struct Level Collision;};
 struct UObject{virtual~UObject()=default;template<class T>static T*TryCast(UObject*p){return dynamic_cast<T*>(p);}};
 int Roots=0;template<class T>struct GCRoot{T*Value;GCRoot(T*p):Value(p){++Roots;}~GCRoot(){--Roots;}};
 struct Launch{bool IsHarryPotter3(){return true;}};struct Engine{Launch LaunchInfo;}instance;Engine*engine=&instance;
 std::function<void(UActor*)>Hook;
-struct UActor:UObject{Scene*ScenePtr=nullptr;UActor*WorldLevel=nullptr,*Base=nullptr;uint8_t Mode=0,Shape=0;bool Deleted=false,HaveShape=true,World=false,CollideWorld=true,Actors=true,Players=true,LadderMode=true;float Radius=2,Height=5;int Sets=0;vec3 Position{10,20,30},Speed{7},Accel{9};
- bool bDeleteMe(){return Deleted;}bool HasProperty(const char*s){return std::string(s)=="CollideType"?HaveShape:true;}bool GetBool(const char*){return World;}uint8_t GetByte(const char*){return Shape;}float CollisionRadius(){return Radius;}float CollisionHeight(){return Height;}Scene*XLevel(){return ScenePtr;}UActor*Level(){return WorldLevel;}vec3 Location(){return Position;}bool bCollideWorld(){return CollideWorld;}bool bBlockActors(){return Actors;}bool bBlockPlayers(){return Players;}UActor*&ActorBase(){return Base;}void SetBase(UActor*p,bool notify){assert(notify);assert(Roots>0);Base=p;++Sets;auto cb=Hook;if(cb)cb(this);}uint8_t&Physics(){return Mode;}vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}void SetPhysics(uint8_t);
+struct UActor:UObject{Scene*ScenePtr=nullptr;UActor*WorldLevel=nullptr,*Base=nullptr;uint8_t Mode=0,Shape=0;bool Deleted=false,HaveShape=true,World=false,CollideWorld=true,Actors=true,Players=true,LadderMode=true;float Radius=2,Height=5;int Sets=0;vec3 Position{10,20,30},Speed{7},Accel{9},FloorNormal{9};
+ void SetVector(const char*,vec3 v){FloorNormal=v;}bool bDeleteMe(){return Deleted;}bool HasProperty(const char*s){return std::string(s)=="CollideType"?HaveShape:true;}bool GetBool(const char*){return World;}uint8_t GetByte(const char*){return Shape;}float CollisionRadius(){return Radius;}float CollisionHeight(){return Height;}Scene*XLevel(){return ScenePtr;}UActor*Level(){return WorldLevel;}vec3 Location(){return Position;}bool bCollideWorld(){return CollideWorld;}bool bBlockActors(){return Actors;}bool bBlockPlayers(){return Players;}UActor*&ActorBase(){return Base;}void SetBase(UActor*p,bool notify){assert(notify);assert(Roots>0);Base=p;++Sets;auto cb=Hook;if(cb)cb(this);}uint8_t&Physics(){return Mode;}vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}void SetPhysics(uint8_t);
 };
 struct UPlayerPawn:UActor{};struct UProjectile:UActor{};constexpr int PHYS_None=0,PHYS_Rotating=5;
 '''+floor+setter+'\nint main(){\n'+checks+'\n}\n'
@@ -48,5 +48,15 @@ a.CollideWorld=false;assert(PoaFloor::FindBase(&a)&&!a.Base);a.CollideWorld=true
 a.Shape=1;auto count=scene.Collision.Calls;assert(!PoaFloor::FindBase(&a)&&scene.Collision.Calls==count&&a.Base==&level);a.Shape=0;a.Radius=NAN;assert(!PoaFloor::FindBase(&a));a.Radius=2;a.ScenePtr=nullptr;assert(!PoaFloor::FindBase(&a));a.ScenePtr=&scene;
 a.Base=&old;a.Mode=2;a.Speed=vec3(7);scene.Collision.Hits={{&floor}};Hook=[](UActor*p){Hook={};p->SetPhysics(5);};a.SetPhysics(1);assert(a.Base==&floor&&a.Mode==5&&a.Speed.x==0);
 a.Base=&old;a.Mode=2;a.Speed=vec3(7);Hook=[](UActor*p){Hook={};p->Deleted=true;p->Mode=5;};a.SetPhysics(1);assert(a.Deleted&&a.Base==&floor&&a.Speed.x==7);Hook={};assert(Roots==0);
+''')
+ def test_normal_written_before_callbacks(self):
+  self.run_body(r'''
+Scene scene;UActor a,floor;a.ScenePtr=&scene;floor.World=true;
+scene.Collision.Hits={{&floor,vec3(0,.6f,.8f)}};
+Hook=[](UActor*p){assert(p->FloorNormal.y==.6f&&p->FloorNormal.z==.8f);};
+assert(PoaFloor::FindBase(&a));Hook={};
+a.FloorNormal=vec3(7);assert(PoaFloor::FindBase(&a)&&a.FloorNormal.z==7);
+scene.Collision.Hits.clear();Hook=[](UActor*p){assert(p->FloorNormal.x==0&&p->FloorNormal.y==0&&p->FloorNormal.z==0);};
+assert(PoaFloor::FindBase(&a)&&!a.Base);Hook={};assert(Roots==0);
 ''')
 if __name__=='__main__':unittest.main()

@@ -1,3 +1,7 @@
+# Current priority: collision and floors only
+
+Follow [the active-area checklist](HP3-ACTIVE-AREA-COLLISION.md) before advancing to another area. Box collision remains incomplete after loss of the unpushed batch; earlier completion claims do not apply to the retained source.
+
 # 9 November — initial cylindrical floor discovery
 
 - [x] Execute 36 original floor-query cases, retaining cylinder and box-width evidence (Actions 42665237370).
@@ -5,7 +9,7 @@
 - [x] Preserve the current base when box shape/context is unsupported; retain objects across callbacks.
 - [x] Pass focused controller, filtering and callback regressions.
 - [x] Pass all 150 compatibility tests, production C++ syntax checks and patch verification.
-- [ ] Pass this checkpoint's ARM64 build.
+- [x] Pass this checkpoint's ARM64 build (Actions 42666512883).
 - [ ] Implement box/width queries, original trace flags/normals, wider collision parity and root-motion state/movement.
 
 See HP3-FLOOR-DISCOVERY.md. This is initial cylindrical support, not full UE2 floor or root-motion completion. Published v0.4.14 remains unchanged.
