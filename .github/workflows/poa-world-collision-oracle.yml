@@ -1,0 +1,47 @@
+name: Trace original EU world collision
+on:
+  push:
+    paths: ['.github/workflows/poa-world-collision-oracle.yml', 'scripts/poa_world_collision_oracle.c']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Recover pinned original EU helper
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovery output
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          python3 - <<'PY'
+          import zipfile,pathlib,hashlib
+          with zipfile.ZipFile(next(pathlib.Path('recovery').glob('*.apk'))) as z: data=z.read('assets/hp3data/System/Engine.dll')
+          assert hashlib.sha256(data).hexdigest()=='73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a'
+          pathlib.Path('recovery/Engine.dll').write_bytes(data)
+          PY
+      - name: Execute isolated SetPhysics transitions
+        run: |
+          gcc -m32 -O1 -nostdlib -static -fno-stack-protector -fno-pie -no-pie -fno-builtin -fno-strict-aliasing -fomit-frame-pointer -fno-asynchronous-unwind-tables scripts/poa_world_collision_oracle.c -o recovery/world-collision-oracle
+          timeout 30 recovery/world-collision-oracle > output/world-collision-reference.bin
+          python3 - <<'PY'
+          import pathlib,struct,json
+          raw=pathlib.Path('output/world-collision-reference.bin').read_bytes()
+          assert len(raw)==512*12,len(raw)
+          rows=[]
+          for i,offset in enumerate(range(0,len(raw),12)):
+              self_mask,other_mask,blocked=struct.unpack_from('<2Ii',raw,offset)
+              assert self_mask==i//2
+              assert blocked==int(bool(self_mask&8))
+              rows.append({'selfMask':self_mask,'otherMask':other_mask,'blocked':bool(blocked)})
+          pathlib.Path('output/world-collision-reference.json').write_text(json.dumps({'scope':'Original EU IsBlockedBy world-geometry early branch with synthetic actor flags; excludes ordinary actors, brushes, encroachers and full collision queries','engineSHA256':'73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a','cases':rows},indent=2))
+          print('Validated',len(rows),'original world-geometry blocking cases')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eu-world-collision-reference
+          path: output/
+          retention-days: 7
