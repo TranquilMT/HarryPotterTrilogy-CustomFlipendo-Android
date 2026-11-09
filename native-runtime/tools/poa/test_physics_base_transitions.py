@@ -29,6 +29,7 @@ enum class EventName{Attach,Detach,BaseChange};
 struct ExpressionValue{UObject*Object;static ExpressionValue ObjectValue(UObject*p){return{p};}};
 int Detaches=0,Changes=0;std::function<void(UObject*,EventName)>Hook;
 void CallEvent(UObject*p,EventName e,std::vector<ExpressionValue> = {}){if(e==EventName::Detach)++Detaches;if(e==EventName::BaseChange)++Changes;auto callback=Hook;if(callback)callback(p,e);}
+namespace PoaFloor{bool FindBase(UActor*){return false;}}
 '''+base+setter+'\nint main(){\n'+checks+'\n}\n'
   with tempfile.TemporaryDirectory()as tmp:
    p=pathlib.Path(tmp);(p/'test.cpp').write_text(code);subprocess.run(['g++','-std=c++20','-Wall','-Wextra','-Werror','-Wno-misleading-indentation','-fsanitize=address,undefined','-I'+str(ENGINE),str(p/'test.cpp'),'-o',str(p/'test')],check=True);subprocess.run([str(p/'test')],check=True,env=dict(os.environ,ASAN_OPTIONS='detect_leaks=0'))

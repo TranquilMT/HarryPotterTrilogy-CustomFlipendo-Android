@@ -11,6 +11,7 @@
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
 #include "hp3/PoaBones.h"
+#include "hp3/PoaFloor.h"
 #include "Package/PoaPhysicsModes.h"
 
 void UActor::TickPhysics(float elapsed)
@@ -76,7 +77,9 @@ void UActor::SetPhysics(uint8_t newPhysics)
         GCRoot<UActor> actorRoot(this);
         // Retail clears the base in airborne/other non-grounded modes.
         // SetBase raises script callbacks, which can change the mode again.
-        if (!PoaPhysics::KeepsExistingBase(Physics()) && ActorBase())
+        if (PoaPhysics::KeepsExistingBase(Physics()))
+            PoaFloor::FindBase(this);
+        else if (ActorBase())
             SetBase(nullptr, true);
         if (bDeleteMe()) return;
         if (Physics() == PHYS_None || Physics() == PHYS_Rotating)

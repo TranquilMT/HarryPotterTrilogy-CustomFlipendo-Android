@@ -19,7 +19,7 @@ Captured outputs are retained in tools/poa/reference-profile/eu-world-collision.
 
 Production-helper tests compare all 512 reference cases. Additional tests execute the production TraceFirstHit body, exercise static-mesh flag combinations, optional false overrides, owner filtering and the legacy-game gate, and inspect EU flag declarations and integration sites. Existing mesh geometry/collision corpus regressions remain part of the compatibility suite. Full Android movement, original scene comparisons and query performance still require validation.
 
-All 147 compatibility tests pass locally. The changed production C++ files pass syntax checks, and canonical patch 0217 passes reverse-application verification. This source checkpoint still needs its ARM64 build and device acceptance.
+All 147 compatibility tests pass locally. The changed production C++ files pass syntax checks, and canonical patch 0217 passes reverse-application verification. This source checkpoint passed ARM64 Actions 42654449991 and still needs device acceptance.
 
 ## Still open
 

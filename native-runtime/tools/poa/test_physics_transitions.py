@@ -21,6 +21,7 @@ constexpr int PHYS_None=0,PHYS_Rotating=5;
 struct Launch{bool Poa=true;bool IsHarryPotter3(){return Poa;}};struct Engine{Launch LaunchInfo;}instance;Engine*engine=&instance;
 template<class T>struct GCRoot{T*Value;GCRoot(T*p):Value(p){}};
 struct UActor{UActor*Base=nullptr;UActor*&ActorBase(){return Base;}void SetBase(UActor*p,bool){Base=p;}bool bDeleteMe(){return false;}uint8_t Mode=0;bool LadderMode=true;vec3 Speed{7},Accel{9};uint8_t&Physics(){return Mode;}vec3&Velocity(){return Speed;}vec3&Acceleration(){return Accel;}void SetPhysics(uint8_t);};
+namespace PoaFloor{bool FindBase(UActor*){return false;}}
 '''+body+r'''
 struct Original{int Old,New;float X,Y,Z,AX,AY,AZ;};
 Original reference[]={'''+','.join(rows)+r'''};

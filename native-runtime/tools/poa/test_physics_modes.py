@@ -31,6 +31,7 @@ struct UActor{UActor*Base=nullptr;UActor*&ActorBase(){return Base;}void SetBase(
 };
 namespace PoaBones{bool IsAttached(UActor*a){return a->Attached;}void UpdateAttachment(UActor*a){a->Called=100;}}
 namespace KW{bool UseKWPhysics(){return true;}void PhysicsTick(UActor*a,float dt){a->Step(101,dt);}bool IsInterpolationManager(UActor*){return false;}void InterpolationManagerPhysics(UActor*a,float dt){a->Step(102,dt);}}
+namespace PoaFloor{bool FindBase(UActor*){return false;}}
 '''+body+r'''
 int main(){
  int expected[]={PHYS_None,PHYS_Walking,PHYS_Falling,PHYS_Swimming,PHYS_Flying,PHYS_Rotating,PHYS_Projectile,PHYS_Interpolating,PHYS_MovingBrush,PHYS_Spider,PHYS_Trailer};

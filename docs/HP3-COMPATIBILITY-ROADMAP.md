@@ -1,3 +1,15 @@
+# 9 November — initial cylindrical floor discovery
+
+- [x] Execute 36 original floor-query cases, retaining cylinder and box-width evidence (Actions 42665237370).
+- [x] Add an eight-unit cylindrical floor query and changed-base dispatch to retained-base physics transitions.
+- [x] Preserve the current base when box shape/context is unsupported; retain objects across callbacks.
+- [x] Pass focused controller, filtering and callback regressions.
+- [x] Pass all 150 compatibility tests, production C++ syntax checks and patch verification.
+- [ ] Pass this checkpoint's ARM64 build.
+- [ ] Implement box/width queries, original trace flags/normals, wider collision parity and root-motion state/movement.
+
+See HP3-FLOOR-DISCOVERY.md. This is initial cylindrical support, not full UE2 floor or root-motion completion. Published v0.4.14 remains unchanged.
+
 # 9 November — EU world-geometry blocking and trace classification
 
 - [x] Execute and retain 512 original EU world-blocking cases (Actions 42653655827).
@@ -5,7 +17,7 @@
 - [x] Retain world-geometry hits in the production trace filter and classify static-mesh trace routing by bWorldGeometry.
 - [x] Pass three focused tests for original reference outputs, production filtering and integration.
 - [x] Pass all 147 compatibility tests, changed-file C++ syntax checks and patch verification.
-- [ ] Pass this checkpoint's ARM64 build.
+- [x] Pass the world-collision checkpoint's ARM64 build (Actions 42654449991).
 - [ ] Complete floor discovery, other collision shapes/flags, root-motion state/movement and device acceptance.
 
 See HP3-WORLD-COLLISION.md. This does not complete floor handling, root motion or broader UE2 physics. Published v0.4.14 remains unchanged.

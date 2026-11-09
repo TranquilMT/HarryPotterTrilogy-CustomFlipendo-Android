@@ -1,0 +1,1050 @@
+{
+  "scope": "Original EU FindBase/GetCollisionExtent with synthetic actor/level storage, recording trace and SetBase callbacks; excludes actual collision and VM events",
+  "engineSHA256": "73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a",
+  "cases": [
+    {
+      "scenario": 0,
+      "oldBase": 0,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 0,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 0,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 0,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 1,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 1,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 1,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 1,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 2,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 2,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 0,
+      "oldBase": 2,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 2,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 0,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 0,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 0,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 0,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 1,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 1,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 1,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 1,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 2,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 2,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 1,
+      "oldBase": 2,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 2,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 0,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 0,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 0,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 0,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 1,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 1,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 1,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 1,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 2,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 2,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 2,
+      "oldBase": 2,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        2,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 2,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 0,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 0,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 0,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 0,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 1,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 1,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 1,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 1,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 2,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 2,
+      "hit": 0,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 0,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 2,
+      "hit": 1,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 1,
+      "newBase": 1,
+      "notify": 1,
+      "normal": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "scenario": 3,
+      "oldBase": 2,
+      "hit": 2,
+      "start": [
+        10,
+        20,
+        30
+      ],
+      "end": [
+        10,
+        20,
+        22
+      ],
+      "extent": [
+        2,
+        3,
+        5
+      ],
+      "flags": 223,
+      "setBaseCalls": 0,
+      "newBase": 2,
+      "notify": 0,
+      "normal": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
