@@ -20,6 +20,8 @@ The PoA setter now preserves repeated-mode state and clears motion on entry to N
 
 PoA physics changes now detach existing bases according to 338 original EU reference cases, with callback/deletion/rebasing checks. See [base-transition scope](docs/HP3-PHYSICS-BASE-TRANSITIONS.md).
 
+World-geometry blocking now uses the EU world-collision rule, with corrected static-mesh trace classification. See [world-collision scope](docs/HP3-WORLD-COLLISION.md).
+
 ## 0.4.14 — KWGame range defaults
 
 - Fix the reported `Name index out of bounds!: KWGame` while loading `CompanionCombatManager` defaults.

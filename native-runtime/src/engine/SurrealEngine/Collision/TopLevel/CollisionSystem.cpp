@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "Engine.h"
+#include "Package/PoaWorldCollision.h"
 #include "KW.h"
 #include "Packages/Engine/Resources/Mesh/PoaStaticMeshActor.h"
 #include "CollisionSystem.h"
@@ -55,6 +56,11 @@ CollisionHit CollisionSystem::TraceFirstHit(const vec3& from, const vec3& to, UA
 	{
 		if (hit.Actor != LevelInfo && (!tracingActor || !tracingActor->IsOwnedBy(hit.Actor)))
 		{
+            if (engine->LaunchInfo.IsHarryPotter3() && PoaCollision::WorldGeometry(hit.Actor))
+            {
+                if (flags.world) return hit;
+                continue;
+            }
 			if (hit.Actor->IsA("Pawn"))
 			{
 				if (flags.pawns)

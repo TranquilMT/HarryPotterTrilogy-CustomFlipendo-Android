@@ -1,3 +1,15 @@
+# 9 November — EU world-geometry blocking and trace classification
+
+- [x] Execute and retain 512 original EU world-blocking cases (Actions 42653655827).
+- [x] Apply world-geometry blocking before inherited actor/player flags in movement, touch and encroachment checks.
+- [x] Retain world-geometry hits in the production trace filter and classify static-mesh trace routing by bWorldGeometry.
+- [x] Pass three focused tests for original reference outputs, production filtering and integration.
+- [x] Pass all 147 compatibility tests, changed-file C++ syntax checks and patch verification.
+- [ ] Pass this checkpoint's ARM64 build.
+- [ ] Complete floor discovery, other collision shapes/flags, root-motion state/movement and device acceptance.
+
+See HP3-WORLD-COLLISION.md. This does not complete floor handling, root motion or broader UE2 physics. Published v0.4.14 remains unchanged.
+
 # 9 November — EU base detachment on physics changes
 
 - [x] Trace and retain 338 original EU based-actor transition cases (Actions 42645356037).
@@ -5,7 +17,7 @@
 - [x] Retain the actor across callbacks; respect deletion, rebasing and reentrant mode changes.
 - [x] Pass seven focused physics tests, including original-data and production-body/list/event checks.
 - [x] Pass all 144 compatibility tests, C++ syntax checks and canonical patch verification.
-- [ ] Pass this checkpoint's ARM64 build.
+- [x] Pass the base-transition checkpoint's ARM64 build (Actions 42646197180).
 - [ ] Complete floor discovery/replacement and root-motion transitions, movement, queries and persistence.
 
 See HP3-PHYSICS-BASE-TRANSITIONS.md for scope. Broader UE2 physics and phone validation remain open; published v0.4.14 is unchanged.

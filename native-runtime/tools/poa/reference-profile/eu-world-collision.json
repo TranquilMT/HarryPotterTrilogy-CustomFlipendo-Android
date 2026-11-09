@@ -1,0 +1,2566 @@
+{
+  "scope": "Original EU IsBlockedBy world-geometry early branch with synthetic actor flags; excludes ordinary actors, brushes, encroachers and full collision queries",
+  "engineSHA256": "73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a",
+  "cases": [
+    {
+      "selfMask": 0,
+      "otherMask": 165,
+      "blocked": false
+    },
+    {
+      "selfMask": 0,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 1,
+      "otherMask": 164,
+      "blocked": false
+    },
+    {
+      "selfMask": 1,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 2,
+      "otherMask": 167,
+      "blocked": false
+    },
+    {
+      "selfMask": 2,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 3,
+      "otherMask": 166,
+      "blocked": false
+    },
+    {
+      "selfMask": 3,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 4,
+      "otherMask": 161,
+      "blocked": false
+    },
+    {
+      "selfMask": 4,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 5,
+      "otherMask": 160,
+      "blocked": false
+    },
+    {
+      "selfMask": 5,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 6,
+      "otherMask": 163,
+      "blocked": false
+    },
+    {
+      "selfMask": 6,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 7,
+      "otherMask": 162,
+      "blocked": false
+    },
+    {
+      "selfMask": 7,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 8,
+      "otherMask": 173,
+      "blocked": true
+    },
+    {
+      "selfMask": 8,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 9,
+      "otherMask": 172,
+      "blocked": true
+    },
+    {
+      "selfMask": 9,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 10,
+      "otherMask": 175,
+      "blocked": true
+    },
+    {
+      "selfMask": 10,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 11,
+      "otherMask": 174,
+      "blocked": true
+    },
+    {
+      "selfMask": 11,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 12,
+      "otherMask": 169,
+      "blocked": true
+    },
+    {
+      "selfMask": 12,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 13,
+      "otherMask": 168,
+      "blocked": true
+    },
+    {
+      "selfMask": 13,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 14,
+      "otherMask": 171,
+      "blocked": true
+    },
+    {
+      "selfMask": 14,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 15,
+      "otherMask": 170,
+      "blocked": true
+    },
+    {
+      "selfMask": 15,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 16,
+      "otherMask": 181,
+      "blocked": false
+    },
+    {
+      "selfMask": 16,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 17,
+      "otherMask": 180,
+      "blocked": false
+    },
+    {
+      "selfMask": 17,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 18,
+      "otherMask": 183,
+      "blocked": false
+    },
+    {
+      "selfMask": 18,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 19,
+      "otherMask": 182,
+      "blocked": false
+    },
+    {
+      "selfMask": 19,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 20,
+      "otherMask": 177,
+      "blocked": false
+    },
+    {
+      "selfMask": 20,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 21,
+      "otherMask": 176,
+      "blocked": false
+    },
+    {
+      "selfMask": 21,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 22,
+      "otherMask": 179,
+      "blocked": false
+    },
+    {
+      "selfMask": 22,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 23,
+      "otherMask": 178,
+      "blocked": false
+    },
+    {
+      "selfMask": 23,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 24,
+      "otherMask": 189,
+      "blocked": true
+    },
+    {
+      "selfMask": 24,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 25,
+      "otherMask": 188,
+      "blocked": true
+    },
+    {
+      "selfMask": 25,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 26,
+      "otherMask": 191,
+      "blocked": true
+    },
+    {
+      "selfMask": 26,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 27,
+      "otherMask": 190,
+      "blocked": true
+    },
+    {
+      "selfMask": 27,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 28,
+      "otherMask": 185,
+      "blocked": true
+    },
+    {
+      "selfMask": 28,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 29,
+      "otherMask": 184,
+      "blocked": true
+    },
+    {
+      "selfMask": 29,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 30,
+      "otherMask": 187,
+      "blocked": true
+    },
+    {
+      "selfMask": 30,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 31,
+      "otherMask": 186,
+      "blocked": true
+    },
+    {
+      "selfMask": 31,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 32,
+      "otherMask": 133,
+      "blocked": false
+    },
+    {
+      "selfMask": 32,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 33,
+      "otherMask": 132,
+      "blocked": false
+    },
+    {
+      "selfMask": 33,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 34,
+      "otherMask": 135,
+      "blocked": false
+    },
+    {
+      "selfMask": 34,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 35,
+      "otherMask": 134,
+      "blocked": false
+    },
+    {
+      "selfMask": 35,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 36,
+      "otherMask": 129,
+      "blocked": false
+    },
+    {
+      "selfMask": 36,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 37,
+      "otherMask": 128,
+      "blocked": false
+    },
+    {
+      "selfMask": 37,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 38,
+      "otherMask": 131,
+      "blocked": false
+    },
+    {
+      "selfMask": 38,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 39,
+      "otherMask": 130,
+      "blocked": false
+    },
+    {
+      "selfMask": 39,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 40,
+      "otherMask": 141,
+      "blocked": true
+    },
+    {
+      "selfMask": 40,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 41,
+      "otherMask": 140,
+      "blocked": true
+    },
+    {
+      "selfMask": 41,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 42,
+      "otherMask": 143,
+      "blocked": true
+    },
+    {
+      "selfMask": 42,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 43,
+      "otherMask": 142,
+      "blocked": true
+    },
+    {
+      "selfMask": 43,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 44,
+      "otherMask": 137,
+      "blocked": true
+    },
+    {
+      "selfMask": 44,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 45,
+      "otherMask": 136,
+      "blocked": true
+    },
+    {
+      "selfMask": 45,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 46,
+      "otherMask": 139,
+      "blocked": true
+    },
+    {
+      "selfMask": 46,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 47,
+      "otherMask": 138,
+      "blocked": true
+    },
+    {
+      "selfMask": 47,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 48,
+      "otherMask": 149,
+      "blocked": false
+    },
+    {
+      "selfMask": 48,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 49,
+      "otherMask": 148,
+      "blocked": false
+    },
+    {
+      "selfMask": 49,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 50,
+      "otherMask": 151,
+      "blocked": false
+    },
+    {
+      "selfMask": 50,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 51,
+      "otherMask": 150,
+      "blocked": false
+    },
+    {
+      "selfMask": 51,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 52,
+      "otherMask": 145,
+      "blocked": false
+    },
+    {
+      "selfMask": 52,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 53,
+      "otherMask": 144,
+      "blocked": false
+    },
+    {
+      "selfMask": 53,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 54,
+      "otherMask": 147,
+      "blocked": false
+    },
+    {
+      "selfMask": 54,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 55,
+      "otherMask": 146,
+      "blocked": false
+    },
+    {
+      "selfMask": 55,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 56,
+      "otherMask": 157,
+      "blocked": true
+    },
+    {
+      "selfMask": 56,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 57,
+      "otherMask": 156,
+      "blocked": true
+    },
+    {
+      "selfMask": 57,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 58,
+      "otherMask": 159,
+      "blocked": true
+    },
+    {
+      "selfMask": 58,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 59,
+      "otherMask": 158,
+      "blocked": true
+    },
+    {
+      "selfMask": 59,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 60,
+      "otherMask": 153,
+      "blocked": true
+    },
+    {
+      "selfMask": 60,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 61,
+      "otherMask": 152,
+      "blocked": true
+    },
+    {
+      "selfMask": 61,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 62,
+      "otherMask": 155,
+      "blocked": true
+    },
+    {
+      "selfMask": 62,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 63,
+      "otherMask": 154,
+      "blocked": true
+    },
+    {
+      "selfMask": 63,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 64,
+      "otherMask": 229,
+      "blocked": false
+    },
+    {
+      "selfMask": 64,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 65,
+      "otherMask": 228,
+      "blocked": false
+    },
+    {
+      "selfMask": 65,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 66,
+      "otherMask": 231,
+      "blocked": false
+    },
+    {
+      "selfMask": 66,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 67,
+      "otherMask": 230,
+      "blocked": false
+    },
+    {
+      "selfMask": 67,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 68,
+      "otherMask": 225,
+      "blocked": false
+    },
+    {
+      "selfMask": 68,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 69,
+      "otherMask": 224,
+      "blocked": false
+    },
+    {
+      "selfMask": 69,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 70,
+      "otherMask": 227,
+      "blocked": false
+    },
+    {
+      "selfMask": 70,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 71,
+      "otherMask": 226,
+      "blocked": false
+    },
+    {
+      "selfMask": 71,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 72,
+      "otherMask": 237,
+      "blocked": true
+    },
+    {
+      "selfMask": 72,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 73,
+      "otherMask": 236,
+      "blocked": true
+    },
+    {
+      "selfMask": 73,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 74,
+      "otherMask": 239,
+      "blocked": true
+    },
+    {
+      "selfMask": 74,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 75,
+      "otherMask": 238,
+      "blocked": true
+    },
+    {
+      "selfMask": 75,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 76,
+      "otherMask": 233,
+      "blocked": true
+    },
+    {
+      "selfMask": 76,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 77,
+      "otherMask": 232,
+      "blocked": true
+    },
+    {
+      "selfMask": 77,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 78,
+      "otherMask": 235,
+      "blocked": true
+    },
+    {
+      "selfMask": 78,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 79,
+      "otherMask": 234,
+      "blocked": true
+    },
+    {
+      "selfMask": 79,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 80,
+      "otherMask": 245,
+      "blocked": false
+    },
+    {
+      "selfMask": 80,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 81,
+      "otherMask": 244,
+      "blocked": false
+    },
+    {
+      "selfMask": 81,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 82,
+      "otherMask": 247,
+      "blocked": false
+    },
+    {
+      "selfMask": 82,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 83,
+      "otherMask": 246,
+      "blocked": false
+    },
+    {
+      "selfMask": 83,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 84,
+      "otherMask": 241,
+      "blocked": false
+    },
+    {
+      "selfMask": 84,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 85,
+      "otherMask": 240,
+      "blocked": false
+    },
+    {
+      "selfMask": 85,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 86,
+      "otherMask": 243,
+      "blocked": false
+    },
+    {
+      "selfMask": 86,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 87,
+      "otherMask": 242,
+      "blocked": false
+    },
+    {
+      "selfMask": 87,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 88,
+      "otherMask": 253,
+      "blocked": true
+    },
+    {
+      "selfMask": 88,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 89,
+      "otherMask": 252,
+      "blocked": true
+    },
+    {
+      "selfMask": 89,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 90,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 90,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 91,
+      "otherMask": 254,
+      "blocked": true
+    },
+    {
+      "selfMask": 91,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 92,
+      "otherMask": 249,
+      "blocked": true
+    },
+    {
+      "selfMask": 92,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 93,
+      "otherMask": 248,
+      "blocked": true
+    },
+    {
+      "selfMask": 93,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 94,
+      "otherMask": 251,
+      "blocked": true
+    },
+    {
+      "selfMask": 94,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 95,
+      "otherMask": 250,
+      "blocked": true
+    },
+    {
+      "selfMask": 95,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 96,
+      "otherMask": 197,
+      "blocked": false
+    },
+    {
+      "selfMask": 96,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 97,
+      "otherMask": 196,
+      "blocked": false
+    },
+    {
+      "selfMask": 97,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 98,
+      "otherMask": 199,
+      "blocked": false
+    },
+    {
+      "selfMask": 98,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 99,
+      "otherMask": 198,
+      "blocked": false
+    },
+    {
+      "selfMask": 99,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 100,
+      "otherMask": 193,
+      "blocked": false
+    },
+    {
+      "selfMask": 100,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 101,
+      "otherMask": 192,
+      "blocked": false
+    },
+    {
+      "selfMask": 101,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 102,
+      "otherMask": 195,
+      "blocked": false
+    },
+    {
+      "selfMask": 102,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 103,
+      "otherMask": 194,
+      "blocked": false
+    },
+    {
+      "selfMask": 103,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 104,
+      "otherMask": 205,
+      "blocked": true
+    },
+    {
+      "selfMask": 104,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 105,
+      "otherMask": 204,
+      "blocked": true
+    },
+    {
+      "selfMask": 105,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 106,
+      "otherMask": 207,
+      "blocked": true
+    },
+    {
+      "selfMask": 106,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 107,
+      "otherMask": 206,
+      "blocked": true
+    },
+    {
+      "selfMask": 107,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 108,
+      "otherMask": 201,
+      "blocked": true
+    },
+    {
+      "selfMask": 108,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 109,
+      "otherMask": 200,
+      "blocked": true
+    },
+    {
+      "selfMask": 109,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 110,
+      "otherMask": 203,
+      "blocked": true
+    },
+    {
+      "selfMask": 110,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 111,
+      "otherMask": 202,
+      "blocked": true
+    },
+    {
+      "selfMask": 111,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 112,
+      "otherMask": 213,
+      "blocked": false
+    },
+    {
+      "selfMask": 112,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 113,
+      "otherMask": 212,
+      "blocked": false
+    },
+    {
+      "selfMask": 113,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 114,
+      "otherMask": 215,
+      "blocked": false
+    },
+    {
+      "selfMask": 114,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 115,
+      "otherMask": 214,
+      "blocked": false
+    },
+    {
+      "selfMask": 115,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 116,
+      "otherMask": 209,
+      "blocked": false
+    },
+    {
+      "selfMask": 116,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 117,
+      "otherMask": 208,
+      "blocked": false
+    },
+    {
+      "selfMask": 117,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 118,
+      "otherMask": 211,
+      "blocked": false
+    },
+    {
+      "selfMask": 118,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 119,
+      "otherMask": 210,
+      "blocked": false
+    },
+    {
+      "selfMask": 119,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 120,
+      "otherMask": 221,
+      "blocked": true
+    },
+    {
+      "selfMask": 120,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 121,
+      "otherMask": 220,
+      "blocked": true
+    },
+    {
+      "selfMask": 121,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 122,
+      "otherMask": 223,
+      "blocked": true
+    },
+    {
+      "selfMask": 122,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 123,
+      "otherMask": 222,
+      "blocked": true
+    },
+    {
+      "selfMask": 123,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 124,
+      "otherMask": 217,
+      "blocked": true
+    },
+    {
+      "selfMask": 124,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 125,
+      "otherMask": 216,
+      "blocked": true
+    },
+    {
+      "selfMask": 125,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 126,
+      "otherMask": 219,
+      "blocked": true
+    },
+    {
+      "selfMask": 126,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 127,
+      "otherMask": 218,
+      "blocked": true
+    },
+    {
+      "selfMask": 127,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 128,
+      "otherMask": 37,
+      "blocked": false
+    },
+    {
+      "selfMask": 128,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 129,
+      "otherMask": 36,
+      "blocked": false
+    },
+    {
+      "selfMask": 129,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 130,
+      "otherMask": 39,
+      "blocked": false
+    },
+    {
+      "selfMask": 130,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 131,
+      "otherMask": 38,
+      "blocked": false
+    },
+    {
+      "selfMask": 131,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 132,
+      "otherMask": 33,
+      "blocked": false
+    },
+    {
+      "selfMask": 132,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 133,
+      "otherMask": 32,
+      "blocked": false
+    },
+    {
+      "selfMask": 133,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 134,
+      "otherMask": 35,
+      "blocked": false
+    },
+    {
+      "selfMask": 134,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 135,
+      "otherMask": 34,
+      "blocked": false
+    },
+    {
+      "selfMask": 135,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 136,
+      "otherMask": 45,
+      "blocked": true
+    },
+    {
+      "selfMask": 136,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 137,
+      "otherMask": 44,
+      "blocked": true
+    },
+    {
+      "selfMask": 137,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 138,
+      "otherMask": 47,
+      "blocked": true
+    },
+    {
+      "selfMask": 138,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 139,
+      "otherMask": 46,
+      "blocked": true
+    },
+    {
+      "selfMask": 139,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 140,
+      "otherMask": 41,
+      "blocked": true
+    },
+    {
+      "selfMask": 140,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 141,
+      "otherMask": 40,
+      "blocked": true
+    },
+    {
+      "selfMask": 141,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 142,
+      "otherMask": 43,
+      "blocked": true
+    },
+    {
+      "selfMask": 142,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 143,
+      "otherMask": 42,
+      "blocked": true
+    },
+    {
+      "selfMask": 143,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 144,
+      "otherMask": 53,
+      "blocked": false
+    },
+    {
+      "selfMask": 144,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 145,
+      "otherMask": 52,
+      "blocked": false
+    },
+    {
+      "selfMask": 145,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 146,
+      "otherMask": 55,
+      "blocked": false
+    },
+    {
+      "selfMask": 146,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 147,
+      "otherMask": 54,
+      "blocked": false
+    },
+    {
+      "selfMask": 147,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 148,
+      "otherMask": 49,
+      "blocked": false
+    },
+    {
+      "selfMask": 148,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 149,
+      "otherMask": 48,
+      "blocked": false
+    },
+    {
+      "selfMask": 149,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 150,
+      "otherMask": 51,
+      "blocked": false
+    },
+    {
+      "selfMask": 150,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 151,
+      "otherMask": 50,
+      "blocked": false
+    },
+    {
+      "selfMask": 151,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 152,
+      "otherMask": 61,
+      "blocked": true
+    },
+    {
+      "selfMask": 152,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 153,
+      "otherMask": 60,
+      "blocked": true
+    },
+    {
+      "selfMask": 153,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 154,
+      "otherMask": 63,
+      "blocked": true
+    },
+    {
+      "selfMask": 154,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 155,
+      "otherMask": 62,
+      "blocked": true
+    },
+    {
+      "selfMask": 155,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 156,
+      "otherMask": 57,
+      "blocked": true
+    },
+    {
+      "selfMask": 156,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 157,
+      "otherMask": 56,
+      "blocked": true
+    },
+    {
+      "selfMask": 157,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 158,
+      "otherMask": 59,
+      "blocked": true
+    },
+    {
+      "selfMask": 158,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 159,
+      "otherMask": 58,
+      "blocked": true
+    },
+    {
+      "selfMask": 159,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 160,
+      "otherMask": 5,
+      "blocked": false
+    },
+    {
+      "selfMask": 160,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 161,
+      "otherMask": 4,
+      "blocked": false
+    },
+    {
+      "selfMask": 161,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 162,
+      "otherMask": 7,
+      "blocked": false
+    },
+    {
+      "selfMask": 162,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 163,
+      "otherMask": 6,
+      "blocked": false
+    },
+    {
+      "selfMask": 163,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 164,
+      "otherMask": 1,
+      "blocked": false
+    },
+    {
+      "selfMask": 164,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 165,
+      "otherMask": 0,
+      "blocked": false
+    },
+    {
+      "selfMask": 165,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 166,
+      "otherMask": 3,
+      "blocked": false
+    },
+    {
+      "selfMask": 166,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 167,
+      "otherMask": 2,
+      "blocked": false
+    },
+    {
+      "selfMask": 167,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 168,
+      "otherMask": 13,
+      "blocked": true
+    },
+    {
+      "selfMask": 168,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 169,
+      "otherMask": 12,
+      "blocked": true
+    },
+    {
+      "selfMask": 169,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 170,
+      "otherMask": 15,
+      "blocked": true
+    },
+    {
+      "selfMask": 170,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 171,
+      "otherMask": 14,
+      "blocked": true
+    },
+    {
+      "selfMask": 171,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 172,
+      "otherMask": 9,
+      "blocked": true
+    },
+    {
+      "selfMask": 172,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 173,
+      "otherMask": 8,
+      "blocked": true
+    },
+    {
+      "selfMask": 173,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 174,
+      "otherMask": 11,
+      "blocked": true
+    },
+    {
+      "selfMask": 174,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 175,
+      "otherMask": 10,
+      "blocked": true
+    },
+    {
+      "selfMask": 175,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 176,
+      "otherMask": 21,
+      "blocked": false
+    },
+    {
+      "selfMask": 176,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 177,
+      "otherMask": 20,
+      "blocked": false
+    },
+    {
+      "selfMask": 177,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 178,
+      "otherMask": 23,
+      "blocked": false
+    },
+    {
+      "selfMask": 178,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 179,
+      "otherMask": 22,
+      "blocked": false
+    },
+    {
+      "selfMask": 179,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 180,
+      "otherMask": 17,
+      "blocked": false
+    },
+    {
+      "selfMask": 180,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 181,
+      "otherMask": 16,
+      "blocked": false
+    },
+    {
+      "selfMask": 181,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 182,
+      "otherMask": 19,
+      "blocked": false
+    },
+    {
+      "selfMask": 182,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 183,
+      "otherMask": 18,
+      "blocked": false
+    },
+    {
+      "selfMask": 183,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 184,
+      "otherMask": 29,
+      "blocked": true
+    },
+    {
+      "selfMask": 184,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 185,
+      "otherMask": 28,
+      "blocked": true
+    },
+    {
+      "selfMask": 185,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 186,
+      "otherMask": 31,
+      "blocked": true
+    },
+    {
+      "selfMask": 186,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 187,
+      "otherMask": 30,
+      "blocked": true
+    },
+    {
+      "selfMask": 187,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 188,
+      "otherMask": 25,
+      "blocked": true
+    },
+    {
+      "selfMask": 188,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 189,
+      "otherMask": 24,
+      "blocked": true
+    },
+    {
+      "selfMask": 189,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 190,
+      "otherMask": 27,
+      "blocked": true
+    },
+    {
+      "selfMask": 190,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 191,
+      "otherMask": 26,
+      "blocked": true
+    },
+    {
+      "selfMask": 191,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 192,
+      "otherMask": 101,
+      "blocked": false
+    },
+    {
+      "selfMask": 192,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 193,
+      "otherMask": 100,
+      "blocked": false
+    },
+    {
+      "selfMask": 193,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 194,
+      "otherMask": 103,
+      "blocked": false
+    },
+    {
+      "selfMask": 194,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 195,
+      "otherMask": 102,
+      "blocked": false
+    },
+    {
+      "selfMask": 195,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 196,
+      "otherMask": 97,
+      "blocked": false
+    },
+    {
+      "selfMask": 196,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 197,
+      "otherMask": 96,
+      "blocked": false
+    },
+    {
+      "selfMask": 197,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 198,
+      "otherMask": 99,
+      "blocked": false
+    },
+    {
+      "selfMask": 198,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 199,
+      "otherMask": 98,
+      "blocked": false
+    },
+    {
+      "selfMask": 199,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 200,
+      "otherMask": 109,
+      "blocked": true
+    },
+    {
+      "selfMask": 200,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 201,
+      "otherMask": 108,
+      "blocked": true
+    },
+    {
+      "selfMask": 201,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 202,
+      "otherMask": 111,
+      "blocked": true
+    },
+    {
+      "selfMask": 202,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 203,
+      "otherMask": 110,
+      "blocked": true
+    },
+    {
+      "selfMask": 203,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 204,
+      "otherMask": 105,
+      "blocked": true
+    },
+    {
+      "selfMask": 204,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 205,
+      "otherMask": 104,
+      "blocked": true
+    },
+    {
+      "selfMask": 205,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 206,
+      "otherMask": 107,
+      "blocked": true
+    },
+    {
+      "selfMask": 206,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 207,
+      "otherMask": 106,
+      "blocked": true
+    },
+    {
+      "selfMask": 207,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 208,
+      "otherMask": 117,
+      "blocked": false
+    },
+    {
+      "selfMask": 208,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 209,
+      "otherMask": 116,
+      "blocked": false
+    },
+    {
+      "selfMask": 209,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 210,
+      "otherMask": 119,
+      "blocked": false
+    },
+    {
+      "selfMask": 210,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 211,
+      "otherMask": 118,
+      "blocked": false
+    },
+    {
+      "selfMask": 211,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 212,
+      "otherMask": 113,
+      "blocked": false
+    },
+    {
+      "selfMask": 212,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 213,
+      "otherMask": 112,
+      "blocked": false
+    },
+    {
+      "selfMask": 213,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 214,
+      "otherMask": 115,
+      "blocked": false
+    },
+    {
+      "selfMask": 214,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 215,
+      "otherMask": 114,
+      "blocked": false
+    },
+    {
+      "selfMask": 215,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 216,
+      "otherMask": 125,
+      "blocked": true
+    },
+    {
+      "selfMask": 216,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 217,
+      "otherMask": 124,
+      "blocked": true
+    },
+    {
+      "selfMask": 217,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 218,
+      "otherMask": 127,
+      "blocked": true
+    },
+    {
+      "selfMask": 218,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 219,
+      "otherMask": 126,
+      "blocked": true
+    },
+    {
+      "selfMask": 219,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 220,
+      "otherMask": 121,
+      "blocked": true
+    },
+    {
+      "selfMask": 220,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 221,
+      "otherMask": 120,
+      "blocked": true
+    },
+    {
+      "selfMask": 221,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 222,
+      "otherMask": 123,
+      "blocked": true
+    },
+    {
+      "selfMask": 222,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 223,
+      "otherMask": 122,
+      "blocked": true
+    },
+    {
+      "selfMask": 223,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 224,
+      "otherMask": 69,
+      "blocked": false
+    },
+    {
+      "selfMask": 224,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 225,
+      "otherMask": 68,
+      "blocked": false
+    },
+    {
+      "selfMask": 225,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 226,
+      "otherMask": 71,
+      "blocked": false
+    },
+    {
+      "selfMask": 226,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 227,
+      "otherMask": 70,
+      "blocked": false
+    },
+    {
+      "selfMask": 227,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 228,
+      "otherMask": 65,
+      "blocked": false
+    },
+    {
+      "selfMask": 228,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 229,
+      "otherMask": 64,
+      "blocked": false
+    },
+    {
+      "selfMask": 229,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 230,
+      "otherMask": 67,
+      "blocked": false
+    },
+    {
+      "selfMask": 230,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 231,
+      "otherMask": 66,
+      "blocked": false
+    },
+    {
+      "selfMask": 231,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 232,
+      "otherMask": 77,
+      "blocked": true
+    },
+    {
+      "selfMask": 232,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 233,
+      "otherMask": 76,
+      "blocked": true
+    },
+    {
+      "selfMask": 233,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 234,
+      "otherMask": 79,
+      "blocked": true
+    },
+    {
+      "selfMask": 234,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 235,
+      "otherMask": 78,
+      "blocked": true
+    },
+    {
+      "selfMask": 235,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 236,
+      "otherMask": 73,
+      "blocked": true
+    },
+    {
+      "selfMask": 236,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 237,
+      "otherMask": 72,
+      "blocked": true
+    },
+    {
+      "selfMask": 237,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 238,
+      "otherMask": 75,
+      "blocked": true
+    },
+    {
+      "selfMask": 238,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 239,
+      "otherMask": 74,
+      "blocked": true
+    },
+    {
+      "selfMask": 239,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 240,
+      "otherMask": 85,
+      "blocked": false
+    },
+    {
+      "selfMask": 240,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 241,
+      "otherMask": 84,
+      "blocked": false
+    },
+    {
+      "selfMask": 241,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 242,
+      "otherMask": 87,
+      "blocked": false
+    },
+    {
+      "selfMask": 242,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 243,
+      "otherMask": 86,
+      "blocked": false
+    },
+    {
+      "selfMask": 243,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 244,
+      "otherMask": 81,
+      "blocked": false
+    },
+    {
+      "selfMask": 244,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 245,
+      "otherMask": 80,
+      "blocked": false
+    },
+    {
+      "selfMask": 245,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 246,
+      "otherMask": 83,
+      "blocked": false
+    },
+    {
+      "selfMask": 246,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 247,
+      "otherMask": 82,
+      "blocked": false
+    },
+    {
+      "selfMask": 247,
+      "otherMask": 255,
+      "blocked": false
+    },
+    {
+      "selfMask": 248,
+      "otherMask": 93,
+      "blocked": true
+    },
+    {
+      "selfMask": 248,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 249,
+      "otherMask": 92,
+      "blocked": true
+    },
+    {
+      "selfMask": 249,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 250,
+      "otherMask": 95,
+      "blocked": true
+    },
+    {
+      "selfMask": 250,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 251,
+      "otherMask": 94,
+      "blocked": true
+    },
+    {
+      "selfMask": 251,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 252,
+      "otherMask": 89,
+      "blocked": true
+    },
+    {
+      "selfMask": 252,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 253,
+      "otherMask": 88,
+      "blocked": true
+    },
+    {
+      "selfMask": 253,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 254,
+      "otherMask": 91,
+      "blocked": true
+    },
+    {
+      "selfMask": 254,
+      "otherMask": 255,
+      "blocked": true
+    },
+    {
+      "selfMask": 255,
+      "otherMask": 90,
+      "blocked": true
+    },
+    {
+      "selfMask": 255,
+      "otherMask": 255,
+      "blocked": true
+    }
+  ]
+}

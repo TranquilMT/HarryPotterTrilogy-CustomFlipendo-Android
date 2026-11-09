@@ -14,7 +14,7 @@ Captured outputs are retained in tools/poa/reference-profile/eu-physics-base.jso
 
 ## Production coverage and remaining work
 
-All 144 compatibility tests pass locally, including the original EU asset corpus. Changed production C++ passes syntax checks; canonical patch 0216 passes reverse-application verification. This checkpoint still requires its own ARM64 build and device acceptance.
+All 144 compatibility tests pass locally, including the original EU asset corpus. Changed production C++ passes syntax checks; canonical patch 0216 passes reverse-application verification. This checkpoint passed ARM64 Actions 42646197180 and still requires device acceptance.
 
 Production SetPhysics and SetBase bodies are exercised together against the 338 outputs for base retention/detachment, callbacks and list maintenance. Separate cases cover reentrant mode changes, rebasing, deletion, GC retention and the previous UE1 setter behavior. The port's SetBase does not implement the original floor-normal argument; that part of the reference is recorded, not claimed implemented.
 

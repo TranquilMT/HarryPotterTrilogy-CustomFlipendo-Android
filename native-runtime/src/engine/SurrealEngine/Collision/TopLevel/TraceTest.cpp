@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "Engine.h"
+#include "Package/PoaWorldCollision.h"
 #include "KW.h"
 #include "TraceTest.h"
 #include "PoaStaticMeshTrace.h"
@@ -142,7 +143,7 @@ bool TraceTester::TraceAnyHit(vec3 from, vec3 to, UActor* tracingActor, bool tra
 						if (actor->Collision.CheckCounter != checkCounter)
 						{
 							actor->Collision.CheckCounter = checkCounter;
-							if (actor != tracingActor && (actor->bBlockActors() || (engine->LaunchInfo.IsHarryPotter3() && traceWorld && GetPoaStaticMesh(actor))))
+							if (actor != tracingActor && (actor->bBlockActors() || (engine->LaunchInfo.IsHarryPotter3() && traceWorld && PoaCollision::WorldGeometry(actor) && GetPoaStaticMesh(actor))))
 							{
 								TraceActor(actor, origin, tmin, direction, tmax, 0.0, 0.0, traceActors, traceWorld, visibilityOnly, hits);
 								if (!hits.empty())
@@ -201,7 +202,7 @@ void TraceTester::TraceActor(UActor* actor, const dvec3& origin, double tmin, co
     {
         if (auto mesh = GetPoaStaticMesh(actor))
         {
-            if (traceWorld) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
+            if (PoaCollision::TraceStaticMesh(actor,traceActors,traceWorld)) TracePoaStaticMesh(actor, mesh, origin, tmin, dirNormalized, tmax, height, radius, hits);
             return;
         }
     }

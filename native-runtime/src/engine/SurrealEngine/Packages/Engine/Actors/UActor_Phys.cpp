@@ -3,6 +3,7 @@
 #include "UActor.h"
 #include "VM/ScriptCall.h"
 #include "Engine.h"
+#include "Package/PoaWorldCollision.h"
 #include "Packages/Engine/Actors/UProjectile.h"
 #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
 #include "Packages/Engine/Actors/Info/ULevelInfo.h"
@@ -476,7 +477,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 				if (hit.Actor != Level())
 				{
 					bool isBlocking;
-					if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy (movers stop bCollideWorld actors)
+					if (auto world = PoaCollision::WorldBlocking(this,hit.Actor,engine->LaunchInfo.IsHarryPotter3()))
+                        isBlocking = *world;
+                    else if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy (movers stop bCollideWorld actors)
 						isBlocking = KW::IsBlockedBy(this, hit.Actor);
 					else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
 						isBlocking = hit.Actor->bBlockPlayers() && bBlockPlayers();
@@ -529,7 +532,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 				continue;
 
 			bool isBlocking;
-			if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor))
+			if (auto world = PoaCollision::WorldBlocking(this,actor,engine->LaunchInfo.IsHarryPotter3()))
+                isBlocking = *world;
+            else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor))
 				isBlocking = actor->bBlockPlayers() && bBlockPlayers();
 			else
 				isBlocking = actor->bBlockActors() && bBlockActors();
@@ -556,7 +561,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 				continue;
 
 			bool isBlocking;
-			if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor))
+			if (auto world = PoaCollision::WorldBlocking(this,actor,engine->LaunchInfo.IsHarryPotter3()))
+                isBlocking = *world;
+            else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(actor) || UObject::TryCast<UProjectile>(actor))
 				isBlocking = actor->bBlockPlayers() && bBlockPlayers();
 			else
 				isBlocking = actor->bBlockActors() && bBlockActors();
@@ -586,7 +593,9 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 		{
 			// We can't touch stuff we are blocked by
 			bool isBlocking;
-			if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy
+			if (auto world = PoaCollision::WorldBlocking(this,hit.Actor,engine->LaunchInfo.IsHarryPotter3()))
+                isBlocking = *world;
+            else if (engine->LaunchInfo.IsKnowWonder()) // HP1's AActor::IsBlockedBy
 				isBlocking = KW::IsBlockedBy(this, hit.Actor);
 			else if (useBlockPlayers || UObject::TryCast<UPlayerPawn>(hit.Actor) || UObject::TryCast<UProjectile>(hit.Actor))
 				isBlocking = hit.Actor->bBlockPlayers() && bBlockPlayers();
