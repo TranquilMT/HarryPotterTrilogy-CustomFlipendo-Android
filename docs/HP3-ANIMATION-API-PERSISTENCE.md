@@ -41,6 +41,6 @@ Host tests cold-load a newly constructed actor/stream, serialize it identically 
 
 ## Verification and remaining work
 
-134 compatibility tests and 29 packaging tests pass locally; changed production C++ files pass syntax checks. The preceding channel checkpoint passed ARM64 Actions 42524780799. This follow-up has its own build gate.
+134 compatibility tests and 29 packaging tests pass locally; changed production C++ files pass syntax checks. The preceding channel checkpoint passed ARM64 Actions 42524780799. This follow-up passed ARM64 Actions 42528353602. Later bone/notify work is documented in HP3-BONES-NOTIFIES.md.
 
 Remaining work includes translational/root-motion tracking and collision integration, bone/socket attachments, native-only notifies and special animation behavior, exact within-frame/cross-channel callback ordering, other animation APIs, original pose/timing comparisons, full map-save/VM/device acceptance, optimized LOD/lighting/performance and the wider terrain/world/rendering/gameplay workstreams. The source update does not publish or alter the v0.4.14 APK.

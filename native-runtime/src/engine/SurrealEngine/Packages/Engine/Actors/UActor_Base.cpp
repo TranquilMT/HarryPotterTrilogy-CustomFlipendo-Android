@@ -12,6 +12,7 @@
 #include "VM/ScriptCall.h"
 #include "KW.h"
 #include "KWMove.h"
+#include "hp3/PoaBones.h"
 
 void UActor::InitBase()
 {
@@ -74,7 +75,10 @@ void UActor::InitBase()
 void UActor::AddBasedActor(UActor* actor)
 {
 	if (actor)
-		BasedActors.push_back(actor);
+    {
+        if (!engine->LaunchInfo.IsHarryPotter3() || std::find(BasedActors.begin(),BasedActors.end(),actor)==BasedActors.end())BasedActors.push_back(actor);
+        if (engine->LaunchInfo.IsHarryPotter3())PoaBones::SyncAttached(this,actor,true);
+    }
 }
 
 void UActor::RemoveBasedActor(UActor* actor)
@@ -82,6 +86,7 @@ void UActor::RemoveBasedActor(UActor* actor)
 	if (!actor)
 		return;
 
+	if(engine->LaunchInfo.IsHarryPotter3())PoaBones::SyncAttached(this,actor,false);
 	auto it = BasedActors.begin();
 
 	while (it != BasedActors.end())
@@ -105,7 +110,7 @@ void UActor::SetBase(UActor* newBase, bool sendBaseChangeEvent)
 		if (ActorBase() && ActorBase() != Level())
 		{
 			ActorBase()->RemoveBasedActor(this);
-			ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+			if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
 			CallEvent(ActorBase(), EventName::Detach, { ExpressionValue::ObjectValue(this) });
 		}
 
@@ -114,7 +119,7 @@ void UActor::SetBase(UActor* newBase, bool sendBaseChangeEvent)
 		if (ActorBase() && ActorBase() != Level())
 		{
 			ActorBase()->AddBasedActor(this);
-			ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+			if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
 			// Note: in the unlikely case of an actor having > 255 bases, StandingCount() won't be an accurate number.
 			CallEvent(ActorBase(), EventName::Attach, { ExpressionValue::ObjectValue(this) });
 		}
@@ -129,7 +134,7 @@ void UActor::RelinkBasedActor()
 	if (ActorBase() && ActorBase() != Level())
 	{
 		ActorBase()->AddBasedActor(this);
-		ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+		if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
 	}
 }
 

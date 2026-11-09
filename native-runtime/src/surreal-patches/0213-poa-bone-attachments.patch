@@ -1,0 +1,151 @@
+diff --git a/SurrealEngine/Package/PoaBoneTransforms.h b/SurrealEngine/Package/PoaBoneTransforms.h
+new file mode 100644
+index 0000000..4aebdea
+--- /dev/null
++++ b/SurrealEngine/Package/PoaBoneTransforms.h
+@@ -0,0 +1,35 @@
++#pragma once
++#include "PoaSkeletalMeshData.h"
++#include "Math/mat.h"
++#include "Math/coords.h"
++namespace PoaBones
++{
++inline mat4 BoneMatrix(const PoaAssets::BoneTransform& bone)
++{
++    auto result=mat4::identity();
++    for(size_t axis=0;axis<3;++axis)
++    {
++        PoaAssets::Vector unit={0,0,0};unit[axis]=1;auto direction=PoaAssets::RotateBoneVector(bone.Rotation,unit);
++        for(size_t row=0;row<3;++row)result[axis*4+row]=direction[row];
++    }
++    for(size_t row=0;row<3;++row)result[12+row]=bone.Position[row];return result;
++}
++inline Coords QueryCoords(const mat4& world)
++{
++    Coords result;result.Origin=(world*vec4(0,0,0,1)).xyz();
++    result.XAxis=(world*vec4(1,0,0,0)).xyz();result.YAxis=(world*vec4(0,1,0,0)).xyz();result.ZAxis=(world*vec4(0,0,1,0)).xyz();return result;
++}
++inline mat4 AttachmentMatrix(const mat4& bone,const vec3& relativeLocation,const Rotator& relativeRotation)
++{
++    return bone*mat4::translate(relativeLocation)*Coords::Rotation(relativeRotation).ToMatrix();
++}
++// Build a right-handed rotation after removing affine scale/shear. Location
++// and query axes retain the full world affine transform separately.
++inline mat4 RotationMatrix(const mat4& transform)
++{
++    auto x=(transform*vec4(1,0,0,0)).xyz(),y=(transform*vec4(0,1,0,0)).xyz();
++    if(length(x)<1e-8f)throw std::runtime_error("Degenerate PoA bone frame");x=normalize(x);y-=x*dot(x,y);
++    if(length(y)<1e-8f)throw std::runtime_error("Degenerate PoA bone frame");y=normalize(y);auto z=cross(x,y);
++    auto rotation=mat4::identity();for(size_t row=0;row<3;++row){rotation[row]=x[row];rotation[4+row]=y[row];rotation[8+row]=z[row];}return rotation;
++}
++}
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor.cpp b/SurrealEngine/Packages/Engine/Actors/UActor.cpp
+index e224404..11d11c4 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor.cpp
+@@ -1,5 +1,6 @@
+ 
+ #include "Precomp.h"
++#include "hp3/PoaBones.h"
+ #include "UActor.h"
+ #include "Packages/Core/UClass.h"
+ #include "Packages/Engine/UViewport.h"
+@@ -262,6 +263,7 @@ void UActor::Tick(float elapsed)
+ 	if (timerFirst && !bDeleteMe())
+ 		TickPhysics(elapsed);
+ 
++	if(engine->LaunchInfo.IsHarryPotter3()&&!bDeleteMe())PoaBones::UpdateAttachments(this);
+ 	if (engine->LaunchInfo.IsKnowWonder()) // bAnimMove root motion (end of AActor::Tick)
+ 		KW::TickRootMotion(this);
+ }
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp
+index 0617693..06be983 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Base.cpp
+@@ -12,6 +12,7 @@
+ #include "VM/ScriptCall.h"
+ #include "KW.h"
+ #include "KWMove.h"
++#include "hp3/PoaBones.h"
+ 
+ void UActor::InitBase()
+ {
+@@ -74,7 +75,10 @@ void UActor::InitBase()
+ void UActor::AddBasedActor(UActor* actor)
+ {
+ 	if (actor)
+-		BasedActors.push_back(actor);
++    {
++        if (!engine->LaunchInfo.IsHarryPotter3() || std::find(BasedActors.begin(),BasedActors.end(),actor)==BasedActors.end())BasedActors.push_back(actor);
++        if (engine->LaunchInfo.IsHarryPotter3())PoaBones::SyncAttached(this,actor,true);
++    }
+ }
+ 
+ void UActor::RemoveBasedActor(UActor* actor)
+@@ -82,6 +86,7 @@ void UActor::RemoveBasedActor(UActor* actor)
+ 	if (!actor)
+ 		return;
+ 
++	if(engine->LaunchInfo.IsHarryPotter3())PoaBones::SyncAttached(this,actor,false);
+ 	auto it = BasedActors.begin();
+ 
+ 	while (it != BasedActors.end())
+@@ -105,7 +110,7 @@ void UActor::SetBase(UActor* newBase, bool sendBaseChangeEvent)
+ 		if (ActorBase() && ActorBase() != Level())
+ 		{
+ 			ActorBase()->RemoveBasedActor(this);
+-			ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
++			if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+ 			CallEvent(ActorBase(), EventName::Detach, { ExpressionValue::ObjectValue(this) });
+ 		}
+ 
+@@ -114,7 +119,7 @@ void UActor::SetBase(UActor* newBase, bool sendBaseChangeEvent)
+ 		if (ActorBase() && ActorBase() != Level())
+ 		{
+ 			ActorBase()->AddBasedActor(this);
+-			ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
++			if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+ 			// Note: in the unlikely case of an actor having > 255 bases, StandingCount() won't be an accurate number.
+ 			CallEvent(ActorBase(), EventName::Attach, { ExpressionValue::ObjectValue(this) });
+ 		}
+@@ -129,7 +134,7 @@ void UActor::RelinkBasedActor()
+ 	if (ActorBase() && ActorBase() != Level())
+ 	{
+ 		ActorBase()->AddBasedActor(this);
+-		ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
++		if(!engine->LaunchInfo.IsHarryPotter3()||ActorBase()->HasProperty("StandingCount"))ActorBase()->StandingCount() = (uint8_t)std::min<size_t>(ActorBase()->BasedActors.size(), 0xff);
+ 	}
+ }
+ 
+diff --git a/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp b/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
+index b73fe0d..0ad3c28 100644
+--- a/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
++++ b/SurrealEngine/Packages/Engine/Actors/UActor_Phys.cpp
+@@ -9,9 +9,11 @@
+ #include "Packages/Engine/Resources/Level/ULevel.h"
+ #include "Packages/Engine/Resources/Level/UModel.h"
+ #include "KW.h"
++#include "hp3/PoaBones.h"
+ 
+ void UActor::TickPhysics(float elapsed)
+ {
++    if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(this)){PoaBones::UpdateAttachment(this);return;}
+ 	// KnowWonder's own physics (src/knowwonder/KWPhysics.cpp): one step with the whole frame time
+ 	if (engine->LaunchInfo.IsKnowWonder() && KW::UseKWPhysics())
+ 	{
+@@ -132,6 +134,7 @@ void UActor::TurnBasedActors(const Rotator& deltaRotation)
+ 	for (size_t i = 0; i < BasedActors.size(); )
+ 	{
+ 		UActor* basedActor = BasedActors[i];
++        if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(basedActor)){++i;continue;}
+ 		if (!basedActor) { i++; continue; }
+ 		vec3 basedLoc = basedActor->Location();
+ 		vec3 rotatedOffset = yawRot * (basedLoc - baseLoc);
+@@ -485,6 +488,7 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
+ 	for (size_t i = 0; i < BasedActors.size(); )
+ 	{
+ 		UActor* basedActor = BasedActors[i];
++        if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(basedActor)){++i;continue;}
+ 		basedActor->TryMove(actuallyMoved, false, false);
+ 		// UnrealScript events triggered in TryMove can call methods such as SetBase or Destroy, so need to guard while iterating.
+ 		if (i < BasedActors.size() && BasedActors[i] == basedActor)

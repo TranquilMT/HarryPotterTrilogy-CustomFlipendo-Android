@@ -4,6 +4,7 @@
 #include "PoaTracing.h"
 #include "PoaServices.h"
 #include "PoaActorAnimation.h"
+#include "PoaBones.h"
 #include "PoaRotation.h"
 #include "VM/NativeFunc.h"
 #include "Packages/Core/UObject.h"
@@ -98,6 +99,7 @@ void RegisterNatives()
 {
     PoaServices::RegisterNatives();
     PoaActorAnimation::RegisterNatives();
+    PoaBones::RegisterNatives();
     RegisterVMNativeFunc_2("Object", "QuatFromRotator", &QuatFromRotator, 0);
     RegisterVMNativeFunc_2("Object", "QuatToRotator", &QuatToRotator, 0);
     PoaTracing::Set(false, false);

@@ -9,9 +9,11 @@
 #include "Packages/Engine/Resources/Level/ULevel.h"
 #include "Packages/Engine/Resources/Level/UModel.h"
 #include "KW.h"
+#include "hp3/PoaBones.h"
 
 void UActor::TickPhysics(float elapsed)
 {
+    if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(this)){PoaBones::UpdateAttachment(this);return;}
 	// KnowWonder's own physics (src/knowwonder/KWPhysics.cpp): one step with the whole frame time
 	if (engine->LaunchInfo.IsKnowWonder() && KW::UseKWPhysics())
 	{
@@ -132,6 +134,7 @@ void UActor::TurnBasedActors(const Rotator& deltaRotation)
 	for (size_t i = 0; i < BasedActors.size(); )
 	{
 		UActor* basedActor = BasedActors[i];
+        if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(basedActor)){++i;continue;}
 		if (!basedActor) { i++; continue; }
 		vec3 basedLoc = basedActor->Location();
 		vec3 rotatedOffset = yawRot * (basedLoc - baseLoc);
@@ -485,6 +488,7 @@ CollisionHit UActor::TryMove(const vec3& delta, bool dryRun, bool isOwnBaseBlock
 	for (size_t i = 0; i < BasedActors.size(); )
 	{
 		UActor* basedActor = BasedActors[i];
+        if(engine->LaunchInfo.IsHarryPotter3()&&PoaBones::IsAttached(basedActor)){++i;continue;}
 		basedActor->TryMove(actuallyMoved, false, false);
 		// UnrealScript events triggered in TryMove can call methods such as SetBase or Destroy, so need to guard while iterating.
 		if (i < BasedActors.size() && BasedActors[i] == basedActor)

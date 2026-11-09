@@ -1,3 +1,17 @@
+# 9 November — bone attachment and native notify implementation
+
+- [x] Add six EU bone/query/attachment native handlers and follow current blended poses.
+- [x] Synchronize reflected attachment lists; retain objects across callbacks and reject attachment cycles.
+- [x] Avoid absent PoA StandingCount writes while retaining HP1/HP2 behavior.
+- [x] Add native named-script and sound notify dispatch with explicit unsupported-class rejection.
+- [x] Audit static bone/root calls across 8,090 functions in twelve EU script packages.
+- [x] Pass 137 compatibility tests, 29 packaging tests, production syntax checks and engine patch verification.
+- [ ] Pass this checkpoint's ARM64 build and verify Android wand/item placement and notify playback.
+- [ ] Implement root-motion cache/locking/movement and EU physics enum dispatch; validate original behavior.
+- [ ] Complete other required animation APIs, effect notifies, event parity and broader world/rendering/gameplay acceptance.
+
+See HP3-BONES-NOTIFIES.md and HP3-BONE-ROOT-CALL-SITES.json. Earlier sections are checkpoint history; unchecked comprehensive requirements below remain open. Published v0.4.14 is unchanged.
+
 # 8 November — extended APIs, global-root poses and channel save data
 
 - [x] Match 22 Actor handler arities/indices to EU declarations; use DefaultAnimChannel for omitted channel parameters.
@@ -7,7 +21,7 @@
 - [x] Capture interrupted local tween poses and preserve them in the native state codec.
 - [x] Add versioned PoA actor channel trailers and retain actual saved state identity apart from bytecode ownership.
 - [x] Pass 134 compatibility tests, 29 packaging tests and production syntax checks.
-- [ ] Pass ARM64 compilation for this extended follow-up.
+- [x] Pass ARM64 compilation for this extended follow-up (Actions 42528353602).
 - [ ] Prove actual map saves, VM continuations, cold phone reload, original pose/timing behavior and gameplay.
 - [ ] Finish root-motion tracking/physics, attachments, remaining APIs/native-only notifies, event ordering and mobile performance.
 

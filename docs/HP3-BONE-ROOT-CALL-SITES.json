@@ -1,0 +1,423 @@
+{
+  "scope": "Static final/named call candidates in twelve EU script packages only; excludes native calls, maps and dynamic resolution",
+  "decodedFunctions": 8090,
+  "calls": {
+    "GetRootLocationDelta": [],
+    "GetRootRotation": [],
+    "LockRootMotion": [],
+    "AttachToBone": [
+      {
+        "caller": "engine.inventory.attachtopawn",
+        "offset": 143,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpcharacter.postbeginplay",
+        "offset": 186,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.aviforpawn.touch",
+        "offset": 140,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronusstag.onevent",
+        "offset": 57,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronusstag.onevent",
+        "offset": 347,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronusstag.onevent",
+        "offset": 389,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.warfareweaponattachment.postbeginplay",
+        "offset": 170,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.spawnarmortobone",
+        "offset": 199,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.bundimuncontroller.launchbundball",
+        "offset": 249,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.weaponwand.attachactortoweaponwandbone",
+        "offset": 27,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.dementorboss.spawnboneeffect",
+        "offset": 46,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.weaponwand.attachtopawn",
+        "offset": 74,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.dementormanager.onevent",
+        "offset": 191,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.spawnscroll",
+        "offset": 161,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hppawn.spawnspell",
+        "offset": 94,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpgenericstudent.customizegenericstudent",
+        "offset": 432,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpgenericstudent.customizegenericstudent",
+        "offset": 842,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.ronscabbers.postbeginplay",
+        "offset": 15,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.aviforpawn.stateactive.playflameshoot",
+        "offset": 23,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwaction_attachactortobone.initactionfor",
+        "offset": 159,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.holdcarriedobject",
+        "offset": 90,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.ticksliding",
+        "offset": 523,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.ticksliding",
+        "offset": 554,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.objectpickup",
+        "offset": 471,
+        "kind": "resolved final"
+      }
+    ],
+    "BoneRefresh": [],
+    "DetachFromBone": [
+      {
+        "caller": "hgame.peeves.statevulnerable.bustoffpiece",
+        "offset": 13,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.statevulnerable.onhandlespell",
+        "offset": 405,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.imp.throwit",
+        "offset": 425,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.impcontroller.throwit",
+        "offset": 349,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwaction_detachactorfrombone.initactionfor",
+        "offset": 161,
+        "kind": "resolved final"
+      }
+    ],
+    "GetBoneCoords": [
+      {
+        "caller": "engine.shadowprojector.updateshadow",
+        "offset": 161,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 73,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 127,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 203,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 257,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpgenericstudent.setupfortransaction.beginstate",
+        "offset": 225,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 177,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 225,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 289,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 337,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.stateattack.throwrock",
+        "offset": 23,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.stateattack.throwrock",
+        "offset": 126,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.stateattack.throwrock",
+        "offset": 229,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.spawnarmortobone",
+        "offset": 6,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.bundimuncontroller.launchbundball",
+        "offset": 20,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.dementorboss.spawnboneeffect",
+        "offset": 99,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.charmedskeleton.throwprojectile",
+        "offset": 17,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.superchickenpawn.stateactive.processflameshoot",
+        "offset": 276,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpgenericstudent.doingvendortransaction.accepttransaction",
+        "offset": 128,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.hpgenericstudent.doingvendortransaction.accepttransaction",
+        "offset": 160,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.warfareweaponattachment.geteffectstart",
+        "offset": 150,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.peeves.spawnscroll",
+        "offset": 19,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.dementorboss.shootspell",
+        "offset": 11,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.weaponwand.getattachedwandtiplocation",
+        "offset": 25,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronusstag.tick",
+        "offset": 38,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.fire",
+        "offset": 173,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.fallingobject.statefalling.beginstate",
+        "offset": 34,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.gettargetendlocation",
+        "offset": 58,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.gettargetendlocation",
+        "offset": 104,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.getshooterendlocation",
+        "offset": 58,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.getshooterendlocation",
+        "offset": 135,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.basecamtarget.updateorientation",
+        "offset": 248,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.basecamtarget.updateorientation",
+        "offset": 308,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeamsegment.tick",
+        "offset": 110,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwgenericspawner.findemitterpos",
+        "offset": 64,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwgenericspawner.findbaseparticlepos",
+        "offset": 68,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.firing.tick",
+        "offset": 153,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.firing.tick",
+        "offset": 208,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwbeam.firing.tick",
+        "offset": 277,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.mountfinish.tick",
+        "offset": 112,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.mountfinish.tick",
+        "offset": 162,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwpawn.mountfinish.tick",
+        "offset": 222,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.kwgenericspawner.spawnobject",
+        "offset": 642,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.headlookmanager.lockedonpawn.tick",
+        "offset": 105,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "kwgame.headlookmanager.lockedonpawn.tick",
+        "offset": 160,
+        "kind": "resolved final"
+      }
+    ],
+    "GetRootRotationDelta": [],
+    "GetRootLocation": [
+      {
+        "caller": "hgame.monsterbook.spawnpage",
+        "offset": 23,
+        "kind": "resolved final"
+      }
+    ],
+    "GetBoneRotation": [
+      {
+        "caller": "hgame.bundimuncontroller.launchbundball",
+        "offset": 87,
+        "kind": "resolved final"
+      }
+    ],
+    "HasBone": [
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 31,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.setupmoveinfo",
+        "offset": 161,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 141,
+        "kind": "resolved final"
+      },
+      {
+        "caller": "hgame.patronumspell.statecharge.checkmovechange",
+        "offset": 253,
+        "kind": "resolved final"
+      }
+    ]
+  }
+}

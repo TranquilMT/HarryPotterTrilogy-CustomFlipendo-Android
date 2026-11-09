@@ -1,5 +1,6 @@
 
 #include "Precomp.h"
+#include "hp3/PoaBones.h"
 #include "UActor.h"
 #include "Packages/Core/UClass.h"
 #include "Packages/Engine/UViewport.h"
@@ -262,6 +263,7 @@ void UActor::Tick(float elapsed)
 	if (timerFirst && !bDeleteMe())
 		TickPhysics(elapsed);
 
+	if(engine->LaunchInfo.IsHarryPotter3()&&!bDeleteMe())PoaBones::UpdateAttachments(this);
 	if (engine->LaunchInfo.IsKnowWonder()) // bAnimMove root motion (end of AActor::Tick)
 		KW::TickRootMotion(this);
 }

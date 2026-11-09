@@ -1,5 +1,6 @@
 #include "Precomp.h"
 #include "PoaActorAnimation.h"
+#include "PoaNotifies.h"
 #include "Package/PoaAnimationChannels.h"
 #include "Package/PoaAnimationStateIO.h"
 #include "Package/ObjectStream.h"
@@ -205,8 +206,7 @@ void Tick(UActor* actor,float elapsed)
         else if(event.ObjectReference)
         {
             auto notify=resource->package->GetUObject(event.ObjectReference);if(!notify)Exception::Throw("PoA missing animation notify object");notify->LoadNow();
-            if(!FindEventFunction(notify,"Notify"))Exception::Throw("PoA native animation notify has no script dispatcher");
-            CallEvent(notify,NameString("Notify"),{ExpressionValue::ObjectValue(actor)});
+            if(!PoaNotifies::Dispatch(notify,actor))Exception::Throw("Unsupported PoA native animation notify");
         }
         else if(!PoaChannels::SameName(event.Function,"None")&&!event.Function.empty())CallEvent(actor,NameString(event.Function));
     }

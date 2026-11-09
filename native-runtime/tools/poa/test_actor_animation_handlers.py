@@ -39,6 +39,7 @@ enum class EventName{AnimEnd};struct Event{UObject*Context;std::string Name;std:
 void CallEvent(UObject*p,EventName,std::vector<ExpressionValue>args={}){Events.push_back({p,"AnimEnd",args});if(EndCallback)EndCallback();}
 void CallEvent(UObject*p,const NameString&name,std::vector<ExpressionValue>args={}){Events.push_back({p,name.ToString(),args});}
 bool FindEventFunction(UObject*,const char*){return true;}
+namespace PoaNotifies{bool Dispatch(UObject*notify,UActor*owner){CallEvent(notify,NameString("Notify"),{ExpressionValue::ObjectValue(owner)});return true;}}
 template<class T>struct GCRoot{T*Value;GCRoot(T*p):Value(p){}};
 template<class F>void RegisterVMNativeFunc_1(const char*,const char*,F,int){}template<class F>void RegisterVMNativeFunc_2(const char*,const char*,F,int){}template<class F>void RegisterVMNativeFunc_3(const char*,const char*,F,int){}template<class F>void RegisterVMNativeFunc_4(const char*,const char*,F,int){}template<class F>void RegisterVMNativeFunc_6(const char*,const char*,F,int){}
 '''+body+r'''
