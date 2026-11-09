@@ -1,0 +1,7 @@
+{
+  "sourceIntegrationReady": false,
+  "reason": "William requested the original menu be added before APK assembly. GUI initialization, layout, drawing, focus/input and original New Game/Load/Options flow remain incomplete.",
+  "deviceExecutionAccepted": false,
+  "permanentSigningCertificateVerified": true,
+  "certificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40"
+}

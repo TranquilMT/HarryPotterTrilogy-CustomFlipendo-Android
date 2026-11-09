@@ -2,7 +2,7 @@ name: Rebuild Android ARM64 engine
 on:
   push:
     branches: [main]
-    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**', 'native-runtime/tools/poa/**', 'native-runtime/android/tests/**', 'native-runtime/android/prepare_test_apk.py', 'native-runtime/tools/graphics/**']
+    paths: ['.github/workflows/android-rebuild.yml', 'native-runtime/src/engine/**', 'native-runtime/src/hp3/**', 'native-runtime/tools/poa/**', 'native-runtime/android/tests/**', 'native-runtime/android/prepare_test_apk.py', 'native-runtime/tools/graphics/**', 'docs/POA-MENU-ACCEPTANCE.json']
   workflow_dispatch:
 permissions:
   contents: read
@@ -93,7 +93,17 @@ jobs:
              build-android/engine/libSurrealVideo.so output/native/
           git rev-parse HEAD > output/native/source-commit.txt
           sha256sum output/native/*.so > output/native/SHA256.txt
+      - name: Gate APK assembly on completed menu integration
+        id: menu-gate
+        run: |
+          python3 - <<'PYMENU'
+          import json,os,pathlib
+          ready=json.loads(pathlib.Path('docs/POA-MENU-ACCEPTANCE.json').read_text()).get('sourceIntegrationReady') is True
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('ready='+str(ready).lower()+'\n')
+          print('Menu source integration ready:',ready)
+          PYMENU
       - name: Prepare versioned three-game test APK for permanent-key signing
+        if: steps.menu-gate.outputs.ready == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

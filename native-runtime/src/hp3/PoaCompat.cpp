@@ -1,4 +1,5 @@
 #include "Precomp.h"
+#include "PoaGui.h"
 #include "PoaCompat.h"
 #include "PoaMath.h"
 #include "PoaTracing.h"
@@ -98,6 +99,7 @@ static void GetIniEntry(const std::string& section, const std::string& key,
 void RegisterNatives()
 {
     PoaServices::RegisterNatives();
+    PoaGui::RegisterNatives();
     PoaActorAnimation::RegisterNatives();
     PoaBones::RegisterNatives();
     RegisterVMNativeFunc_2("Object", "QuatFromRotator", &QuatFromRotator, 0);

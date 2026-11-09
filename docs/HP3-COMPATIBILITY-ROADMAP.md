@@ -1,3 +1,7 @@
+# Current priority: original PoA menu before APK
+
+William requested menu integration before APK assembly. Assembly is gated off in POA-MENU-ACCEPTANCE.json. Four original component layout bindings are added; initialization, styles/fonts, focus/input and New Game/Load/Options flow remain open. The permanent signing key has been recovered and its certificate verified. See [layout checkpoint](HP3-MENU-LAYOUT.md).
+
 # Menu/APK and HP1/HP2 reflection follow-up
 
 At William's request, the current follow-up also covers menu test packaging and HP1/HP2 rendering. Shared GLES mirror-plane clipping is corrected and pixel-tested; the workflow prepares a three-game unsigned test APK. PoA native menu audit: 42 declarations, 34 without direct registration candidates. These are investigation candidates, not proof that every one blocks startup. See [menu and reflection status](HP1-HP2-MENUS-AND-REFLECTIONS.md). Collision device acceptance remains open.

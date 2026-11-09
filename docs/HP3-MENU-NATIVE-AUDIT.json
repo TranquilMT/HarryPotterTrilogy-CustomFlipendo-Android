@@ -133,28 +133,28 @@
       "owner": "GUIComponent",
       "name": "ActualTop",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIComponent",
       "name": "ActualLeft",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIComponent",
       "name": "ActualHeight",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIComponent",
       "name": "ActualWidth",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
@@ -305,5 +305,5 @@
     }
   ],
   "total": 42,
-  "unmatched": 34
+  "unmatched": 30
 }

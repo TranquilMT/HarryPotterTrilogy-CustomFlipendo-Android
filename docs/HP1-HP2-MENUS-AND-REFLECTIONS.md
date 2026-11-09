@@ -10,7 +10,7 @@ The ARM64 workflow now assembles a version 0.4.15-test/code 57 unsigned APK from
 
 ## PoA original menus
 
-The EU static audit covers GUI, UDebugMenu, kwGame, UWindow, HGame and the Engine Canvas/Console/GUIController declarations. It finds 42 native declarations, of which 34 have no direct class/name registration candidate in source. These are investigation candidates: inherited or numeric dispatch must be checked before calling each one a missing runtime binding.
+The EU static audit covers GUI, UDebugMenu, kwGame, UWindow, HGame and the Engine Canvas/Console/GUIController declarations. It finds 42 native declarations, of which 30 still have no direct class/name registration candidate after adding the four component layout bindings. These are investigation candidates: inherited or numeric dispatch must be checked before calling each one a missing runtime binding.
 
 The candidates include GUI component dimensions and timers, GUI style/text drawing, fonts, control initialization, list operations and Canvas tile/text helpers. See HP3-MENU-NATIVE-AUDIT.json with package hashes. Original menu boot, callbacks, input and rendering remain incomplete; this update does not claim an interactive PoA menu. Existing missing-config handling already covers the historical Hardware2Options.ini crash, but needs phone execution in the changed APK.
 
@@ -21,3 +21,5 @@ The candidates include GUI component dimensions and timers, GUI style/text drawi
 3. HP2: main menu and six slots, Options/control settings, mirror/window scenes at several angles, translucent red-wall issue, Lumos alignment and beans across level travel. The clipping fix does not establish that these other issues are resolved.
 4. PoA: record the first current startup/menu failure, trace the original GUI dependencies and implement each required native with its original semantics; then test language selection, New Game, Load and Options.
 5. Resume collision scene acceptance, including slopes, steps, platforms and exact rotated-brush behavior. Host geometry checks alone do not close that area.
+
+The original permanent signing backup has now been recovered and its certificate verified. APK assembly is explicitly gated until menu source integration is ready, following William's latest instruction. See HP3-MENU-LAYOUT.md.
