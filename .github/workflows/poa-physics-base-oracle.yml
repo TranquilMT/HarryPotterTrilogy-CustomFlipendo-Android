@@ -1,0 +1,50 @@
+name: Trace original EU physics base transitions
+on:
+  push:
+    paths: ['.github/workflows/poa-physics-base-oracle.yml', 'scripts/poa_physics_base_oracle.c']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Recover pinned original EU helper
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovery output
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          python3 - <<'PY'
+          import zipfile,pathlib,hashlib
+          with zipfile.ZipFile(next(pathlib.Path('recovery').glob('*.apk'))) as z: data=z.read('assets/hp3data/System/Engine.dll')
+          assert hashlib.sha256(data).hexdigest()=='73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a'
+          pathlib.Path('recovery/Engine.dll').write_bytes(data)
+          PY
+      - name: Execute isolated SetPhysics transitions
+        run: |
+          gcc -m32 -O1 -nostdlib -static -fno-stack-protector -fno-pie -no-pie -fno-builtin -fno-strict-aliasing -fomit-frame-pointer -fno-asynchronous-unwind-tables scripts/poa_physics_base_oracle.c -o recovery/physics-base-oracle
+          timeout 30 recovery/physics-base-oracle > output/physics-base-reference.bin
+          python3 - <<'PY'
+          import pathlib,struct,json
+          raw=pathlib.Path('output/physics-base-reference.bin').read_bytes()
+          assert len(raw)==338*36,len(raw)
+          cases=[]
+          for i,offset in enumerate(range(0,len(raw),36)):
+              old,new,had,has,calls,notify,*floor=struct.unpack_from('<6i3f',raw,offset)
+              assert (had,old,new)==(i//169,(i%169)//13,i%13)
+              detach=bool(had and old!=new and new not in (0,1,5,9,12))
+              assert has==int(bool(had) and not detach)
+              assert calls==int(detach) and notify==int(detach)
+              assert floor==([0.0,0.0,1.0] if detach else [0.0,0.0,0.0])
+              cases.append({'old':old,'new':new,'hadBase':bool(had),'hasBase':bool(has),'setBaseCalls':calls,'notify':notify,'floor':floor})
+          pathlib.Path('output/physics-base-reference.json').write_text(json.dumps({'scope':'Original EU AActor.setPhysics with synthetic actor storage, null mesh/static-mesh instance, synthetic base, stubbed floor lookup and SetBase callback; excludes actual collision/base events and root locking','engineSHA256':'73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a','cases':cases},indent=2))
+          print('Validated',len(cases),'original base transitions')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eu-physics-base-reference
+          path: output/
+          retention-days: 7
