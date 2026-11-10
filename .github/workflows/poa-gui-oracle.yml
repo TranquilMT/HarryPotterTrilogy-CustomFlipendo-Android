@@ -1,0 +1,51 @@
+name: Trace original EU GUI image stretching
+on:
+  push:
+    paths: ['.github/workflows/poa-gui-oracle.yml', 'scripts/poa_gui_stretch_oracle.c']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reference:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Restore verified original helper
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovery output
+          gh release download v0.4.14 --pattern '*Three-Games.apk' --dir recovery
+          python3 - <<'PY'
+          import zipfile,pathlib,hashlib
+          with zipfile.ZipFile(next(pathlib.Path('recovery').glob('*.apk'))) as z:data=z.read('assets/hp3data/System/Engine.dll')
+          assert hashlib.sha256(data).hexdigest()=='73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a'
+          pathlib.Path('recovery/Engine.dll').write_bytes(data)
+          PY
+      - name: Record original stretching geometry
+        run: |
+          gcc -m32 -O1 -nostdlib -static -fno-stack-protector -fno-pie -no-pie -fno-builtin -fno-strict-aliasing -fomit-frame-pointer -fno-asynchronous-unwind-tables scripts/poa_gui_stretch_oracle.c -o recovery/gui-oracle
+          timeout 30 recovery/gui-oracle > output/gui-stretch.bin
+          python3 - <<'PY'
+          import pathlib,struct,json,math
+          raw=pathlib.Path('output/gui-stretch.bin').read_bytes();size=32+16*52
+          assert len(raw)==225*size,(len(raw),size)
+          rows=[]
+          for offset in range(0,len(raw),size):
+              index,sw,sh,count,width,height,x,y=struct.unpack_from('<4i4f',raw,offset)
+              assert 0<count<=16,(index,count)
+              tiles=[]
+              for n in range(count):
+                  values=struct.unpack_from('<13f',raw,offset+32+n*52);assert all(math.isfinite(v)for v in values)
+                  tiles.append(dict(zip(['x','y','width','height','u','v','ul','vl','z','r','g','b','a'],values)))
+              rows.append(dict(id=index,sourceWidth=sw,sourceHeight=sh,width=width,height=height,afterX=x,afterY=y,tiles=tiles))
+          report=dict(scope='Original EU UCanvas.DrawTileStretched geometry with synthetic material size and draw callbacks; colour conversion and positive-size floor adapters; no renderer, Windows entry point, VM or GUI page execution',engineSHA256='73bbe178769b51429062c94ca0a209da3bd6e40d020588e8a4ca401427ecc34a',cases=rows)
+          pathlib.Path('output/gui-stretch.json').write_text(json.dumps(report,indent=2,allow_nan=False))
+          print('Recorded',len(rows),'original stretching cases')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: eu-gui-stretch-reference
+          path: output/
+          retention-days: 7
