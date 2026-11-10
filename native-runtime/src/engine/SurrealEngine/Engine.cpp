@@ -2,6 +2,7 @@
 #include "Precomp.h"
 #include "hp3/PoaGui.h"
 #include "hp3/PoaPlayer.h"
+#include "Utils/CommandLine.h"
 #include "KWProf.h"
 #ifdef __ANDROID__
 #include <atomic>
@@ -181,6 +182,9 @@ void Engine::Run()
 
 	float currentZoneTimeDilation = 1.0f; // Unreal 227 allows zones to specify their own time dilations
 
+    int poaSmokeFrames=0;
+    if(LaunchInfo.IsHarryPotter3() && commandline && commandline->HasArg("","--poa-smoke-frames"))
+        poaSmokeFrames=std::clamp(std::stoi(commandline->GetArg("","--poa-smoke-frames","30")),1,600);
 	while (!quit)
 	{
 		// Main game loop should consist of these 4 steps:
@@ -294,6 +298,10 @@ void Engine::Run()
 		viewport->SetViewportRect(0, 0, engine->window->GetPixelWidth(), engine->window->GetPixelHeight());
 		render->DrawGame(levelElapsed);
 		KWProf::EndFrame();
+        if(poaSmokeFrames>0 && --poaSmokeFrames==0){
+            LogMessage("POA_SMOKE_RENDERED_FRAMES: bounded startup run completed; menu/gameplay acceptance is separate");
+            break;
+        }
 
 		// Save the game if there is a request for it
 		if (SaveGameInfo.SaveGameSlot != DONT_SAVE_GAME)
