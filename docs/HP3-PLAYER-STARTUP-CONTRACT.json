@@ -1,0 +1,229 @@
+{
+  "scope": "Original EU package metadata, not startup execution or compatibility acceptance",
+  "packages": {
+    "Engine.u": "3b5c2b2002dbc8522e8a932e2733228f7f60711d55a9ccb1a033621b3a12f1ef",
+    "kwGame.u": "de29aa642969ff5586559580fe05f29df6ca7fffa215dd50156d3be7e0f9b11e",
+    "HGame.u": "d0981cc5fc704391e3f152f1e94295b2e0440b2660b2b5027dba7eb2cd889ef1"
+  },
+  "classes": [
+    {
+      "package": "Engine.u",
+      "name": "Controller",
+      "base": "Actor"
+    },
+    {
+      "package": "Engine.u",
+      "name": "PlayerController",
+      "base": "Controller"
+    },
+    {
+      "package": "kwGame.u",
+      "name": "KWHeroController",
+      "base": "PlayerController"
+    },
+    {
+      "package": "HGame.u",
+      "name": "HPHeroController",
+      "base": "KWHeroController"
+    },
+    {
+      "package": "HGame.u",
+      "name": "HarryController",
+      "base": "HPHeroController"
+    }
+  ],
+  "functions": [
+    {
+      "package": "Engine.u",
+      "owner": "Controller",
+      "name": "Possess",
+      "parameters": [
+        {
+          "name": "aPawn",
+          "type": "ObjectProperty",
+          "objectClass": "Pawn",
+          "out": false,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "Engine.u",
+      "owner": "PlayerController",
+      "name": "Possess",
+      "parameters": [
+        {
+          "name": "aPawn",
+          "type": "ObjectProperty",
+          "objectClass": "Pawn",
+          "out": false,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "Engine.u",
+      "owner": "GameInfo",
+      "name": "PostLogin",
+      "parameters": [
+        {
+          "name": "NewPlayer",
+          "type": "ObjectProperty",
+          "objectClass": "PlayerController",
+          "out": false,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "Engine.u",
+      "owner": "GameInfo",
+      "name": "Login",
+      "parameters": [
+        {
+          "name": "Portal",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Options",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Error",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": true,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "ReturnValue",
+          "type": "ObjectProperty",
+          "objectClass": "PlayerController",
+          "out": true,
+          "return": true,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "Engine.u",
+      "owner": "GameInfo",
+      "name": "PreLogin",
+      "parameters": [
+        {
+          "name": "Options",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Address",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Error",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": true,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "FailCode",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": true,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "KWHeroController",
+      "name": "Possess",
+      "parameters": [
+        {
+          "name": "NewPawn",
+          "type": "ObjectProperty",
+          "objectClass": "Pawn",
+          "out": false,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "KWGame",
+      "name": "PostLogin",
+      "parameters": [
+        {
+          "name": "NewPlayer",
+          "type": "ObjectProperty",
+          "objectClass": "PlayerController",
+          "out": false,
+          "return": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "package": "kwGame.u",
+      "owner": "KWGame",
+      "name": "Login",
+      "parameters": [
+        {
+          "name": "Portal",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Options",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": false,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "Error",
+          "type": "StrProperty",
+          "objectClass": null,
+          "out": true,
+          "return": false,
+          "optional": false
+        },
+        {
+          "name": "ReturnValue",
+          "type": "ObjectProperty",
+          "objectClass": "PlayerController",
+          "out": true,
+          "return": true,
+          "optional": false
+        }
+      ]
+    }
+  ]
+}

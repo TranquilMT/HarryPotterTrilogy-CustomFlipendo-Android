@@ -2,6 +2,7 @@
 #include "PoaGui.h"
 #include "PoaGuiText.h"
 #include "PoaGuiDraw.h"
+#include "PoaGuiTimers.h"
 #include "PoaGuiLayout.h"
 #include "PoaServices.h"
 #include "Engine.h"
@@ -214,10 +215,17 @@ static void DrawTileScaled(UObject* self,UObject* material,float xScale,float yS
     catch(...){canvas->CurX()=x;canvas->CurY()=y;canvas->CurYL()=line;throw;}
     canvas->CurX()=x;canvas->CurY()=y;canvas->CurYL()=line;
 }
+void Tick(float elapsed)
+{
+    auto current=Controller();
+    if(!current || !current->HasProperty("ActivePage"))return;
+    PoaGuiTimers::Update(current->GetUObject("ActivePage"),elapsed);
+}
 void RegisterNatives()
 {
     PoaGuiText::RegisterNatives();
     PoaGuiDraw::RegisterNatives();
+    PoaGuiTimers::RegisterNatives();
     RegisterVMNativeFunc_3("GUIFont","GetFont",&GetFont,0);
     RegisterVMNativeFunc_1("GUIController","GetMainMenuClass",&GetMainMenuClass,0);
     RegisterVMNativeFunc_1("GUIController","GetCurrentRes",&GetCurrentRes,0);

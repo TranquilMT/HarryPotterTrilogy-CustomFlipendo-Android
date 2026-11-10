@@ -230,6 +230,7 @@ void Engine::Run()
 		}
 
 		UpdateInput(realTimeElapsed);
+        if(LaunchInfo.IsHarryPotter3())PoaGui::Tick(realTimeElapsed);
 		if (LaunchInfo.IsHarryPotter1())
 		{
 			HP1::BeginModsFrame(realTimeElapsed);

@@ -1,6 +1,6 @@
 {
   "sourceIntegrationReady": false,
-  "reason": "Controller ownership, resource lookup, owned-control instancing, bitmap font selection, style text drawing and texture-backed style image drawing are connected. UE2 player/controller startup, widget traversal, focus/input, page bootstrap and original New Game/Load/Options flow still require integration and acceptance.",
+  "reason": "Controller ownership, resource lookup, control instancing, bitmap fonts, text/texture style drawing and active-page timers are connected. Original startup metadata confirms incompatible UE1 Login/PreLogin/Possess signatures. UE2 controller startup, widget traversal, focus/input, frontend and New Game/Load/Options integration remain unaccepted.",
   "deviceExecutionAccepted": false,
   "permanentSigningCertificateVerified": true,
   "certificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40"

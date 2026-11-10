@@ -1,0 +1,12 @@
+diff --git a/SurrealEngine/Engine.cpp b/SurrealEngine/Engine.cpp
+index 4830e46..f54b880 100644
+--- a/SurrealEngine/Engine.cpp
++++ b/SurrealEngine/Engine.cpp
+@@ -230,6 +230,7 @@ void Engine::Run()
+ 		}
+ 
+ 		UpdateInput(realTimeElapsed);
++        if(LaunchInfo.IsHarryPotter3())PoaGui::Tick(realTimeElapsed);
+ 		if (LaunchInfo.IsHarryPotter1())
+ 		{
+ 			HP1::BeginModsFrame(realTimeElapsed);
