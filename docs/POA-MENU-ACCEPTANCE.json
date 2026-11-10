@@ -1,6 +1,6 @@
 {
   "sourceIntegrationReady": false,
-  "reason": "Controller initialization, resource lookup, control collection/instancing and scaled texture drawing are connected. Full style/text/font rendering, focus/input and original New Game/Load/Options page flow remain incomplete.",
+  "reason": "Controller ownership, resource lookup, owned-control instancing, bitmap font selection, style text drawing and texture-backed style image drawing are connected. UE2 player/controller startup, widget traversal, focus/input, page bootstrap and original New Game/Load/Options flow still require integration and acceptance.",
   "deviceExecutionAccepted": false,
   "permanentSigningCertificateVerified": true,
   "certificateSHA256": "25aa34c1db19a5007e934df03f5927e4b71a990856fe439a57e3e73ead8eae40"

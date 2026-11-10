@@ -14,21 +14,21 @@ class GuiController(unittest.TestCase):
 #include <functional>
 #include <cassert>
 #include <stdexcept>
-int Roots=0,Creates=0,Calls=0;struct UObject{bool Valid=true;bool IsA(const char*){return Valid;}};
+int Roots=0,Creates=0,Calls=0;struct UObject{bool Valid=true;UObject*Owner=nullptr;bool HasProperty(const char*){return true;}UObject*GetUObject(const char*){return Owner;}void SetObject(const char*,const UObject*v){Owner=const_cast<UObject*>(v);}bool IsA(const char*){return Valid;}};
 template<class T>struct GCRoot{T*Value;GCRoot(T*v):Value(v){++Roots;}~GCRoot(){--Roots;}T*get(){return Value;}};
 namespace Exception{void Throw(std::string s){throw std::runtime_error(s);}}
 namespace ObjectFlags{constexpr int Transient=1;}
 struct Package{UObject Class,Instance;UObject*GetClass(std::string name){assert(name=="HPGUIController");return &Class;}UObject*NewObject(const char*name,UObject*cls,int flags){assert(std::string(name)=="poa_gui_controller"&&cls==&Class&&flags==1);++Creates;return &Instance;}};
 struct Packages{std::string Name="HGame.HPGUIController";Package P;std::string GetIniValue(const char*,const char*,const char*){return Name;}Package*GetPackage(std::string name){assert(name=="HGame");return &P;}Package*GetTransientPackage(){return &P;}};
-struct Engine{struct{bool Poa=true;bool IsHarryPotter3(){return Poa;}}LaunchInfo;Packages*packages;void*viewport=nullptr,*canvas=nullptr;};Engine*engine=nullptr;
+struct Engine{struct{bool Poa=true;bool IsHarryPotter3(){return Poa;}}LaunchInfo;Packages*packages;UObject*viewport=nullptr;void*canvas=nullptr;};Engine*engine=nullptr;
 std::function<void()>Hook;void CallEvent(UObject*,const char*name){assert(Roots==1&&std::string(name)=="InitializeController");++Calls;if(Hook)Hook();}
 namespace PoaGui{static std::unique_ptr<GCRoot<UObject>>controller;static bool initializing=false;
 '''+body+r'''}
-int main(){using namespace PoaGui;Initialize();assert(!Controller());Packages p;Engine e;e.packages=&p;engine=&e;Initialize();assert(Creates==0);e.viewport=&e;e.canvas=&e;e.LaunchInfo.Poa=false;Initialize();assert(Creates==0);e.LaunchInfo.Poa=true;
+int main(){using namespace PoaGui;Initialize();assert(!Controller());Packages p;Engine e;e.packages=&p;engine=&e;Initialize();assert(Creates==0);UObject viewport;e.viewport=&viewport;e.canvas=&e;e.LaunchInfo.Poa=false;Initialize();assert(Creates==0);e.LaunchInfo.Poa=true;
 p.Name="Invalid";bool threw=false;try{Initialize();}catch(...){threw=true;}assert(threw&&!Controller()&&Roots==0);p.Name="HGame.HPGUIController";
 p.P.Instance.Valid=false;threw=false;try{Initialize();}catch(...){threw=true;}assert(threw&&!Controller()&&Roots==0);p.P.Instance.Valid=true;
-Hook=[](){Initialize();};Initialize();assert(Controller()==&p.P.Instance&&Calls==1&&Roots==1);Initialize();assert(Calls==1);Shutdown();assert(!Controller()&&Roots==0);
-Hook=[](){throw std::runtime_error("script initialization failed");};threw=false;try{Initialize();}catch(...){threw=true;}assert(threw&&!Controller()&&Roots==0);Hook={};Initialize();assert(Controller()&&Roots==1);Shutdown();assert(Roots==0);
+Hook=[](){Initialize();};Initialize();assert(Controller()==&p.P.Instance&&Calls==1&&Roots==1&&viewport.Owner==Controller()&&Controller()->Owner==&viewport);Initialize();assert(Calls==1);Shutdown();assert(!Controller()&&Roots==0&&!viewport.Owner&&!p.P.Instance.Owner);
+Hook=[](){throw std::runtime_error("script initialization failed");};threw=false;try{Initialize();}catch(...){threw=true;}assert(threw&&!Controller()&&Roots==0&&!viewport.Owner);Hook={};Initialize();assert(Controller()&&Roots==1);Shutdown();assert(Roots==0);
 }
 ''')
  def test_production_style_and_font_stack_lookup(self):

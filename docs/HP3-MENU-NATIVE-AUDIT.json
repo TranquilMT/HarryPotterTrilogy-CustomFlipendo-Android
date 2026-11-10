@@ -91,14 +91,14 @@
       "owner": "GUIStyles",
       "name": "Draw",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
       "owner": "GUIStyles",
       "name": "DrawText",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "GUI.u",
@@ -280,7 +280,7 @@
       "owner": "Canvas",
       "name": "DrawTileStretched",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     },
     {
       "package": "Engine.u",
@@ -301,9 +301,9 @@
       "owner": "Canvas",
       "name": "DrawTextJustified",
       "nativeIndex": 0,
-      "directRegistrationCandidate": false
+      "directRegistrationCandidate": true
     }
   ],
   "total": 42,
-  "unmatched": 23
+  "unmatched": 19
 }

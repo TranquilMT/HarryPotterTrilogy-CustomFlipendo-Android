@@ -1,5 +1,7 @@
 #include "Precomp.h"
 #include "PoaGui.h"
+#include "PoaGuiText.h"
+#include "PoaGuiDraw.h"
 #include "PoaGuiLayout.h"
 #include "PoaServices.h"
 #include "Engine.h"
@@ -24,7 +26,15 @@ namespace PoaGui
 static std::unique_ptr<GCRoot<UObject>> controller;
 static bool initializing=false;
 UObject* Controller(){return controller?controller->get():nullptr;}
-void Shutdown(){controller.reset();initializing=false;}
+void Shutdown()
+{
+    if(auto current=Controller()){
+        if(engine && engine->viewport && engine->viewport->HasProperty("GUIController") && engine->viewport->GetUObject("GUIController")==current)
+            engine->viewport->SetObject("GUIController",nullptr);
+        if(current->HasProperty("ViewportOwner"))current->SetObject("ViewportOwner",nullptr);
+    }
+    controller.reset();initializing=false;
+}
 void Initialize()
 {
     if(Controller() || initializing || !engine || !engine->LaunchInfo.IsHarryPotter3() || !engine->viewport || !engine->canvas)return;
@@ -36,7 +46,11 @@ void Initialize()
     auto root=std::make_unique<GCRoot<UObject>>(engine->packages->GetTransientPackage()->NewObject("poa_gui_controller",cls,ObjectFlags::Transient));
     if(!root->get()->IsA("BaseGUIController"))Exception::Throw("Configured PoA GUIController does not derive from BaseGUIController");
     controller=std::move(root);initializing=true;
-    try {CallEvent(Controller(),"InitializeController");initializing=false;}
+    try {
+        Controller()->SetObject("ViewportOwner",engine->viewport);
+        engine->viewport->SetObject("GUIController",Controller());
+        CallEvent(Controller(),"InitializeController");initializing=false;
+    }
     catch(...){Shutdown();throw;}
 }
 static UObject* Lookup(UObject* self,const char* stack,const std::string& key)
@@ -202,6 +216,8 @@ static void DrawTileScaled(UObject* self,UObject* material,float xScale,float yS
 }
 void RegisterNatives()
 {
+    PoaGuiText::RegisterNatives();
+    PoaGuiDraw::RegisterNatives();
     RegisterVMNativeFunc_3("GUIFont","GetFont",&GetFont,0);
     RegisterVMNativeFunc_1("GUIController","GetMainMenuClass",&GetMainMenuClass,0);
     RegisterVMNativeFunc_1("GUIController","GetCurrentRes",&GetCurrentRes,0);
