@@ -1,6 +1,7 @@
 
 #include "Precomp.h"
 #include "hp3/PoaGui.h"
+#include "hp3/PoaPlayer.h"
 #include "KWProf.h"
 #ifdef __ANDROID__
 #include <atomic>
@@ -148,9 +149,9 @@ void Engine::Run()
 
 #ifdef __ANDROID__
 	// Touch input is absolute: always use the Windows mouse position in menus (the engine only does this when windowed).
-	if (engine->LaunchInfo.ue1Version > 219)
+	if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
 #else
-	if (engine->LaunchInfo.ue1Version > 219 && !client->StartupFullscreen)
+	if ((engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219) && !client->StartupFullscreen)
 #endif
 		viewport->bWindowsMouseAvailable() = true;
 
@@ -644,7 +645,7 @@ void Engine::ClientTravel(const std::string& newURL, ETravelType travelType, boo
 	// As they have to persist somehow
 	for (std::string optionKey : { "Name", "Class", "team", "skin", "Face", "Voice", "OverrideClass" })
 	{
-		if (engine->LaunchInfo.ue1Version > 219)
+		if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
 		{
 			if (url.HasOption(optionKey))
 				engine->packages->SetIniValue("User", "DefaultPlayer", optionKey, url.GetOption(optionKey));
@@ -722,7 +723,7 @@ void Engine::LoadEntryMap()
 	Level = nullptr;
 	LevelInfo = nullptr;
 	GameInfo = nullptr;
-	viewport->Actor() = nullptr;
+	viewport->ViewActor() = nullptr;
 }
 
 void Engine::UnloadMap()
@@ -738,7 +739,7 @@ void Engine::UnloadMap()
 	GameInfo = nullptr;
 	DeusExLevelInfo = nullptr;
 	dxRootWindow = nullptr;
-	viewport->Actor() = nullptr;
+	viewport->ViewActor() = nullptr;
 
 	// GC::Collect();
 }
@@ -1032,6 +1033,10 @@ void Engine::LoginPlayer()
 {
 	UnrealURL url = LevelInfo->URL;
 	std::map<std::string, std::string> travelInfo = Level->TravelInfo;
+    if(LaunchInfo.IsHarryPotter3()){
+        PoaPlayer::Login(LevelInfo->Game(),viewport, url.GetPortal(),url.GetOptions());
+        render->OnMapLoaded();return;
+    }
 
 	auto stringProp = GC::Alloc<UStringProperty>("", nullptr, ObjectFlags::NoFlags);
 	std::string error, failcode;
@@ -1162,16 +1167,16 @@ void Engine::CalcView()
 	static UStructProperty* rotprop = GC::Alloc<UStructProperty>(NameString(), nullptr, ObjectFlags::NoFlags);
 
 	// To do: improve CallEvent so parameter passing isn't this painful
-	UFunction* funcPlayerCalcView = viewport->Actor() ? FindEventFunction(viewport->Actor(), "PlayerCalcView") : nullptr;
+	UFunction* funcPlayerCalcView = viewport->ViewActor() ? FindEventFunction(viewport->ViewActor(), "PlayerCalcView") : nullptr;
 	if (funcPlayerCalcView)
 	{
 		vecprop->Struct = UObject::Cast<UStructProperty>(funcPlayerCalcView->Properties[1])->Struct;
 		rotprop->Struct = UObject::Cast<UStructProperty>(funcPlayerCalcView->Properties[2])->Struct;
-		CameraActor = viewport->Actor();
-		CameraLocation = viewport->Actor()->Location();
-		CameraRotation = viewport->Actor()->Rotation();
-		CameraFovAngle = viewport->Actor()->FovAngle();
-		CallEvent(viewport->Actor(), EventName::PlayerCalcView, {
+		CameraActor = viewport->ViewActor();
+		CameraLocation = viewport->ViewActor()->Location();
+		CameraRotation = viewport->ViewActor()->Rotation();
+		CameraFovAngle = LaunchInfo.IsHarryPotter3()?viewport->ViewActor()->GetFloat("FovAngle"):viewport->Actor()->FovAngle();
+		CallEvent(viewport->ViewActor(), EventName::PlayerCalcView, {
 			ExpressionValue::Variable(&CameraActor, objprop),
 			ExpressionValue::Variable(&CameraLocation, vecprop),
 			ExpressionValue::Variable(&CameraRotation, rotprop)
@@ -1764,20 +1769,25 @@ void Engine::UpdateInput(float timeElapsed)
 	if (tickDebugger)
 		tickDebugger();
 
-	if (!viewport->Actor())
+	if (!viewport->ViewActor())
 		return;
 
 	for (auto& it : activeInputButtons)
-		viewport->Actor()->SetBool(it.first, true);
+    {
+        if(LaunchInfo.IsHarryPotter3())
+            PoaPlayer::SetButton(viewport->ViewActor(),it.first,true);
+        else
+            viewport->ViewActor()->SetBool(it.first, true);
+    }
 	for (auto& it : activeInputAxes)
 	{
 		if (it.first == "aMouseX" || it.first == "aMouseY")
 		{
-			viewport->Actor()->SetFloat(it.first, it.second.Value / (timeElapsed * 150.0f));
+			viewport->ViewActor()->SetFloat(it.first, it.second.Value / (timeElapsed * 150.0f));
 		}
 		else
 		{
-			viewport->Actor()->SetFloat(it.first, it.second.Value);
+			viewport->ViewActor()->SetFloat(it.first, it.second.Value);
 		}
 	}
 }
@@ -1828,7 +1838,7 @@ void Engine::CloseWindow()
 
 void Engine::TickWindow()
 {
-	if (window && engine->LaunchInfo.ue1Version > 219)
+	if (window && (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219))
 	{
 #ifdef __ANDROID__
 		g_androidMenuActive = viewport->bShowWindowsMouse() && viewport->bWindowsMouseAvailable();
@@ -1871,7 +1881,7 @@ void Engine::OnWindowMouseMove(const Point& pos)
 	if (engine->dxRootWindow && engine->dxRootWindow->OnWindowMouseMove(pos))
 		return;
 
-	if (engine->LaunchInfo.ue1Version > 219)
+	if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
 	{
 		viewport->WindowsMouseX() = (float)(pos.x * window->GetDpiScale());
 		viewport->WindowsMouseY() = (float)(pos.y * window->GetDpiScale());
@@ -2069,8 +2079,13 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
 			{
 				if (it->second == key)
 				{
-					if (viewport->Actor())
-						viewport->Actor()->SetBool(it->first, false);
+					if (viewport->ViewActor())
+                    {
+                        if(LaunchInfo.IsHarryPotter3())
+                            PoaPlayer::SetButton(viewport->ViewActor(),it->first,false);
+                        else
+                            viewport->ViewActor()->SetBool(it->first, false);
+                    }
 					it = activeInputButtons.erase(it);
 				}
 				else
@@ -2083,8 +2098,8 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
 			{
 				if (it->second.Key == key)
 				{
-					if (viewport->Actor())
-						viewport->Actor()->SetFloat(it->first, 0.0f);
+					if (viewport->ViewActor())
+						viewport->ViewActor()->SetFloat(it->first, 0.0f);
 					it = activeInputAxes.erase(it);
 				}
 				else
@@ -2098,7 +2113,7 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
 
 bool Engine::ExecCommand(const Array<std::string>& args)
 {
-	for (UObject* target : { static_cast<UObject*>(viewport->Actor()), static_cast<UObject*>(console) })
+	for (UObject* target : { static_cast<UObject*>(viewport->ViewActor()), static_cast<UObject*>(console) })
 	{
 		if (!target)
 			continue;

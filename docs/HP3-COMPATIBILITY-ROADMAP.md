@@ -1,3 +1,21 @@
+# Current source checkpoint — 10 November 2026
+
+The original menu remains the active priority before APK assembly. Older checkpoint headings below are historical and do not replace this status.
+
+- [x] Source: controller ownership, style/font lookup, control collection/instancing and layout helpers.
+- [x] Source: bitmap font selection and style text/image drawing; 225 captured original EU stretching cases match.
+- [x] Source: active-page timers, including callback cancellation/rearming and frame-boundary behavior.
+- [x] Source: separate UE2 PlayerController login signatures, viewport/player links, script tick, generic view/input/listener handling and byte-valued buttons.
+- [x] Validation: 173 host compatibility tests and changed production C++ syntax checks pass.
+- [ ] Validate real original map/login/controller script execution and implement remaining reached controller natives.
+- [ ] Implement original native widget traversal/rendering, watch callbacks, GUI focus/hit-testing/input and frontend bootstrap.
+- [ ] Validate New Game/Load/Options, saves/travel and the UE2 music path.
+- [ ] Assemble/sign the complete three-game APK once source integration is ready; run phone and HP1/HP2 regressions before release acceptance.
+
+Source integration and device acceptance remain false. No new APK or latest release is claimed. See [menu scope](HP3-MENU-LAYOUT.md) and [startup contract](HP3-PLAYER-STARTUP-CONTRACT.json).
+
+## Earlier checkpoints
+
 # Menu font-selection checkpoint
 
 The interrupted controller/control-instancing work was recovered and pushed. GUIFont.GetFont now selects and caches the shipped bitmap fonts, with original EU button/title asset checks. Style/text drawing, focus/input and original page actions remain unfinished. APK assembly stays gated.

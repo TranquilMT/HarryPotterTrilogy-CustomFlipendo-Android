@@ -775,28 +775,29 @@ void NActor::GetMeshTexture(UObject* Self, std::optional<int> texnum, UObject*& 
 	ReturnValue = tex ? tex : engine->DefaultTexture;  
 }
 
-void NActor::GetPlayerPawn(UObject* Self, UObject*& ReturnValue)  
-{  
-	if (engine && engine->viewport && engine->viewport->Actor())  
-	{  
-		ReturnValue = engine->viewport->Actor();  
-		return;  
-	}  
-  
-	if (engine && engine->Level)  
-	{  
-		for (UActor* actor : engine->Level->Actors)  
-		{  
-			UPlayerPawn* pawn = UObject::TryCast<UPlayerPawn>(actor);  
-			if (pawn && pawn->Player())  
-			{  
-				ReturnValue = pawn;  
-				return;  
-			}  
-		}  
-	}  
-  
-	ReturnValue = nullptr;  
+void NActor::GetPlayerPawn(UObject* Self, UObject*& ReturnValue)
+{
+	if (engine && engine->viewport && engine->viewport->ViewActor())
+	{
+		auto view=engine->viewport->ViewActor();
+        ReturnValue=engine->LaunchInfo.IsHarryPotter3() ? (view->HasProperty("Pawn")?view->GetUObject("Pawn"):nullptr) : view;
+		return;
+	}
+
+	if (engine && engine->Level)
+	{
+		for (UActor* actor : engine->Level->Actors)
+		{
+			UPlayerPawn* pawn = UObject::TryCast<UPlayerPawn>(actor);
+			if (pawn && pawn->Player())
+			{
+				ReturnValue = pawn;
+				return;
+			}
+		}
+	}
+
+	ReturnValue = nullptr;
 }
 
 void NActor::AIClearEvent(UObject* Self, const NameString& eventName)

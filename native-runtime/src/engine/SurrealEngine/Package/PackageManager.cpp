@@ -159,6 +159,7 @@
 #include "Packages/Engine/Actors/Pawn/UCamera.h"
 #include "Packages/Engine/Actors/Pawn/UPawn.h"
 #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
+#include "hp3/PoaPlayerController.h"
 #include "Packages/Engine/Actors/Pawn/UScout.h"
 #include "Packages/Engine/Actors/Triggers/UTrigger.h"
 #include "Packages/Engine/Actors/Triggers/UTriggers.h"
@@ -1543,6 +1544,10 @@ void PackageManager::RegisterNativeClasses()
 	RegisterNativeClass<UPawn>(enginePackage, "Pawn", "Actor");
 	RegisterNativeClass<UScout>(enginePackage, "Scout", "Pawn");
 	RegisterNativeClass<UPlayerPawn>(enginePackage, "PlayerPawn", "Pawn");
+    if(launchInfo.IsHarryPotter3()){
+        RegisterNativeClass<UPoaController>(enginePackage,"Controller","Actor");
+        RegisterNativeClass<UPoaPlayerController>(enginePackage,"PlayerController","Controller");
+    }
 	RegisterNativeClass<UCamera>(enginePackage, "Camera", "PlayerPawn");
 
 	RegisterNativeClass<UInternetLink>(ipdrvPackage, "InternetLink", "InternetInfo");

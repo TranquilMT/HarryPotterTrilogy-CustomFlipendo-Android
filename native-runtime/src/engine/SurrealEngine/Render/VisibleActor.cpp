@@ -35,7 +35,7 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
 	if (actor->bHidden())
 		return;
 
-	UActor* viewportActor = engine->viewport->Actor();
+	UActor* viewportActor = engine->viewport->ViewActor();
 	bool isOwnedByViewport = actor->IsOwnedBy(viewportActor);
 
 	bool behindView = frame->PortalDepth > 0;

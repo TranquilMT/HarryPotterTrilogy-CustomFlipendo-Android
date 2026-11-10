@@ -1,0 +1,433 @@
+diff --git a/SurrealEngine/Engine.cpp b/SurrealEngine/Engine.cpp
+index f54b880..cadb9a6 100644
+--- a/SurrealEngine/Engine.cpp
++++ b/SurrealEngine/Engine.cpp
+@@ -1,6 +1,7 @@
+ 
+ #include "Precomp.h"
+ #include "hp3/PoaGui.h"
++#include "hp3/PoaPlayer.h"
+ #include "KWProf.h"
+ #ifdef __ANDROID__
+ #include <atomic>
+@@ -148,9 +149,9 @@ void Engine::Run()
+ 
+ #ifdef __ANDROID__
+ 	// Touch input is absolute: always use the Windows mouse position in menus (the engine only does this when windowed).
+-	if (engine->LaunchInfo.ue1Version > 219)
++	if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
+ #else
+-	if (engine->LaunchInfo.ue1Version > 219 && !client->StartupFullscreen)
++	if ((engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219) && !client->StartupFullscreen)
+ #endif
+ 		viewport->bWindowsMouseAvailable() = true;
+ 
+@@ -644,7 +645,7 @@ void Engine::ClientTravel(const std::string& newURL, ETravelType travelType, boo
+ 	// As they have to persist somehow
+ 	for (std::string optionKey : { "Name", "Class", "team", "skin", "Face", "Voice", "OverrideClass" })
+ 	{
+-		if (engine->LaunchInfo.ue1Version > 219)
++		if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
+ 		{
+ 			if (url.HasOption(optionKey))
+ 				engine->packages->SetIniValue("User", "DefaultPlayer", optionKey, url.GetOption(optionKey));
+@@ -722,7 +723,7 @@ void Engine::LoadEntryMap()
+ 	Level = nullptr;
+ 	LevelInfo = nullptr;
+ 	GameInfo = nullptr;
+-	viewport->Actor() = nullptr;
++	viewport->ViewActor() = nullptr;
+ }
+ 
+ void Engine::UnloadMap()
+@@ -738,7 +739,7 @@ void Engine::UnloadMap()
+ 	GameInfo = nullptr;
+ 	DeusExLevelInfo = nullptr;
+ 	dxRootWindow = nullptr;
+-	viewport->Actor() = nullptr;
++	viewport->ViewActor() = nullptr;
+ 
+ 	// GC::Collect();
+ }
+@@ -1032,6 +1033,10 @@ void Engine::LoginPlayer()
+ {
+ 	UnrealURL url = LevelInfo->URL;
+ 	std::map<std::string, std::string> travelInfo = Level->TravelInfo;
++    if(LaunchInfo.IsHarryPotter3()){
++        PoaPlayer::Login(LevelInfo->Game(),viewport, url.GetPortal(),url.GetOptions());
++        render->OnMapLoaded();return;
++    }
+ 
+ 	auto stringProp = GC::Alloc<UStringProperty>("", nullptr, ObjectFlags::NoFlags);
+ 	std::string error, failcode;
+@@ -1162,16 +1167,16 @@ void Engine::CalcView()
+ 	static UStructProperty* rotprop = GC::Alloc<UStructProperty>(NameString(), nullptr, ObjectFlags::NoFlags);
+ 
+ 	// To do: improve CallEvent so parameter passing isn't this painful
+-	UFunction* funcPlayerCalcView = viewport->Actor() ? FindEventFunction(viewport->Actor(), "PlayerCalcView") : nullptr;
++	UFunction* funcPlayerCalcView = viewport->ViewActor() ? FindEventFunction(viewport->ViewActor(), "PlayerCalcView") : nullptr;
+ 	if (funcPlayerCalcView)
+ 	{
+ 		vecprop->Struct = UObject::Cast<UStructProperty>(funcPlayerCalcView->Properties[1])->Struct;
+ 		rotprop->Struct = UObject::Cast<UStructProperty>(funcPlayerCalcView->Properties[2])->Struct;
+-		CameraActor = viewport->Actor();
+-		CameraLocation = viewport->Actor()->Location();
+-		CameraRotation = viewport->Actor()->Rotation();
+-		CameraFovAngle = viewport->Actor()->FovAngle();
+-		CallEvent(viewport->Actor(), EventName::PlayerCalcView, {
++		CameraActor = viewport->ViewActor();
++		CameraLocation = viewport->ViewActor()->Location();
++		CameraRotation = viewport->ViewActor()->Rotation();
++		CameraFovAngle = LaunchInfo.IsHarryPotter3()?viewport->ViewActor()->GetFloat("FovAngle"):viewport->Actor()->FovAngle();
++		CallEvent(viewport->ViewActor(), EventName::PlayerCalcView, {
+ 			ExpressionValue::Variable(&CameraActor, objprop),
+ 			ExpressionValue::Variable(&CameraLocation, vecprop),
+ 			ExpressionValue::Variable(&CameraRotation, rotprop)
+@@ -1764,20 +1769,25 @@ void Engine::UpdateInput(float timeElapsed)
+ 	if (tickDebugger)
+ 		tickDebugger();
+ 
+-	if (!viewport->Actor())
++	if (!viewport->ViewActor())
+ 		return;
+ 
+ 	for (auto& it : activeInputButtons)
+-		viewport->Actor()->SetBool(it.first, true);
++    {
++        if(LaunchInfo.IsHarryPotter3())
++            PoaPlayer::SetButton(viewport->ViewActor(),it.first,true);
++        else
++            viewport->ViewActor()->SetBool(it.first, true);
++    }
+ 	for (auto& it : activeInputAxes)
+ 	{
+ 		if (it.first == "aMouseX" || it.first == "aMouseY")
+ 		{
+-			viewport->Actor()->SetFloat(it.first, it.second.Value / (timeElapsed * 150.0f));
++			viewport->ViewActor()->SetFloat(it.first, it.second.Value / (timeElapsed * 150.0f));
+ 		}
+ 		else
+ 		{
+-			viewport->Actor()->SetFloat(it.first, it.second.Value);
++			viewport->ViewActor()->SetFloat(it.first, it.second.Value);
+ 		}
+ 	}
+ }
+@@ -1828,7 +1838,7 @@ void Engine::CloseWindow()
+ 
+ void Engine::TickWindow()
+ {
+-	if (window && engine->LaunchInfo.ue1Version > 219)
++	if (window && (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219))
+ 	{
+ #ifdef __ANDROID__
+ 		g_androidMenuActive = viewport->bShowWindowsMouse() && viewport->bWindowsMouseAvailable();
+@@ -1871,7 +1881,7 @@ void Engine::OnWindowMouseMove(const Point& pos)
+ 	if (engine->dxRootWindow && engine->dxRootWindow->OnWindowMouseMove(pos))
+ 		return;
+ 
+-	if (engine->LaunchInfo.ue1Version > 219)
++	if (engine->LaunchInfo.IsHarryPotter3() || engine->LaunchInfo.ue1Version > 219)
+ 	{
+ 		viewport->WindowsMouseX() = (float)(pos.x * window->GetDpiScale());
+ 		viewport->WindowsMouseY() = (float)(pos.y * window->GetDpiScale());
+@@ -2069,8 +2079,13 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
+ 			{
+ 				if (it->second == key)
+ 				{
+-					if (viewport->Actor())
+-						viewport->Actor()->SetBool(it->first, false);
++					if (viewport->ViewActor())
++                    {
++                        if(LaunchInfo.IsHarryPotter3())
++                            PoaPlayer::SetButton(viewport->ViewActor(),it->first,false);
++                        else
++                            viewport->ViewActor()->SetBool(it->first, false);
++                    }
+ 					it = activeInputButtons.erase(it);
+ 				}
+ 				else
+@@ -2083,8 +2098,8 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
+ 			{
+ 				if (it->second.Key == key)
+ 				{
+-					if (viewport->Actor())
+-						viewport->Actor()->SetFloat(it->first, 0.0f);
++					if (viewport->ViewActor())
++						viewport->ViewActor()->SetFloat(it->first, 0.0f);
+ 					it = activeInputAxes.erase(it);
+ 				}
+ 				else
+@@ -2098,7 +2113,7 @@ void Engine::InputEvent(EInputKey key, EInputType type, int delta)
+ 
+ bool Engine::ExecCommand(const Array<std::string>& args)
+ {
+-	for (UObject* target : { static_cast<UObject*>(viewport->Actor()), static_cast<UObject*>(console) })
++	for (UObject* target : { static_cast<UObject*>(viewport->ViewActor()), static_cast<UObject*>(console) })
+ 	{
+ 		if (!target)
+ 			continue;
+diff --git a/SurrealEngine/Native/NActor.cpp b/SurrealEngine/Native/NActor.cpp
+index 3071dc3..1fc8127 100644
+--- a/SurrealEngine/Native/NActor.cpp
++++ b/SurrealEngine/Native/NActor.cpp
+@@ -775,28 +775,29 @@ void NActor::GetMeshTexture(UObject* Self, std::optional<int> texnum, UObject*&
+ 	ReturnValue = tex ? tex : engine->DefaultTexture;  
+ }
+ 
+-void NActor::GetPlayerPawn(UObject* Self, UObject*& ReturnValue)  
+-{  
+-	if (engine && engine->viewport && engine->viewport->Actor())  
+-	{  
+-		ReturnValue = engine->viewport->Actor();  
+-		return;  
+-	}  
+-  
+-	if (engine && engine->Level)  
+-	{  
+-		for (UActor* actor : engine->Level->Actors)  
+-		{  
+-			UPlayerPawn* pawn = UObject::TryCast<UPlayerPawn>(actor);  
+-			if (pawn && pawn->Player())  
+-			{  
+-				ReturnValue = pawn;  
+-				return;  
+-			}  
+-		}  
+-	}  
+-  
+-	ReturnValue = nullptr;  
++void NActor::GetPlayerPawn(UObject* Self, UObject*& ReturnValue)
++{
++	if (engine && engine->viewport && engine->viewport->ViewActor())
++	{
++		auto view=engine->viewport->ViewActor();
++        ReturnValue=engine->LaunchInfo.IsHarryPotter3() ? (view->HasProperty("Pawn")?view->GetUObject("Pawn"):nullptr) : view;
++		return;
++	}
++
++	if (engine && engine->Level)
++	{
++		for (UActor* actor : engine->Level->Actors)
++		{
++			UPlayerPawn* pawn = UObject::TryCast<UPlayerPawn>(actor);
++			if (pawn && pawn->Player())
++			{
++				ReturnValue = pawn;
++				return;
++			}
++		}
++	}
++
++	ReturnValue = nullptr;
+ }
+ 
+ void NActor::AIClearEvent(UObject* Self, const NameString& eventName)
+diff --git a/SurrealEngine/Package/PackageManager.cpp b/SurrealEngine/Package/PackageManager.cpp
+index 145e000..6cbe1e4 100644
+--- a/SurrealEngine/Package/PackageManager.cpp
++++ b/SurrealEngine/Package/PackageManager.cpp
+@@ -159,6 +159,7 @@
+ #include "Packages/Engine/Actors/Pawn/UCamera.h"
+ #include "Packages/Engine/Actors/Pawn/UPawn.h"
+ #include "Packages/Engine/Actors/Pawn/UPlayerPawn.h"
++#include "hp3/PoaPlayerController.h"
+ #include "Packages/Engine/Actors/Pawn/UScout.h"
+ #include "Packages/Engine/Actors/Triggers/UTrigger.h"
+ #include "Packages/Engine/Actors/Triggers/UTriggers.h"
+@@ -1543,6 +1544,10 @@ void PackageManager::RegisterNativeClasses()
+ 	RegisterNativeClass<UPawn>(enginePackage, "Pawn", "Actor");
+ 	RegisterNativeClass<UScout>(enginePackage, "Scout", "Pawn");
+ 	RegisterNativeClass<UPlayerPawn>(enginePackage, "PlayerPawn", "Pawn");
++    if(launchInfo.IsHarryPotter3()){
++        RegisterNativeClass<UPoaController>(enginePackage,"Controller","Actor");
++        RegisterNativeClass<UPoaPlayerController>(enginePackage,"PlayerController","Controller");
++    }
+ 	RegisterNativeClass<UCamera>(enginePackage, "Camera", "PlayerPawn");
+ 
+ 	RegisterNativeClass<UInternetLink>(ipdrvPackage, "InternetLink", "InternetInfo");
+diff --git a/SurrealEngine/Packages/Engine/Subsystems/USurrealAudioDevice.cpp b/SurrealEngine/Packages/Engine/Subsystems/USurrealAudioDevice.cpp
+index ec778ab..e203bfd 100644
+--- a/SurrealEngine/Packages/Engine/Subsystems/USurrealAudioDevice.cpp
++++ b/SurrealEngine/Packages/Engine/Subsystems/USurrealAudioDevice.cpp
+@@ -1,5 +1,6 @@
+ 
+ #include "Precomp.h"
++#include "hp3/PoaPlayer.h"
+ #include "USurrealAudioDevice.h"
+ #include "Engine.h"
+ #include "Package/PackageManager.h"
+@@ -201,7 +202,7 @@ void USurrealAudioDevice::SetViewport(UViewport* InViewport)
+ 
+ 		if (m_Viewport)
+ 		{
+-			if (m_Viewport->Actor()->Song() && m_Viewport->Actor()->Transition() == MTRAN_None)
++			if (!engine->LaunchInfo.IsHarryPotter3() && m_Viewport->Actor() && m_Viewport->Actor()->Song() && m_Viewport->Actor()->Transition() == MTRAN_None)
+ 				m_Viewport->Actor()->Transition() = MTRAN_Instant;
+ 
+ 			PlayingSounds.resize(std::min(engine->LaunchInfo.IsHarryPotter2() ? HP2::AudioChannels() : Channels, m_Device->GetTotalChannels()));
+@@ -263,14 +264,14 @@ void USurrealAudioDevice::StopMusic()
+ 
+ void USurrealAudioDevice::StartAmbience()
+ {
+-	if (!m_Viewport || !m_Viewport->Actor())
++	if (!m_Viewport || !m_Viewport->ViewActor())
+ 		return;
+ 
+-	bool realtime = m_Viewport->IsRealtime() && m_Viewport->Actor()->Level()->Pauser() == "";
++	bool realtime = m_Viewport->IsRealtime() && m_Viewport->ViewActor()->Level()->Pauser() == "";
+ 	if (realtime)
+ 	{
+-		UActor* viewActor = m_Viewport->Actor()->ViewTarget() ? m_Viewport->Actor()->ViewTarget() : m_Viewport->Actor();
+-		for (UActor* Actor : m_Viewport->Actor()->XLevel()->Actors)
++		UActor* viewActor = PoaPlayer::ViewTarget(m_Viewport->ViewActor());
++		for (UActor* Actor : m_Viewport->ViewActor()->XLevel()->Actors)
+ 		{
+ 			if (Actor && Actor->AmbientSound() && dist_squared(viewActor->Location(), Actor->Location()) <= square(Actor->WorldSoundRadius()))
+ 			{
+@@ -293,11 +294,11 @@ void USurrealAudioDevice::StartAmbience()
+ 
+ void USurrealAudioDevice::UpdateAmbience()
+ {
+-	if (!m_Viewport || !m_Viewport->Actor())
++	if (!m_Viewport || !m_Viewport->ViewActor())
+ 		return;
+ 
+-	UActor* ViewActor = m_Viewport->Actor()->ViewTarget() ? m_Viewport->Actor()->ViewTarget() : m_Viewport->Actor();
+-	bool Realtime = m_Viewport->IsRealtime() && m_Viewport->Actor()->Level()->Pauser() == "";
++	UActor* ViewActor = PoaPlayer::ViewTarget(m_Viewport->ViewActor());
++	bool Realtime = m_Viewport->IsRealtime() && m_Viewport->ViewActor()->Level()->Pauser() == "";
+ 	for (size_t i = 0; i < PlayingSounds.size(); i++)
+ 	{
+ 		PlayingSound& Playing = PlayingSounds[i];
+@@ -371,7 +372,7 @@ void USurrealAudioDevice::ClearLipSync(PlayingSound& Playing)
+ 
+ void USurrealAudioDevice::UpdateSounds()
+ {
+-	if (!m_Viewport || !m_Viewport->Actor())
++	if (!m_Viewport || !m_Viewport->ViewActor())
+ 		return;
+ 
+ 	// HP1's Galaxy driver: volume = clamp(1 - distance / radius) * Volume, at most the sound volume
+@@ -454,6 +455,8 @@ void USurrealAudioDevice::UpdateSounds()
+ 
+ void USurrealAudioDevice::UpdateMusic()
+ {
++    // UE2 PlayerController.Song is FString, not the UE1 UMusic pointer.
++    if(engine->LaunchInfo.IsHarryPotter3())return;
+ 	m_Device->SetMusicVolume(MusicVolume / 255.0f);
+ 
+ 	if (m_Viewport && m_Viewport->Actor() && m_Viewport->Actor()->Transition() != MTRAN_None)
+@@ -785,8 +788,6 @@ void USurrealAudioDevice::AddStats(Array<std::string>& lines)
+ 
+ float USurrealAudioDevice::SoundPriority(UViewport* Viewport, vec3 Location, float Volume, float Radius)
+ {
+-	UActor* target = Viewport->Actor();
+-	if (target && Viewport->Actor()->ViewTarget())
+-		target = Viewport->Actor()->ViewTarget();
++	UActor* target = PoaPlayer::ViewTarget(Viewport->ViewActor());
+ 	return target ? std::max(Volume * (1.0f - length(Location - target->Location()) / Radius), 0.0f) : 0.0f;
+ }
+diff --git a/SurrealEngine/Packages/Engine/UPlayer.h b/SurrealEngine/Packages/Engine/UPlayer.h
+index 0de2f9e..ec5dfa6 100644
+--- a/SurrealEngine/Packages/Engine/UPlayer.h
++++ b/SurrealEngine/Packages/Engine/UPlayer.h
+@@ -3,6 +3,7 @@
+ #include "Packages/Core/UObject.h"
+ 
+ class UPlayerPawn;
++class UActor;
+ class UConsole;
+ 
+ class UPlayer : public UObject
+@@ -10,6 +11,8 @@ class UPlayer : public UObject
+ public:
+ 	using UObject::UObject;
+ 
++	// UE1 Actor() is kept for legacy-only paths. UE2 stores PlayerController.
++	UActor*& ViewActor() { return Value<UActor*>(PropOffsets_Player.Actor); }
+ 	UPlayerPawn*& Actor() { return Value<UPlayerPawn*>(PropOffsets_Player.Actor); }
+ 	int& ConfiguredInternetSpeed() { return Value<int>(PropOffsets_Player.ConfiguredInternetSpeed); }
+ 	int& ConfiguredLanSpeed() { return Value<int>(PropOffsets_Player.ConfiguredLanSpeed); }
+diff --git a/SurrealEngine/Render/RenderCanvas.cpp b/SurrealEngine/Render/RenderCanvas.cpp
+index 0423550..1c47a11 100644
+--- a/SurrealEngine/Render/RenderCanvas.cpp
++++ b/SurrealEngine/Render/RenderCanvas.cpp
+@@ -86,16 +86,20 @@ void RenderSubsystem::PreRender()
+ 	Device->SetSceneNode(&Canvas.Frame);
+     if(engine->LaunchInfo.IsHarryPotter3())PoaGui::Initialize();
+ 	CallEvent(engine->console, EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
+-	if (engine->viewport->Actor())
+-		CallEvent(engine->viewport->Actor(), EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
++	if (engine->viewport->ViewActor())
++		CallEvent(engine->viewport->ViewActor(), EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
+ }
+ 
+ void RenderSubsystem::RenderOverlays()
+ {
+ 	Device->SetSceneNode(&Canvas.Frame);
+-	if (engine->viewport->Actor())
++	if (engine->viewport->ViewActor())
+ 	{
+-		if (engine->LaunchInfo.IsKnowWonder())
++		if (engine->LaunchInfo.IsHarryPotter3())
++        {
++            CallEvent(engine->viewport->ViewActor(),EventName::RenderOverlays,{ExpressionValue::ObjectValue(engine->canvas)});
++        }
++        else if (engine->LaunchInfo.IsKnowWonder())
+ 		{
+ 			// URender::DrawWorld only raises RenderOverlays without bBehindView, on the ViewTarget if any.
+ 			// (Weapon.RenderOverlays draws the first person weapon with Canvas.DrawActor, which leaves it bHidden:
+@@ -106,7 +110,7 @@ void RenderSubsystem::RenderOverlays()
+ 		}
+ 		else if (engine->LaunchInfo.ue1Version > 219)
+ 		{
+-			CallEvent(engine->viewport->Actor(), EventName::RenderOverlays, { ExpressionValue::ObjectValue(engine->canvas) });
++			CallEvent(engine->viewport->ViewActor(), EventName::RenderOverlays, { ExpressionValue::ObjectValue(engine->canvas) });
+ 		}
+ 		else
+ 		{
+@@ -123,8 +127,8 @@ void RenderSubsystem::RenderOverlays()
+ void RenderSubsystem::PostRender()
+ {
+ 	Device->SetSceneNode(&Canvas.Frame);
+-	if (engine->viewport->Actor())
+-		CallEvent(engine->viewport->Actor(), EventName::PostRender, { ExpressionValue::ObjectValue(engine->canvas) });
++	if (engine->viewport->ViewActor())
++		CallEvent(engine->viewport->ViewActor(), EventName::PostRender, { ExpressionValue::ObjectValue(engine->canvas) });
+ 	if (engine->LaunchInfo.IsKnowWonder()) // console/menus in a centred 4:3 area (src/knowwonder/KWCanvas.cpp)
+ 	{
+ 		KW::SetCanvasArea(Canvas.Frame, Canvas.uiscale, true);
+@@ -162,8 +166,8 @@ void RenderSubsystem::DrawLevelInfo(const std::string& levelEnterText)
+ void RenderSubsystem::PostRenderFlash()
+ {
+ 	Device->SetSceneNode(&Canvas.Frame);
+-	if (engine->viewport->Actor())
+-		CallEvent(engine->viewport->Actor(), "PostRenderFlash", {ExpressionValue::ObjectValue(engine->canvas)});
++	if (engine->viewport->ViewActor())
++		CallEvent(engine->viewport->ViewActor(), "PostRenderFlash", {ExpressionValue::ObjectValue(engine->canvas)});
+ }
+ 
+ void RenderSubsystem::DrawActor(UActor* actor, bool WireFrame, bool ClearZ)
+@@ -634,7 +638,7 @@ void RenderSubsystem::DrawTimedemoStats()
+ 		}
+ 
+ 		/*
+-		if (auto pawnExt = UObject::TryCast<UPlayerPawnExt>(engine->viewport->Actor()))
++		if (auto pawnExt = UObject::TryCast<UPlayerPawnExt>(engine->viewport->ViewActor()))
+ 		{
+ 			if (auto flags = pawnExt->FlagBase())
+ 			{
+diff --git a/SurrealEngine/Render/VisibleActor.cpp b/SurrealEngine/Render/VisibleActor.cpp
+index c326a00..cc98dd7 100644
+--- a/SurrealEngine/Render/VisibleActor.cpp
++++ b/SurrealEngine/Render/VisibleActor.cpp
+@@ -35,7 +35,7 @@ void VisibleActor::Process(VisibleFrame* frame, UActor* actor)
+ 	if (actor->bHidden())
+ 		return;
+ 
+-	UActor* viewportActor = engine->viewport->Actor();
++	UActor* viewportActor = engine->viewport->ViewActor();
+ 	bool isOwnedByViewport = actor->IsOwnedBy(viewportActor);
+ 
+ 	bool behindView = frame->PortalDepth > 0;

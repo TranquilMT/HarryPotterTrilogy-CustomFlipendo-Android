@@ -3,6 +3,7 @@
 #include "Packages/Core/UObject.h"
 
 class UPlayerPawn;
+class UActor;
 class UConsole;
 
 class UPlayer : public UObject
@@ -10,6 +11,8 @@ class UPlayer : public UObject
 public:
 	using UObject::UObject;
 
+	// UE1 Actor() is kept for legacy-only paths. UE2 stores PlayerController.
+	UActor*& ViewActor() { return Value<UActor*>(PropOffsets_Player.Actor); }
 	UPlayerPawn*& Actor() { return Value<UPlayerPawn*>(PropOffsets_Player.Actor); }
 	int& ConfiguredInternetSpeed() { return Value<int>(PropOffsets_Player.ConfiguredInternetSpeed); }
 	int& ConfiguredLanSpeed() { return Value<int>(PropOffsets_Player.ConfiguredLanSpeed); }

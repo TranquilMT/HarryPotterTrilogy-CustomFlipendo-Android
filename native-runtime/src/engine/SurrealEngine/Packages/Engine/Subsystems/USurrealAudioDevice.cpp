@@ -1,5 +1,6 @@
 
 #include "Precomp.h"
+#include "hp3/PoaPlayer.h"
 #include "USurrealAudioDevice.h"
 #include "Engine.h"
 #include "Package/PackageManager.h"
@@ -201,7 +202,7 @@ void USurrealAudioDevice::SetViewport(UViewport* InViewport)
 
 		if (m_Viewport)
 		{
-			if (m_Viewport->Actor()->Song() && m_Viewport->Actor()->Transition() == MTRAN_None)
+			if (!engine->LaunchInfo.IsHarryPotter3() && m_Viewport->Actor() && m_Viewport->Actor()->Song() && m_Viewport->Actor()->Transition() == MTRAN_None)
 				m_Viewport->Actor()->Transition() = MTRAN_Instant;
 
 			PlayingSounds.resize(std::min(engine->LaunchInfo.IsHarryPotter2() ? HP2::AudioChannels() : Channels, m_Device->GetTotalChannels()));
@@ -263,14 +264,14 @@ void USurrealAudioDevice::StopMusic()
 
 void USurrealAudioDevice::StartAmbience()
 {
-	if (!m_Viewport || !m_Viewport->Actor())
+	if (!m_Viewport || !m_Viewport->ViewActor())
 		return;
 
-	bool realtime = m_Viewport->IsRealtime() && m_Viewport->Actor()->Level()->Pauser() == "";
+	bool realtime = m_Viewport->IsRealtime() && m_Viewport->ViewActor()->Level()->Pauser() == "";
 	if (realtime)
 	{
-		UActor* viewActor = m_Viewport->Actor()->ViewTarget() ? m_Viewport->Actor()->ViewTarget() : m_Viewport->Actor();
-		for (UActor* Actor : m_Viewport->Actor()->XLevel()->Actors)
+		UActor* viewActor = PoaPlayer::ViewTarget(m_Viewport->ViewActor());
+		for (UActor* Actor : m_Viewport->ViewActor()->XLevel()->Actors)
 		{
 			if (Actor && Actor->AmbientSound() && dist_squared(viewActor->Location(), Actor->Location()) <= square(Actor->WorldSoundRadius()))
 			{
@@ -293,11 +294,11 @@ void USurrealAudioDevice::StartAmbience()
 
 void USurrealAudioDevice::UpdateAmbience()
 {
-	if (!m_Viewport || !m_Viewport->Actor())
+	if (!m_Viewport || !m_Viewport->ViewActor())
 		return;
 
-	UActor* ViewActor = m_Viewport->Actor()->ViewTarget() ? m_Viewport->Actor()->ViewTarget() : m_Viewport->Actor();
-	bool Realtime = m_Viewport->IsRealtime() && m_Viewport->Actor()->Level()->Pauser() == "";
+	UActor* ViewActor = PoaPlayer::ViewTarget(m_Viewport->ViewActor());
+	bool Realtime = m_Viewport->IsRealtime() && m_Viewport->ViewActor()->Level()->Pauser() == "";
 	for (size_t i = 0; i < PlayingSounds.size(); i++)
 	{
 		PlayingSound& Playing = PlayingSounds[i];
@@ -371,7 +372,7 @@ void USurrealAudioDevice::ClearLipSync(PlayingSound& Playing)
 
 void USurrealAudioDevice::UpdateSounds()
 {
-	if (!m_Viewport || !m_Viewport->Actor())
+	if (!m_Viewport || !m_Viewport->ViewActor())
 		return;
 
 	// HP1's Galaxy driver: volume = clamp(1 - distance / radius) * Volume, at most the sound volume
@@ -454,6 +455,8 @@ void USurrealAudioDevice::UpdateSounds()
 
 void USurrealAudioDevice::UpdateMusic()
 {
+    // UE2 PlayerController.Song is FString, not the UE1 UMusic pointer.
+    if(engine->LaunchInfo.IsHarryPotter3())return;
 	m_Device->SetMusicVolume(MusicVolume / 255.0f);
 
 	if (m_Viewport && m_Viewport->Actor() && m_Viewport->Actor()->Transition() != MTRAN_None)
@@ -785,8 +788,6 @@ void USurrealAudioDevice::AddStats(Array<std::string>& lines)
 
 float USurrealAudioDevice::SoundPriority(UViewport* Viewport, vec3 Location, float Volume, float Radius)
 {
-	UActor* target = Viewport->Actor();
-	if (target && Viewport->Actor()->ViewTarget())
-		target = Viewport->Actor()->ViewTarget();
+	UActor* target = PoaPlayer::ViewTarget(Viewport->ViewActor());
 	return target ? std::max(Volume * (1.0f - length(Location - target->Location()) / Radius), 0.0f) : 0.0f;
 }

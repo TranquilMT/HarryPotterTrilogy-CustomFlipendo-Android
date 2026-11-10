@@ -86,16 +86,20 @@ void RenderSubsystem::PreRender()
 	Device->SetSceneNode(&Canvas.Frame);
     if(engine->LaunchInfo.IsHarryPotter3())PoaGui::Initialize();
 	CallEvent(engine->console, EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
-	if (engine->viewport->Actor())
-		CallEvent(engine->viewport->Actor(), EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
+	if (engine->viewport->ViewActor())
+		CallEvent(engine->viewport->ViewActor(), EventName::PreRender, { ExpressionValue::ObjectValue(engine->canvas) });
 }
 
 void RenderSubsystem::RenderOverlays()
 {
 	Device->SetSceneNode(&Canvas.Frame);
-	if (engine->viewport->Actor())
+	if (engine->viewport->ViewActor())
 	{
-		if (engine->LaunchInfo.IsKnowWonder())
+		if (engine->LaunchInfo.IsHarryPotter3())
+        {
+            CallEvent(engine->viewport->ViewActor(),EventName::RenderOverlays,{ExpressionValue::ObjectValue(engine->canvas)});
+        }
+        else if (engine->LaunchInfo.IsKnowWonder())
 		{
 			// URender::DrawWorld only raises RenderOverlays without bBehindView, on the ViewTarget if any.
 			// (Weapon.RenderOverlays draws the first person weapon with Canvas.DrawActor, which leaves it bHidden:
@@ -106,7 +110,7 @@ void RenderSubsystem::RenderOverlays()
 		}
 		else if (engine->LaunchInfo.ue1Version > 219)
 		{
-			CallEvent(engine->viewport->Actor(), EventName::RenderOverlays, { ExpressionValue::ObjectValue(engine->canvas) });
+			CallEvent(engine->viewport->ViewActor(), EventName::RenderOverlays, { ExpressionValue::ObjectValue(engine->canvas) });
 		}
 		else
 		{
@@ -123,8 +127,8 @@ void RenderSubsystem::RenderOverlays()
 void RenderSubsystem::PostRender()
 {
 	Device->SetSceneNode(&Canvas.Frame);
-	if (engine->viewport->Actor())
-		CallEvent(engine->viewport->Actor(), EventName::PostRender, { ExpressionValue::ObjectValue(engine->canvas) });
+	if (engine->viewport->ViewActor())
+		CallEvent(engine->viewport->ViewActor(), EventName::PostRender, { ExpressionValue::ObjectValue(engine->canvas) });
 	if (engine->LaunchInfo.IsKnowWonder()) // console/menus in a centred 4:3 area (src/knowwonder/KWCanvas.cpp)
 	{
 		KW::SetCanvasArea(Canvas.Frame, Canvas.uiscale, true);
@@ -162,8 +166,8 @@ void RenderSubsystem::DrawLevelInfo(const std::string& levelEnterText)
 void RenderSubsystem::PostRenderFlash()
 {
 	Device->SetSceneNode(&Canvas.Frame);
-	if (engine->viewport->Actor())
-		CallEvent(engine->viewport->Actor(), "PostRenderFlash", {ExpressionValue::ObjectValue(engine->canvas)});
+	if (engine->viewport->ViewActor())
+		CallEvent(engine->viewport->ViewActor(), "PostRenderFlash", {ExpressionValue::ObjectValue(engine->canvas)});
 }
 
 void RenderSubsystem::DrawActor(UActor* actor, bool WireFrame, bool ClearZ)
@@ -634,7 +638,7 @@ void RenderSubsystem::DrawTimedemoStats()
 		}
 
 		/*
-		if (auto pawnExt = UObject::TryCast<UPlayerPawnExt>(engine->viewport->Actor()))
+		if (auto pawnExt = UObject::TryCast<UPlayerPawnExt>(engine->viewport->ViewActor()))
 		{
 			if (auto flags = pawnExt->FlagBase())
 			{
